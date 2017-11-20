@@ -1,0 +1,14 @@
+
+VteTerminal, vte-terminal {
+	padding: 4px 6px 0px 6px;
+}
+
+@binding-set DeleteWordBackwards
+{
+	bind "<ctrl>w" { "delete-from-cursor" (word-ends, -1) }
+}
+
+entry
+{
+	-gtk-key-bindings: DeleteWordBackwards;
+}

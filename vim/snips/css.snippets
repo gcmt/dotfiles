@@ -1,0 +1,260 @@
+
+priority -50
+
+snippet ! "!important;"
+!important;$0
+endsnippet
+
+snippet w "width: value;"
+width: $0;
+endsnippet
+
+snippet h "height: value;"
+height: $0;
+endsnippet
+
+# background
+
+snippet bg "background: color image repeat attachment position;"
+background: $1;$0
+endsnippet
+
+snippet bga "background-attachment: scroll/fixed;"
+background-attachment: $1;$0
+endsnippet
+
+snippet bgc "background-color: color-hex;"
+background-color: #$1;$0
+endsnippet
+
+snippet bgi "background-image: url;"
+background-image: url($1);$0
+endsnippet
+
+# border
+
+snippet b "border: size style color;"
+border: $1;$0
+endsnippet
+
+snippet bt "border-top: size style color;"
+border-top: $1;$0
+endsnippet
+
+snippet bb "border-bottom: size style color;"
+border-bottom: $1;$0
+endsnippet
+
+snippet bl "border-left: size style color;"
+border-left: $1;$0
+endsnippet
+
+snippet br "border-right: size style color;"
+border-right: $1;$0
+endsnippet
+
+# clear
+
+snippet cl "clear: value;"
+clear: $1;$0
+endsnippet
+
+snippet cll "clear: left;"
+clear: left;$0
+endsnippet
+
+snippet clr "clear: right;"
+clear: right;$0
+endsnippet
+
+snippet clb "clear: both;"
+clear: both;$0
+endsnippet
+
+# color
+
+snippet c "color: color;"
+color: $1;$0
+endsnippet
+
+# cursor
+
+snippet cu "cursor: type;"
+cursor: $1;$0
+endsnippet
+
+# display
+
+snippet d "display: value;"
+display: $1;$0
+endsnippet
+
+snippet db "display: block;"
+display: block;$0
+endsnippet
+
+snippet di "display: inline;"
+display: inline;$0
+endsnippet
+
+snippet din "display: none;"
+display: none;$0
+endsnippet
+
+# float
+
+snippet fl "float: value;"
+float: $1;$0
+endsnippet
+
+snippet fll "float: left;"
+float: left;$0
+endsnippet
+
+snippet flr "float: right;"
+float: right;$0
+endsnippet
+
+# font
+
+snippet ff "font-family: family;"
+font-family: $1;$0
+endsnippet
+
+snippet fz "font-size: size;"
+font-size: $1em;$0
+endsnippet
+
+snippet fs "font-style: style;"
+font-style: ${1:normal/italic/oblique};$0
+endsnippet
+
+snippet fv "font-variant: variant;"
+font-variant: ${1:normal/small-caps};$0
+endsnippet
+
+snippet fw "font-weight: weight;"
+font-weight: ${1:normal/bold};$0
+endsnippet
+
+snippet f "font: style variant weight size:line-height font -family (font);"
+font: $1;$0
+endsnippet
+
+snippet les "letter-spacing: length-em;"
+letter-spacing: $1;$0
+endsnippet
+
+snippet list "list-style-image: url (list);"
+list-style-image: url($1);$0
+endsnippet
+
+snippet lsp "list-style-position: position;"
+list-style-position: ${1:inside/outside};$0
+endsnippet
+
+snippet lst "list-style-type: type;"
+list-style-type: ${1:cjk-ideographic/hiragana/katakana/hiragana-iroha/katakana-iroha};$0
+endsnippet
+
+snippet ls "list-style: type position image;"
+list-style: $1;$0
+endsnippet
+
+snippet mb "margin-bottom: length;"
+margin-bottom: $1;$0
+endsnippet
+
+snippet ml "margin-left: length;"
+margin-left: $1;$0
+endsnippet
+
+snippet mr "margin-right: length;"
+margin-right: $1;$0
+endsnippet
+
+snippet mt "margin-top: length;"
+margin-top: $1;$0
+endsnippet
+
+snippet m "margin: top right bototm left;"
+margin: $1;$0
+endsnippet
+
+snippet ov "overflow: type;"
+overflow: ${1:visible/hidden/scroll/auto};$0
+endsnippet
+
+snippet pb "padding-bottom: length;"
+padding-bottom: $1;$0
+endsnippet
+
+snippet pl "padding-left: length;"
+padding-left: $1;$0
+endsnippet
+
+snippet pr "padding-right: length;"
+padding-right: $1;$0
+endsnippet
+
+snippet pt "padding-top: length;"
+padding-top: $1;$0
+endsnippet
+
+snippet p "padding: top right bottom left;"
+padding: $1;$0
+endsnippet
+
+snippet po "position: type;"
+position: ${1};$0
+endsnippet
+
+snippet ta "text-align: value;"
+text-align: ${1:left/right/center/justify};$0
+endsnippet
+
+snippet td "text-decoration: value;"
+text-decoration: ${1:none/underline/overline/line-through/blink};$0
+endsnippet
+
+snippet ti "text-indent: length;"
+text-indent: $1;$0
+endsnippet
+
+snippet ts "text-shadow: color-hex x y blur;"
+text-shadow: $1;$0
+endsnippet
+
+snippet tsn "text-shadow: none;"
+text-shadow: $1;$0
+endsnippet
+
+snippet tt "text-transform: value;"
+text-transform: ${1:capitalize/uppercase/lowercase};$0
+endsnippet
+
+snippet ttn "text-transform: none;"
+text-transform: none;$0
+endsnippet
+
+snippet va "vertical-align: type;"
+vertical-align: ${1:baseline/sub/super/top/text-top/middle/bottom/text-bottom/length/%};$0
+endsnippet
+
+snippet vis "visibility: type;"
+visibility: ${1:visible/hidden/collapse};$0
+endsnippet
+
+snippet wh "white-space: value;"
+white-space: ${1:normal/pre/nowrap};$0
+endsnippet
+
+snippet ws "word-spacing: length;"
+word-spacing: $1;$0
+endsnippet
+
+snippet z "z-index: index;"
+z-index: $1;$0
+endsnippet
+
+# vim:ft=snippets:

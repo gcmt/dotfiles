@@ -1,0 +1,88 @@
+#!/usr/bin/env zsh
+
+CACHE_DIR=~/.cache/rpass
+# set password-store root dir
+ROOT=${PASSWORD_STORE_DIR:-$HOME/.password-store}
+
+clear_clipboard() {
+	sleep 45
+	echo -n "" | xclip -selection clipboard
+	notify-send "Pass" "Clipboard cleared"
+}
+
+submenu() {
+
+	local fields=$(echo "Password: $(pass show "$1" | head -1)\n$(pass show "$1" | tail -n +2 | grep '^[-a-zA-Z0-9_ ]\+:')")
+
+	local line
+	line=$(echo $fields | grep -o '^[-a-zA-Z0-9_ ]\+' | rofi -dmenu -format d -p "$1: " -kb-custom-1 'Alt+c' -kb-custom-2 'Alt+e')
+	rofi_exit=$?
+
+	if [[ -z "$line" || $rofi_exit == 1 ]]; then
+		return 1
+	fi
+
+	local field=$(echo $fields | sed -n "${line}p")
+	local label=$(echo $field | grep -o '^[-a-zA-Z_ ]\+:')
+	local value=$(echo $field | sed 's/^[-a-zA-Z0-9_ ]\+:\s*//')
+
+	case "$rofi_exit" in
+		0)
+			echo -n "$value" | xdotool type --clearmodifiers --file -
+			;;
+		10)
+			if [[ "$label" == "Password" ]]; then
+				pass -c "$1"
+			else
+				echo -n "$value" | xclip -selection clipboard
+				clear_clipboard &
+			fi
+			notify-send "Pass" "Copied $1 '$choice' to clipboard. Will clear in 45 seconds."
+			;;
+		11)
+			termite -e "pass edit $1"
+			;;
+	esac
+
+}
+
+main() {
+
+	local rofi_exit
+	local passwords entry
+
+	passwords=$(rg --files $ROOT | sed "s,^$ROOT/,," | sed 's/.gpg$//' | sort)
+
+	entry=$(echo $passwords | rofi -dmenu -no-auto-select -p 'pass: ' $selected -kb-custom-1 'Alt+e' -kb-custom-2 'Alt+c')
+	rofi_exit=$?
+
+	if [[ -z "$entry" || $rofi_exit == 1 ]]; then
+		return 1
+	fi
+
+	pass show "$entry" 2>&1 > /dev/null
+	if [[ $? == 1 && ! -f "$ROOT/$entry.gpg" ]]; then
+		pass generate -c "$entry"
+		notify-send 'Pass' "Password for $entry generated and copied to clipboard. Will clear in 45 seconds."
+		return 0
+	fi
+
+	case "$rofi_exit" in
+		0)
+			submenu "$entry"
+			;;
+		10)
+			termite -e "pass edit $entry"
+			;;
+		11)
+			pass -c "$entry"
+			notify-send 'Pass' "Copied $entry 'Password' to clipboard. Will clear in 45 seconds."
+			;;
+	esac
+
+}
+
+mkdir -p "$CACHE_DIR"
+
+main "$@"
+

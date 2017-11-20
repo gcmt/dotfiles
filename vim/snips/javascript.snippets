@@ -1,0 +1,73 @@
+
+priority -50
+
+# Basic snippets
+
+snippet use "use strict" b
+'use strict';
+$0
+endsnippet
+
+snippet re "require(..)" b
+const ${1} = require('${2}')$0;
+endsnippet
+
+snippet ar "Arrow function" w
+(${1}) => {$0}
+endsnippet
+
+snippet st "setTimeout function"
+setTimeout((${1}) => {
+	$0
+}, ${2});
+endsnippet
+
+# Snippets for console debug output
+
+snippet ce "console.error" b
+console.error($0);
+endsnippet
+
+snippet cl "console.log" b
+console.log($0);
+endsnippet
+
+snippet ca "console.assert" b
+console.assert($0);
+endsnippet
+
+# DOM manipulation snippets
+
+snippet d "document" w
+document.
+endsnippet
+
+snippet ce "document.createElement(..)" w
+document.createElement('$1');
+endsnippet
+
+snippet /(?<=\.)el/ "addEventListener(..)" r
+addEventListener($1);
+endsnippet
+
+snippet /(?<=\.)qs/ "querySelector(..)" r
+querySelector('$1')
+endsnippet
+
+snippet /(?<=[\s])qs/ "document.querySelector(..)" r
+document.querySelector('$1')
+endsnippet
+
+snippet /(?<=\.)qsa/ "querySelectorAll(..)" r
+querySelectorAll('$1')
+endsnippet
+
+snippet /(?<=[\s])qsa/ "document.querySelectorAll(..)" r
+document.querySelectorAll('$1')
+endsnippet
+
+snippet gid "document.getElementById(..)" w
+document.getElementById('$1');
+endsnippet
+
+# vim:ft=snippets:

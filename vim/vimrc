@@ -1,0 +1,726 @@
+
+" INIT
+" ----------------------------------------------------------------------------
+
+	if empty($XDG_CONFIG_HOME)
+		let $XDG_CONFIG_HOME = $HOME.'/.config'
+	end
+
+	if empty($XDG_DATA_HOME)
+		let $XDG_DATA_HOME = $HOME.'/.local/share'
+	end
+
+	if empty($XDG_CACHE_HOME)
+		let $XDG_CACHE_HOME = $HOME.'/.cache'
+	end
+
+	let $VIMHOME = empty($VIMHOME) ? $XDG_CONFIG_HOME.'/vim' : $VIMHOME
+	let $VIMCACHE = empty($VIMCACHE) ? $XDG_CACHE_HOME.'/vim' : $VIMCACHE
+	let $VIMDATA = empty($VIMDATA) ? $XDG_DATA_HOME.'/vim' : $VIMDATA
+
+	let &rtp = substitute(&rtp, $HOME.'/.vim', $VIMHOME, 'g')
+
+" PLUGINS
+" ----------------------------------------------------------------------------
+
+	comm! -nargs=1 Mine exec printf("Plug '%s/plugins/%s'", $VIMHOME, <args>)
+
+	call plug#begin($VIMDATA . '/plugins')
+
+	Plug 'w0rp/ale'
+	Plug 'mbbill/undotree'
+	Plug 'scrooloose/nerdtree'
+	Plug 'Valloric/YouCompleteMe'
+	Plug 'tpope/vim-fugitive'
+	Plug 'airblade/vim-gitgutter'
+	Plug 'mattn/emmet-vim'
+	Plug 'SirVer/ultisnips'
+	Plug 'wellle/targets.vim'
+	Plug 'slashmili/alchemist.vim'
+	Plug 'ap/vim-css-color'
+	Plug 'posva/vim-vue'
+	Plug 'pangloss/vim-javascript'
+	Plug 'JulesWang/css.vim'
+	Plug 'othree/html5.vim'
+	Plug 'elixir-lang/vim-elixir'
+	Plug 'tpope/vim-markdown'
+	Plug 'stephpy/vim-yaml'
+
+	Mine 'utils'
+	Mine 'rofi'
+	Mine 'grep'
+	Mine 'flow'
+	Mine 'pairs'
+	Mine 'qfedit'
+	Mine 'spotter'
+	Mine 'explorer'
+	Mine 'commenter'
+	Mine 'bookmarks'
+	Mine 'finder'
+	Mine 'buffers'
+	Mine 'tagmaker'
+	Mine 'taglist'
+	Mine 'python'
+	Mine 'term'
+
+	call plug#end()
+
+	delcomm Mine
+
+" OPTIONS
+" ----------------------------------------------------------------------------
+
+	syntax on
+	filetype plugin on
+
+	set history=100
+	set viminfo=!,'100,h,n$VIMCACHE/viminfo
+
+	set undofile
+	set undodir=$VIMCACHE/undofiles
+
+	set noswapfile
+	set nobackup
+
+	set backspace=indent,eol,start
+	set encoding=utf8
+	set spelllang=it,en
+	set cryptmethod=blowfish
+	set updatetime=200
+	set timeoutlen=1000
+	set ttimeoutlen=10
+	set lazyredraw
+	set hidden
+	set autoread
+	set path=**
+
+	set ignorecase
+	set smartcase
+	set showmatch
+	set incsearch
+	set nohlsearch
+	set gdefault
+
+	let mapleader = "\<space>"
+
+" " UI
+" " ----------------------------------------------------------------------------
+
+	let g:html_no_rendering = 1
+	let g:vim_json_warnings = 0
+
+	colorscheme dark
+
+	if has('termguicolors')
+		set termguicolors
+	end
+
+	if exists('$TMUX')
+		set cmdheight=2
+	end
+
+	set guioptions=c
+
+	let &guifont = 'SF Mono ' . (has('unix') ? '12' : 'h12')
+	set linespace=1
+
+	set title
+	let &titlestring = "Vim  |  %{substitute(getcwd(), $HOME, '~', '')}"
+
+	set nowrap
+	set linebreak
+	set breakindent
+	set showbreak=..
+	set display=lastline
+	set textwidth=100
+
+	set nonumber
+	set norelativenumber
+	set numberwidth=1
+	set nocursorline
+
+	set scrolloff=0
+	set sidescrolloff=0
+
+	set virtualedit=all
+	set mouse=a
+
+	set noexpandtab
+	set tabstop=3
+	set shiftwidth=0
+	set softtabstop=0
+	set autoindent
+
+	set wildmenu
+	set wildmode=full
+	set wildignore+=
+	set wildignore+=*/venv/*,venv$
+	set wildignore+=*/__pycache__/*,__pycache__
+	set wildignore+=*/node_modules/*,node_modules
+	set wildignore+=.git,.vagrant,.DS_Store,tags,.tags,*.retry
+	set wildignore+=*.sqlite3,*.pyc,*.beam,*.so
+	set wildignore+=*.jpg,*.png,*.ico,*.gif
+
+	set formatoptions=crq1nj
+	set nrformats-=octal
+
+	set splitbelow
+	set splitright
+
+	set list
+	set listchars=tab:│\ ,trail:·,precedes:⋯,extends:⋯
+	set fillchars=vert:│
+
+	set nofoldenable
+	set foldcolumn=0
+
+	set completeopt=menuone,longest
+	set nojoinspaces
+	set report=9999
+	set shortmess=FOIAoastc
+	set noshowmode
+	set showcmd
+	set laststatus=2
+	set visualbell
+	set t_vb=
+
+" STATUSLINE
+" ----------------------------------------------------------------------------
+
+	let s:sep = ' ‹ '
+
+	func! _current_buffer()
+		if empty(bufname('%'))
+			return '[no name]'
+		end
+		if !empty(&buftype) || &ft == 'notes'
+			return expand('%:t')
+		end
+		let path = substitute(expand('%:p'), $HOME, '~', '')
+		return join(split(path, '/')[-2:], '/')
+	endf
+
+	func! _alternate_buffer()
+		let alternate = expand('#:t')
+		if !&diff && empty(&bt) && winwidth(0) > 60 && !empty(alternate) && expand('#:p') != expand('%:p')
+			return '[' . alternate . '] '
+		end
+		return ''
+	endf
+
+	func! _venv()
+		if !&diff && &ft == 'python' && !empty($VIRTUAL_ENV)
+			return '[' . fnamemodify($VIRTUAL_ENV, ':t') . '] '
+		end
+		return ''
+	endf
+
+	func! _git_branch()
+		let branch = exists('*fugitive#head') ? fugitive#head() : ''
+		if !&diff && !empty(branch) && winwidth(0) > 60
+			return branch . s:sep
+		end
+		return ''
+	endf
+
+	func! _meta()
+		let enc = printf('%s:%s', &fenc ? &fenc : &enc, &ff)
+		if !&diff && empty(&bt) && winwidth(0) > 50 && &ft != 'notes'
+			return join(filter([enc, &ft], 'len(v:val)'), s:sep) . s:sep
+		end
+		return ''
+	endf
+
+	func! _quickfix()
+		return empty(getqflist()) ? '' : '[QF] '
+	endf
+
+	func! _loclist()
+		return empty(getloclist(0)) ? '' : '[ERR] '
+	endf
+
+	let &stl  = ' '
+
+	let &stl .= '%#StatusLineGreen#%{_venv()}%*'
+
+	let &stl .= '%{_alternate_buffer()}'
+
+	let &stl .= '%(%w%r%h %)'
+
+	let &stl .= '%{&mod ? "" : _current_buffer()}'
+	let &stl .= '%#StatusLineMod#%{&mod ? _current_buffer() : ""}%*'
+
+	let &stl .= '%='
+
+	let &stl .= '%{_git_branch()}'
+
+	let &stl .= '%{_meta()}'
+
+	let &stl .= '%1l:%02c '
+
+	let &stl .= '%#StatusLineBlue#%{_quickfix()}%*'
+	let &stl .= '%#StatusLineRed#%{_loclist()}%*'
+
+" TABS
+" ----------------------------------------------------------------------------
+
+	set tabline=%!_tabline()
+
+	func! _tabline()
+		let tabline = ''
+		for tabnr in range(1, tabpagenr('$'))
+			let tabline .= tabnr == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#'
+			let tabline .= ' %' . tabnr . 'T'
+			let tabname = gettabvar(tabnr, 'tabname', '')
+			let tabname = empty(tabname) ? 'TAB' : tabname
+			let tabline .= printf('[ #%s %s ]', tabnr, tabname)
+			let tabline .= ' '
+		endfor
+		let tabline .= '%#TabLineFill#%T'
+		let tabline .= '%=%#TabLine#%999X'
+		return tabline
+	endf
+
+	command! -nargs=? Tab tabe | TabName <args>
+	command! -nargs=? TabName call <sid>set_tabname(<q-args>)
+
+	func! s:set_tabname(name)
+		let t:tabname = a:name
+		set tabline=%!_tabline()
+	endf
+
+" WINDOWS
+" ----------------------------------------------------------------------------
+
+	aug _windows
+		au!
+		au VimResized * wincmd = | redraw
+	aug END
+
+	nnoremap <c-w>v <c-w>v:b#<cr>
+	nnoremap <c-w>s <c-w>s:b#<cr>
+
+	" toggle zooming
+	nnoremap <silent> <c-w>z :Zoom<cr>
+
+" BUFFERS
+" ----------------------------------------------------------------------------
+
+	aug _buffers
+		au!
+		au BufReadPost * call <sid>restore_cursor()
+	aug END
+
+	func! s:restore_cursor()
+		if line("'\"") > 1 && line("'\"") <= line("$") && &ft !~ 'commit'
+			exec "norm! g`\""
+		end
+	endf
+
+	" switch to the alternate buffer
+	nnoremap <leader>a <c-^>
+
+	" switch buffer
+	nnoremap <leader><tab> :buffers<cr>:b<space>
+
+	" delete buffer
+	nnoremap <silent> <leader>d :call <sid>bdelete()<cr>
+
+	func! s:bdelete()
+		let target = bufnr('%')
+		if buflisted(bufnr('#'))
+			exec bufnr('#') . 'buffer'
+		end
+		sil! exec target . 'bdelete'
+	endf
+
+" QUICKFIX
+" ----------------------------------------------------------------------------
+
+	let g:quickfix_height = 50
+
+	nnoremap <silent> <leader>q :cwindow<cr>
+	nnoremap <silent> ]q :Zz! :cnext<cr>
+	nnoremap <silent> ]Q :Zz! :clast<cr>
+	nnoremap <silent> [q :Zz! :cprev<cr>
+	nnoremap <silent> [Q :Zz! :cfirst<cr>
+
+	nnoremap <silent> <leader>l :lwindow<cr>
+	nnoremap <silent> ]l :Zz! :lnext<cr>
+	nnoremap <silent> ]L :Zz! :llast<cr>
+	nnoremap <silent> [l :Zz! :lprev<cr>
+	nnoremap <silent> [L :Zz! :lfirst<cr>
+
+" EDITING
+" ----------------------------------------------------------------------------
+
+	inoremap <c-e> <esc>O
+	inoremap <c-d> <esc>o
+	inoremap <c-w> <c-g>u<c-w>
+	inoremap <c-l> <right><bs>
+	cnoremap <c-l> <right><bs>
+
+	" create empty lines without leaving normal mode
+	nnoremap <c-e> m`O<esc>"_cc<esc>``
+	nnoremap <c-d> m`o<esc>"_cc<esc>``
+
+	" toggle capitalization of the previous word
+	inoremap <c-t> <esc>b~ea
+
+	" buffer text object
+	xnoremap a% GoggV
+	onoremap a% :<c-u>norm va%<cr>
+
+	" blackhole register shortcut
+	nnoremap _ "_
+	xnoremap _ "_
+
+	" select the last changed text
+	nnoremap <expr> gV '`[' . strpart(getregtype(), 0, 1) . '`]'
+
+	" indent the last changed text
+	nmap g= gV=
+
+	" paste and indent (improved)
+	nmap ]P Pg=
+	nmap ]p pg=
+
+	" replace selection without side effects
+	vmap <expr> P '_d"' . v:register . 'P'
+	vmap <expr> ]P '_d"' . v:register . ']P'
+
+	" copy to the end of the line
+	nnoremap Y y$
+
+	" select the current line without indentation
+	nnoremap vv ^vg_
+
+	" indent lines without losing selection
+	vnoremap < <gv
+	vnoremap > >gv
+
+	" repeat last substitute on a selection
+	xnoremap <silent> & :&<cr>
+	xnoremap <silent> <leader>& :&&<cr>
+
+" MOVING AROUND
+" ----------------------------------------------------------------------------
+
+	nnoremap ' `
+
+	nnoremap <c-u> <c-e>
+
+	noremap j gj
+	noremap k gk
+
+	noremap J 3gj
+	noremap K 3gk
+
+	noremap H ^
+	noremap L g_
+	noremap M %
+
+	noremap <c-k> {
+	noremap <c-j> }
+
+	noremap <silent> gw :<c-u>call <sid>next_word(0)<cr>
+	noremap <silent> gb :<c-u>call <sid>next_word(1)<cr>
+
+	" move to the next/previous word that starts with word characters
+	func! s:next_word(backward)
+		let flags = 'We' . (a:backward ? 'b' :'')
+		for _ in range(1, v:count1)
+			call searchpos('\v(\W|^)\w', flags)
+		endfor
+	endf
+
+	" jump after given characters without leaving insert mode
+	inoremap <silent> <c-f> <c-r>=<sid>jump_to_char(']', ')', '}', '>', '"', "'")<cr>
+
+	func! s:jump_to_char(...)
+		let pos = searchpos('\v['.join(a:000, '').']', 'Wc')
+		return "\<right>"
+	endf
+
+" SEARCH AND SUBSTITUTE
+" ---------------------------------------------------------------------------
+
+	noremap <c-b> ?
+	noremap <c-f> /
+
+	" toggle highlighting of the last search pattern
+	nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
+
+	" search for current word or selected text without moving the cursor
+	nnoremap <silent> S :call utils#search(0)<cr>:set hlsearch<cr>
+	xnoremap <silent> S :<c-u>call utils#search(1)<cr>:set hlsearch<cr>
+
+	nnoremap <silent> N :Zz! N<cr>
+	nnoremap <silent> n :Zz! n<cr>
+
+	nnoremap <silent> # :Zz! #<cr>
+	nnoremap <silent> * :Zz! *<cr>
+
+" MACROS
+" ----------------------------------------------------------------------------
+
+	xnoremap @ :norm! @
+
+	nnoremap Q @q
+	xnoremap <silent> Q :norm! @q<cr>
+
+" TAGS
+" ----------------------------------------------------------------------------
+
+	set tags=
+	let g:tags_common = ['tags']
+
+	aug _tags
+		au!
+		au FileType * call _set_tagfiles()
+		au User TagMakerPost call _set_tagfiles()
+	aug END
+
+	" The order of tags file will determine in what position Taglist will display
+	" them. Prefix them with a number followed by a dot to enforce an ordering:
+	" ie. results from 0.project will always be displayed on top.
+	" To ignore a tag file, prefix its name with an underscore.
+	func! _set_tagfiles()
+		let local_tags = glob('.tags/'.&ft.'/[^_]*', 1, 1)
+		let global_tags = glob($XDG_DATA_HOME . '/ctags/tags/'.&ft.'/[^_]*', 1, 1)
+		let tagfiles = local_tags + global_tags + g:tags_common
+		call setbufvar(bufnr('%'), '&tags', join(tagfiles, ','))
+	endf
+
+" PROJECT
+" ----------------------------------------------------------------------------
+
+	let g:root_markers = ['.gitignore', 'node_modules']
+
+	aug _project_util
+		au!
+		au VimEnter * sil! CdRoot
+	aug END
+
+	nnoremap <leader>c :lcd %:p:h<cr>:pwd<cr>
+	nnoremap <leader>C :CdRoot<cr>
+
+" MISC
+" ----------------------------------------------------------------------------
+
+	aug _misc
+		au!
+
+		au BufWritePost *vimrc source $MYVIMRC
+		au BufWritePost */colors/* nested exec 'colorscheme' g:colors_name
+
+		au CmdWinEnter * set ft=
+		au CmdWinEnter * noremap <buffer> <c-j> <cr>
+		au CmdWinEnter * setl nonumber norelativenumber
+
+		" keep the help window to the bottom when there are multiple splits
+		au BufWinEnter * if &ft == 'help' | wincmd J | end
+
+		" show cursorline only for a short amount of time (useful with :Zz)
+		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|netrw|explorer|buffers|finder|bookmarks|taglist)$' | set nocul | end
+
+		" remove trailing spaces before every save
+		au BufWritePre * if &ft != 'diff' && exists('*utils#s') | call utils#s('\v\s+$', '', 'e') | end
+
+		au BufReadPost * if &key != '' | setl noudf noswf nowb nobk nostmp secure hi=0 vi= | end
+		au BufNewFile,BufReadPre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl secure nostmp nowb nobk noswf hi=0 vi=
+		au BufWritePre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl noudf
+
+	aug END
+
+	command! -nargs=0 Vimrc edit $MYVIMRC
+	command! -nargs=0 ColoEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
+	command! -nargs=1 -complete=filetype FtEdit call <sid>ftedit(<q-args>)
+
+	func! s:ftedit(ft)
+		let paths = split(globpath(&rtp, 'ftplugin/'.a:ft.'.vim'))
+		let paths = filter(paths, "v:val =~ '\\V\\^'.$VIMHOME")
+		let default = $VIMHOME.'/after/ftplugin/'.a:ft.'.vim'
+		let path = empty(paths) ? default : paths[0]
+		exec 'edit' fnameescape(path)
+	endf
+
+	cnoremap <c-n> <down>
+	cnoremap <c-p> <up>
+
+	noremap <leader>j J
+	noremap <leader>k K
+
+	nnoremap <leader>v :source .vimrc<cr>
+
+	nnoremap <silent> <leader>w :set wrap!<bar>set wrap?<cr>
+	nnoremap <silent> <leader>n :set number!<bar>set number?<cr>
+	nnoremap <silent> <leader>z :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
+
+	iabbrev teh the
+	iabbrev wiht with
+	iabbrev lenght length
+	iabbrev retrun return
+
+" Grep
+" ----------------------------------------------------------------------------
+
+	nnoremap <leader>s :Grep!<space>
+	nnoremap <leader>S :Grep! <c-r><c-w><cr>
+
+" Finder
+" ----------------------------------------------------------------------------
+
+	nnoremap <leader>f :Find<space>
+
+" Buffers
+" ----------------------------------------------------------------------------
+
+	nnoremap <silent> <leader>b :Buffers<cr>
+
+" Bookmarks
+" ----------------------------------------------------------------------------
+
+	nnoremap <silent> <leader>? :Bookmarks<cr>
+	nnoremap <silent> <leader>' :call bookmarks#jump(getchar())<cr>
+	nnoremap <silent> <leader>m :call bookmarks#set(getchar(), expand('%:p'))<cr>
+	nnoremap <silent> <leader>M :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
+
+" Taglist
+" ----------------------------------------------------------------------------
+
+	nnoremap <leader>t :Tag!<space>
+	nnoremap <silent> <leader>T :Tag! <c-r><c-w><cr>
+	nnoremap <silent> <c-]> :Tag <c-r><c-w><cr>
+
+" Spotter
+" ----------------------------------------------------------------------------
+
+	let g:spotter_banned_filetypes = {
+		\ 'html':1, 'jinja':1, 'htmldjango':1, "json":1,
+	   \ 'text':1, 'markdown':1, 'notes':1,
+	\ }
+
+	let g:spotter_banned_syntax = {
+		\ 'String':1, 'Comment':1,
+	\ }
+
+	let g:spotter_banned_syntax_elixir = {
+		\ 'elixirDocString':1
+	\ }
+
+	let g:spotter_banned_words_javascript = {
+		\ 'var':1, 'let':1, 'const':1, 'function':1, 'class':1
+	\ }
+
+" Ale
+" ----------------------------------------------------------------------------
+
+	highlight link ALEError None
+	highlight link ALEErrorSign Exception
+	highlight link ALEWarningSign Repeat
+
+	let g:ale_sign_error = 'x'
+	let g:ale_sign_warning = '!'
+	let ale_lint_on_text_changed = 'never'
+	let g:ale_open_list = 0
+
+" Explorer
+" ----------------------------------------------------------------------------
+
+	nnoremap <silent> <leader>e :exec 'Explorer' expand('%:p:h')<cr>
+	nnoremap <silent> <leader>E :exec 'Explorer' getcwd()<cr>
+
+" Netrw
+" ----------------------------------------------------------------------------
+
+	let g:netrw_banner = 0
+	let g:netrw_altfile = 1
+	let g:netrw_liststyle = 0
+
+	let g:netrw_list_hide = ''
+	let g:netrw_list_hide .= '\(^\|\s\s\)\zs\.\S\+,'
+	let g:netrw_list_hide .= '\./,\.\./'
+	let g:netrw_list_hide .= '\.DS_Store,\.pyc$'
+	let g:netrw_list_hide .= '__pycache__,node_modules,venv$,'
+
+" NERDTree
+" ----------------------------------------------------------------------------
+
+	aug _nerdtree
+		au!
+		au FileType nerdtree setl foldcolumn=1
+	aug END
+
+	nnoremap <silent> <f1> :call <sid>nerdtree_toggle()<cr>
+
+	func! s:nerdtree_toggle()
+		if bufwinnr(get(t:, 'NERDTreeBufName', -1)) != -1
+			NERDTreeToggle
+		else
+			sil exe "NERDTreeToggle" utils#find_root(expand('%:p:h'))
+			wincmd p
+			NERDTreeFind
+		end
+	endf
+
+	let g:NERDTreeHijackNetrw = 0
+	let g:NERDTreeShowHidden = 1
+	let g:NERDTreeRespectWildIgnore = 1
+	let g:NERDTreeMinimalUI = 1
+	let g:NERDTreeDirArrows = 1
+	let g:NERDTreeWinSize = 35
+	let g:NERDTreeMouseMode = 3
+	let g:NERDTreeDirArrowExpandable = '+'
+	let g:NERDTreeDirArrowCollapsible = '-'
+	let g:NERDTreeHighlightCursorline = 0
+	let g:NERDTreeStatusline = "\ NERDTree"
+
+" Undotree
+" ----------------------------------------------------------------------------
+
+	nnoremap <silent> <f2> :UndotreeToggle<cr>
+
+" Ultisnips
+" ----------------------------------------------------------------------------
+
+	let g:UltiSnipsExpandTrigger = '<c-s>'
+	let g:UltiSnipsJumpForwardTrigger = '<c-s>'
+	let g:UltiSnipsJumpBackwardTrigger = '<c-b>'
+	let g:UltiSnipsSnippetsDir = $VIMHOME . '/snips'
+
+" Targets
+" ----------------------------------------------------------------------------
+
+	omap ia Ia
+	omap i, I,
+
+	let g:targets_argOpening = '[({[]'
+	let g:targets_argClosing = '[]})]'
+
+" Emmet
+" ----------------------------------------------------------------------------
+
+	aug _emmet
+		au!
+		au FileType html,vue,htmldjango EmmetInstall
+	aug END
+
+	let g:user_emmet_mode = 'iv'
+	let g:user_emmet_install_global = 0
+	let g:user_emmet_leader_key = '<c-c>'
+
+" YouCompleteMe
+" ----------------------------------------------------------------------------
+
+	let g:ycm_python_binary_path = 'python'
+
+" Alchemist
+" ----------------------------------------------------------------------------
+
+	let g:alchemist_tag_disable = 1
+
+" GitGutter
+" ----------------------------------------------------------------------------
+
+	let g:gitgutter_enabled = 0

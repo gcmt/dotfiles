@@ -1,0 +1,245 @@
+
+; Colors
+; ----------------------------------------------------------------------------
+
+[colors]
+
+background = #ef1e222b
+background-solid = #1e222b
+background-lighter = #ef252933
+background-lighter-solid = #252933
+
+foreground = #df8e9299
+foreground-solid = #8e9299
+foreground-dim = #636770
+foreground-very-dim = #3a3e4a
+
+blue = #657B99
+cyan = #739492
+green = #768A78
+magenta = #917086
+red = #945F65
+orange = #998068
+yellow = #A39465
+
+secondary = #e60053
+alert = #aaaf5d66
+
+; Settings
+; ----------------------------------------------------------------------------
+
+[settings]
+
+screenchange-reload = true
+
+; Wm
+; ----------------------------------------------------------------------------
+
+[global/wm]
+
+margin-top = 5
+margin-bottom = 5
+
+; Main bar
+; ----------------------------------------------------------------------------
+
+[bar/main]
+
+width = 100%
+height = 27
+radius = 0.0
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 0
+line-color = #f00
+
+border-left-size = 5
+border-right-size = 5
+border-top-size = 5
+border-bottom-size = 1
+border-color = #00000000
+
+padding-left = 0
+padding-right = 2
+
+module-margin-left = 2
+module-margin-right = 2
+
+font-0 = "SF Mono:style=Medium:size=10;3"
+font-1 = "FontAwesome:size=10;3"
+
+modules-left = i3
+modules-center =
+modules-right = wlan eth volume battery datetime
+
+; separator = ‹
+separator = 
+
+; i3 workspaces
+; ----------------------------------------------------------------------------
+
+[module/i3]
+
+type = internal/i3
+format = <label-state> <label-mode>
+index-sort = true
+wrapping-scroll = false
+
+label-mode-foreground = ${colors.foreground-solid}
+label-mode-background = ${colors.alert}
+label-mode-padding = ${self.label-focused-padding}
+
+; focused = Active workspace on focused monitor
+label-focused = %name%
+label-focused-background = #ef3a3e4a
+label-focused-padding = 2
+
+; unfocused = Inactive workspace on any monitor
+label-unfocused = %name%
+label-unfocused-padding = ${self.label-focused-padding}
+
+; visible = Active workspace on unfocused monitor
+label-visible = %name%
+label-visible-background = ${self.label-focused-background}
+label-visible-padding = ${self.label-focused-padding}
+
+; urgent = Workspace with urgency hint set
+label-urgent = %name%
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 2
+
+; Battery
+; ----------------------------------------------------------------------------
+
+[module/battery]
+
+type = custom/script
+exec = ~/.config/polybar/modules/battery.sh
+interval = 10
+
+; Date & time
+; ----------------------------------------------------------------------------
+
+[module/datetime]
+
+type = custom/script
+exec = ~/.config/polybar/modules/datetime.sh
+click-left = ~/.config/polybar/modules/datetime.sh -toggle-verbosity
+interval = 1
+
+; Wifi
+; ----------------------------------------------------------------------------
+
+[module/wlan]
+
+type = internal/network
+interface = wlp2s0
+interval = 3.0
+
+format-connected = <label-connected>
+label-connected =  %essid%
+
+format-disconnected = <label-disconnected>
+label-disconnected =
+label-disconnected-foreground = ${colors.foreground-very-dim}
+
+; Ethernet
+; ----------------------------------------------------------------------------
+
+[module/eth]
+
+type = internal/network
+interface = enp3s0
+interval = 3.0
+
+format-connected = <label-connected>
+label-connected = %local_ip%
+
+format-disconnected = <label-disconnected>
+label-disconnected-foreground = ${colors.foreground-dim}
+label-disconnected =
+
+; Volume
+; ----------------------------------------------------------------------------
+
+[module/volume]
+
+type = internal/volume
+
+; master-mixer = Master
+; speaker-mixer = Speaker
+; headphone-mixer = Headphone
+; headphone-id = 21
+
+format-volume = <ramp-volume> <label-volume>
+label-volume = %percentage%%
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+ramp-headphones-0 = 
+ramp-headphones-1 = 
+
+format-muted = <label-muted>
+format-muted-foreground = ${colors.foreground}
+label-muted =  Mute
+
+bar-volume-width = 10
+bar-volume-foreground-0 = ${colors.green}
+bar-volume-foreground-1 = ${colors.green}
+bar-volume-foreground-2 = ${colors.green}
+bar-volume-foreground-3 = ${colors.green}
+bar-volume-foreground-4 = ${colors.green}
+bar-volume-foreground-5 = ${colors.yellow}
+bar-volume-foreground-6 = ${colors.red}
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-indicator-font = 2
+bar-volume-fill = ─
+bar-volume-fill-font = 2
+bar-volume-empty = ─
+bar-volume-empty-font = 2
+bar-volume-empty-foreground = ${colors.foreground-dim}
+
+; Cpu
+; ----------------------------------------------------------------------------
+
+[module/cpu]
+
+type = internal/cpu
+interval = 2
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground-dim}
+format-underline = #f90000
+label = %percentage%%
+
+; Memory
+; ----------------------------------------------------------------------------
+
+[module/memory]
+
+type = internal/memory
+interval = 2
+format-prefix = " "
+format-prefix-foreground = ${colors.foreground-dim}
+format-underline = #4bffdc
+label = %percentage_used%%
+
+; Filesystem
+; ----------------------------------------------------------------------------
+
+[module/filesystem]
+
+type = internal/fs
+interval = 25
+
+mount-0 = /
+mount-1 = /boot
+mount-2 = /home
+
+label-mounted = %mountpoint% %percentage_used%%
+
+; vim:ft=dosini cms=;\ %s

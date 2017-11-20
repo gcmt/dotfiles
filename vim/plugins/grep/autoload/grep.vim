@@ -1,0 +1,74 @@
+
+fun! grep#run(grepcmd, args) abort
+
+	" https://github.com/mileszs/ack.vim/issues/18
+	let t_ti_save = &t_ti
+	let t_te_save = &t_te
+	set t_ti= t_te=
+	let sp_save = &shellpipe
+	set shellpipe=>
+
+	sil! exec a:grepcmd join(map(split(a:args), 'shellescape(v:val)'))
+
+	let &shellpipe = sp_save
+	let &t_ti = t_ti_save
+	let &t_te = t_te_save
+
+	if len(getqflist()) == 0
+		call s:err("Nothing found") | cclose
+		return
+	end
+
+	copen
+	if w:quickfix_title !~ '\V\^[Grep'
+		call setqflist([], 'a', {'title': '[Grep]' . w:quickfix_title})
+	end
+
+endf
+
+fun! grep#buffer(grepcmd, args) abort
+	let scope = expand((&ft == 'qf' ? '#' : '%').':p')
+	call grep#run(a:grepcmd, join([a:args, scope]))
+	if len(getqflist()) == 0
+		return
+	end
+	if w:quickfix_title !~ '\V\^[Grep!'
+		let title = substitute(w:quickfix_title, '\V\^[Grep\zs', '!', '')
+		call setqflist([], 'a', {'title': title})
+	end
+	call grep#render()
+endf
+
+fun! grep#render() abort
+	if &bt != 'quickfix'
+		throw "Grep: Not inside a quickfix buffer"
+	end
+	syntax clear
+	setl modifiable nolist
+	let qf = getqflist()
+	let tabstop = getbufvar('#', '&tabstop')
+	let num_width = len(max(map(copy(qf), 'v:val["lnum"]')))
+	for linenr in range(len(qf))
+		let text = substitute(qf[linenr].text, "\t", repeat(" ", tabstop), 'g')
+		let line = printf("%".num_width."s %s", qf[linenr].lnum, text)
+		call setline(linenr+1, line)
+	endfor
+	call matchadd('LineNr', '\v^\s*\d+')
+	setl nomodifiable nomodified
+endf
+
+fun! grep#try_render()
+	if get(w:, 'quickfix_title', '') =~ '\V\^[Grep!]'
+		call grep#render()
+	end
+endf
+
+fun! s:err(msg)
+	echohl WarningMsg | echo a:msg | echohl None
+endf
+
+aug _grep
+	au!
+	au BufWinEnter quickfix call grep#try_render()
+	au User QfEditPostEdit call grep#try_render()
+aug END

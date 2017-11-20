@@ -1,0 +1,22 @@
+
+# Terminating Xorg with Ctrl+Alt+Backspace
+setxkbmap -option terminate:ctrl_alt_bksp
+
+# Make caps-lock behave like ctrl or esc
+setxkbmap -option caps:ctrl_modifier
+xcape -e 'Caps_Lock=Escape'
+
+# Set key press repeat delay and rate
+xset r rate 175 25
+
+# Set background with feh
+sh ~/.fehbg &
+
+# Start dunst
+sh ~/.config/dunst/start.sh
+
+# Start compton
+compton -b
+
+# Start i3wm
+exec i3 -V >> "$XDG_DATA_HOME/i3/i3log-$(date +'%F-%k-%M-%S')" 2>&1

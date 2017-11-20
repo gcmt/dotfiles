@@ -1,0 +1,16 @@
+#!/bin/sh
+# Create new workspace with the first available number.
+
+main() {
+	local num=1
+	while [ $num -lt 10 ]; do
+		i3-msg -t get_workspaces | jq -e ".[] | select(.num==$num)" >/dev/null
+		if [ $? -ne 0 ]; then
+			i3-msg "workspace number $num" >/dev/null
+			break
+		fi
+		num=$(expr $num + 1)
+	done
+}
+
+main

@@ -1,0 +1,14 @@
+{
+    /**
+        Move to ~/Library/KeyBindings
+        http://osxnotes.net/keybindings.html
+
+        "^f" = "moveWordForward:";
+        "^b" = "moveWordBackward:";
+        "^d" = "deleteWordForward:";
+        "^t" = ("insertText:", "~");
+        "^b" = ("insertText:", "`");
+    */
+
+    "^w" = "deleteWordBackward:";
+}

@@ -1,0 +1,62 @@
+
+# elixir snippets
+
+snippet do "do .. end" w
+do
+	$0
+end
+endsnippet
+
+snippet receive "receive do .. end" w
+receive do
+	$0
+end
+endsnippet
+
+snippet cond "cond do .. end" w
+cond do
+	$0
+end
+endsnippet
+
+snippet def "def foo() do .. end" w
+def ${1:foo}(${2}) do
+	$0
+end
+endsnippet
+
+snippet defp "defp foo() do .. end" w
+defp ${1:foo}(${2}) do
+	$0
+end
+endsnippet
+
+snippet defm "defmodule" b
+defmodule ${1} do
+	@moduledoc false
+
+	$0
+end
+endsnippet
+
+snippet test "test macro" b
+test "${1}" do
+	$0
+end
+endsnippet
+
+snippet mdoc "@moduledoc" w
+@moduledoc """
+	$0
+"""
+endsnippet
+
+snippet doc "@doc" w
+@doc """
+	$0
+"""
+endsnippet
+
+snippet p "IO.puts" w
+IO.puts $0
+endsnippet

@@ -1,0 +1,231 @@
+# i3 config file (v4)
+
+set $alt Mod1
+set $cmd Mod4
+set $mod Mod4
+
+# Options
+# ----------------------------------------------------------------------------
+
+font pango:Noto Sans 10
+
+new_window pixel 2
+
+for_window [class=".*"] title_format " %title"
+for_window [class="(?i)firefox"] title_format " Firefox  |  %title"
+for_window [class="(?i)nemo"] title_format " Nemo  |  %title"
+
+# hide_edge_borders both
+
+gaps inner 5
+gaps outer 1
+smart_borders on
+# smart_gaps on
+
+# Bindings
+# ----------------------------------------------------------------------------
+
+# Rename current workspace
+bindsym $mod+comma exec i3-rename-workspace
+
+# New workspace
+bindsym $mod+c exec --no-startup-id i3-new-workspace
+
+# Kill window
+bindsym $mod+Shift+q kill
+
+# Rofi
+bindsym $alt+space exec "rofi -show run -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
+bindsym $mod+space exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
+bindsym $mod+w exec "rofi -show window -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
+
+# Change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# Move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+# Horizontal layout, split vertically
+bindsym $mod+b split vertical
+
+# Vertical layout, split horizontally
+bindsym $mod+r split horizontal
+
+# Enter fullscreen mode
+bindsym $mod+Return fullscreen toggle
+
+# Change window layout (stacked, tabbed, toggle split)
+bindsym $mod+s layout stacking
+bindsym $mod+t layout tabbed
+bindsym $mod+d layout toggle split
+
+# Focus the parent or child container
+bindsym $mod+minus focus parent
+bindsym $mod+Shift+minus focus child
+
+# Switch to workspace
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+
+# Move window to other workspace
+bindsym $mod+Shift+1 move container to workspace number 1; workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2; workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3; workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4; workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5; workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6; workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7; workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8; workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9; workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10; workspace number 10
+
+# Move to last focused workspace
+workspace_auto_back_and_forth no
+bindsym $mod+a workspace back_and_forth
+
+# Move container to a new temporary workspace
+bindsym $mod+o move container to workspace 10; workspace number 10
+bindsym $mod+Shift+o move container to workspace back_and_forth; workspace back_and_forth
+
+# Cycle through workspaces
+bindsym $mod+Tab workspace next
+bindsym $mod+n workspace next
+bindsym $mod+p workspace prev
+
+# Toggle tiling / floating
+bindsym $mod+f floating toggle
+
+# Change focus between tiling / floating windows
+bindsym $mod+Shift+f focus mode_toggle
+
+# Controls
+# ----------------------------------------------------------------------------
+
+# Screenshots (F3 = XF86LaunchA)
+bindsym XF86LaunchA exec gnome-screenshot
+bindsym $mod+XF86LaunchA exec gnome-screenshot -w
+bindsym $alt+XF86LaunchA exec gnome-screenshot -a
+
+# Volume controls
+bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-mute 0 false"; exec --no-startup-id "pactl set-sink-volume 0 +1%"
+bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-mute 0 false"; exec --no-startup-id "pactl set-sink-volume 0 -1%"
+bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute 0 toggle"
+
+# Screen brightness controls ()thanks to acpilight
+bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 5
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 5
+
+# Keyboard backlight controls (thanks to acpilight)
+bindsym XF86KbdBrightnessUp exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -inc 5
+bindsym XF86KbdBrightnessDown exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -dec 5
+
+# Rules
+# ----------------------------------------------------------------------------
+
+for_window [class="Firefox" title="Library"] layout stacking
+
+for_window [class="Pinentry"] floating enable
+
+for_window [class="Qalculate"] floating enable
+
+# Modes
+# ----------------------------------------------------------------------------
+
+# i3 commands
+mode "i3" {
+
+	bindsym e exit
+	bindsym r restart
+	bindsym c reload
+
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+	bindsym Control+c mode "default"
+}
+
+bindsym $mod+i mode "i3"
+
+# Go to container
+mode "goto" {
+
+	bindsym b [class="(?i)google-chrome|firefox"] focus; mode "default"
+	bindsym x [class="(?i)termite" title="tmux"] focus; mode "default"
+	bindsym v [class="(?i)termite" title="vim"] focus; mode "default"
+	bindsym t [class="(?i)termite"] focus; mode "default"
+	bindsym p [class="(?i)mupdf"] focus; mode "default"
+	bindsym d [class="(?i)zeal"] focus; mode "default"
+
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+	bindsym Control+c mode "default"
+}
+
+bindsym $mod+g mode "goto"
+
+# Resize window
+mode "resize" {
+
+	bindsym Shift+h resize grow height 5px
+	bindsym h resize shrink height 5px
+	bindsym Shift+w resize grow width 5px
+	bindsym w resize shrink width 5px
+
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+	bindsym Control+c mode "default"
+}
+
+bindsym $mod+period mode "resize"
+
+# move floating window
+mode "move" {
+
+	bindsym h move left 10px
+	bindsym j move down 10px
+	bindsym k move up 10px
+	bindsym l move right 10px
+
+	bindsym Shift+h move left 30px
+	bindsym Shift+j move down 30px
+	bindsym Shift+k move up 30px
+	bindsym Shift+l move right 30px
+
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+	bindsym Control+c mode "default"
+}
+
+bindsym $mod+Shift+period focus floating; mode "move"
+
+# Colors
+# ----------------------------------------------------------------------------
+
+# class                 border   backgr.  text     indic.   child_border
+client.focused          #1e222b  #3a3e4a  #8e9299  #2e9ef4  #3c74b7
+client.focused_inactive #1e222b  #3a3e4a  #8e9299  #484e50  #5f676a
+client.unfocused        #1e222b  #252933  #8e9299  #292d2e  #3a3e4a
+client.urgent           #af5d66  #636770  #8e9299  #900000  #900000
+client.placeholder      #1e222b  #252933  #8e9299  #000000  #0c0c0c
+
+client.background       #1e222b
+
+# Status Bar
+# ----------------------------------------------------------------------------
+
+bar {
+	i3bar_command $HOME/.config/polybar/start.sh
+}

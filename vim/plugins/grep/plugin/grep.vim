@@ -21,7 +21,7 @@ end
 command! -nargs=* -bang Grep call <sid>grep(<q-bang>, 'grep!', <q-args>)
 command! -nargs=* -bang Grepa call <sid>grep(<q-bang>, 'grepadd!', <q-args>)
 
-fun! s:grep(bang, grepcmd, args)
+func! s:grep(bang, grepcmd, args)
 	if empty(a:bang)
 		call grep#run(a:grepcmd, a:args)
 	else

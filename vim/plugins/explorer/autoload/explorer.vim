@@ -3,8 +3,12 @@ let s:bufname = '__explorer__'
 
 aug _explorer
 	au!
-	au BufLeave __explorer__ let @# = b:explorer.alt != -1 ? b:explorer.alt : ''
+	au BufLeave __explorer__ call <sid>restore_alternate_buffer()
 aug END
+
+func! s:restore_alternate_buffer()
+	let @# = b:explorer.alt != -1 ? b:explorer.alt : b:explorer.current
+endf
 
 func! explorer#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
@@ -18,8 +22,7 @@ endf
 
 func! explorer#render(path)
 
-	let hidden = get(g:, 'explorer_hidden_files', 0)
-	let [files, errmsg] = s:ls(a:path, hidden)
+	let [files, errmsg] = s:ls(a:path, g:explorer_hidden_files)
 	if !empty(errmsg)
 		call s:err(errmsg)
 		return
@@ -128,7 +131,7 @@ endf
 
 func! s:set_statusline(path)
 	let hidden_flag = ''
-	if get(g:, 'explorer_hidden_files', 0)
+	if g:explorer_hidden_files
 		let hidden_flag = '[H] '
 	end
 	let stl = ' ' . hidden_flag . substitute(a:path, $HOME, '~', '')[:-1] . '%=explorer '
@@ -171,6 +174,10 @@ func! s:ls(path, hidden)
 		end
 
 		if fname[0] == '.' && !a:hidden
+			continue
+		end
+
+		if fname =~# '\v('.join(split(g:explorer_hide, ','), '|').')'
 			continue
 		end
 

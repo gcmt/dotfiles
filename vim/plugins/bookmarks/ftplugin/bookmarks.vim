@@ -23,10 +23,7 @@ sil! nunmap vv
 
 nnoremap <silent> <buffer> <enter> :call <sid>edit('edit')<cr>zz
 nnoremap <silent> <buffer> <c-j> :call <sid>edit('edit')<cr>zz
+nnoremap <silent> <buffer> <right> :call <sid>edit('edit')<cr>zz
 nnoremap <silent> <buffer> l :call <sid>edit('edit')<cr>zz
-nnoremap <silent> <buffer> o :call <sid>edit('edit')<cr>zz
 nnoremap <silent> <buffer> e :call <sid>edit('edit')<cr>zz
-nnoremap <silent> <buffer> t :call <sid>edit('tabedit')<cr>zz
-nnoremap <silent> <buffer> s :call <sid>edit('split')<cr>zz
-nnoremap <silent> <buffer> v :call <sid>edit('vsplit')<cr>zz
 nnoremap <silent> <buffer> dd :call <sid>unset()<cr>

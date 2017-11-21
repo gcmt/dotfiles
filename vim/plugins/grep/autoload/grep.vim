@@ -1,5 +1,5 @@
 
-fun! grep#run(grepcmd, args) abort
+func! grep#run(grepcmd, args) abort
 
 	" https://github.com/mileszs/ack.vim/issues/18
 	let t_ti_save = &t_ti
@@ -26,7 +26,7 @@ fun! grep#run(grepcmd, args) abort
 
 endf
 
-fun! grep#buffer(grepcmd, args) abort
+func! grep#buffer(grepcmd, args) abort
 	let scope = expand((&ft == 'qf' ? '#' : '%').':p')
 	call grep#run(a:grepcmd, join([a:args, scope]))
 	if len(getqflist()) == 0
@@ -39,7 +39,7 @@ fun! grep#buffer(grepcmd, args) abort
 	call grep#render()
 endf
 
-fun! grep#render() abort
+func! grep#render() abort
 	if &bt != 'quickfix'
 		throw "Grep: Not inside a quickfix buffer"
 	end
@@ -57,13 +57,13 @@ fun! grep#render() abort
 	setl nomodifiable nomodified
 endf
 
-fun! grep#try_render()
+func! grep#try_render()
 	if get(w:, 'quickfix_title', '') =~ '\V\^[Grep!]'
 		call grep#render()
 	end
 endf
 
-fun! s:err(msg)
+func! s:err(msg)
 	echohl WarningMsg | echo a:msg | echohl None
 endf
 

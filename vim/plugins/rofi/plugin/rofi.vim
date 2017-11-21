@@ -30,42 +30,41 @@ let g:rofi_width_rules =
 " Commands
 " ----------------------------------------------------------------------------
 
-command -nargs=? RofiEdit call <sid>rofi_edit(<q-args>)
-command -nargs=? RofiSearch call <sid>rofi_search(<q-args>)
-command -nargs=0 RofiBuffers call <sid>rofi_buffers()
-
-nnoremap <silent> <leader>r :RofiEdit<cr>
+command -nargs=? RofiEdit call <sid>edit(<q-args>)
+command -nargs=? RofiSearch call <sid>search(<q-args>)
+command -nargs=0 RofiBuffers call <sid>buffers()
 
 " Code
 " ----------------------------------------------------------------------------
 
-func s:win_width() abort
+" Determine the right rofi witdth according to predefined rules
+func s:rofi_width() abort
 	let width = g:rofi_width_default
 	for rule in g:rofi_width_rules
-		if rule[0] !~ '\v^\s*((\<|\>)\=?|\=\=)\s*\d+\s*$'
-			continue
-		end
-		if eval('&columns' . rule[0])
+		if rule[0] =~ '\v^\s*((\<|\>)\=?|\=\=)\s*\d+\s*$' && eval('&columns' . rule[0])
 			let width = rule[1]
 		end
 	endfo
 	return width
 endf
 
-func s:rofi_edit(excmd) abort
+" Search for files in the current working directory
+func s:edit(excmd) abort
 	let excmd = empty(a:excmd) ? 'edit' : a:excmd
 	let cmd = join([
-		\ 'rofi', '-dmenu', '-no-custom', '-p ":edit "' , '-width ' . s:win_width(),
+		\ 'rofi', '-dmenu', '-no-custom', '-p ":edit "' , '-width ' . s:rofi_width(),
 		\ g:rofi_options
 	\ ])
 	let input = system('rg --files')
 	let path = get(systemlist(cmd . ' 2>/dev/null', input), 0, '')
 	if !empty(path)
 		exec excmd fnameescape(path)
+		set cursorline
 	end
 endf
 
-func s:rofi_search(word) abort
+" Search for lines in the current buffer
+func s:search(word) abort
 	let cmd = join([
 		\ 'rofi', '-dmenu', '-no-custom', '-format i', '-p ":search "' , '-width 90',
 		\ '-matching normal',
@@ -81,13 +80,16 @@ func s:rofi_search(word) abort
 	let index = get(systemlist(cmd . ' 2>/dev/null', input), 0, '')
 	if !empty(index)
 		exec lines[index][0]
+		norm! zz
+		set cursorline
 	end
 endf
 
-func s:rofi_buffers() abort
+" Search for buffers
+func s:buffers() abort
 	let buffers = filter(range(1, bufnr('$')), 'buflisted(v:val)')
 	let cmd = join([
-		\ 'rofi', '-dmenu', '-format i', '-p ":buffer "', '-width ' . s:win_width(),
+		\ 'rofi', '-dmenu', '-format i', '-p ":buffer "', '-width ' . s:rofi_width(),
 		\ '-selected-row ' . index(buffers, bufnr('%')),
 		\ g:rofi_options
 	\ ])

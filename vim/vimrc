@@ -23,7 +23,7 @@
 " PLUGINS
 " ----------------------------------------------------------------------------
 
-	comm! -nargs=1 Mine exec printf("Plug '%s/plugins/%s'", $VIMHOME, <args>)
+	comm! -nargs=1 Local exec printf("Plug '%s/plugins/%s'", $VIMHOME, <args>)
 
 	call plug#begin($VIMDATA . '/plugins')
 
@@ -46,26 +46,26 @@
 	Plug 'tpope/vim-markdown'
 	Plug 'stephpy/vim-yaml'
 
-	Mine 'utils'
-	Mine 'rofi'
-	Mine 'grep'
-	Mine 'flow'
-	Mine 'pairs'
-	Mine 'qfedit'
-	Mine 'spotter'
-	Mine 'explorer'
-	Mine 'commenter'
-	Mine 'bookmarks'
-	Mine 'finder'
-	Mine 'buffers'
-	Mine 'tagmaker'
-	Mine 'taglist'
-	Mine 'python'
-	Mine 'term'
+	Local 'utils'
+	Local 'rofi'
+	Local 'grep'
+	Local 'flow'
+	Local 'pairs'
+	Local 'qfedit'
+	Local 'spotter'
+	Local 'explorer'
+	Local 'commenter'
+	Local 'bookmarks'
+	Local 'finder'
+	Local 'buffers'
+	Local 'tagmaker'
+	Local 'taglist'
+	Local 'python'
+	Local 'term'
 
 	call plug#end()
 
-	delcomm Mine
+	delcomm Local
 
 " OPTIONS
 " ----------------------------------------------------------------------------
@@ -631,6 +631,14 @@
 	nnoremap <silent> <leader>e :exec 'Explorer' expand('%:p:h')<cr>
 	nnoremap <silent> <leader>E :exec 'Explorer' getcwd()<cr>
 
+	let g:explorer_hide = '^\.git$'
+
+" Rofi
+" ----------------------------------------------------------------------------
+
+	nnoremap <silent> <leader>r :RofiEdit<cr>
+	nnoremap <silent> <leader>R :RofiSearch<cr>
+
 " Netrw
 " ----------------------------------------------------------------------------
 
@@ -723,4 +731,4 @@
 " GitGutter
 " ----------------------------------------------------------------------------
 
-	let g:gitgutter_enabled = 0
+	let g:gitgutter_enabled = 1

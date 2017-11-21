@@ -39,7 +39,7 @@ func bookmarks#jump(mark, ...) abort
 	if empty(target)
 		return s:err("Mark not set")
 	end
-	let map = {'edit': 'Explore', 'split': 'Hexplore', 'vsplit': 'Vexplore', 'tabedit': 'Texplore'}
+	let map = {'edit': 'Explorer'}
 	let cmd = isdirectory(target) ? map[cmd] : cmd
 	let target = s:prettify_path(target)
 	exec cmd fnameescape(target)

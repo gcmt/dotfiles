@@ -2,46 +2,36 @@
 
 	font: "Noto Sans 15";
 
-	spacing: 2;
-
 	background: rgba(245, 245, 245, 100%);
 	foreground: rgba(68, 71, 81, 100%);
 	shadow: rgba(58, 62, 74, 50%);
 	scrollbar: rgba(200, 200, 200, 100%);
 
 	inputbar-background: rgba(225, 225, 225, 100%);
-	element-border: rgba(220, 220, 220, 100%);
-
 	border-color: rgba(30, 34, 43, 100%);
+	separator-color: rgba(220, 220, 220, 100%);
 	background-color: rgba(0, 0, 0, 0%);
-	separatorcolor: rgba(30, 34, 43, 100%);
-
-	red: rgba(181, 85, 95, 100%);
-	blue: rgba(38, 139, 210, 100%);
-
-	lightbg: rgba(238, 232, 213, 100%);
-	lightfg: rgba(88, 104, 117, 100%);
 
 	normal-foreground: @foreground;
-	normal-background: rgba(0, 0, 0, 0%);
+	normal-background: @background;
 	selected-normal-foreground: @foreground;
 	selected-normal-background: rgba(225, 225, 225, 100%);
 	alternate-normal-foreground: @foreground;
-	alternate-normal-background: rgba(0, 0, 0, 0%);
+	alternate-normal-background: @background;
 
-	active-foreground: @red;
-	active-background: rgba(0, 0, 0, 0%);
-	selected-active-foreground: @red;
+	active-foreground: rgba(181, 85, 95, 100%);
+	active-background: @background;
+	selected-active-foreground: rgba(181, 85, 95, 100%);
 	selected-active-background: @selected-normal-background;
 	alternate-active-foreground: @active-foreground;
-	alternate-active-background: rgba(0, 0, 0, 0%);
+	alternate-active-background: @background;
 
-	urgent-foreground: rgba(148, 95, 101, 100%);
-	urgent-background: rgba(0, 0, 0, 0%);
-	selected-urgent-foreground: rgba(148, 95, 101, 100%);
-	selected-urgent-background: rgba(58, 62, 74, 100%);
+	urgent-foreground: rgba(181, 85, 95, 100%);
+	urgent-background: @background;
+	selected-urgent-foreground: rgba(181, 85, 95, 100%);
+	selected-urgent-background: @background;
 	alternate-urgent-foreground: @urgent-foreground;
-	alternate-urgent-background: rgba(0, 0, 0, 0%);
+	alternate-urgent-background: @background;
 
 }
 
@@ -63,7 +53,7 @@
 
 #message {
 	border: 0px ;
-	border-color: @separatorcolor;
+	border-color: @separator-color;
 	padding: 1px ;
 }
 
@@ -74,7 +64,7 @@
 #listview {
 	fixed-height: 0;
 	border: 0px ;
-	border-color: @separatorcolor;
+	border-color: @separator-color;
 	spacing: 0px ;
 	scrollbar: true;
 	padding: 2px 0px 0px ;
@@ -83,7 +73,7 @@
 #element {
 	font: "Noto Sans 12";
 	border: 0px 0px 1px solid;
-	border-color: @element-border;
+	border-color: @separator-color;
 	padding: 6 4;
 }
 
@@ -142,7 +132,7 @@
 
 #sidebar {
 	border: 0px ;
-	border-color: @separatorcolor;
+	border-color: @separator-color;
 }
 
 #button {

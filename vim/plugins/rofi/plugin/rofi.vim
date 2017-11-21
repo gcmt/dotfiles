@@ -49,26 +49,29 @@ func s:rofi_width() abort
 endf
 
 " Search for files in the current working directory
-func s:edit(excmd) abort
-	let excmd = empty(a:excmd) ? 'edit' : a:excmd
+func s:edit(filter) abort
 	let cmd = join([
-		\ 'rofi', '-dmenu', '-no-custom', '-p ":edit "' , '-width ' . s:rofi_width(),
+		\ 'rofi', '-dmenu', '-no-custom', '-p ":edit "', '-width ' . s:rofi_width(),
+		\ (!empty(a:filter) ? "-filter '".a:filter."'" : ''),
+		\ '-kb-custom-1 "Alt+s" -kb-custom-2 "Alt+v" -kb-custom-3 "Alt+t"',
 		\ g:rofi_options
 	\ ])
 	let input = system('rg --files')
 	let path = get(systemlist(cmd . ' 2>/dev/null', input), 0, '')
-	if !empty(path)
-		exec excmd fnameescape(path)
+	" maps exit codes to ex commands
+	let excmds = {0: 'edit', 10: 'split', 11: 'vsplit', 12: 'tabedit'}
+	if !empty(path) && has_key(excmds, v:shell_error)
+		exec get(excmds, v:shell_error) fnameescape(path)
 		set cursorline
 	end
 endf
 
 " Search for lines in the current buffer
-func s:search(word) abort
+func s:search(filter) abort
 	let cmd = join([
 		\ 'rofi', '-dmenu', '-no-custom', '-format i', '-p ":search "' , '-width 90',
 		\ '-matching normal',
-		\ (!empty(a:word) ? "-filter '".a:word."'" : ''),
+		\ (!empty(a:filter) ? "-filter '".a:filter."'" : ''),
 		\ g:rofi_options
 	\ ])
 	let lines = map(getline(0, '$'), '[v:key+1, v:val]')
@@ -122,4 +125,8 @@ func s:prettify_path(path)
 	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
 	let path = substitute(path, '\V\^'.$HOME, '~', '')
 	return path
+endf
+
+func s:err(msg)
+	echohl WarningMsg | echom 'Rofi.vim:' a:msg | echohl None
 endf

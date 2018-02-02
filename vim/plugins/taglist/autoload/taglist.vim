@@ -132,7 +132,7 @@ endf
 
 func s:resize_window(lines) abort
 	let max = float2nr(&lines * g:taglist_max_winsize / 100)
-	exec 'resize' a:lines < max ? a:lines : max
+	exec 'resize' min([a:lines, max])
 endf
 
 func s:err(msg)

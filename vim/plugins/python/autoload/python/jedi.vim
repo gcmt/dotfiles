@@ -1,27 +1,27 @@
 
-" INTERNAL
-" -----------------------------------------------------------------------------
+python3 << EOF
 
-python << EOF
-import jedi, json
+import jedi
 
-_script = None
+_jedi_script = None
 
 def jedi_definitions():
-	return jedi_marshal(_script.goto_definitions())
+	return jedi_marshal(_jedi_script.goto_definitions())
 
 def jedi_assignments():
-	return jedi_marshal(_script.goto_assignments())
+	return jedi_marshal(_jedi_script.goto_assignments())
 
 def jedi_usages():
-	return jedi_marshal(_script.usages())
+	return jedi_marshal(_jedi_script.usages())
 
 def jedi_call_signatures():
-	return jedi_marshal(_script.call_signatures())
+	return jedi_marshal(_jedi_script.call_signatures())
 
 def jedi_marshal(definitions):
-	data = []
+	rv = []
+
 	for d in definitions:
+
 		_d = {
 			'line': d.get_line_code().strip('\n'),
 			'line_nr': d.line,
@@ -34,55 +34,72 @@ def jedi_marshal(definitions):
 			'name': d.name,
 			'type': d.type,
 		}
+
 		if hasattr(d, 'params'):
-			_d['params'] = [p.description.split()[1] for p in d.params if len(p.description.split()) > 1]
-		data.append(_d)
-	return json.dumps(data)
+			_d['params'] = []
+			for param in d.params:
+				if len(param.description.split()) > 1:
+					_d['params'] = param.description.split()[1]
+
+		rv.append(_d)
+
+	return rv
 
 EOF
 
-let s:venv = ''
-let s:sys_path = ''
+let s:Jedi = {}
 
-func s:init(sys_path)
-	python _script = jedi.api.Script(
+func s:Jedi.New()
+	let obj = copy(self)
+	let obj.venv = ''
+	let obj.sys_path = ''
+	return obj
+endf
+
+func s:Jedi.pyeval(expr)
+	call self.init_jedi_script()
+	return py3eval(a:expr)
+endf
+
+func s:Jedi.init_jedi_script()
+	call self.update_sys_path()
+	python3 _jedi_script = jedi.api.Script(
 		\ path=vim.current.buffer.name,
 		\ source='\n'.join(vim.current.buffer),
 		\ line=vim.current.window.cursor[0],
 		\ column=vim.current.window.cursor[1],
-		\ sys_path=vim.eval('a:sys_path'),
+		\ sys_path=vim.eval('self.sys_path'),
 		\ encoding=(vim.eval('&fenc') or vim.eval('&enc'))
 	\ )
 endf
 
-func s:get_sys_path()
-	if empty(s:sys_path) || $VIRTUAL_ENV != s:venv
-		let s:sys_path = eval(system('python3 -c "import sys; sys.stdout.write(repr(sys.path))"'))
-		let s:venv = $VIRTUAL_ENV
+func s:Jedi.update_sys_path()
+	if empty(self.sys_path) || $VIRTUAL_ENV != self.venv
+		let self.sys_path = eval(system('python3 -c "import sys; sys.stdout.write(repr(sys.path))"'))
+		let self.venv = $VIRTUAL_ENV
 	end
-	return s:sys_path
 endf
 
-func s:definitions(follow)
-	call s:init(s:get_sys_path())
-	if a:follow
-		python vim.command("let json = \"{}\"".format(jedi_definitions().replace('"', '\\"')))
-	else
-		python vim.command("let json = \"{}\"".format(jedi_assignments().replace('"', '\\"')))
-	end
-	return filter(json_decode(json), 'v:val.module_path != v:null')
+func s:Jedi.definitions(follow)
+	let res = self.pyeval(a:follow ? 'jedi_definitions()' : 'jedi_assignments()')
+	return filter(res, 'v:val.module_path != v:none')
 endf
 
-func s:usages()
-	call s:init(s:get_sys_path())
-	python vim.command("let json = \"{}\"".format(jedi_usages().replace('"', '\\"')))
-	return json_decode(json)
+func s:Jedi.usages()
+	return self.pyeval('jedi_usages()')
 endf
 
-func s:call_signatures()
-	call s:init(s:get_sys_path())
-	python vim.command("let json = \"{}\"".format(jedi_call_signatures().replace('"', '\\"')))
-	return json_decode(json)
+func s:Jedi.call_signatures()
+	return self.pyeval('jedi_call_signatures()')
+endf
+
+" API
+" -----------------------------------------------------------------------------
+
+let s:jedi = s:Jedi.New()
+
+func s:err(msg)
+	echohl ErrorMsg | echo a:msg | echohl None
 endf
 
 func s:setqflist(definitions, ...)
@@ -110,15 +127,8 @@ func s:goto_definition(def, cmd) abort
 	setl cursorline
 endf
 
-func s:err(msg)
-	echohl ErrorMsg | echo a:msg | echohl None
-endf
-
-" API
-" -----------------------------------------------------------------------------
-
 func python#jedi#definitions(bang, cmd) abort
-	let definitions = s:definitions(1)
+	let definitions = s:jedi.definitions(1)
 	if empty(definitions)
 		return s:err("No definition found")
 	end
@@ -131,7 +141,7 @@ func python#jedi#definitions(bang, cmd) abort
 endf
 
 func python#jedi#assignments(bang, cmd) abort
-	let definitions = s:definitions(0)
+	let definitions = s:jedi.definitions(0)
 	if empty(definitions)
 		return s:err("No assignment found")
 	end
@@ -144,7 +154,7 @@ func python#jedi#assignments(bang, cmd) abort
 endf
 
 func python#jedi#usages() abort
-	let usages = s:usages()
+	let usages = s:jedi.usages()
 	if empty(usages)
 		return s:err("Nothing found")
 	end
@@ -153,7 +163,7 @@ func python#jedi#usages() abort
 endf
 
 func python#jedi#docstring() abort
-	let definitions = s:definitions(1)
+	let definitions = s:jedi.definitions(1)
 	if empty(definitions)
 		return s:err("No definition found")
 	end
@@ -167,7 +177,7 @@ endf
 
 " expected to be called in insert mode inside function parenthesis
 func python#jedi#call_signatures() abort
-	let definitions = s:call_signatures()
+	let definitions = s:jedi.call_signatures()
 	if empty(definitions)
 		call s:err("No definition found")
 		return ''
@@ -179,7 +189,7 @@ endf
 
 " expected to be called on a function name
 func python#jedi#signature() abort
-	let definitions = s:definitions(1)
+	let definitions = s:jedi.definitions(1)
 	if empty(definitions)
 		return s:err("No definition found")
 	end

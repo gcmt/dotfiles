@@ -66,7 +66,7 @@ rofi.terminal: rofi-sensible-terminal
 ! THEMING
 ! ----------------------------------------------------------------------------
 
-rofi.theme: ~/.config/rofi/light.theme
+rofi.theme: ~/.config/rofi/themes/main-light.theme
 
 ! Whether to load and show icons
 rofi.show-icons: false
@@ -218,7 +218,7 @@ rofi.display-windowcd:
 ! - len: maximum field length (0 for auto-size).
 ! If length negative and window width is negative, field length is width - len.
 ! If length is positive, the entry will be truncated or padded to fill that length.
-rofi.window-format: #{w} {c:0} {t}
+rofi.window-format: {c}  ›  {t}
 
 ! Set command to execute on selected window for custom action.
 rofi.window-command: xkill -id {window}
@@ -278,7 +278,7 @@ rofi.kb-remove-to-sol:
 ! ----------------------------------------------------------------------------
 
 ! Accept entry
-rofi.kb-accept-entry: Control+j,Control+m,Return
+rofi.kb-accept-entry: Control+j,Return
 
 ! Use entered text as command (in ssh/run modi)
 rofi.kb-accept-custom: Control+d
@@ -324,7 +324,7 @@ rofi.kb-row-first:
 rofi.kb-row-last:
 
 ! Set selected item as input text
-rofi.kb-row-select: Control+y
+rofi.kb-row-select: Control+a
 
 ! Take a screenshot of the rofi window
 rofi.kb-screenshot: Control+space

@@ -18,9 +18,10 @@ if [[ "$@" =~ '-x' || "$@" =~ '-all' ]]; then
 	if hash xinit 2>/dev/null
 	then
 		ln -sf "$DOTDIR/X11/xinitrc" "$HOME/.xinitrc"
-		echo "[ ok ] xinitrc"
+		ln -sf "$DOTDIR/X11/Xmodmap" "$HOME/.Xmodmap"
+		echo "[ ok ] x"
 	else
-		echo "[ skip ] xinitrc"
+		echo "[ skip ] x"
 	fi
 fi
 
@@ -130,7 +131,7 @@ if [[ "$@" =~ '-tmux' || "$@" =~ '-all' ]]
 then
 	if hash tmux 2>/dev/null
 	then
-		ln -sf "$DOTDIR/tmux/tmux.conf" "$XDG_CONFIG_HOME/tmux.conf"
+		ln -sf "$DOTDIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 		echo "[ ok ] tmux"
 	else
 		echo "[ skip ] tmux"

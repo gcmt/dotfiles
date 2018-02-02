@@ -7,7 +7,7 @@ aug _explorer
 aug END
 
 func! s:restore_alternate_buffer()
-	let @# = b:explorer.alt != -1 ? b:explorer.alt : b:explorer.current
+	let @# = buflisted(b:explorer.alt) ? b:explorer.alt : b:explorer.current
 endf
 
 func! explorer#toggle_hidden_files()
@@ -112,21 +112,24 @@ func! explorer#enter_or_edit() abort
 	let path = b:explorer.dir . (b:explorer.dir == '/' ? tail : '/' . tail)
 	if isdirectory(path)
       call explorer#render(path)
+		norm! M
 	else
 		let current = b:explorer.current
 		exec 'edit' fnameescape(path)
-		let @# = current
+		let @# = buflisted(current) ? current : bufnr('%')
 	end
 endf
 
 func! s:new_buffer(current, alt)
-	exec 'sil keepj keepa edit' s:bufname
+	exec 'sil edit' s:bufname
 	setl filetype=explorer buftype=nofile bufhidden=delete nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
 	let b:explorer = {'current': a:current, 'alt': a:alt, 'table': {}}
-	let @# = a:current
+	if buflisted(a:current)
+		let @# = a:current
+	end
 endf
 
 func! s:set_statusline(path)
@@ -162,6 +165,7 @@ func! s:ls(path, hidden)
 		let m = matchlist(line, '\v^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\w\w\w\s+\d\d?\s+\d\d:\d\d)\s+(.*)')
 		call filter(m, '!empty(v:val)')
 		if empty(m)
+			" echom "line didn't match >>" line
 			continue
 		end
 

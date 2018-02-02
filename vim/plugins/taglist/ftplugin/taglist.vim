@@ -34,6 +34,7 @@ sil! nunmap vv
 
 nnoremap <buffer> c :<c-u>call <sid>echo_context()<cr>
 
+nnoremap <silent> <buffer> q :close<cr>
 nnoremap <silent> <buffer> <enter> :call <sid>jump('edit')<cr>zz
 nnoremap <silent> <buffer> <c-j> :call <sid>jump('edit')<cr>zz
 nnoremap <silent> <buffer> o :call <sid>jump('edit')<cr>zz

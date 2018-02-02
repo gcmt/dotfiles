@@ -15,7 +15,7 @@ inoremap <expr> [ pairs#insert('[')
 inoremap <expr> ( pairs#insert('(')
 inoremap <expr> " pairs#insert('"')
 inoremap <expr> ' pairs#insert("'")
-inoremap <expr> ` pairs#insert("`") 
+inoremap <expr> ` pairs#insert("`")
 
 inoremap <expr> <bs> pairs#delete(0)
 inoremap <expr> <c-h> pairs#delete(0)

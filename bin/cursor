@@ -1,0 +1,30 @@
+#!/bin/zsh
+
+if [ -n "$ITERM_PROFILE" ]; then
+	# 0 -> block
+	# 1 -> bar
+	cursor_cmd="\e]50;CursorShape=0\007"
+	cursor_ins="\e]50;CursorShape=1\007"
+fi
+
+if [ -n "$VTE_VERSION" ]; then
+	# 0 -> blinking block
+	# 1 -> blinking block
+	# 2 -> steady block
+	# 3 -> blinking underline
+	# 4 -> steady underline
+	# 5 -> blinking bar
+	# 6 -> steady bar
+	cursor_cmd="\e[2 q"
+	cursor_ins="\e[6 q"
+fi
+
+if [ -n "$TMUX" ]; then
+	cursor_cmd="\ePtmux;\e$cursor_cmd\e\\"
+	cursor_ins="\ePtmux;\e$cursor_ins\e\\"
+fi
+
+case "$1" in
+	-cmd) print -n $cursor_cmd;;
+	-ins) print -n $cursor_ins;;
+esac

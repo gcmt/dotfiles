@@ -1,16 +1,15 @@
 
 [options]
 
-font = SF Mono Medium 11
+font = SF Mono 11
 cursor_blink = system
-cursor_shape = block
+cursor_shape = ibeam
 allow_bold = false
 dynamic_title = true
 mouse_autohide = true
-browser = firefox-nightly
+browser = firefox
 clickable_url = true
 search_wrap = true
-resize_grip = false
 scrollback_lines = 10000
 
 scroll_on_output = false
@@ -22,17 +21,20 @@ urgent_on_bell = true
 
 [colors]
 
-cursor = #8e9299
+cursor = #917086
 cursor_foreground = #1e222b
 background = #1e222b
 foreground = #636770
 foreground_bold = #636770
-
 highlight = #a39465
+
+# light greys
+color16 = #444751
+color17 = #3a3e4a
 
 # black
 color0 = #1e222b
-color8 = #3a3e4a
+color8 = #252933
 
 # white
 color7 = #636770

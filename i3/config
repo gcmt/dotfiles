@@ -7,37 +7,71 @@ set $mod Mod4
 # Options
 # ----------------------------------------------------------------------------
 
-font pango:Noto Sans 10
-
+font pango:Noto Sans Medium 10.5
+floating_modifier $mod
+focus_follows_mouse yes
+workspace_auto_back_and_forth no
 new_window pixel 2
-
-for_window [class=".*"] title_format " %title"
-for_window [class="(?i)firefox"] title_format " Firefox  |  %title"
-for_window [class="(?i)nemo"] title_format " Nemo  |  %title"
-
 # hide_edge_borders both
+
+default_orientation auto
+workspace_layout default
+
+floating_minimum_size 75 x 25
+floating_maximum_size -1 x -1
 
 gaps inner 5
 gaps outer 1
 smart_borders on
 # smart_gaps on
 
-# Bindings
+# Rules
 # ----------------------------------------------------------------------------
 
-# Rename current workspace
-bindsym $mod+comma exec i3-rename-workspace
+for_window [class="(?i)pinentry"] floating enable
+for_window [class="(?i)qalculate"] floating enable
+for_window [class="(?i)firefox" title="(?i)library"] layout stacking
 
-# New workspace
-bindsym $mod+c exec --no-startup-id i3-new-workspace
+for_window [class="Termite" title="i3 Config"] floating enable, resize set 1000 600, move position center
+for_window [class="Termite" window_role="Notes"] floating enable, resize set 1000 600, move position center
+for_window [class="Termite" window_role="Logbook"] floating enable, resize set 1000 600, move position center
+
+for_window [class="KeePass2"] floating enable, resize set 1000 600, move position center
+for_window [title="Create New Password Database"] floating enable
+
+# ›
+# for_window [class=".*"] title_format " %title"
+# for_window [class="(?i)vlc"] title_format " Vlc  ›  %title"
+for_window [class="(?i)nemo"] title_format "%title - Nemo"
+
+# Bindings
+# ----------------------------------------------------------------------------
 
 # Kill window
 bindsym $mod+Shift+q kill
 
-# Rofi
-bindsym $alt+space exec "rofi -show run -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
+# Rename current workspace
+bindsym $mod+comma exec termite -e i3-rename-workspace -c '.config/termite/i3-rename-workspace' --title 'i3 Rename Workspace'
+for_window [title="(?i)i3 rename workspace"] floating enable, resize set 300 35, move position 15 52
+
+# Create new workspace
+# bindsym $mod+c exec --no-startup-id i3-new-workspace
+
+# Youtube-dl (download selected url)
+bindsym $mod+y exec --no-startup-id ydl-mp3
+
+# Open Fastmail app
+bindsym $mod+m exec firefox -new-tab 'https://www.fastmail.com/mail/' ; [class="Firefox"] focus
+bindsym $mod+Shift+m exec --no-startup-id '.local/bin/check_mail.py'
+
+# Rofi bindings
 bindsym $mod+space exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
+bindsym $mod+Shift+space exec --no-startup-id i3-new-workspace ; exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
+bindsym $alt+space exec "rofi -show run -kb-accept-custom 'Control+j,Return' -kb-accept-entry 'Control+d' -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 bindsym $mod+w exec "rofi -show window -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
+
+# Enter fullscreen mode
+bindsym $mod+Return fullscreen toggle
 
 # Change focus
 bindsym $mod+h focus left
@@ -45,20 +79,11 @@ bindsym $mod+j focus down
 bindsym $mod+k focus up
 bindsym $mod+l focus right
 
-# Move focused window
-bindsym $mod+Shift+h move left
-bindsym $mod+Shift+j move down
-bindsym $mod+Shift+k move up
-bindsym $mod+Shift+l move right
-
 # Horizontal layout, split vertically
 bindsym $mod+b split vertical
 
 # Vertical layout, split horizontally
 bindsym $mod+r split horizontal
-
-# Enter fullscreen mode
-bindsym $mod+Return fullscreen toggle
 
 # Change window layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
@@ -66,8 +91,36 @@ bindsym $mod+t layout tabbed
 bindsym $mod+d layout toggle split
 
 # Focus the parent or child container
-bindsym $mod+minus focus parent
-bindsym $mod+Shift+minus focus child
+bindsym $mod+period focus child
+bindsym $mod+Shift+period focus parent
+
+# Move container
+bindsym $mod+Shift+c move position center
+bindsym $mod+Shift+h move left 10px
+bindsym $mod+Shift+j move down 10px
+bindsym $mod+Shift+k move up 10px
+bindsym $mod+Shift+l move right 10px
+
+# Swap containers
+bindsym $mod+Control+i exec --no-startup-id i3-swap-container -interactive
+bindsym $mod+Control+h exec --no-startup-id i3-swap-container -left
+bindsym $mod+Control+j exec --no-startup-id i3-swap-container -below
+bindsym $mod+Control+k exec --no-startup-id i3-swap-container -above
+bindsym $mod+Control+l exec --no-startup-id i3-swap-container -right
+
+# Resize container
+bindsym $mod+Left resize shrink width 10px or 2ppt
+bindsym $mod+Down resize shrink height 10px or 2ppt
+bindsym $mod+Up resize grow height 10px or 2ppt
+bindsym $mod+Right resize grow width 10px or 2ppt
+bindsym $mod+Shift+Left resize shrink width 2px or 2ppt
+bindsym $mod+Shift+Down resize shrink height 2px or 2ppt
+bindsym $mod+Shift+Up resize grow height 2px or 2ppt
+bindsym $mod+Shift+Right resize grow width 2px or 2ppt
+
+# Rotate containers
+# bindsym $mod+c exec --no-startup-id i3-swap-container -crotate -nofollow
+# bindsym $mod+Shift+c exec --no-startup-id i3-swap-container -ccrotate -nofollow
 
 # Switch to workspace
 bindsym $mod+1 workspace number 1
@@ -94,15 +147,9 @@ bindsym $mod+Shift+9 move container to workspace number 9; workspace number 9
 bindsym $mod+Shift+0 move container to workspace number 10; workspace number 10
 
 # Move to last focused workspace
-workspace_auto_back_and_forth no
 bindsym $mod+a workspace back_and_forth
 
-# Move container to a new temporary workspace
-bindsym $mod+o move container to workspace 10; workspace number 10
-bindsym $mod+Shift+o move container to workspace back_and_forth; workspace back_and_forth
-
 # Cycle through workspaces
-bindsym $mod+Tab workspace next
 bindsym $mod+n workspace next
 bindsym $mod+p workspace prev
 
@@ -110,64 +157,34 @@ bindsym $mod+p workspace prev
 bindsym $mod+f floating toggle
 
 # Change focus between tiling / floating windows
-bindsym $mod+Shift+f focus mode_toggle
+bindsym $mod+z focus mode_toggle
 
-# Controls
-# ----------------------------------------------------------------------------
+# Scratchpad bindings
+bindsym $mod+minus scratchpad show
+bindsym $mod+Shift+minus move scratchpad
 
-# Screenshots (F3 = XF86LaunchA)
-bindsym XF86LaunchA exec gnome-screenshot
-bindsym $mod+XF86LaunchA exec gnome-screenshot -w
-bindsym $alt+XF86LaunchA exec gnome-screenshot -a
+# edit shortcut
+mode "edit" {
 
-# Volume controls
-bindsym XF86AudioRaiseVolume exec --no-startup-id "pactl set-sink-mute 0 false"; exec --no-startup-id "pactl set-sink-volume 0 +1%"
-bindsym XF86AudioLowerVolume exec --no-startup-id "pactl set-sink-mute 0 false"; exec --no-startup-id "pactl set-sink-volume 0 -1%"
-bindsym XF86AudioMute exec --no-startup-id "pactl set-sink-mute 0 toggle"
-
-# Screen brightness controls ()thanks to acpilight
-bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 5
-bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 5
-
-# Keyboard backlight controls (thanks to acpilight)
-bindsym XF86KbdBrightnessUp exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -inc 5
-bindsym XF86KbdBrightnessDown exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -dec 5
-
-# Rules
-# ----------------------------------------------------------------------------
-
-for_window [class="Firefox" title="Library"] layout stacking
-
-for_window [class="Pinentry"] floating enable
-
-for_window [class="Qalculate"] floating enable
-
-# Modes
-# ----------------------------------------------------------------------------
-
-# i3 commands
-mode "i3" {
-
-	bindsym e exit
-	bindsym r restart
-	bindsym c reload
+	bindsym l exec termite -e "vim $(date '+%Y-%m-%d').md" -d 'Documents/logbook' --role 'Logbook'; mode "default"
+	bindsym n exec termite -e 'vim wall.md' -d 'Notes' --role 'Notes'; mode "default"
 
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
 	bindsym Control+c mode "default"
 }
 
-bindsym $mod+i mode "i3"
+bindsym $mod+e mode "edit"
 
-# Go to container
+# go to container
 mode "goto" {
 
 	bindsym b [class="(?i)google-chrome|firefox"] focus; mode "default"
-	bindsym x [class="(?i)termite" title="tmux"] focus; mode "default"
-	bindsym v [class="(?i)termite" title="vim"] focus; mode "default"
+	bindsym x [class="(?i)termite" title="(?i)tmux"] focus; mode "default"
 	bindsym t [class="(?i)termite"] focus; mode "default"
 	bindsym p [class="(?i)mupdf"] focus; mode "default"
 	bindsym d [class="(?i)zeal"] focus; mode "default"
+	bindsym m [class="(?i)rhythmbox"] focus; mode "default"
 
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
@@ -176,49 +193,49 @@ mode "goto" {
 
 bindsym $mod+g mode "goto"
 
-# Resize window
-mode "resize" {
+# i3 commands
+mode "i3" {
 
-	bindsym Shift+h resize grow height 5px
-	bindsym h resize shrink height 5px
-	bindsym Shift+w resize grow width 5px
-	bindsym w resize shrink width 5px
-
-	bindsym Return mode "default"
-	bindsym Escape mode "default"
-	bindsym Control+c mode "default"
-}
-
-bindsym $mod+period mode "resize"
-
-# move floating window
-mode "move" {
-
-	bindsym h move left 10px
-	bindsym j move down 10px
-	bindsym k move up 10px
-	bindsym l move right 10px
-
-	bindsym Shift+h move left 30px
-	bindsym Shift+j move down 30px
-	bindsym Shift+k move up 30px
-	bindsym Shift+l move right 30px
+	bindsym c exec termite -e 'vim .config/i3/config' --title 'i3 Config'
+	bindsym BackSpace exit
+	bindsym Shift+r restart
+	bindsym r reload
 
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
 	bindsym Control+c mode "default"
 }
 
-bindsym $mod+Shift+period focus floating; mode "move"
+bindsym $mod+i mode "i3"
+
+# Controls
+# ----------------------------------------------------------------------------
+
+# Screenshots (XF86LaunchA = F3)
+bindsym XF86LaunchA exec --no-startup-id scr -window root
+bindsym $mod+XF86LaunchA exec --no-startup-id scr
+
+# Volume controls
+bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master unmute 3%+
+bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master unmute 3%-
+bindsym XF86AudioMute exec --no-startup-id amixer -D pulse sset Master toggle
+
+# Screen brightness controls
+bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 5
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 5
+
+# Keyboard backlight controls
+bindsym XF86KbdBrightnessUp exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -inc 5
+bindsym XF86KbdBrightnessDown exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -dec 5
 
 # Colors
 # ----------------------------------------------------------------------------
 
-# class                 border   backgr.  text     indic.   child_border
-client.focused          #1e222b  #3a3e4a  #8e9299  #2e9ef4  #3c74b7
+# class                 border   back     text     indic    child_border
+client.focused          #1e222b  #3a3e4a  #8e9299  #3ba7f9  #3c74b7
 client.focused_inactive #1e222b  #3a3e4a  #8e9299  #484e50  #5f676a
 client.unfocused        #1e222b  #252933  #8e9299  #292d2e  #3a3e4a
-client.urgent           #af5d66  #636770  #8e9299  #900000  #900000
+client.urgent           #1e222b  #252933  #945F65  #900000  #900000
 client.placeholder      #1e222b  #252933  #8e9299  #000000  #0c0c0c
 
 client.background       #1e222b

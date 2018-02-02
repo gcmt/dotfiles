@@ -95,6 +95,37 @@ stty -ixon
 # FUNCTIONS
 # ----------------------------------------------------------------------------
 
+function lb() {
+	local name=${1:-$(date '+%Y-%m-%d')}
+	vim ~/Documents/logbook/$name.md
+}
+
+# create virtual environment
+mkvenv() {
+	local venv=${1:-venv}
+	if [ -d "$venv" -o -f "$venv" ]; then
+		echo >&2 "mkvenv: file '$venv' already exists"
+		return 1
+	fi
+	python3 -m venv "$venv"
+	source "$venv/bin/activate"
+}
+
+# activate virtual environment
+activate() {
+	local venv=${1:-venv}
+	if [ ! -f "$venv/bin/activate" ]; then
+		venv="$HOME/.virtualenvs/$venv"
+	fi
+	if [ ! -f "$venv/bin/activate" ]; then
+		echo >&2 "activate: virtual environment doesn't exist"
+		return 1
+	fi
+	source "$venv/bin/activate"
+	echo "virtual environment activated: $venv"
+}
+
+# search and open files with vim
 vimf() {
 	local f=$(mktemp -d)/flist
 	rg --files -g "!node_modules/*" -g "!venv/*" -g "!dist/*" -g "!build/*" \
@@ -129,6 +160,15 @@ g() {
 
 compdef g=git
 
+# vagrant shortcut
+va() {
+	if [ $# -eq 0 ]; then
+		vagrant status
+	else
+		vagrant "$@"
+	fi
+}
+
 # create directory and move into it
 mcd() {
 	mkdir -p "$@" && cd "$@"
@@ -144,6 +184,10 @@ alias zs='source $XDG_CONFIG_HOME/zsh/.zshrc'
 
 alias cb='cd -'
 
+alias ..=' ..'
+alias ...=' ../..'
+alias ....=' ../../..'
+
 alias rm=' rm -Iv'
 alias mv=' mv -iv'
 alias cp=' cp -iv'
@@ -153,6 +197,11 @@ alias ll='ls -lhp'
 alias lla='ls -lhAp'
 alias lld='ls -lhA | grep "^d"'
 alias llf='ls -lhA | grep -v "^d"'
+
+alias py="python"
+alias ipy="ipython"
+alias pudb="cursor -cmd; pudb3"
+alias pypath='python -c "import sys; [print(p) for p in sys.path]"'
 
 alias open='xdg-open'
 alias rg="rg --color=never -S"
@@ -213,7 +262,7 @@ setopt prompt_subst
 
 precmd() {
 	if [[ $TERM == *xterm* ]]; then
-		print -nP "\e]2;Shell  |  %~\a"
+		print -nP "\e]2;$HOME - Termite\a"
 	fi
 }
 
@@ -231,7 +280,7 @@ _prompt_git_branch() {
 }
 
 _prompt_venv() {
-	[ $VIRTUAL_ENV ] && echo " ‹ $(basename $VIRTUAL_ENV)"
+	[ $VIRTUAL_ENV ] && echo " ($(basename $VIRTUAL_ENV))"
 }
 
 _prompt_cwd() {
@@ -260,15 +309,7 @@ RPROMPT='$(_prompt_git_branch)$(_prompt_venv)'
 # ----------------------------------------------------------------------------
 
 if hash rofi 2>/dev/null; then
-	source "$ZDOTDIR/opt/rofi.zsh"
-fi
-
-if hash python 2>/dev/null; then
-	source "$ZDOTDIR/opt/python.zsh"
-fi
-
-if hash tmux 2>/dev/null; then
-	source "$ZDOTDIR/opt/tmux.zsh"
+	source "$ZDOTDIR/rofi.zsh"
 fi
 
 if [ -f "$XDG_DATA_HOME/zsh/opt/z/z.sh" ]; then

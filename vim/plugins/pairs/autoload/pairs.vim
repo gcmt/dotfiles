@@ -31,7 +31,7 @@ func pairs#space()
 	if !empty(opening) && closing == s:pairs[opening]
 		return "\<space>\<space>\<left>"
 	end
-	return "\<space>"
+	return "\<c-]>\<space>"
 endf
 
 func pairs#delete(word)
@@ -54,5 +54,5 @@ func pairs#newline()
 	if !empty(opening) && closing == s:pairs[opening]
 		return "\<c-g>u\<cr>\<esc>O"
 	end
-	return "\<cr>"
+	return "\<c-]>\<cr>"
 endf

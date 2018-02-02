@@ -5,11 +5,9 @@
 	if empty($XDG_CONFIG_HOME)
 		let $XDG_CONFIG_HOME = $HOME.'/.config'
 	end
-
 	if empty($XDG_DATA_HOME)
 		let $XDG_DATA_HOME = $HOME.'/.local/share'
 	end
-
 	if empty($XDG_CACHE_HOME)
 		let $XDG_CACHE_HOME = $HOME.'/.cache'
 	end
@@ -28,16 +26,14 @@
 	call plug#begin($VIMDATA . '/plugins')
 
 	Plug 'w0rp/ale'
-	Plug 'mbbill/undotree'
-	Plug 'scrooloose/nerdtree'
-	Plug 'Valloric/YouCompleteMe'
 	Plug 'tpope/vim-fugitive'
 	Plug 'airblade/vim-gitgutter'
-	Plug 'mattn/emmet-vim'
 	Plug 'SirVer/ultisnips'
 	Plug 'wellle/targets.vim'
-	Plug 'slashmili/alchemist.vim'
-	Plug 'ap/vim-css-color'
+   Plug 'ap/vim-css-color'
+	Plug 'prabirshrestha/vim-lsp'
+	Plug 'prabirshrestha/async.vim'
+
 	Plug 'posva/vim-vue'
 	Plug 'pangloss/vim-javascript'
 	Plug 'JulesWang/css.vim'
@@ -46,11 +42,11 @@
 	Plug 'tpope/vim-markdown'
 	Plug 'stephpy/vim-yaml'
 
-	Local 'utils'
 	Local 'rofi'
 	Local 'grep'
-	Local 'flow'
 	Local 'pairs'
+	Local 'autotype'
+	Local 'taggify'
 	Local 'qfedit'
 	Local 'spotter'
 	Local 'explorer'
@@ -86,7 +82,7 @@
 	set encoding=utf8
 	set spelllang=it,en
 	set cryptmethod=blowfish
-	set updatetime=200
+	set updatetime=300
 	set timeoutlen=1000
 	set ttimeoutlen=10
 	set lazyredraw
@@ -103,8 +99,8 @@
 
 	let mapleader = "\<space>"
 
-" " UI
-" " ----------------------------------------------------------------------------
+" UI
+" ----------------------------------------------------------------------------
 
 	let g:html_no_rendering = 1
 	let g:vim_json_warnings = 0
@@ -125,7 +121,7 @@
 	set linespace=1
 
 	set title
-	let &titlestring = "Vim  |  %{substitute(getcwd(), $HOME, '~', '')}"
+	let &titlestring = "%{getcwd()} - Vim"
 
 	set nowrap
 	set linebreak
@@ -134,7 +130,7 @@
 	set display=lastline
 	set textwidth=100
 
-	set nonumber
+	set number
 	set norelativenumber
 	set numberwidth=1
 	set nocursorline
@@ -157,9 +153,9 @@
 	set wildignore+=*/venv/*,venv$
 	set wildignore+=*/__pycache__/*,__pycache__
 	set wildignore+=*/node_modules/*,node_modules
-	set wildignore+=.git,.vagrant,.DS_Store,tags,.tags,*.retry
+	set wildignore+=.git,.DS_Store,tags,.tags,*.retry
 	set wildignore+=*.sqlite3,*.pyc,*.beam,*.so
-	set wildignore+=*.jpg,*.png,*.ico,*.gif
+	set wildignore+=*.jpg,*.jpeg,*.png,*.ico,*.gif
 
 	set formatoptions=crq1nj
 	set nrformats-=octal
@@ -168,7 +164,7 @@
 	set splitright
 
 	set list
-	set listchars=tab:│\ ,trail:·,precedes:⋯,extends:⋯
+	set listchars=tab:│\ ,trail:·,precedes:‹,extends:›
 	set fillchars=vert:│
 
 	set nofoldenable
@@ -197,6 +193,9 @@
 			return expand('%:t')
 		end
 		let path = substitute(expand('%:p'), $HOME, '~', '')
+		if winwidth(0) < 80
+			return fnamemodify(path, ':t')
+		end
 		return join(split(path, '/')[-2:], '/')
 	endf
 
@@ -225,18 +224,35 @@
 
 	func! _meta()
 		let enc = printf('%s:%s', &fenc ? &fenc : &enc, &ff)
-		if !&diff && empty(&bt) && winwidth(0) > 50 && &ft != 'notes'
-			return join(filter([enc, &ft], 'len(v:val)'), s:sep) . s:sep
+		if !&diff && !empty(&ft) && empty(&bt) && winwidth(0) > 50
+			let ret = join(filter([&ft], 'len(v:val)'), s:sep)
+			return empty(ret) ? '' : ret . s:sep
 		end
 		return ''
 	endf
 
-	func! _quickfix()
-		return empty(getqflist()) ? '' : '[QF] '
-	endf
-
-	func! _loclist()
-		return empty(getloclist(0)) ? '' : '[ERR] '
+	func! _flags()
+		if winwidth(0) < 80
+			return ''
+		end
+		let flags = []
+		" let strip_flags = []
+		" if get(g:, 'strip_spaces', 1) && get(b:, 'strip_spaces', 0)
+			" call add(strip_flags, 'S')
+		" end
+		" if get(g:, 'strip_lines', 1) && get(b:, 'strip_lines', 0)
+			" call add(strip_flags, 'L')
+		" end
+		" if !empty(strip_flags)
+			" call add(flags, '['.join(strip_flags, ',').']')
+		" end
+		if !empty(getqflist())
+			call add(flags, '[QF]')
+		end
+		if !empty(getloclist(0))
+			call add(flags, '[ERR]')
+		end
+		return empty(flags) ? '' : '‹ ' . join(flags, '') . ' '
 	endf
 
 	let &stl  = ' '
@@ -256,10 +272,9 @@
 
 	let &stl .= '%{_meta()}'
 
-	let &stl .= '%1l:%02c '
+	let &stl .= '%1lL %02cC (%P) '
 
-	let &stl .= '%#StatusLineBlue#%{_quickfix()}%*'
-	let &stl .= '%#StatusLineRed#%{_loclist()}%*'
+	" let &stl .= '%{_flags()}'
 
 " TABS
 " ----------------------------------------------------------------------------
@@ -297,11 +312,27 @@
 		au VimResized * wincmd = | redraw
 	aug END
 
-	nnoremap <c-w>v <c-w>v:b#<cr>
-	nnoremap <c-w>s <c-w>s:b#<cr>
+	nnoremap <silent> <c-w>v <c-w>v:b#<cr>
+	nnoremap <silent> <c-w>s <c-w>s:b#<cr>
 
-	" toggle zooming
+	nnoremap <silent> <left> <c-w><
+	nnoremap <silent> <right> <c-w>>
+	nnoremap <silent> <up> <c-w>+
+	nnoremap <silent> <down> <c-w>-
+
+	command! -nargs=0 Zoom call <sid>zoom_toggle()
 	nnoremap <silent> <c-w>z :Zoom<cr>
+
+	func! s:zoom_toggle() abort
+		if exists('w:zoom')
+			exec w:zoom
+			unlet w:zoom
+		else
+			let w:zoom = winrestcmd()
+			wincmd _
+			wincmd |
+		end
+	endf
 
 " BUFFERS
 " ----------------------------------------------------------------------------
@@ -317,22 +348,31 @@
 		end
 	endf
 
+	command! -bang -nargs=1 -complete=file Rename call <sid>rename_buffer(<q-bang>, <q-args>)
+
+	" rename the current buffer
+	fun! s:rename_buffer(bang, new_name)
+		let alternate_save = @#
+		try
+			exec 'saveas'.a:bang fnameescape(expand('%:p:h'). '/' . a:new_name)
+			call delete(expand('#:p'))
+			sil exec 'bwipe' fnameescape(expand('#:p'))
+		catch
+			let msg = substitute(v:exception, '\v^Vim\([^:]*:', '', '')
+			echohl WarningMsg | echo msg | echohl None
+		finally
+			let @# = alternate_save
+		endtry
+	endf
+
 	" switch to the alternate buffer
 	nnoremap <leader>a <c-^>
 
-	" switch buffer
-	nnoremap <leader><tab> :buffers<cr>:b<space>
+	" create scratch buffer
+	nnoremap <leader>_ :edit __scratch__<cr>:setl buftype=nofile<cr>
 
 	" delete buffer
-	nnoremap <silent> <leader>d :call <sid>bdelete()<cr>
-
-	func! s:bdelete()
-		let target = bufnr('%')
-		if buflisted(bufnr('#'))
-			exec bufnr('#') . 'buffer'
-		end
-		sil! exec target . 'bdelete'
-	endf
+	nnoremap <silent> <leader>d :bdelete<cr>
 
 " QUICKFIX
 " ----------------------------------------------------------------------------
@@ -340,20 +380,21 @@
 	let g:quickfix_height = 50
 
 	nnoremap <silent> <leader>q :cwindow<cr>
-	nnoremap <silent> ]q :Zz! :cnext<cr>
-	nnoremap <silent> ]Q :Zz! :clast<cr>
-	nnoremap <silent> [q :Zz! :cprev<cr>
-	nnoremap <silent> [Q :Zz! :cfirst<cr>
+	nnoremap <silent> ]q :cnext<cr>zz:set cul<cr>
+	nnoremap <silent> ]Q :clast<cr>zz:set cul<cr>
+	nnoremap <silent> [q :cprev<cr>zz:set cul<cr>
+	nnoremap <silent> [Q :cfirst<cr>zz:set cul<cr>
 
 	nnoremap <silent> <leader>l :lwindow<cr>
-	nnoremap <silent> ]l :Zz! :lnext<cr>
-	nnoremap <silent> ]L :Zz! :llast<cr>
-	nnoremap <silent> [l :Zz! :lprev<cr>
-	nnoremap <silent> [L :Zz! :lfirst<cr>
+	nnoremap <silent> ]l :lnext<cr>zz:set cul<cr>
+	nnoremap <silent> ]L :llast<cr>zz:set cul<cr>
+	nnoremap <silent> [l :lprev<cr>zz:set cul<cr>
+	nnoremap <silent> [L :lfirst<cr>zz:set cul<cr>
 
 " EDITING
 " ----------------------------------------------------------------------------
 
+	inoremap <c-y> <c-d>
 	inoremap <c-e> <esc>O
 	inoremap <c-d> <esc>o
 	inoremap <c-w> <c-g>u<c-w>
@@ -364,8 +405,10 @@
 	nnoremap <c-e> m`O<esc>"_cc<esc>``
 	nnoremap <c-d> m`o<esc>"_cc<esc>``
 
-	" toggle capitalization of the previous word
-	inoremap <c-t> <esc>b~ea
+	" toggle case or capitalization of the previous word
+	inoremap <c-u> <nop>
+	inoremap <c-u>c <esc>m`b~``a
+	inoremap <c-u>u <esc>m`bg~iw``a
 
 	" buffer text object
 	xnoremap a% GoggV
@@ -389,6 +432,9 @@
 	vmap <expr> P '_d"' . v:register . 'P'
 	vmap <expr> ]P '_d"' . v:register . ']P'
 
+	" toggle paste
+	nnoremap <leader>p :set paste!<bar>set paste?<cr>
+
 	" copy to the end of the line
 	nnoremap Y y$
 
@@ -409,6 +455,11 @@
 	nnoremap ' `
 
 	nnoremap <c-u> <c-e>
+
+	inoremap <c-g>l <esc>la
+	inoremap <c-g><c-l> <esc>la
+	inoremap <c-g>h <esc>ha
+	inoremap <c-g><c-h> <esc>ha
 
 	noremap j gj
 	noremap k gk
@@ -434,16 +485,25 @@
 		endfor
 	endf
 
-	" jump after given characters without leaving insert mode
-	inoremap <silent> <c-f> <c-r>=<sid>jump_to_char(']', ')', '}', '>', '"', "'")<cr>
+	inoremap <c-a> <esc>A
 
-	func! s:jump_to_char(...)
-		let pos = searchpos('\v['.join(a:000, '').']', 'Wc')
-		return "\<right>"
+	" jump after given characters without leaving insert mode
+	inoremap <silent> <c-f> <c-r>=_jump_after('\v['.join([']',')','}','>','"',"'"],'').']')<cr>
+
+	func! _jump_after(pattern)
+		return search(a:pattern, 'Wce') ? "\<right>" : ''
 	endf
 
 " SEARCH AND SUBSTITUTE
 " ---------------------------------------------------------------------------
+
+	if has('patch1238')
+		aug _hlsearch
+			au!
+			au CmdlineEnter [/\?] set hlsearch
+			au CmdlineLeave [/\?] set nohlsearch
+		aug END
+	end
 
 	noremap <c-b> ?
 	noremap <c-f> /
@@ -452,14 +512,18 @@
 	nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
 
 	" search for current word or selected text without moving the cursor
-	nnoremap <silent> S :call utils#search(0)<cr>:set hlsearch<cr>
-	xnoremap <silent> S :<c-u>call utils#search(1)<cr>:set hlsearch<cr>
+	nnoremap <silent> S :call <sid>search(0)<cr>:set hlsearch<cr>
+	xnoremap <silent> S :<c-u>call <sid>search(1)<cr>:set hlsearch<cr>
 
-	nnoremap <silent> N :Zz! N<cr>
-	nnoremap <silent> n :Zz! n<cr>
-
-	nnoremap <silent> # :Zz! #<cr>
-	nnoremap <silent> * :Zz! *<cr>
+	" toggle search for current word or selected text without moving the cursor
+	fun! s:search(visual)
+		if a:visual
+			let selection = getline('.')[col("'<")-1:col("'>")-1]
+			let @/ = '\V' . escape(selection, '/\')
+		else
+			let @/ = '\<' . expand('<cword>') . '\>'
+		end
+	endf
 
 " MACROS
 " ----------------------------------------------------------------------------
@@ -505,6 +569,57 @@
 	nnoremap <leader>c :lcd %:p:h<cr>:pwd<cr>
 	nnoremap <leader>C :CdRoot<cr>
 
+	command! -bang -nargs=0 CdRoot call <sid>cd_into_root(<q-bang>)
+
+	" Find project root
+	func! s:find_root(path)
+		if empty(a:path) || a:path == '/'
+			return ''
+		end
+		let files = glob(a:path.'/.*', 1, 1) + glob(a:path.'/*', 1, 1)
+		let pattern = '\V\^\(' . join(get(g:, 'root_markers', []), '\|') . '\)\$'
+		if match(map(files, "fnamemodify(v:val, ':t')"), pattern) >= 0
+			return a:path
+		end
+		return s:find_root(fnamemodify(a:path, ':h'))
+	endf
+
+	" Cd into the current project root
+	func! s:cd_into_root(bang)
+		let path = s:find_root(expand('%:p:h'))
+		if !empty(path)
+			let cmd = empty(a:bang) ? 'cd' : 'lcd'
+			exec cmd fnameescape(path)
+			pwd
+		end
+	endf
+
+" TRAILINGS
+" ----------------------------------------------------------------------------
+
+	aug _strip
+		au!
+
+		au BufWritePre * call <sid>strip_trailing_lines()
+		au BufWritePre * call <sid>strip_trailing_spaces()
+
+		au BufEnter,BufNewFile * let b:strip_spaces = 1
+		au BufEnter,BufNewFile *.py let b:strip_lines = 1
+
+	aug END
+
+	func! s:strip_trailing_spaces()
+		if &ft != 'diff' && get(g:, 'strip_spaces', 1) && get(b:, 'strip_spaces', 0)
+			call _s('\v\s+$', '', 'e')
+		end
+	endf
+
+	func! s:strip_trailing_lines()
+		if &ft != 'diff' && get(g:, 'strip_lines', 1) && get(b:, 'strip_lines', 0)
+			call _s('\v($\n\s*)+%$', '', '')
+		end
+	endf
+
 " MISC
 " ----------------------------------------------------------------------------
 
@@ -516,16 +631,18 @@
 
 		au CmdWinEnter * set ft=
 		au CmdWinEnter * noremap <buffer> <c-j> <cr>
+		au CmdWinEnter * noremap <buffer> q <c-w>c
 		au CmdWinEnter * setl nonumber norelativenumber
 
-		" keep the help window to the bottom when there are multiple splits
+		" Keep clipboard content
+		au VimLeave * call system("xclip -sel clip -i", getreg('+'))
+
+		" Keep the help window to the bottom when there are multiple splits
 		au BufWinEnter * if &ft == 'help' | wincmd J | end
+		au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q :bdelete<cr> | end
 
-		" show cursorline only for a short amount of time (useful with :Zz)
+		" Show cursorline only for a short amount of time
 		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|netrw|explorer|buffers|finder|bookmarks|taglist)$' | set nocul | end
-
-		" remove trailing spaces before every save
-		au BufWritePre * if &ft != 'diff' && exists('*utils#s') | call utils#s('\v\s+$', '', 'e') | end
 
 		au BufReadPost * if &key != '' | setl noudf noswf nowb nobk nostmp secure hi=0 vi= | end
 		au BufNewFile,BufReadPre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl secure nostmp nowb nobk noswf hi=0 vi=
@@ -533,17 +650,60 @@
 
 	aug END
 
-	command! -nargs=0 Vimrc edit $MYVIMRC
-	command! -nargs=0 ColoEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
-	command! -nargs=1 -complete=filetype FtEdit call <sid>ftedit(<q-args>)
-
-	func! s:ftedit(ft)
-		let paths = split(globpath(&rtp, 'ftplugin/'.a:ft.'.vim'))
-		let paths = filter(paths, "v:val =~ '\\V\\^'.$VIMHOME")
-		let default = $VIMHOME.'/after/ftplugin/'.a:ft.'.vim'
-		let path = empty(paths) ? default : paths[0]
-		exec 'edit' fnameescape(path)
+	" Execute the :s command without messing jumps or cursor
+	func! _s(pattern, string, flags)
+		let view = winsaveview()
+		sil! exec 'keepj' 'keepp' '%s/'.a:pattern.'/'.a:string.'/'.a:flags
+		call winrestview(view)
 	endf
+
+	command! -nargs=0 ClearUndo call <sid>clear_undo()
+
+	" Clear undo history (:h clear-undo)
+	func! s:clear_undo()
+		let modified_save = &modified
+		let undolevels_save = &undolevels
+		let line_save = getline('.')
+		set undolevels=-1
+		exec "norm! a \<bs>\<esc>"
+		call setline('.', line_save)
+		let &undolevels = undolevels_save
+		let &modified = modified_save
+	endf
+
+	" Edit filetype plugin
+	command! -nargs=? -complete=filetype Ftedit call <sid>ft_edit(<q-args>)
+
+	func! s:ft_edit(ft)
+		let ft = empty(a:ft) ? &ft : a:ft
+		let paths = []
+		call extend(paths, split(globpath(&rtp, 'after/ftplugin/'.ft.'.vim')))
+		call extend(paths, split(globpath(&rtp, 'plugins/ftplugin/'.ft.'.vim')))
+		call filter(paths, "v:val =~ '\\V\\^'.$VIMHOME")
+		if !empty(paths)
+			exec 'edit' fnameescape(paths[0])
+		else
+			" create the file if it doesn't exist
+			let path = $VIMHOME.'/after/ftplugin/'.ft.'.vim'
+			exec 'edit' fnameescape(path)
+		end
+	endf
+
+	command! -nargs=0 Vimrc edit $MYVIMRC
+	command! -nargs=0 Coloredit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
+
+	" Save the current buffer as sudo
+	command! -nargs=0 Sudow exec 'write !sudo tee % > /dev/null'
+
+	" Execute commands silently and redraw
+	command! -nargs=+ Sil exec 'sil!' <q-args> | redraw!
+
+	" Returns the syntax group under the cursor
+	func! _syntax()
+		return synIDattr(synIDtrans(synID(line('.'), col('.'), 0)), 'name')
+	endf
+
+	inoremap <c-c> <c-]><esc>
 
 	cnoremap <c-n> <down>
 	cnoremap <c-p> <up>
@@ -566,7 +726,7 @@
 " ----------------------------------------------------------------------------
 
 	nnoremap <leader>s :Grep!<space>
-	nnoremap <leader>S :Grep! <c-r><c-w><cr>
+	nnoremap <silent> <leader>S :Grep! <c-r><c-w><cr>
 
 " Finder
 " ----------------------------------------------------------------------------
@@ -633,12 +793,6 @@
 
 	let g:explorer_hide = '^\.git$'
 
-" Rofi
-" ----------------------------------------------------------------------------
-
-	nnoremap <silent> <leader>r :RofiEdit<cr>
-	nnoremap <silent> <leader>R :RofiSearch<cr>
-
 " Netrw
 " ----------------------------------------------------------------------------
 
@@ -648,54 +802,15 @@
 
 	let g:netrw_list_hide = ''
 	let g:netrw_list_hide .= '\(^\|\s\s\)\zs\.\S\+,'
-	let g:netrw_list_hide .= '\./,\.\./'
+	let g:netrw_list_hide .= '\./,\.\./,'
 	let g:netrw_list_hide .= '\.DS_Store,\.pyc$'
-	let g:netrw_list_hide .= '__pycache__,node_modules,venv$,'
-
-" NERDTree
-" ----------------------------------------------------------------------------
-
-	aug _nerdtree
-		au!
-		au FileType nerdtree setl foldcolumn=1
-	aug END
-
-	nnoremap <silent> <f1> :call <sid>nerdtree_toggle()<cr>
-
-	func! s:nerdtree_toggle()
-		if bufwinnr(get(t:, 'NERDTreeBufName', -1)) != -1
-			NERDTreeToggle
-		else
-			sil exe "NERDTreeToggle" utils#find_root(expand('%:p:h'))
-			wincmd p
-			NERDTreeFind
-		end
-	endf
-
-	let g:NERDTreeHijackNetrw = 0
-	let g:NERDTreeShowHidden = 1
-	let g:NERDTreeRespectWildIgnore = 1
-	let g:NERDTreeMinimalUI = 1
-	let g:NERDTreeDirArrows = 1
-	let g:NERDTreeWinSize = 35
-	let g:NERDTreeMouseMode = 3
-	let g:NERDTreeDirArrowExpandable = '+'
-	let g:NERDTreeDirArrowCollapsible = '-'
-	let g:NERDTreeHighlightCursorline = 0
-	let g:NERDTreeStatusline = "\ NERDTree"
-
-" Undotree
-" ----------------------------------------------------------------------------
-
-	nnoremap <silent> <f2> :UndotreeToggle<cr>
 
 " Ultisnips
 " ----------------------------------------------------------------------------
 
 	let g:UltiSnipsExpandTrigger = '<c-s>'
 	let g:UltiSnipsJumpForwardTrigger = '<c-s>'
-	let g:UltiSnipsJumpBackwardTrigger = '<c-b>'
-	let g:UltiSnipsSnippetsDir = $VIMHOME . '/snips'
+	" let g:UltiSnipsSnippetsDir = $VIMHOME . '/UltiSnips'
 
 " Targets
 " ----------------------------------------------------------------------------
@@ -706,29 +821,28 @@
 	let g:targets_argOpening = '[({[]'
 	let g:targets_argClosing = '[]})]'
 
-" Emmet
-" ----------------------------------------------------------------------------
-
-	aug _emmet
-		au!
-		au FileType html,vue,htmldjango EmmetInstall
-	aug END
-
-	let g:user_emmet_mode = 'iv'
-	let g:user_emmet_install_global = 0
-	let g:user_emmet_leader_key = '<c-c>'
-
-" YouCompleteMe
-" ----------------------------------------------------------------------------
-
-	let g:ycm_python_binary_path = 'python'
-
-" Alchemist
-" ----------------------------------------------------------------------------
-
-	let g:alchemist_tag_disable = 1
-
 " GitGutter
 " ----------------------------------------------------------------------------
 
-	let g:gitgutter_enabled = 1
+	let g:gitgutter_enabled = 0
+
+" LSP
+" ----------------------------------------------------------------------------
+
+	let g:lsp_async_completion = 1
+
+	if executable('pyls')
+		" pip install python-language-server
+		au User lsp_setup call lsp#register_server({
+			\ 'name': 'pyls',
+			\ 'cmd': {server_info->['pyls']},
+			\ 'whitelist': ['python'],
+		\ })
+	end
+
+" Disable unused plugins
+" ----------------------------------------------------------------------------
+
+	let g:loaded_logiPat = 1
+	let g:loaded_vimballPlugin = 1
+	let g:loaded_getscriptPlugin = 1

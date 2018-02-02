@@ -1,0 +1,20 @@
+
+[options]
+
+font = SF Mono Medium 12
+cursor_blink = system
+cursor_shape = ibeam
+allow_bold = false
+
+audible_bell = false
+visible_bell = true
+urgent_on_bell = true
+
+[colors]
+
+cursor = #917086
+cursor_foreground = #1e222b
+background = #1e222b
+foreground = #636770
+foreground_bold = #636770
+highlight = #a39465

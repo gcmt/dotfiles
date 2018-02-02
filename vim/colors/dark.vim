@@ -134,7 +134,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('IncSearch', s:red, s:bg, '', '')
 	cal s:h('VertSplit', s:bg, s:fg_vvery_dim, '', '')
 	cal s:h('Visual', s:fg, s:fg_vvery_dim, '', '')
-	cal s:h('MatchParen', s:bg, s:magenta, '', '')
+	cal s:h('MatchParen', s:bg, s:fg, '', '')
 	cal s:h('Directory', s:blue, '', '', '')
 	cal s:h('Folded', s:fg_vvery_dim, s:bg, '', '')
 	cal s:h('WildMenu', s:bg, s:blue, '', '')

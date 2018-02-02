@@ -46,7 +46,7 @@ margin-bottom = 5
 [bar/main]
 
 width = 100%
-height = 27
+height = 29
 radius = 0.0
 
 background = ${colors.background}
@@ -57,8 +57,8 @@ line-color = #f00
 
 border-left-size = 5
 border-right-size = 5
-border-top-size = 5
-border-bottom-size = 1
+border-top-size = 6
+border-bottom-size = 0
 border-color = #00000000
 
 padding-left = 0
@@ -67,12 +67,12 @@ padding-right = 2
 module-margin-left = 2
 module-margin-right = 2
 
-font-0 = "SF Mono:style=Medium:size=10;3"
+font-0 = "SF Mono:style=Medium:size=10.5;3"
 font-1 = "FontAwesome:size=10.5;3"
 
 modules-left = i3
 modules-center =
-modules-right = wlan eth volume battery datetime
+modules-right = wlan eth volume battery datetime mailcheck
 
 ; separator = ‹
 separator = 
@@ -118,6 +118,15 @@ label-urgent-padding = 2
 type = custom/script
 exec = ~/.config/polybar/modules/battery.sh
 interval = 10
+
+; Check mail
+; ----------------------------------------------------------------------------
+
+[module/mailcheck]
+
+type = custom/script
+exec = ~/.local/bin/check_mail.py &
+interval = 1800
 
 ; Date & time
 ; ----------------------------------------------------------------------------

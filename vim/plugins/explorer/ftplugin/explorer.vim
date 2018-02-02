@@ -1,4 +1,5 @@
 
+nnoremap <silent> <buffer> q :bdelete<cr>
 nnoremap <silent> <buffer> <enter> :call explorer#enter_or_edit()<cr>
 nnoremap <silent> <buffer> <c-j> :call explorer#enter_or_edit()<cr>
 nnoremap <silent> <buffer> <right> :call explorer#enter_or_edit()<cr>

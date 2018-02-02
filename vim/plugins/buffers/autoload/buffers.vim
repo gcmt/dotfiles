@@ -72,7 +72,7 @@ func! buffers#render_buffers()
 		let line .= getbufvar(nr, '&mod') ? ' * ' : ''
 		if !empty(path) && path != tail
 			exec 'syn match BuffersDim /\%'.i.'l\%'.(len(line)+1).'c.*/'
-			let line .= ' ' . path
+			let line .= ',' . path
 		end
 
 		call add(text, line)
@@ -80,6 +80,9 @@ func! buffers#render_buffers()
 	endfor
 
 	call setline(1, text)
+
+	%!column -t -s ',' -o '  '
+
 	setl nomodifiable
 
 endf
@@ -92,7 +95,8 @@ endf
 
 func! s:resize_window(entries_num)
 	let max = float2nr(&lines * g:buffers_max_winsize / 100)
-	exec 'resize' a:entries_num < max ? a:entries_num : max
+	let min = float2nr(&lines * g:buffers_min_winsize / 100)
+	exec 'resize' max([min([a:entries_num, max]), min])
 endf
 
 func! s:err(msg)

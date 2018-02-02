@@ -21,6 +21,7 @@ endf
 
 sil! nunmap vv
 
+nnoremap <silent> <buffer> q :close<cr>
 nnoremap <silent> <buffer> <enter> :call <sid>edit('edit')<cr>zz
 nnoremap <silent> <buffer> <c-j> :call <sid>edit('edit')<cr>zz
 nnoremap <silent> <buffer> <right> :call <sid>edit('edit')<cr>zz

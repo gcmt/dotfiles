@@ -120,7 +120,7 @@ endf
 
 func s:resize_window(entries_num)
 	let max = float2nr(&lines * g:bookmarks_max_winsize / 100)
-	exec 'resize' a:entries_num < max ? a:entries_num : max
+	exec 'resize' min([a:entries_num, max])
 endf
 
 func s:prettify_path(path)

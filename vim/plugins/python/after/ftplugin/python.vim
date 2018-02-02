@@ -1,9 +1,5 @@
 
-aug _python
-	au!
-	" remove empty lines at the end of the file
-	au BufWritePre <buffer> call utils#s('\v($\n\s*)+%$', '', '')
-aug END
+setl omnifunc=lsp#complete
 
 iabbrev <buffer> none None
 iabbrev <buffer> true True
@@ -11,6 +7,8 @@ iabbrev <buffer> false False
 
 nnoremap <silent> <buffer> <f5> :!python %<cr>
 inoremap <silent> <buffer> <f5> <esc>:!python %<cr>
+
+inoremap <buffer> <c-b> <c-r>="import pudb; pudb.set_trace()\n"<cr>
 
 " activate local virtualenv (default name  is 'venv')
 command! -buffer -nargs=? Activate call python#venv#activate(<q-args>)
@@ -23,7 +21,7 @@ nnoremap <buffer> <leader><f3> :TagMaker --languages=python -f .tags/python/X.pa
 nnoremap <silent> <buffer> <leader>o :Grep! ^\s*(class\\|def)\b<cr>
 
 " expand current name into a function definition
-inoremap <silent> <buffer> <c-c> <c-r>=python#snippets#func()<cr>
+inoremap <silent> <buffer> <c-t> <c-r>=python#snippets#func()<cr>
 
 " Yapf
 command! -range Yapf <line1>,<line2>call python#yapf#format()

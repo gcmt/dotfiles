@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+sessions=$(tmux ls -F '#{session_name}' 2>/dev/null)
+session=$(echo "$sessions" | rofi -dmenu -no-auto-select -p 'tmux ')
+if [ $? -ne 0 -o -z "$session" ]; then
+	exit 1
+fi
+
+tmux has -t "$session" 2>/dev/null
+if [ $? -ne 0 ]; then
+	tmux new -s "$session" -d
+fi
+
+termite -e "tmux attach -t '$session'"

@@ -1,0 +1,296 @@
+#!/usr/bin/env python
+
+import re
+import sys
+import argparse
+import subprocess
+import i3ipc
+
+
+i3 = i3ipc.Connection()
+
+# default offset in pixels
+DEFAULT_OFFSET = 100
+OFFSET = DEFAULT_OFFSET
+
+LEFT = 1
+LEFT_TOP = 2
+LEFT_BOTTOM = 3
+RIGHT = 4
+RIGHT_TOP = 5
+RIGHT_BOTTOM = 6
+ABOVE = 7
+ABOVE_LEFT = 8
+ABOVE_RIGHT = 9
+BELOW = 10
+BELOW_LEFT = 11
+BELOW_RIGHT = 12
+
+# useful for debugging
+direction_map = {
+    0: "LEFT",
+    1: "LEFT_TOP",
+    2: "LEFT_BOTTOM",
+    3: "RIGHT",
+    4: "RIGHT_TOP",
+    5: "RIGHT_BOTTOM",
+    6: "ABOVE",
+    7: "ABOVE_LEFT",
+    8: "ABOVE_RIGHT",
+    9: "BELOW",
+    10: "BELOW_LEFT",
+    11: "BELOW_RIGHT"
+}
+
+
+def _notify(msg):
+    subprocess.Popen("notify-send 'Debug' '{}'".format(msg), shell=True)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Swap i3 containers")
+    parser.add_argument('-nofollow', action='store_true', help="keep focus in the same place")
+    parser.add_argument('-offset', type=int, default=DEFAULT_OFFSET, help="")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-left', action='store_true', help="")
+    group.add_argument('-left-top', action='store_true', help="")
+    group.add_argument('-left-bottom', action='store_true', help="")
+    group.add_argument('-right', action='store_true', help="")
+    group.add_argument('-right-top', action='store_true', help="")
+    group.add_argument('-right-bottom', action='store_true', help="")
+    group.add_argument('-above', action='store_true', help="")
+    group.add_argument('-above-left', action='store_true', help="")
+    group.add_argument('-above-right', action='store_true', help="")
+    group.add_argument('-below', action='store_true', help="")
+    group.add_argument('-below-left', action='store_true', help="")
+    group.add_argument('-below-right', action='store_true', help="")
+    group.add_argument('-interactive', action='store_true', help="click on the target container")
+    group.add_argument('-crotate', action='store_true', help="rotate windows clockwise")
+    group.add_argument('-ccrotate', action='store_true', help="rotate windows counter-clockwise")
+    return parser.parse_args()
+
+
+def get_direction(args):
+    if args.right:
+        return RIGHT
+    if args.right_top or args.crotate:
+        return RIGHT_TOP
+    if args.right_bottom:
+        return RIGHT_BOTTOM
+    if args.left:
+        return LEFT
+    if args.left_top or args.ccrotate:
+        return LEFT_TOP
+    if args.left_bottom:
+        return LEFT_BOTTOM
+    if args.below:
+        return BELOW
+    if args.below_left:
+        return BELOW_LEFT
+    if args.below_right:
+        return BELOW_RIGHT
+    if args.above:
+        return ABOVE
+    if args.above_left:
+        return ABOVE_LEFT
+    if args.above_right:
+        return ABOVE_RIGHT
+    return -1
+
+
+def get_target_interactively():
+    out = subprocess.check_output('xwininfo', shell=True).decode('utf-8')
+    match = re.search('Window id:\s+(0x[a-fA-F0-9]+)', out)
+    if match:
+        return match.group(1)
+
+
+def calculate_probe_point(rect, direction, offset, gap=0):
+    x, y, width, height = rect.x, rect.y, rect.width, rect.height
+    if direction == LEFT:
+        return x - offset - gap, (y + height) // 2
+    if direction == LEFT_TOP:
+        return x - offset - gap, y
+    if direction == LEFT_BOTTOM:
+        return x - offset - gap, y + height
+    if direction == RIGHT:
+        return x + width + offset + gap, (y + height) // 2
+    if direction == RIGHT_TOP:
+        return x + width + offset + gap, y
+    if direction == RIGHT_BOTTOM:
+        return x + width + offset + gap, y + height
+    if direction == BELOW:
+        return (x + width) // 2, y + height + offset + gap
+    if direction == BELOW_LEFT:
+        return x, y + height + offset + gap
+    if direction == BELOW_RIGHT:
+        return x + width, y + height + offset + gap
+    if direction == ABOVE:
+        return (x + width) // 2, y - offset - gap
+    if direction == ABOVE_LEFT:
+        return x, y - offset - gap
+    if direction == ABOVE_RIGHT:
+        return x + width, y - offset - gap
+    return x, y
+
+
+def get_window_at_position(x, y, windows):
+    for w in windows:
+        x1, y1 = w.rect.x, w.rect.y
+        x2, y2 = w.rect.x + w.rect.width, w.rect.y + w.rect.height
+        if (x1 <= x <= x2) and (y1 <= y <= y2):
+            return w
+
+
+def make_adjacency_map(windows, ws_rect):
+
+    def inside_workspace(x, y):
+        return (
+            x >= ws_rect.x and x <= ws_rect.x + ws_rect.width and
+            y >= ws_rect.y and y <= ws_rect.y + ws_rect.height
+        )
+
+    def adjacent(rect, direction):
+        x, y = calculate_probe_point(rect, direction, OFFSET)
+        if inside_workspace(x, y):
+            window = get_window_at_position(x, y, windows)
+            if window:
+                return window.id
+
+    amap = {}
+    for w in windows:
+        amap[w.id] = {}
+        amap[w.id][LEFT_TOP] = adjacent(w.rect, LEFT_TOP)
+        amap[w.id][RIGHT_TOP] = adjacent(w.rect, RIGHT_TOP)
+        amap[w.id][LEFT_BOTTOM] = adjacent(w.rect, LEFT_BOTTOM)
+        amap[w.id][RIGHT_BOTTOM] = adjacent(w.rect, RIGHT_BOTTOM)
+        amap[w.id][ABOVE_LEFT] = adjacent(w.rect, ABOVE_LEFT)
+        amap[w.id][ABOVE_RIGHT] = adjacent(w.rect, ABOVE_RIGHT)
+        amap[w.id][BELOW_LEFT] = adjacent(w.rect, BELOW_LEFT)
+        amap[w.id][BELOW_RIGHT] = adjacent(w.rect, BELOW_RIGHT)
+
+    return amap
+
+
+def determine_starting_direction(amap, clockwise):
+    if clockwise:
+        if not amap.get(ABOVE_RIGHT) and not amap.get(ABOVE_LEFT) and amap.get(RIGHT_TOP):
+            return RIGHT_TOP
+        if not amap.get(RIGHT_TOP) and not amap.get(RIGHT_BOTTOM) and amap.get(BELOW_RIGHT):
+            return BELOW_RIGHT
+        if not amap.get(BELOW_RIGHT) and not amap.get(BELOW_LEFT) and amap.get(LEFT_BOTTOM):
+            return LEFT_BOTTOM
+        if not amap.get(LEFT_BOTTOM) and not amap.get(LEFT_TOP) and amap.get(ABOVE_LEFT):
+            return ABOVE_LEFT
+    else:
+        if not amap.get(ABOVE_RIGHT) and not amap.get(ABOVE_LEFT) and amap.get(LEFT_TOP):
+            return LEFT_TOP
+        if not amap.get(LEFT_BOTTOM) and not amap.get(LEFT_TOP) and amap.get(BELOW_LEFT):
+            return BELOW_LEFT
+        if not amap.get(BELOW_RIGHT) and not amap.get(BELOW_LEFT) and amap.get(RIGHT_BOTTOM):
+            return RIGHT_BOTTOM
+        if not amap.get(RIGHT_TOP) and not amap.get(RIGHT_BOTTOM) and amap.get(ABOVE_RIGHT):
+            return ABOVE_RIGHT
+
+
+def main():
+
+    args = parse_args()
+    direction = get_direction(args)
+
+    global OFFSET
+    OFFSET = args.offset
+
+    tree = i3.get_tree()
+    focused = tree.find_focused()
+    windows = focused.workspace().leaves()
+
+    # If multiple windows share the same rect (tabbed or stacked layout),
+    # pick their container instead.
+    # TODO: if a window is hidden then _NET_WM_STATE(ATOM) = _NET_WM_STATE_HIDDEN
+
+    groups = {}
+    for w in windows:
+        key = "{}:{}:{}:{}".format(w.rect.x, w.rect.y, w.rect.width, w.rect.height)
+        groups.setdefault(key, []).append(w)
+
+    for key, group in groups.items():
+        if len(group) > 1:
+            parent = group[0].parent
+            if any((w.focused for w in group)):
+                focused = parent
+            groups[key] = [parent]
+
+    windows = {group[0].id: group[0] for key, group in groups.items()}
+
+    if args.crotate or args.ccrotate:
+
+        if args.crotate:
+            direction_fallback = {
+                RIGHT_TOP: BELOW_RIGHT,
+                BELOW_RIGHT: LEFT_BOTTOM,
+                LEFT_BOTTOM: ABOVE_LEFT,
+                ABOVE_LEFT: RIGHT_TOP
+            }
+        else:
+            direction_fallback = {
+                LEFT_TOP: BELOW_LEFT,
+                BELOW_LEFT: RIGHT_BOTTOM,
+                RIGHT_BOTTOM: ABOVE_RIGHT,
+                ABOVE_RIGHT: LEFT_TOP
+            }
+
+        adjacency_map = make_adjacency_map(windows.values(), focused.workspace().rect)
+
+        direction = determine_starting_direction(adjacency_map[focused.id], args.crotate)
+        if not direction:
+            sys.stderr.write(
+                "Cannot rotate container ({}). Possible causes:".format(focused.id) +
+                "\n - This is the only window in the current workspace." +
+                "\n - Offset value too low to discover adjacent windows. Make sure it covers the gap between windows."
+                "\n - The window in not at the edge."
+            )
+            sys.exit(1)
+
+        fulcrum_id = focused.id
+
+        while True:
+
+            target = adjacency_map[fulcrum_id].get(direction)
+            if not target:
+                direction = direction_fallback[direction]
+                continue
+
+            if target == focused.id:
+                break
+
+            i3.command('[con_id="{}"] swap container with con_id {}'.format(fulcrum_id, target))
+            fulcrum_id = target
+
+        if args.nofollow:
+            target = windows[fulcrum_id].id
+            i3.command('[con_id="{}"] focus'.format(target))
+
+    elif args.interactive:
+
+        target = get_target_interactively()
+        if not target:
+            sys.exit(1)
+
+        i3.command('swap container with id {}'.format(target))
+
+    else:
+
+        x, y = calculate_probe_point(focused.rect, direction, OFFSET)
+        target = get_window_at_position(x, y, windows.values())
+        if not target:
+            sys.exit(1)
+
+        i3.command('swap container with con_id {}'.format(target.id))
+
+        if args.nofollow:
+            i3.command('[con_id="{}"] focus'.format(target.id))
+
+
+if __name__ == '__main__':
+    main()

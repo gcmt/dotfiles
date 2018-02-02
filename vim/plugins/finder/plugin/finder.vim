@@ -42,6 +42,7 @@ let s:options = {
 	\ 'findgprg': ['git grep -l %s', 'rg -l %s'],
 	\ 'findprg': ['git ls-files | grep %s', 'rg --files | rg %s'],
 	\ 'max_winsize': 50,
+	\ 'min_winsize': 25,
 	\ 'max_results': 100,
 \ }
 

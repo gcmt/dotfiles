@@ -62,7 +62,7 @@ bindsym $mod+y exec --no-startup-id ydl-mp3
 
 # Open Fastmail app
 bindsym $mod+m exec firefox -new-tab 'https://www.fastmail.com/mail/' ; [class="Firefox"] focus
-bindsym $mod+Shift+m exec --no-startup-id '.local/bin/check_mail.py'
+bindsym $mod+Shift+m exec --no-startup-id '.local/bin/mailcheck.py'
 
 # Rofi bindings
 bindsym $mod+space exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"

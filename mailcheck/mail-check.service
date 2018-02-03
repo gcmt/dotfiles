@@ -1,0 +1,11 @@
+[Unit]
+Description=Check Fastmail for new mails
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/fastmail
+ExecStart=/home/gcmt/.local/bin/mailcheck.py
+User=gcmt
+
+[Install]
+WantedBy=multi-user.target

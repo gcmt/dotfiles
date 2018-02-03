@@ -204,4 +204,10 @@ then
 	fi
 fi
 
+if [[ "$@" =~ '-mailcheck' || "$@" =~ '-all' ]]
+then
+	ln -snf "$DOTDIR/mailcheck" "$XDG_DATA_HOME/mailcheck"
+	echo "[ ok ] mailcheck"
+fi
+
 unset DOTDIR

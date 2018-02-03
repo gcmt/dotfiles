@@ -72,7 +72,7 @@ font-1 = "FontAwesome:size=10.5;3"
 
 modules-left = i3
 modules-center =
-modules-right = wlan eth volume battery datetime mailcheck
+modules-right = wlan eth volume battery datetime
 
 ; separator = ‹
 separator = 
@@ -118,15 +118,6 @@ label-urgent-padding = 2
 type = custom/script
 exec = ~/.config/polybar/modules/battery.sh
 interval = 10
-
-; Check mail
-; ----------------------------------------------------------------------------
-
-[module/mailcheck]
-
-type = custom/script
-exec = ~/.local/bin/check_mail.py &
-interval = 1800
 
 ; Date & time
 ; ----------------------------------------------------------------------------

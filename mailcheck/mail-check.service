@@ -4,6 +4,7 @@ Description=Check Fastmail for new mails
 [Service]
 Type=oneshot
 EnvironmentFile=/etc/fastmail
+ExecStartPre=/usr/bin/nm-online --quiet --timeout 30
 ExecStart=/home/gcmt/.local/bin/mailcheck.py
 User=gcmt
 

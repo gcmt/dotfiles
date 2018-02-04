@@ -3,14 +3,9 @@
 import re
 import os
 import sys
+import time
 import imaplib
 import subprocess
-
-
-def notify(msg, critical=False):
-    flag = "-u critical" if critical else ""
-    env = "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
-    subprocess.Popen(f"{env} notify-send {flag} 'Fastmail' '{msg}'", shell=True)
 
 
 try:
@@ -22,47 +17,72 @@ except KeyError:
     sys.exit(1)
 
 
-if __name__ == '__main__':
+def notify(msg, critical=False):
+    flag = "-u critical" if critical else ""
+    env = "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
+    subprocess.Popen(f"{env} notify-send {flag} 'Fastmail' '{msg}'", shell=True)
 
-    try:
-        conn = imaplib.IMAP4_SSL(HOSTNAME)
-    except Exception as e:
-        print(f'ERROR: {e}', file=sys.stderr)
-        sys.exit(1)
 
-    try:
-        conn.login(USERNAME, PASSWORD)
-    except Exception as e:
-        print(f'ERROR: {e}', file=sys.stderr)
-        sys.exit(1)
+# When resuming the system, the network remains unreachable just after
+# nm-online returns successfully. This functions tries to mitigate the problem
+# using timeouts
+def connect(hostname, timeout=0, interval=0.1):
+    start = time.time()
+    while True:
+        try:
+            return imaplib.IMAP4_SSL(hostname)
+        except OSError as e:
+            # catch OSError: [Errno 101] Network is unreachable
+            if time.time() - start > timeout:
+                raise
+            time.sleep(interval)
 
-    res, data = conn.list()
-    if res != 'OK':
-        print('ERROR: Unable to list mailboxes', file=sys.stderr)
-        sys.exit(1)
 
-    unread_count = 0
-    unread_mailboxes = []
+def get_unread_mailboxes(conn):
+
+    unread = {}
+    _, data = conn.list()
+
     for line in data:
         match = re.match(r'\(.*?\) ".*" (.*)', line.decode('utf-8'))
         if not match:
             continue
         mailbox = match.group(1)
-        if mailbox in ('Trash', 'Spam', 'Sent', 'Queue', 'Drafts', 'Archive', 'Notes'):
-            continue
-        res, status = conn.status(f'"{mailbox}"', '(UNSEEN)')
-        if res != 'OK':
-            continue
+        _, status = conn.status(f'"{mailbox}"', '(UNSEEN)')
         match = re.search(r'\(UNSEEN (\d+)\)', status[0].decode('utf-8'))
         if not match:
             continue
         unseen = int(match.group(1))
         if unseen > 0:
-            unread_mailboxes.append(mailbox)
-            unread_count += unseen
+            unread[mailbox] = unseen
+
+    return unread
+
+
+def main():
+
+    conn = connect(HOSTNAME, timeout=5, interval=0.5)
+    conn.login(USERNAME, PASSWORD)
+
+    unread_mailboxes = get_unread_mailboxes(conn)
+    exclude = ('Trash', 'Spam', 'Sent', 'Queue', 'Drafts', 'Archive', 'Notes')
+    unread_mailboxes = {k: v for k, v in unread_mailboxes.items() if k not in exclude}
+    unread_count = sum(unread_mailboxes.values())
 
     if unread_mailboxes:
         filler = "a total of " if len(unread_mailboxes) > 1 else ""
         messages = "message" if unread_count == 1 else "messages"
         mailboxes = ', '.join(unread_mailboxes)
-        notify(f"You have {filler}{unread_count} unread {messages} in {mailboxes}")
+        msg = f"You have {filler}{unread_count} unread {messages} in {mailboxes}"
+        notify(msg)
+        print(msg)
+
+    conn.logout()
+
+
+if __name__ == '__main__':
+    try:
+        main()
+    except imaplib.IMAP4.error as e:
+        print(f'ERROR: {e}', file=sys.stderr)
+        sys.exit(1)

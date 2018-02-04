@@ -1,5 +1,6 @@
 [Unit]
 Description=Check Fastmail for new mails
+After=suspend.target
 
 [Service]
 Type=oneshot
@@ -9,4 +10,4 @@ ExecStart=/home/gcmt/.local/bin/mailcheck.py
 User=gcmt
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=multi-user.target suspend.target

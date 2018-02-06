@@ -26,6 +26,6 @@ add control = Control_L
 ! keycode 50 = Alt_L Meta_L
 
 ! Tab -> Meta
-clear mod1
-keycode 23 = Alt_L
-add mod1 = Alt_L
+! clear mod1
+! keycode 23 = Alt_L
+! add mod1 = Alt_L

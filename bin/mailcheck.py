@@ -65,7 +65,7 @@ def main():
     conn.login(USERNAME, PASSWORD)
 
     unread_mailboxes = get_unread_mailboxes(conn)
-    exclude = ('Trash', 'Spam', 'Sent', 'Queue', 'Drafts', 'Archive', 'Notes')
+    exclude = ('Trash', 'Spam', 'Sent', 'Queue', 'Drafts', 'Archive', 'Notes', 'LinkedIn', 'News')
     unread_mailboxes = {k: v for k, v in unread_mailboxes.items() if k not in exclude}
     unread_count = sum(unread_mailboxes.values())
 

@@ -212,8 +212,10 @@ bindsym $mod+i mode "i3"
 # ----------------------------------------------------------------------------
 
 # Screenshots (XF86LaunchA = F3)
-bindsym XF86LaunchA exec --no-startup-id scr -window root
-bindsym $mod+XF86LaunchA exec --no-startup-id scr
+bindsym XF86LaunchA exec --no-startup-id scrot ~/Downloads/Screenshot_%Y-%m-%d-%T.png
+bindsym $mod+XF86LaunchA exec --no-startup-id sleep 0.2; exec --no-startup-id scrot -s ~/Downloads/Screenshot_%Y-%m-%d-%T.png
+bindsym XF86LaunchB exec --no-startup-id scrot -d 3 ~/Downloads/Screenshot_%Y-%m-%d-%T.png
+bindsym $mod+XF86LaunchB exec --no-startup-id sleep 0.2; exec --no-startup-id scrot -d 3 -s ~/Downloads/Screenshot_%Y-%m-%d-%T.png
 
 # Volume controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master unmute 3%+

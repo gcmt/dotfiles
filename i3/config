@@ -51,8 +51,8 @@ for_window [class="(?i)nemo"] title_format "%title - Nemo"
 bindsym $mod+Shift+q kill
 
 # Rename current workspace
-bindsym $mod+comma exec termite -e i3-rename-workspace -c '.config/termite/i3-rename-workspace' --title 'i3 Rename Workspace'
-for_window [title="(?i)i3 rename workspace"] floating enable, resize set 300 35, move position 15 52
+bindsym $mod+comma exec --no-startup-id i3-rename-workspace
+for_window [title="(?i)i3-rename-workspace"] floating enable, border pixel 0
 
 # Create new workspace
 # bindsym $mod+c exec --no-startup-id i3-new-workspace

@@ -159,7 +159,7 @@
     max_icon_size = 32
 
     # Paths to default icons.
-    icon_folders = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
+    icon_path = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
 
     ### History ###
 
@@ -234,7 +234,7 @@
     history = mod4+mod1+r
 
     # Context menu.
-    context = mod4+mod1+c
+    context = mod4+mod1+m
 
 [urgency_normal]
     background = "#3a3e4a"

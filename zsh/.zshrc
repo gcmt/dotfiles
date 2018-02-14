@@ -201,7 +201,7 @@ alias llf='ls -lhA | grep -v "^d"'
 alias py="python"
 alias ipy="ipython"
 alias pudb="cursor -cmd; pudb3"
-alias pypath='python -c "import sys; [print(p) for p in sys.path]"'
+alias pypath='python -c "import sys; [print(p) for p in filter(None, sys.path)]"'
 
 alias open='xdg-open'
 alias rg="rg --color=never -S"

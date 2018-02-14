@@ -55,7 +55,7 @@ bindsym $mod+comma exec --no-startup-id i3-rename-workspace
 for_window [title="(?i)i3-rename-workspace"] floating enable, border pixel 0
 
 # Create new workspace
-# bindsym $mod+c exec --no-startup-id i3-new-workspace
+bindsym $mod+c exec --no-startup-id i3-new-workspace
 
 # Youtube-dl (download selected url)
 bindsym $mod+y exec --no-startup-id ydl-mp3
@@ -66,7 +66,6 @@ bindsym $mod+Shift+m exec --no-startup-id '.local/bin/mailcheck.py'
 
 # Rofi bindings
 bindsym $mod+space exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
-bindsym $mod+Shift+space exec --no-startup-id i3-new-workspace ; exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 bindsym $alt+space exec "rofi -show run -kb-accept-custom 'Control+j,Return' -kb-accept-entry 'Control+d' -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 bindsym $mod+w exec "rofi -show window -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 

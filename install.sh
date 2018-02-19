@@ -119,7 +119,9 @@ then
 	if hash zsh 2>/dev/null
 	then
 		mkdir -p "$XDG_DATA_HOME/zsh"
+		mkdir -p "$XDG_DATA_HOME/zsh/ext"
 		ln -sf "$DOTDIR/zsh/.zshenv" "$HOME/.zshenv"
+		ln -sf "$DOTDIR/zsh/rofi.zsh" "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
 		ln -snf "$DOTDIR/zsh" "$XDG_CONFIG_HOME/zsh"
 		echo "[ ok ] zsh"
 	else

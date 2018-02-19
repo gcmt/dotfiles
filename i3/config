@@ -26,22 +26,19 @@ gaps outer 1
 # Rules
 # ----------------------------------------------------------------------------
 
-for_window [class="(?i)pinentry"] floating enable
-for_window [class="(?i)qalculate"] floating enable
-for_window [class="(?i)ssh-askpass"] floating enable
-for_window [class="(?i)keepassxc"] layout stacking
-for_window [class="(?i)firefox" title="(?i)library"] layout stacking
+for_window [class="Pinentry"] floating enable
+for_window [class="Qalculate"] floating enable
+for_window [class="ssh-askpass"] floating enable
+for_window [class="KeepassXC"] layout stacking
+for_window [class="Firefox" title="Library"] layout stacking
+for_window [class="Termite" window_role="floating"] floating enable, resize set 900 500, move position center
 
-for_window [class="Termite" title="i3 Config"] floating enable, resize set 1000 600, move position center
+for_window [class="Termite" title="i3/config"] floating enable, resize set 1000 600, move position center
 for_window [class="Termite" window_role="Notes"] floating enable, resize set 1000 600, move position center
 for_window [class="Termite" window_role="Logbook"] floating enable, resize set 1000 600, move position center
 
-for_window [class="KeePass2"] floating enable, resize set 1000 600, move position center
-for_window [title="Create New Password Database"] floating enable
-
 # ›
 for_window [class=".*"] title_format " %title"
-for_window [class="(?i)nemo"] title_format "%title - Nemo"
 
 # Bindings
 # ----------------------------------------------------------------------------

@@ -1,19 +1,4 @@
 
-# PATHS
-# ----------------------------------------------------------------------------
-
-export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-export PATH=$HOME/.local/bin:$PATH
-
-if [[ $OSTYPE == darwin* ]]; then
-	export PATH=/usr/local/opt/python/libexec/bin:$PATH
-	export PATH=/usr/local/opt/coreutils/libexec/gnubin:$PATH
-	export MANPATH=/usr/local/opt/coreutils/libexec/gnuman:$MANPATH
-	export PATH=/usr/local/opt/findutils/libexec/gnubin:$PATH
-	export MANPATH=/usr/local/opt/findutils/libexec/gnuman:$MANPATH
-	export PATH=$HOME/.go/bin:$PATH
-fi
-
 # EXPORTS
 # ----------------------------------------------------------------------------
 
@@ -28,6 +13,9 @@ export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
+
+export LESSKEY="$XDG_CONFIG_HOME/less/keys"
+export LESSHISTFILE="$XDG_DATA_HOME/less/history"
 
 # OPTIONS
 # ----------------------------------------------------------------------------
@@ -74,6 +62,7 @@ zle -N edit-command-line
 # enable completions
 autoload -U compinit
 compinit
+
 
 zstyle ':completion:*' matcher-list '' 'r:|?=** m:{a-z\-}={A-Z\_}'
 zstyle ':completion:*' completer _complete _match _approximate
@@ -125,14 +114,25 @@ activate() {
 	echo "virtual environment activated: $venv"
 }
 
+# quick file search with ripgrep
+rgf() {
+	rg --files -g "!node_modules/*" -g "!venv/*" | rg "$@"
+}
+rgfa() {
+	rg --files --hidden -g "!node_modules/*" -g "!venv/*" -g "!.git/*" | rg "$@"
+}
+
 # search and open files with vim
 vimf() {
 	local f=$(mktemp -d)/flist
-	rg --files -g "!node_modules/*" -g "!venv/*" -g "!dist/*" -g "!build/*" \
+	rg --files \
+		-g "!node_modules/*" -g "!venv/*" -g "!dist/*" -g "!build/*" \
 		-g "!*.pyc" -g "!*.beam" -g "!*.pdf" -g "!*.jpg" -g "!*.png" -g "!*.gif" -g "!*.mp4" -g "!*.gpg" \
 		| grep "$(echo "$@" | sed 's/\s\+/.*/')" > "$f"
 	if [ -s "$f" ]; then
-		vim -c "setl bt=nofile noma" -c "argd %" "$f" \
+		vim \
+			-c "argd %" "$f" \
+			-c "setl bt=nofile nomodifiable" \
 			-c "nn <silent> <buffer> gf ^vg_gf" -c "nmap <buffer> l gf" \
 			-c "nn <silent> <buffer> gF :set bh=wipe<bar>norm gf<cr>" -c "nmap <buffer> L gF"
 	else
@@ -149,6 +149,12 @@ setw() {
 	fi
 }
 
+# create directory and move into it
+mcd() {
+	mkdir -p "$@" && cd "$@"
+}
+compdef mcd=mkdir
+
 # git shortcut
 g() {
 	if [ $# -eq 0 ]; then
@@ -157,7 +163,6 @@ g() {
 		git "$@"
 	fi
 }
-
 compdef g=git
 
 # vagrant shortcut
@@ -168,13 +173,6 @@ va() {
 		vagrant "$@"
 	fi
 }
-
-# create directory and move into it
-mcd() {
-	mkdir -p "$@" && cd "$@"
-}
-
-compdef mcd=mkdir
 
 # ALIASES
 # ----------------------------------------------------------------------------
@@ -200,15 +198,12 @@ alias llf='ls -lhA | grep -v "^d"'
 
 alias py="python"
 alias ipy="ipython"
-alias pudb="cursor -cmd; pudb3"
+alias pudb="pudb3"
 alias pypath='python -c "import sys; [print(p) for p in filter(None, sys.path)]"'
 
 alias open='xdg-open'
 alias rg="rg --color=never -S"
 alias http="http --style=algol"
-
-alias rgf='rg --files -g "!node_modules/*" -g "!venv/*" | rg'
-alias rgfa='rg --files --hidden -g "!node_modules/*" -g "!venv/*" -g "!.git/*" | rg'
 
 # CURSOR
 # ----------------------------------------------------------------------------
@@ -249,8 +244,8 @@ zle-keymap-select() {
 	zle reset-prompt
 }
 
-zle -N zle-line-init
-zle -N zle-keymap-select
+# zle -N zle-line-init
+# zle -N zle-keymap-select
 
 # PROMPT
 # ----------------------------------------------------------------------------
@@ -262,7 +257,7 @@ setopt prompt_subst
 
 precmd() {
 	if [[ $TERM == *xterm* ]]; then
-		print -nP "\e]2;$HOME - Termite\a"
+		print -n "\e]2;$PWD - Terminal\a"
 	fi
 }
 
@@ -303,31 +298,40 @@ _prompt_exit_code() {
 # ›
 sep=' '
 PROMPT='$(_prompt_exit_code)$(_prompt_ww)$(_prompt_cwd) %F{15}%(!.#.$)%f '
-RPROMPT='$(_prompt_git_branch)$(_prompt_venv)'
-
-# OPTIONAL
-# ----------------------------------------------------------------------------
-
-if hash rofi 2>/dev/null; then
-	source "$ZDOTDIR/rofi.zsh"
-fi
-
-if [ -f "$XDG_DATA_HOME/zsh/opt/z/z.sh" ]; then
-	export _Z_DATA="$XDG_DATA_HOME/z/database"
-	source "$XDG_DATA_HOME/zsh/opt/z/z.sh"
-fi
-
-if [ -f "$XDG_DATA_HOME/zsh/opt/zsh-autosuggestions/zsh-autosuggestions.zsh" -a ! "$TERM" = "linux" ]; then
-	source "$XDG_DATA_HOME/zsh/opt/zsh-autosuggestions/zsh-autosuggestions.zsh"
-	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=238'
-	bindkey '^d' autosuggest-execute
-	bindkey '^a' autosuggest-accept
-fi
+RPROMPT='$(_prompt_git_branch)$(_prompt_venv) '
 
 # BINDKEYS
 # ----------------------------------------------------------------------------
 
-bindkey -v
+bindkey -e
+
+autoload -U up-line-or-beginning-search
+autoload -U down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+bindkey "^[[A" up-line-or-beginning-search
+bindkey "^[[B" down-line-or-beginning-search
+
+bindkey "^p" up-line-or-beginning-search
+bindkey "^n" down-line-or-beginning-search
+
+bindkey '^w' backward-delete-word
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+
+bindkey '^k' edit-command-line
+
+bindkey -s '^e' '^u ranger^m'
+
+# bindkey -s '^z' '^u fg^m'
+
+bring-to-fg() {
+	fg
+	zle reset-prompt
+}
+zle -N bring-to-fg
+bindkey '^z' bring-to-fg
 
 toggle-sudo() {
 	local pos=$CURSOR
@@ -340,40 +344,37 @@ toggle-sudo() {
 	fi
 }
 zle -N toggle-sudo
-
 bindkey '^s' toggle-sudo
 
-# enter command mode before searching backward
-history-search-backward-custom() {
-	zle vi-cmd-mode
-	zle history-search-backward
+cd-back() {
+	popd
+	zle reset-prompt
 }
-zle -N history-search-backward-custom
+zle -N cd-back
+bindkey '^[b' cd-back
 
-# enter command mode before searching forward
-history-search-forward-custom() {
-	zle vi-cmd-mode
-	zle history-search-forward
+cd-parent() {
+	pushd ..
+	zle reset-prompt
 }
-zle -N history-search-forward-custom
+zle -N cd-parent
+bindkey '^[u' cd-parent
 
-bindkey '^p' history-search-backward-custom
-bindkey '^n' history-search-forward-custom
+# EXTERNAL
+# ----------------------------------------------------------------------------
 
-bindkey '^w' backward-delete-word
-bindkey '^?' backward-delete-char
-bindkey '^h' backward-delete-char
+if [[ -e "$XDG_DATA_HOME/zsh/ext/rofi.zsh" ]]
+then
+	source "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
+fi
 
-bindkey -s '^z' '^u fg^m'
-
-bindkey -s '^e' '^u ranger^m'
-
-bindkey '^k' edit-command-line
-bindkey -M vicmd '^k' edit-command-line
-
-bindkey -M vicmd 'H' vi-beginning-of-line
-bindkey -M vicmd 'L' vi-end-of-line
-bindkey -M vicmd 'Y' vi-yank-eol
+if [[ -f "$XDG_DATA_HOME/zsh/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && ! "$TERM" = "linux" ]]
+then
+	source "$XDG_DATA_HOME/zsh/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
+	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=236'
+	bindkey '^d' autosuggest-execute
+	bindkey '^y' autosuggest-accept
+fi
 
 # LOCAL RC
 # ----------------------------------------------------------------------------

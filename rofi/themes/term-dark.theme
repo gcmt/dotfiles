@@ -1,6 +1,6 @@
 * {
 
-	font: "SF Mono 11";
+	font: "Noto Mono 10";
 
 	background: rgba(37, 41, 51, 100%);
 	foreground: rgba(142, 146, 153, 100%);

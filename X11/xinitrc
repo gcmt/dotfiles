@@ -1,11 +1,13 @@
 
+export QT_QPA_PLATFORMTHEME=qt5ct
+
 setxkbmap -layout it
 
 xmodmap ~/.Xmodmap
 
 xset r rate 175 25
 
-sh ~/.config/dunst/start.sh
+sh ~/.config/dunst/start.sh &
 
 compton -b
 

@@ -11,40 +11,34 @@ font pango:Noto Sans Regular 10
 floating_modifier $mod
 focus_follows_mouse yes
 workspace_auto_back_and_forth no
-new_window pixel 1
-new_float normal 1
-# hide_edge_borders both
+new_window normal 0
+new_float normal 0
 
 default_orientation auto
 workspace_layout default
 
-floating_minimum_size 75 x 25
-floating_maximum_size -1 x -1
+# floating_minimum_size 75 x 25
+# floating_maximum_size -1 x -1
 
 gaps inner 5
 gaps outer 1
-smart_borders on
-# smart_gaps on
 
 # Rules
 # ----------------------------------------------------------------------------
 
-for_window [class="(?i)pinentry"] floating enable
-for_window [class="(?i)qalculate"] floating enable
-for_window [class="(?i)ssh-askpass"] floating enable
-for_window [class="(?i)keepassxc"] layout stacking
-for_window [class="(?i)firefox" title="(?i)library"] layout stacking
+for_window [class="Pinentry"] floating enable
+for_window [class="Qalculate"] floating enable
+for_window [class="ssh-askpass"] floating enable
+for_window [class="KeepassXC"] layout stacking
+for_window [class="Firefox" title="Library"] layout stacking
+for_window [class="Termite" window_role="floating"] floating enable, resize set 900 500, move position center
 
-for_window [class="Termite" title="i3 Config"] floating enable, resize set 1000 600, move position center
+for_window [class="Termite" title="i3/config"] floating enable, resize set 1000 600, move position center
 for_window [class="Termite" window_role="Notes"] floating enable, resize set 1000 600, move position center
 for_window [class="Termite" window_role="Logbook"] floating enable, resize set 1000 600, move position center
 
-for_window [class="KeePass2"] floating enable, resize set 1000 600, move position center
-for_window [title="Create New Password Database"] floating enable
-
 # ›
 for_window [class=".*"] title_format " %title"
-for_window [class="(?i)nemo"] title_format "%title - Nemo"
 
 # Bindings
 # ----------------------------------------------------------------------------
@@ -52,13 +46,15 @@ for_window [class="(?i)nemo"] title_format "%title - Nemo"
 # Kill window
 bindsym $mod+Shift+q kill
 
-# Toggle border
-bindsym $mod+v border normal 1
-bindsym $mod+shift+v border pixel 1
+# Open tmux
+bindsym $mod+u exec termite -e "t"
+
+# Open tmux in a floating window
+bindsym $mod+Shift+u exec termite -e "t" --role "floating"
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace
-for_window [title="(?i)i3-rename-workspace"] floating enable, border pixel 0
+for_window [title="i3-rename-workspace"] floating enable, border pixel 0
 
 # Create new workspace
 bindsym $mod+c exec --no-startup-id i3-new-workspace
@@ -66,16 +62,19 @@ bindsym $mod+c exec --no-startup-id i3-new-workspace
 # Youtube-dl (download selected url)
 bindsym $mod+y exec --no-startup-id ydl-mp3
 
-# Open Fastmail app
-bindsym $mod+m exec firefox -new-tab 'https://www.fastmail.com/mail/' ; [class="Firefox"] focus
-
 # Rofi bindings
 bindsym $mod+space exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 bindsym $alt+space exec "rofi -show run -kb-accept-custom 'Control+j,Return' -kb-accept-entry 'Control+d' -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 bindsym $mod+w exec "rofi -show window -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 
+# Toggle Polybar visibility
+bindsym $mod+Return exec --no-startup-id polybar-toggle
+
 # Enter fullscreen mode
-bindsym $mod+Return fullscreen toggle
+bindsym $mod+Shift+Return fullscreen toggle
+
+# Cycle through containers
+bindsym $mod+o exec --no-startup-id i3-next-window
 
 # Change focus
 bindsym $mod+h focus left
@@ -106,25 +105,17 @@ bindsym $mod+Shift+k move up 10px
 bindsym $mod+Shift+l move right 10px
 
 # Swap containers
-bindsym $mod+Control+i exec --no-startup-id i3-swap-container -interactive
-bindsym $mod+Control+h exec --no-startup-id i3-swap-container -left
-bindsym $mod+Control+j exec --no-startup-id i3-swap-container -below
-bindsym $mod+Control+k exec --no-startup-id i3-swap-container -above
-bindsym $mod+Control+l exec --no-startup-id i3-swap-container -right
+bindsym $mod+Control+i exec --no-startup-id i3-swap-window -interactive
+bindsym $mod+Control+h exec --no-startup-id i3-swap-window -left
+bindsym $mod+Control+j exec --no-startup-id i3-swap-window -below
+bindsym $mod+Control+k exec --no-startup-id i3-swap-window -above
+bindsym $mod+Control+l exec --no-startup-id i3-swap-window -right
 
 # Resize container
-bindsym $mod+Left resize shrink width 10px or 2ppt
-bindsym $mod+Down resize shrink height 10px or 2ppt
-bindsym $mod+Up resize grow height 10px or 2ppt
-bindsym $mod+Right resize grow width 10px or 2ppt
-bindsym $mod+Shift+Left resize shrink width 2px or 2ppt
-bindsym $mod+Shift+Down resize shrink height 2px or 2ppt
-bindsym $mod+Shift+Up resize grow height 2px or 2ppt
-bindsym $mod+Shift+Right resize grow width 2px or 2ppt
-
-# Rotate containers
-# bindsym $mod+c exec --no-startup-id i3-swap-container -crotate -nofollow
-# bindsym $mod+Shift+c exec --no-startup-id i3-swap-container -ccrotate -nofollow
+bindsym $mod+Left resize shrink width 5px or 2ppt
+bindsym $mod+Down resize shrink height 5px or 2ppt
+bindsym $mod+Up resize grow height 5px or 2ppt
+bindsym $mod+Right resize grow width 5px or 2ppt
 
 # Switch to workspace
 bindsym $mod+1 workspace number 1
@@ -200,7 +191,7 @@ bindsym $mod+g mode "goto"
 # i3 commands
 mode "i3" {
 
-	bindsym c exec termite -e 'vim .config/i3/config' --title 'i3 Config'; mode "default"
+	bindsym c exec termite -e 'vim .config/i3/config'; mode "default"
 	bindsym BackSpace exit
 	bindsym Shift+r restart
 	bindsym r reload
@@ -234,17 +225,29 @@ bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 5
 bindsym XF86KbdBrightnessUp exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -inc 5
 bindsym XF86KbdBrightnessDown exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -dec 5
 
-# Colors
+# Dark Colors
 # ----------------------------------------------------------------------------
 
 # class                 border   back     text     indic    child_border
-client.focused          #3a3e4a  #3a3e4a  #8e9299  #3ba7f9  #3c74b7
-client.focused_inactive #3a3e4a  #3a3e4a  #8e9299  #484e50  #5f676a
-client.unfocused        #252933  #252933  #8e9299  #292d2e  #3a3e4a
-client.urgent           #252933  #252933  #945F65  #900000  #900000
-client.placeholder      #252933  #252933  #8e9299  #000000  #0c0c0c
+# client.focused          #1e222b  #3a3e4a  #8e9299  #3ba7f9  #3c74b7
+# client.focused_inactive #1e222b  #3a3e4a  #8e9299  #484e50  #5f676a
+# client.unfocused        #1e222b  #252933  #8e9299  #292d2e  #3a3e4a
+# client.urgent           #1e222b  #252933  #945F65  #900000  #900000
+# client.placeholder      #1e222b  #252933  #8e9299  #000000  #0c0c0c
 
-client.background       #1e222b
+# client.background       #1e222b
+
+# Light Colors
+# ----------------------------------------------------------------------------
+
+# class                 border   back     text     indic    child_border
+client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
+client.focused_inactive #e7e8eb  #e7e8eb  #9fa2a8  #f95467  #e7e8eb
+client.unfocused        #e7e8eb  #e7e8eb  #9fa2a8  #f95467  #e7e8eb
+client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
+client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
+
+client.background       #e7e8eb
 
 # Status Bar
 # ----------------------------------------------------------------------------

@@ -189,11 +189,14 @@ rofi.display-drun:
 rofi.run-command: {cmd}
 
 ! Set command to execute when running an application in a shell.
-rofi.run-shell-command: {terminal} -e {cmd}
+rofi.run-shell-command: termite -e {cmd}
 
 ! If set, use an external tool to generate list of executable commands.
 ! Uses 'run-command'.
 rofi.run-list-command:
+
+! The modi to combine in combi mode. For syntax to see -modi.
+rofi.modi: window,run,drun
 
 ! COMBI SETTINGS
 ! ----------------------------------------------------------------------------
@@ -218,7 +221,7 @@ rofi.display-windowcd:
 ! - len: maximum field length (0 for auto-size).
 ! If length negative and window width is negative, field length is width - len.
 ! If length is positive, the entry will be truncated or padded to fill that length.
-rofi.window-format: {c}  ›  {t}
+rofi.window-format: {t}
 
 ! Set command to execute on selected window for custom action.
 rofi.window-command: xkill -id {window}

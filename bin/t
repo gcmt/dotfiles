@@ -1,38 +1,40 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 session_name=$1
 
-if [ -z "$session_name" ]; then
+if [ -z "$session_name" ]
+then
 	session_list=$(tmux ls -F '#{session_activity}:#{session_name}' 2>/dev/null)
-	if [ $? -ne 0 ]; then
-		# if tmux server is not running, use 'default' as session name
-		session_name=default
+	if [ $? -ne 0 ]
+	then
+		# if tmux server is not running, use 'scratch' as default session name
+		session_name=scratch
 	else
-		# find last active session
-		last_active_session=''
+		# find the last active session
+		last_active_session=
 		last_activity_delta=$(date '+%s')
-		while IFS= read -r line; do
+		while IFS= read -r line
+		do
 			activity=$(echo $line | grep -o '^[0-9]\+')
 			delta=$(expr $(date '+%s') - $activity)
-			if [ $delta -lt $last_activity_delta ]; then
+			if [ $delta -lt $last_activity_delta ]
+			then
 				last_active_session=$(echo $line | sed 's/^[0-9]\+://')
 				last_activity_delta=$delta
 			fi
 		done <<< "$session_list"
 		session_name="$last_active_session"
-		if [ -z "$session_name" ]; then
-			echo >&2 'Session name should not be empty'
-			return 1
-		fi
 	fi
 fi
 
 tmux has -t "$session_name" 2>/dev/null
-if [ $? -ne 0 ]; then
+if [ $? -ne 0 ]
+then
 	tmux new -s "$session_name" -d
 fi
 
-if [ -z "$TMUX" ]; then
+if [ -z "$TMUX" ]
+then
 	tmux attach -t "$session_name"
 else
 	tmux switchc -t "$session_name"

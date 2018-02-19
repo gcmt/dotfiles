@@ -67,8 +67,11 @@ bindsym $mod+space exec "rofi -show drun -theme-str '#prompt { text-color: rgba(
 bindsym $alt+space exec "rofi -show run -kb-accept-custom 'Control+j,Return' -kb-accept-entry 'Control+d' -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 bindsym $mod+w exec "rofi -show window -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
 
+# Toggle Polybar visibility
+bindsym $mod+Return exec --no-startup-id polybar-toggle
+
 # Enter fullscreen mode
-bindsym $mod+Return fullscreen toggle
+bindsym $mod+Shift+Return fullscreen toggle
 
 # Change focus
 bindsym $mod+h focus left

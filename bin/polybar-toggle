@@ -1,0 +1,9 @@
+#!/bin/bash
+
+id=$(xdo id -N Polybar)
+if xprop -id $id | grep -q "window state: Normal"
+then
+	xdo hide -N Polybar
+else
+	xdo show -N Polybar
+fi

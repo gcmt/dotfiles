@@ -1,8 +1,8 @@
 
 let s:bufname = '__finder__'
 
-func finder#find(prgs, query) abort
-	let res = s:search(a:prgs, a:query)
+func finder#find(prg, query) abort
+	let res = s:search(a:prg, a:query)
 	if !empty(res.err)
 		return s:err(res.err)
 	end
@@ -34,22 +34,15 @@ func s:view_results(query, matches) abort
 endf
 
 " Return all files that match the given query
-func s:search(prgs, query) abort
+func s:search(prg, query) abort
 	let last_err = ''
 	let query = join(map(split(a:query), 'shellescape(v:val)'))
-	for prg in a:prgs
-		let out = systemlist(printf(prg, query))
-		if v:shell_error && !empty(out)
-			let last_err = join(out, "\n")
-			continue
-		end
-		if v:shell_error && empty(out)
-			return {'matches': [], 'err': ''}
-		end
-		let matches = out[:g:finder_max_results]
-		return {'matches': matches, 'err': ''}
-	endfor
-	return {'matches': [], 'err': last_err}
+	let out = systemlist(printf(a:prg, query))
+	if v:shell_error
+		return {'matches': [], 'err': join(out, "\n")}
+	end
+	let matches = out[:g:finder_max_results]
+	return {'matches': matches, 'err': ''}
 endf
 
 func s:render(matches) abort

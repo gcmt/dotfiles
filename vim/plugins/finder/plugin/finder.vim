@@ -39,8 +39,8 @@ func s:findg_preview(ArgLead, CmdLine, CursorPos)
 endf
 
 let s:options = {
-	\ 'findgprg': ['git grep -l %s', 'rg -l %s'],
-	\ 'findprg': ['git ls-files | grep %s', 'rg --files | rg %s'],
+	\ 'findgprg': 'rg -l %s',
+	\ 'findprg': 'rg --files | rg %s',
 	\ 'max_winsize': 50,
 	\ 'min_winsize': 25,
 	\ 'max_results': 100,

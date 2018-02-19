@@ -5,8 +5,8 @@ session_name=$1
 if [ -z "$session_name" ]; then
 	session_list=$(tmux ls -F '#{session_activity}:#{session_name}' 2>/dev/null)
 	if [ $? -ne 0 ]; then
-		# if tmux server is not running, use 'default' as session name
-		session_name=default
+		# if tmux server is not running, use 'scratch' as default session name
+		session_name=scratch
 	else
 		# find last active session
 		last_active_session=''

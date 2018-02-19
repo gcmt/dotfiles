@@ -16,7 +16,7 @@ if [[ "$1" == "-toggle-verbosity" ]]; then
 fi
 
 if [[ $VERBOSITY == 1 ]]; then
-	echo "$(date '+%a %d %b %H:%M:%S')"
+	echo "$(date '+%a %d %H:%M:%S')"
 else
-	echo "$(date '+%a %d %b %H:%M')"
+	echo "$(date '+%a %d %H:%M')"
 fi

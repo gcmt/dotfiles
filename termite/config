@@ -1,9 +1,9 @@
 
 [options]
 
-font = SF Mono 11
+font = Noto Mono 10
 cursor_blink = system
-cursor_shape = ibeam
+cursor_shape = block
 allow_bold = false
 dynamic_title = true
 mouse_autohide = true
@@ -11,57 +11,88 @@ browser = firefox
 clickable_url = true
 search_wrap = true
 scrollback_lines = 10000
-
 scroll_on_output = false
 scroll_on_keystroke = true
-
 audible_bell = false
 visible_bell = true
 urgent_on_bell = true
 
 [colors]
 
+# dark theme
 cursor = #917086
 cursor_foreground = #1e222b
 background = #1e222b
 foreground = #636770
 foreground_bold = #636770
 highlight = #a39465
-
 # light greys
 color16 = #444751
 color17 = #3a3e4a
-
 # black
 color0 = #1e222b
 color8 = #252933
-
 # white
 color7 = #636770
 color15 = #8e9299
-
 # red
 color1 = #945f65
 color9 = #945f65
-
 # magenta
 color5 = #917086
 color13 = #917086
-
 # yellow
 color3 = #a39465
 color11 = #a39465
-
 # blue
 color4 = #657b99
 color12 = #657b99
-
 # cyan
 color6 = #739492
 color14 = #739492
-
 # green
 color2 = #768a78
 color10 = #768a78
+
+# light theme
+# client.focused          #cdd1d6  #cdd1d6  #52565e  #3ba7f9  #af5d66
+# client.focused_inactive #cdd1d6  #cdd1d6  #52565e  #484e50  #af5d66
+# client.unfocused        #e7e8eb  #e7e8eb  #70747c  #292d2e  #e7e8eb
+# client.urgent           #ce7d86  #ce7d86  #cdd1d6  #900000  #e7e8eb
+# client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #000000  #e7e8eb
+
+# cursor = #917086
+# cursor_foreground = #52565e
+# background = #e7e8eb
+# foreground = #787c84
+# foreground_bold = #52565e
+# highlight = #a39465
+# # light greys
+# color16 = #444751
+# color17 = #3a3e4a
+# # black
+# color0 = #1e222b
+# color8 = #252933
+# # white
+# color7 = #c1c6cc
+# color15 = #52565e
+# # red
+# color1 = #ce7d86
+# color9 = #ce7d86
+# # magenta
+# color5 = #917086
+# color13 = #917086
+# # yellow
+# color3 = #a39465
+# color11 = #a39465
+# # blue
+# color4 = #657b99
+# color12 = #657b99
+# # cyan
+# color6 = #739492
+# color14 = #739492
+# # green
+# color2 = #768a78
+# color10 = #768a78
 
 # vim: ft=dosini cms=#\ %s

@@ -11,19 +11,17 @@ font pango:Noto Sans Regular 10
 floating_modifier $mod
 focus_follows_mouse yes
 workspace_auto_back_and_forth no
-new_window pixel 2
-# hide_edge_borders both
+new_window normal 0
+new_float normal 0
 
 default_orientation auto
 workspace_layout default
 
-floating_minimum_size 75 x 25
-floating_maximum_size -1 x -1
+# floating_minimum_size 75 x 25
+# floating_maximum_size -1 x -1
 
 gaps inner 5
 gaps outer 1
-smart_borders on
-# smart_gaps on
 
 # Rules
 # ----------------------------------------------------------------------------
@@ -229,17 +227,29 @@ bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 5
 bindsym XF86KbdBrightnessUp exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -inc 5
 bindsym XF86KbdBrightnessDown exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -dec 5
 
-# Colors
+# Dark Colors
 # ----------------------------------------------------------------------------
 
 # class                 border   back     text     indic    child_border
-client.focused          #1e222b  #3a3e4a  #8e9299  #3ba7f9  #3c74b7
-client.focused_inactive #1e222b  #3a3e4a  #8e9299  #484e50  #5f676a
-client.unfocused        #1e222b  #252933  #8e9299  #292d2e  #3a3e4a
-client.urgent           #1e222b  #252933  #945F65  #900000  #900000
-client.placeholder      #1e222b  #252933  #8e9299  #000000  #0c0c0c
+# client.focused          #1e222b  #3a3e4a  #8e9299  #3ba7f9  #3c74b7
+# client.focused_inactive #1e222b  #3a3e4a  #8e9299  #484e50  #5f676a
+# client.unfocused        #1e222b  #252933  #8e9299  #292d2e  #3a3e4a
+# client.urgent           #1e222b  #252933  #945F65  #900000  #900000
+# client.placeholder      #1e222b  #252933  #8e9299  #000000  #0c0c0c
 
-client.background       #1e222b
+# client.background       #1e222b
+
+# Light Colors
+# ----------------------------------------------------------------------------
+
+# class                 border   back     text     indic    child_border
+client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
+client.focused_inactive #e7e8eb  #e7e8eb  #9fa2a8  #f95467  #e7e8eb
+client.unfocused        #e7e8eb  #e7e8eb  #9fa2a8  #f95467  #e7e8eb
+client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
+client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
+
+client.background       #e7e8eb
 
 # Status Bar
 # ----------------------------------------------------------------------------

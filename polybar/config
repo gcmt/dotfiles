@@ -4,15 +4,26 @@
 
 [colors]
 
-background = #ef1e222b
-background-solid = #1e222b
-background-lighter = #ef252933
-background-lighter-solid = #252933
+; dark
 
-foreground = #df8e9299
-foreground-solid = #8e9299
-foreground-dim = #636770
-foreground-very-dim = #3a3e4a
+; background = #ef1e222b
+; foreground = #df8e9299
+
+; blue = #657B99
+; cyan = #739492
+; green = #768A78
+; magenta = #917086
+; red = #945F65
+; orange = #998068
+; yellow = #A39465
+
+; secondary = #e60053
+; alert = #aaaf5d66
+
+; light
+
+background = #e7e8eb
+foreground = #52565e
 
 blue = #657B99
 cyan = #739492
@@ -23,7 +34,7 @@ orange = #998068
 yellow = #A39465
 
 secondary = #e60053
-alert = #aaaf5d66
+alert = #ce7d86
 
 ; Settings
 ; ----------------------------------------------------------------------------
@@ -46,7 +57,7 @@ margin-bottom = 5
 [bar/main]
 
 width = 100%
-height = 29
+height = 30
 radius = 0.0
 
 background = ${colors.background}
@@ -64,18 +75,19 @@ border-color = #00000000
 padding-left = 0
 padding-right = 2
 
-module-margin-left = 2
+module-margin-left = 1
 module-margin-right = 2
 
-font-0 = "SF Mono:style=Medium:size=10.5;3"
-font-1 = "FontAwesome:size=10.5;3"
+font-0 = "Noto Mono:style=Medium:size=10;3"
+font-1 = "FontAwesome:size=10;3"
+font-2 = "Ionicons:size=10;0"
 
 modules-left = i3
 modules-center =
 modules-right = wlan eth volume battery datetime
 
 ; separator = ‹
-separator = 
+; separator = 
 
 ; i3 workspaces
 ; ----------------------------------------------------------------------------
@@ -87,13 +99,13 @@ format = <label-state> <label-mode>
 index-sort = true
 wrapping-scroll = false
 
-label-mode-foreground = ${colors.foreground-solid}
 label-mode-background = ${colors.alert}
+label-mode-foreground = ${colors.background}
 label-mode-padding = ${self.label-focused-padding}
 
 ; focused = Active workspace on focused monitor
 label-focused = %name%
-label-focused-background = #ef3a3e4a
+label-focused-background = #c2c7ce
 label-focused-padding = 2
 
 ; unfocused = Inactive workspace on any monitor
@@ -139,11 +151,11 @@ interface = wlp2s0
 interval = 3.0
 
 format-connected = <label-connected>
-label-connected =  %essid%
+label-connected =  %essid%
+; 
 
 format-disconnected = <label-disconnected>
 label-disconnected =
-label-disconnected-foreground = ${colors.foreground-very-dim}
 
 ; Ethernet
 ; ----------------------------------------------------------------------------
@@ -158,7 +170,6 @@ format-connected = <label-connected>
 label-connected = %local_ip%
 
 format-disconnected = <label-disconnected>
-label-disconnected-foreground = ${colors.foreground-dim}
 label-disconnected =
 
 ; Volume
@@ -202,7 +213,7 @@ bar-volume-fill = ─
 bar-volume-fill-font = 2
 bar-volume-empty = ─
 bar-volume-empty-font = 2
-bar-volume-empty-foreground = ${colors.foreground-dim}
+bar-volume-empty-foreground = ${colors.foreground}
 
 ; Cpu
 ; ----------------------------------------------------------------------------
@@ -212,7 +223,7 @@ bar-volume-empty-foreground = ${colors.foreground-dim}
 type = internal/cpu
 interval = 2
 format-prefix = " "
-format-prefix-foreground = ${colors.foreground-dim}
+format-prefix-foreground = ${colors.foreground}
 format-underline = #f90000
 label = %percentage%%
 
@@ -224,7 +235,7 @@ label = %percentage%%
 type = internal/memory
 interval = 2
 format-prefix = " "
-format-prefix-foreground = ${colors.foreground-dim}
+format-prefix-foreground = ${colors.foreground}
 format-underline = #4bffdc
 label = %percentage_used%%
 

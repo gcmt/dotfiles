@@ -49,18 +49,21 @@ for_window [class="(?i)nemo"] title_format "%title - Nemo"
 # Kill window
 bindsym $mod+Shift+q kill
 
+# Open tmux
+bindsym $mod+u exec termite -e "t"
+
+# Open tmux in a floating window
+bindsym $mod+Shift+u exec termite -e "t" --role "floating"
+
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace
-for_window [title="(?i)i3-rename-workspace"] floating enable, border pixel 0
+for_window [title="i3-rename-workspace"] floating enable, border pixel 0
 
 # Create new workspace
 bindsym $mod+c exec --no-startup-id i3-new-workspace
 
 # Youtube-dl (download selected url)
 bindsym $mod+y exec --no-startup-id ydl-mp3
-
-# Open Fastmail app
-bindsym $mod+m exec firefox -new-tab 'https://www.fastmail.com/mail/' ; [class="Firefox"] focus
 
 # Rofi bindings
 bindsym $mod+space exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
@@ -72,6 +75,9 @@ bindsym $mod+Return exec --no-startup-id polybar-toggle
 
 # Enter fullscreen mode
 bindsym $mod+Shift+Return fullscreen toggle
+
+# Cycle through containers
+bindsym $mod+o exec --no-startup-id i3-next-window
 
 # Change focus
 bindsym $mod+h focus left
@@ -102,25 +108,17 @@ bindsym $mod+Shift+k move up 10px
 bindsym $mod+Shift+l move right 10px
 
 # Swap containers
-bindsym $mod+Control+i exec --no-startup-id i3-swap-container -interactive
-bindsym $mod+Control+h exec --no-startup-id i3-swap-container -left
-bindsym $mod+Control+j exec --no-startup-id i3-swap-container -below
-bindsym $mod+Control+k exec --no-startup-id i3-swap-container -above
-bindsym $mod+Control+l exec --no-startup-id i3-swap-container -right
+bindsym $mod+Control+i exec --no-startup-id i3-swap-window -interactive
+bindsym $mod+Control+h exec --no-startup-id i3-swap-window -left
+bindsym $mod+Control+j exec --no-startup-id i3-swap-window -below
+bindsym $mod+Control+k exec --no-startup-id i3-swap-window -above
+bindsym $mod+Control+l exec --no-startup-id i3-swap-window -right
 
 # Resize container
-bindsym $mod+Left resize shrink width 10px or 2ppt
-bindsym $mod+Down resize shrink height 10px or 2ppt
-bindsym $mod+Up resize grow height 10px or 2ppt
-bindsym $mod+Right resize grow width 10px or 2ppt
-bindsym $mod+Shift+Left resize shrink width 2px or 2ppt
-bindsym $mod+Shift+Down resize shrink height 2px or 2ppt
-bindsym $mod+Shift+Up resize grow height 2px or 2ppt
-bindsym $mod+Shift+Right resize grow width 2px or 2ppt
-
-# Rotate containers
-# bindsym $mod+c exec --no-startup-id i3-swap-container -crotate -nofollow
-# bindsym $mod+Shift+c exec --no-startup-id i3-swap-container -ccrotate -nofollow
+bindsym $mod+Left resize shrink width 5px or 2ppt
+bindsym $mod+Down resize shrink height 5px or 2ppt
+bindsym $mod+Up resize grow height 5px or 2ppt
+bindsym $mod+Right resize grow width 5px or 2ppt
 
 # Switch to workspace
 bindsym $mod+1 workspace number 1
@@ -196,7 +194,7 @@ bindsym $mod+g mode "goto"
 # i3 commands
 mode "i3" {
 
-	bindsym c exec termite -e 'vim .config/i3/config' --title 'i3 Config'; mode "default"
+	bindsym c exec termite -e 'vim .config/i3/config'; mode "default"
 	bindsym BackSpace exit
 	bindsym Shift+r restart
 	bindsym r reload

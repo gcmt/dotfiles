@@ -13,7 +13,7 @@ get_volume() {
 }
 
 is_mute() {
-	amixer get Master | grep -m1 '\[off\]'
+	amixer get Master | grep -q '\[off\]'
 }
 
 notify-volume() {

@@ -114,10 +114,14 @@ bindsym $mod+Control+k exec --no-startup-id i3-swap-window -above
 bindsym $mod+Control+l exec --no-startup-id i3-swap-window -right
 
 # Resize container
-bindsym $mod+Left resize shrink width 5px or 2ppt
-bindsym $mod+Down resize shrink height 5px or 2ppt
-bindsym $mod+Up resize grow height 5px or 2ppt
-bindsym $mod+Right resize grow width 5px or 2ppt
+bindsym $mod+Left resize shrink left 5px or 2ppt
+bindsym $mod+Down resize shrink down 5px or 2ppt
+bindsym $mod+Up resize shrink up 5px or 2ppt
+bindsym $mod+Right resize shrink right 5px or 2ppt
+bindsym $mod+Shift+Left resize grow left 5px or 2ppt
+bindsym $mod+Shift+Down resize grow down 5px or 2ppt
+bindsym $mod+Shift+Up resize grow up 5px or 2ppt
+bindsym $mod+Shift+Right resize grow right 5px or 2ppt
 
 # Switch to workspace
 bindsym $mod+1 workspace number 1

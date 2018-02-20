@@ -1,0 +1,4 @@
+#!/bin/bash
+
+file="$HOME/Downloads/Screenshot_$(date '+%Y-%m-%d-%T').png"
+import "$@" "$file"

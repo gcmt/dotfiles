@@ -1,41 +1,41 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
 CACHE_DIR="$HOME/.cache/polybar/modules/battery"
 
 mkdir -p "$CACHE_DIR"
 
-if [ ! -f "$CACHE_DIR/last-notification" ]; then
+if [[ ! -f "$CACHE_DIR/last-notification" ]]; then
 	echo 0 > "$CACHE_DIR/last-notification"
 fi
 
-notify() {
-	acpi -b | grep Charging >/dev/null 2>&1
-	if [ $? -eq 0 ]; then
-		return
-	fi
+is_charging() {
+	acpi -b | grep -q Charging
+}
+
+notify_charge() {
+	is_charging && return
 	last_notification="$(cat $CACHE_DIR/last-notification)"
 	elapsed=$(expr $(date '+%s') - $last_notification)
-	if [ $elapsed -gt "$1" ]; then
+	if (( $elapsed > "$1" )); then
 		echo $(date '+%s') > "$CACHE_DIR/last-notification"
-		notify-send -t 10000 'Battery low' "$2"
+		notify-send -t 10000 "Battery low" "$2"
 	fi
 }
 
 charge=$(acpi -b | grep -Po '[0-9]+(?=%)')
 
-if [ $charge -lt "15" ]; then
-	notify 120 "Remaining charge: $charge%"
+if (( $charge < 15 )); then
+	notify_charge 120 "Remaining charge:  $charge%"
 	icon=""
-elif [ $charge -lt "30" ]; then
-	notify 240 "Remaining charge: $charge%"
+elif (( $charge < 30 )); then
+	notify_charge 240 "Remaining charge:  $charge%"
 	icon=""
-elif [ $charge -lt "50" ]; then
+elif (( $charge < 50 )); then
 	icon=""
-elif [ $charge -lt "75" ]; then
+elif (( $charge < 75 )); then
 	icon=""
 else
 	icon=""
 fi
 
-#acpi -b | grep Charging >/dev/null 2>&1
 echo "$icon $charge%"

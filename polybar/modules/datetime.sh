@@ -1,21 +1,31 @@
-#!/usr/bin/env sh
+#!/bin/bash
 
-CACHE_DIR="$HOME/.cache/polybar/modules/datetime"
-VERBOSITY_FILE="$CACHE_DIR/verbosity"
+cache_dir="$HOME/.cache/polybar/modules/datetime"
+verbosity_file="$cache_dir/verbosity"
 
-mkdir -p "$CACHE_DIR"
+mkdir -p "$cache_dir"
 
-if [ ! -f "$VERBOSITY_FILE" ]; then
-	echo 0 > "$VERBOSITY_FILE"
+save_verbosity() {
+	echo "$1" > "$verbosity_file"
+}
+
+get_verbosity() {
+	cat "$verbosity_file"
+}
+
+if [[ ! -f "$verbosity_file" ]]; then
+	verbosity=0
+	save_verbosity $verbosity
+else
+	verbosity=$(get_verbosity)
 fi
-
-VERBOSITY=$(expr 1 - $(cat "$VERBOSITY_FILE"))
 
 if [[ "$1" == "-toggle-verbosity" ]]; then
-	echo $VERBOSITY > "$VERBOSITY_FILE"
+	verbosity=$(expr 1 - $verbosity)
+	save_verbosity $verbosity
 fi
 
-if [[ $VERBOSITY == 1 ]]; then
+if [[ $verbosity == 1 ]]; then
 	echo "$(date '+%a %d %H:%M:%S')"
 else
 	echo "$(date '+%a %d %H:%M')"

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-CACHE_DIR="$HOME/.cache/polybar/modules/battery"
+cache_dir="$HOME/.cache/polybar/modules/battery"
 
-mkdir -p "$CACHE_DIR"
+mkdir -p "$cache_dir"
 
-if [[ ! -f "$CACHE_DIR/last-notification" ]]; then
-	echo 0 > "$CACHE_DIR/last-notification"
+if [[ ! -f "$cache_dir/last-notification" ]]; then
+	echo 0 > "$cache_dir/last-notification"
 fi
 
 is_charging() {
@@ -14,10 +14,10 @@ is_charging() {
 
 notify_charge() {
 	is_charging && return
-	last_notification="$(cat $CACHE_DIR/last-notification)"
+	last_notification="$(cat $cache_dir/last-notification)"
 	elapsed=$(expr $(date '+%s') - $last_notification)
 	if (( $elapsed > "$1" )); then
-		echo $(date '+%s') > "$CACHE_DIR/last-notification"
+		echo $(date '+%s') > "$cache_dir/last-notification"
 		notify-send -t 10000 "Battery low" "$2"
 	fi
 }

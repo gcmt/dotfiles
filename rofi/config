@@ -288,7 +288,7 @@ rofi.kb-accept-custom: Control+d
 
 ! Launch the application in a terminal (in run mode).
 ! Return the selected entry and move to the next item while keeping Rofi open. (in dmenu)
-rofi.kb-accept-alt: Control+Return
+rofi.kb-accept-alt: Control+t
 
 ! Delete entry from history
 rofi.kb-delete-entry: Control+r

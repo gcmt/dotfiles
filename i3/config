@@ -51,6 +51,8 @@ bindsym $mod+u exec termite -e "t"
 
 # Open tmux in a floating window
 bindsym $mod+Shift+u exec termite -e "t" --role "floating"
+# Pick tmux session with rofi
+bindsym $mod+Control+u exec rofi-tmux
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace

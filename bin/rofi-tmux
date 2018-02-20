@@ -1,0 +1,17 @@
+#!/bin/bash
+
+session_list=$(tmux ls -F '#{session_name}' 2>/dev/null)
+session=$(echo "$session_list" | rofi -dmenu -no-auto-select -p 'tmux ' -kb-custom-1 'Control+f' -kb-custom-2 'Control+Return')
+rofi_exit=$?
+
+if [[ $rofi_exit == 1 || -z "$session" ]]
+then
+	exit 1
+fi
+
+case $rofi_exit in
+	10|11)
+		termite -e "t '$session'" --role "floating" ;;
+	*)
+		termite -e "t '$session'" ;;
+esac

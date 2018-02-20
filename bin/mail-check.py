@@ -17,10 +17,8 @@ except KeyError:
     sys.exit(1)
 
 
-def notify(msg, critical=False):
-    flag = "-u critical" if critical else ""
-    env = "DISPLAY=:0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
-    subprocess.Popen(f"{env} notify-send {flag} 'Fastmail' '{msg}'", shell=True)
+def notify(msg):
+    subprocess.Popen(f"notify-send 'Fastmail' '{msg}'", shell=True)
 
 
 # When resuming the system, the network remains unreachable just after

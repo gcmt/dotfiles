@@ -1,0 +1,50 @@
+#!/bin/bash
+
+id=4224
+timeout=1000
+summary="Volume"
+
+polybar_visible() {
+	xprop -id $(xdo id -N Polybar) | grep -q "window state: Normal"
+}
+
+get_volume() {
+	amixer get Master | grep -Pom1 '[0-9]+(?=%)'
+}
+
+is_mute() {
+	amixer get Master | grep -m1 '\[off\]'
+}
+
+notify-volume() {
+	polybar_visible && return
+	volume=$(get_volume)
+	# 350px -> 37 dashes
+	n=$(seq $(($volume * 37 / 100)))
+	if [[ -z $n ]]; then
+		bar="No audio"
+	else
+		bar=$(printf "%0.s─" $n)
+	fi
+	dunstify -t $timeout -r $id "$summary" "$bar"
+}
+
+notify-mute() {
+	polybar_visible && return
+	dunstify -t $timeout -r $id "$summary" "Muted"
+}
+
+case "$1" in
+	up)
+		amixer -D pulse sset Master unmute 3%+ >/dev/null
+		notify-volume
+		;;
+	down)
+		amixer -D pulse sset Master unmute 3%- >/dev/null
+		notify-volume
+		;;
+	toggle)
+		amixer -D pulse sset Master toggle >/dev/null
+		is_mute && notify-mute || notify-volume
+		;;
+esac

@@ -213,9 +213,9 @@ bindsym XF86LaunchB exec --no-startup-id scrot -d 3 ~/Downloads/Screenshot_%Y-%m
 bindsym $mod+XF86LaunchB exec --no-startup-id sleep 0.2; exec --no-startup-id scrot -d 3 -s ~/Downloads/Screenshot_%Y-%m-%d-%T.png
 
 # Volume controls
-bindsym XF86AudioRaiseVolume exec --no-startup-id amixer -D pulse sset Master unmute 3%+
-bindsym XF86AudioLowerVolume exec --no-startup-id amixer -D pulse sset Master unmute 3%-
-bindsym XF86AudioMute exec --no-startup-id amixer -D pulse sset Master toggle
+bindsym XF86AudioRaiseVolume exec --no-startup-id volume up
+bindsym XF86AudioLowerVolume exec --no-startup-id volume down
+bindsym XF86AudioMute exec --no-startup-id volume toggle
 
 # Screen brightness controls
 bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 5

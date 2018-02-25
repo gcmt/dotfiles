@@ -13,4 +13,6 @@ compton -b
 
 nitrogen --restore &
 
+tmux new -ds scratch 2>/dev/null
+
 exec i3

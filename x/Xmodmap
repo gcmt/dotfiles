@@ -4,8 +4,8 @@ clear lock
 keycode 66 = Control_L
 add control = Control_L
 
-! Alt_L -> Escape
-! keycode 37 = Escape
+! Control_L -> Escape
+keycode 37 = Escape
 
 ! Tab -> Escape
 ! keycode 23 = Escape

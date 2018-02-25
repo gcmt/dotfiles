@@ -208,6 +208,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('qfLineNr', s:fg_dim, '', '', '')
 	cal s:h('QuickFixLine', s:bg, s:fg_dim, '', '')
 
+	cal s:h('Yank', '', s:bg_lighter, '', '')
 	cal s:h('Spotter', '', s:bg_lighter, '', '')
 
 	cal s:h('netrwTreeBar', s:bg_lighter, '', '', '')

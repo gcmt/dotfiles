@@ -523,6 +523,26 @@
 		else
 			let @/ = '\<' . expand('<cword>') . '\>'
 		end
+
+" YANK FEEDBACK
+" ----------------------------------------------------------------------------
+
+	aug _yankhl
+		au!
+		if exists("##TextYankPost") && has('timers')
+			au TextYankPost * call <sid>yankhl()
+		end
+	aug END
+
+	func! s:yankhl()
+		if v:event.operator != 'y' || v:event.regname == '*'
+			return
+		endif
+		let lines = v:event.regcontents
+		call map(lines, "empty(v:val) ? '\\n' : escape(v:val, '\\')")
+		let pattern = printf('\V\%%%dl\%%%dc%s', line("'["), col("'["), join(lines, '\n'))
+		let id = matchadd("Yank", pattern, -1)
+		call timer_start(300, {-> call('matchdelete', [id])})
 	endf
 
 " MACROS

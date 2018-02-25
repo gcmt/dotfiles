@@ -1,6 +1,12 @@
 
+/* Temite padding */
 VteTerminal, vte-terminal {
 	padding: 4px 4px 0px 6px;
+}
+
+/* Fix GVim right and bottom white borders */
+window#vim-main-window {
+	background-color: #1e222b;
 }
 
 @binding-set DeleteWordBackwards

@@ -69,6 +69,11 @@ if [[ "$@" =~ '-zsh' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/zsh/rofi.zsh" "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
 fi
 
+if [[ "$@" =~ '-bash' || "$@" =~ '-all' ]]; then
+	link "$DOTDIR/bash/.bashrc" "$HOME/.bashrc"
+	link "$DOTDIR/bash/.bash_profile" "$HOME/.bash_profile"
+fi
+
 if [[ "$@" =~ '-tmux' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 fi

@@ -8,43 +8,38 @@ polybar_visible() {
 	xprop -id $(xdo id -N Polybar) | grep -q "window state: Normal"
 }
 
-get_volume() {
-	amixer get Master | grep -Pom1 '[0-9]+(?=%)'
-}
-
 is_mute() {
 	amixer get Master | grep -q '\[off\]'
 }
 
-notify-volume() {
-	polybar_visible && return
-	volume=$(get_volume)
-	# 350px -> 37 dashes
-	n=$(seq $(($volume * 37 / 100)))
-	if [[ -z $n ]]; then
-		bar="No audio"
+notify_volume() {
+	polybar_visible && return 1
+	if (( $1 == 0 )); then
+		text="Volume off"
 	else
-		bar=$(printf "%0.s─" $n)
+		350px -> 37 dashes
+		n=$(seq $(($1 * 37 / 100)))
+		text=$(printf "%0.s─" $n)
 	fi
-	dunstify -t $timeout -r $id "$summary" "$bar"
+	dunstify -t $timeout -r $id "$summary" "$text"
 }
 
-notify-mute() {
-	polybar_visible && return
+notify_mute() {
+	polybar_visible && return 1
 	dunstify -t $timeout -r $id "$summary" "Muted"
 }
 
 case "$1" in
 	up)
-		amixer -D pulse sset Master unmute 3%+ >/dev/null
-		notify-volume
+		volume=$(amixer -D pulse sset Master unmute 3%+ | grep -Pom1 '[0-9]+(?=%)')
+		notify_volume $volume
 		;;
 	down)
-		amixer -D pulse sset Master unmute 3%- >/dev/null
-		notify-volume
+		volume=$(amixer -D pulse sset Master unmute 3%- | grep -Pom1 '[0-9]+(?=%)')
+		notify_volume $volume
 		;;
 	toggle)
-		amixer -D pulse sset Master toggle >/dev/null
-		is_mute && notify-mute || notify-volume
+		volume=$(amixer -D pulse sset Master toggle | grep -Pom1 '[0-9]+(?=%)')
+		is_mute && notify_mute || notify_volume $volume
 		;;
 esac

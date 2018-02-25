@@ -6,9 +6,8 @@ current_workspace_name() {
 		| cut -d "\"" -f 2
 }
 
-cur_num=$(current_workspace_name | grep -o '^[0-9]\+\( \|:\)\?')
 cur_name=$(current_workspace_name)
-new_name=$(zenity --entry --title "i3-rename-workspace" --text "Workspace name:" --entry-text "$cur_name" --width 300)
-if [ $? -eq 0 -a -n "$new_name" ]; then
-	i3-msg rename workspace to \"$new_name\"
+new_name=$(zenity --entry --title "Rename Workspace" --text "Enter new name:" --entry-text "$cur_name" --width 300)
+if [[ $? == 0 && -n "$new_name" ]]; then
+	i3-msg "rename workspace to \"$new_name\""
 fi

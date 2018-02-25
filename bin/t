@@ -3,46 +3,43 @@
 target_session=$1
 default_session="scratch"
 
-if [[ -z "$target_session" ]]
-then
+if [[ -z "$target_session" ]]; then
 	session_list=$(tmux ls -F '#{session_activity}:#{session_name}' 2>/dev/null)
-	if [[ $? != 0 ]]
-	then
-		# If tmux server is not running, use $default_session as default session name
-		target_session="$default_session"
-	else
-		# Find the last active session that is not $default_session
+	if (( $? == 0 )); then
+		# Find the last active session that is not $default_session or cmus
 		last_active_session=
 		last_activity_delta=$(date '+%s')
-		while IFS= read -r line
-		do
+		while IFS= read -r line; do
 			session=$(echo $line | sed 's/^[0-9]\+://')
-			if [[ "$session" == "$default_session" ]]; then
+			echo "evaluating session $session"
+			if [[ "$session" =~ $default_session|cmus ]]; then
 				continue
 			fi
 			activity=$(echo $line | grep -o '^[0-9]\+')
 			delta=$(expr $(date '+%s') - $activity)
-			if (( $delta < $last_activity_delta ))
-			then
+			if (( $delta < $last_activity_delta )); then
 				last_active_session=$session
 				last_activity_delta=$delta
 			fi
 		done <<< "$session_list"
 		target_session="$last_active_session"
-		# If there aren't any sessions, use $default_session
-		if [[ -z "$target_session" ]]; then
-			target_session="$default_session"
-		fi
 	fi
 fi
 
-tmux has -t "$target_session" 2>/dev/null
-if [[ $? != 0 ]]; then
-	tmux new -s "$target_session" -d
+if ! tmux has -t "$default_session" 2>/dev/null; then
+	tmux new -ds "$default_session"
+fi
+
+if [[ -z "$target_session" ]]; then
+	target_session="$default_session"
+fi
+
+if ! tmux has -t "$target_session" 2>/dev/null; then
+	tmux new -ds "$target_session"
 fi
 
 if [[ -z "$TMUX" ]]; then
-	tmux attach -t "$target_session"
+	exec tmux attach -t "$target_session"
 else
 	tmux switchc -t "$target_session"
 fi

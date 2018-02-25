@@ -1,11 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 selection=$(xclip -o -sel primary)
-if [ -n "$selection" ]; then
+if [[ -n "$selection" ]]; then
 	notify-send 'Download started' "Downloading song to ~/Downloads"
 	cd ~/Downloads
-	youtube-dl -x --audio-format mp3 "$selection"
-	if [ $? -eq 0 ]; then
+	if youtube-dl -x --audio-format mp3 "$selection"; then
 		notify-send 'Download finished' "Song successfully downloaded to ~/Downloads"
 	else
 		notify-send 'Download error' "Youtube-dl returned error code $?"

@@ -13,19 +13,22 @@ is_charging() {
 # usage: notify N "Message"
 # Don't send notification if at least N seconds haven't passed since the last notification
 notify() {
-	is_charging && return 1
-	last_notification="$(cat "$cache_dir/battery-check")"
-	elapsed=$(expr $(date '+%s') - $last_notification)
+	is_charging && return
+	local last_notification="$(cat "$cache_dir/battery-check")"
+	local elapsed=$(expr $(date '+%s') - $last_notification)
 	if (( $elapsed > "$1" )); then
 		echo $(date '+%s') > "$cache_dir/battery-check"
 		notify-send -t 10000 "Battery low" "$2"
 	fi
 }
 
-charge=$(acpi -b | grep -Po '[0-9]+(?=%)')
+main() {
+	local charge=$(acpi -b | grep -Po '[0-9]+(?=%)')
+	if (( $charge < 15 )); then
+		notify 120 "Remaining charge:  $charge%"
+	elif (( $charge < 30 )); then
+		notify 360 "Remaining charge:  $charge%"
+	fi
+}
 
-if (( $charge < 15 )); then
-	notify 120 "Remaining charge:  $charge%"
-elif (( $charge < 30 )); then
-	notify 360 "Remaining charge:  $charge%"
-fi
+main

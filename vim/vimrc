@@ -163,10 +163,6 @@
 	set splitbelow
 	set splitright
 
-	set list
-	set listchars=tab:│\ ,trail:·,precedes:‹,extends:›
-	set fillchars=vert:│
-
 	set nofoldenable
 	set foldcolumn=0
 
@@ -179,6 +175,16 @@
 	set laststatus=2
 	set visualbell
 	set t_vb=
+
+	set list
+	set fillchars=vert:│
+	let g:listchars = ',trail:·,precedes:‹,extends:›'
+	let &listchars = 'tab:  ' . listchars
+
+	nnoremap <silent> <leader>i :call <sid>toggle_indent_guides()<cr>
+	func! s:toggle_indent_guides()
+		let &listchars = (&listchars =~ 'tab:│' ? 'tab:  ' : 'tab:│ ') . g:listchars
+	endf
 
 " STATUSLINE
 " ----------------------------------------------------------------------------

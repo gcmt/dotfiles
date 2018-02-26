@@ -285,7 +285,7 @@ DIRTRIM=1
 PROMPT='%F{red}%(?..%? )%f%(1j.%jj .)$(_prompt_user) $(_prompt_cwd) %F{15}$%f '
 RPROMPT='$(_prompt_git)$(_prompt_venv)'
 
-# BINDKEYS
+# BINDINGS
 # ----------------------------------------------------------------------------
 
 bindkey -v
@@ -304,23 +304,17 @@ bindkey "^n" down-line-or-beginning-search
 bindkey '^w' backward-delete-word
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
-
 bindkey '^k' edit-command-line
 
-bindkey -s '^e' '^u ranger^m'
-
-# bindkey -s '^z' '^u fg^m'
-
-bring-to-fg() {
-	fg
-	zle reset-prompt
-}
-zle -N bring-to-fg
-bindkey '^z' bring-to-fg
+bindkey -M vicmd '^k' edit-command-line
+bindkey -M vicmd 'H' vi-beginning-of-line
+bindkey -M vicmd 'L' vi-end-of-line
+bindkey -M vicmd 'Y' vi-yank-eol
+bindkey '^e' end-of-line
 
 toggle-sudo() {
 	local pos=$CURSOR
-	if [[ "$BUFFER" =~ "^sudo " ]]; then
+	if [[ "$BUFFER" =~ "^sudo\>" ]]; then
 		BUFFER=$(echo "$BUFFER" | cut -b 6-)
 		CURSOR=$(($pos-5))
 	else
@@ -330,20 +324,37 @@ toggle-sudo() {
 }
 zle -N toggle-sudo
 bindkey '^s' toggle-sudo
+bindkey -M vicmd '^s' toggle-sudo
 
-cd-back() {
-	popd
+fix-command() {
+	zle vi-first-non-blank
+	zle kill-word
+	zle vi-insert
+}
+zle -N fix-command
+bindkey '^f' fix-command
+bindkey -M vicmd '^f' fix-command
+
+trim-prompt-cwd() {
+	DIRTRIM=$((1 - DIRTRIM))
 	zle reset-prompt
 }
-zle -N cd-back
-bindkey '^[b' cd-back
+zle -N trim-prompt-cwd
+bindkey '^t' trim-prompt-cwd
 
-cd-parent() {
-	pushd ..
-	zle reset-prompt
-}
-zle -N cd-parent
-bindkey '^[u' cd-parent
+# cd-back() {
+	# popd
+	# zle reset-prompt
+# }
+# zle -N cd-back
+# bindkey '^[b' cd-back
+
+# cd-parent() {
+	# pushd ..
+	# zle reset-prompt
+# }
+# zle -N cd-parent
+# bindkey '^[u' cd-parent
 
 # EXTERNAL
 # ----------------------------------------------------------------------------
@@ -351,6 +362,9 @@ bindkey '^[u' cd-parent
 if [[ -e "$XDG_DATA_HOME/zsh/ext/rofi.zsh" ]]
 then
 	source "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
+	# bindkey '^f' rofi-find
+	# bindkey '^g' rofi-cd
+	# bindkey '^r' rofi-history
 fi
 
 if [[ -f "$XDG_DATA_HOME/zsh/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && ! "$TERM" = "linux" ]]
@@ -358,7 +372,6 @@ then
 	source "$XDG_DATA_HOME/zsh/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
 	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=236'
 	bindkey '^d' autosuggest-execute
-	bindkey '^y' autosuggest-accept
 fi
 
 # LOCAL RC

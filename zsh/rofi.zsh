@@ -26,9 +26,6 @@ rofi-find() {
 }
 zle -N rofi-find
 
-bindkey '^f' rofi-find
-bindkey -M vicmd '^f' rofi-find
-
 rofi-cd() {
 	local cmd="find -L . -mindepth 1 \\( \
 		-path '*/\\.*' -o -name 'node_modules' -o -name 'venv' \
@@ -43,9 +40,6 @@ rofi-cd() {
 }
 zle -N rofi-cd
 
-bindkey '^g' rofi-cd
-bindkey -M vicmd '^g' rofi-cd
-
 rofi-history() {
 	local entry=$(fc -rnl 1 | eval "rofi $rofi_options -filter '$BUFFER' -p '$ ' -width $(rofi_width)")
 	if [ -z "$entry" ]; then
@@ -55,6 +49,3 @@ rofi-history() {
 	zle vi-end-of-line
 }
 zle -N rofi-history
-
-bindkey '^r' rofi-history
-bindkey -M vicmd '^r' rofi-history

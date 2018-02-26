@@ -495,18 +495,30 @@
 	" toggle highlighting of the last search pattern
 	nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
 
-	" search for current word or selected text without moving the cursor
-	nnoremap <silent> S :call <sid>search(0)<cr>:set hlsearch<cr>
-	xnoremap <silent> S :<c-u>call <sid>search(1)<cr>:set hlsearch<cr>
+	" Search for current word or selected text without moving the cursor.
+	" let &hls = &hls is needed to force highlighting
+	nnoremap <silent> S :call <sid>search(0)<cr>:let &hls = &hls<cr>
+	xnoremap <silent> S :<c-u>call <sid>search(1)<cr>:let &hls = &hls<cr>
 
-	" toggle search for current word or selected text without moving the cursor
+	" Toggle search for current word or selected text without moving the cursor
 	fun! s:search(visual)
+		if line("'<") != line("'>")
+			return
+		end
 		if a:visual
 			let selection = getline('.')[col("'<")-1:col("'>")-1]
-			let @/ = '\V' . escape(selection, '/\')
+			let pattern = '\V' . escape(selection, '/\')
 		else
-			let @/ = '\<' . expand('<cword>') . '\>'
+			 let pattern = '\<' . expand('<cword>') . '\>'
 		end
+		if @/ == pattern
+			let @/ = ''
+			set nohlsearch
+		else
+			let @/ = pattern
+			set hlsearch
+		end
+	endf
 
 " YANK FEEDBACK
 " ----------------------------------------------------------------------------

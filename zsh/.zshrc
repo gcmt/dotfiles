@@ -261,44 +261,35 @@ precmd() {
 	fi
 }
 
-_prompt_git_branch() {
-	local branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null)
-	if [ $? -ne 0 ] || [ -z "$branch" ]; then
+_prompt_git() {
+	local branch
+	branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+	if (( $? != 0 )); then
 		return
 	fi
-	git diff --quiet --ignore-submodules HEAD &> /dev/null
-	if [ $? -eq 1 ]; then
-		echo -n " ~$branch*"
-	else
-		echo -n " ~$branch"
-	fi
+	echo -n " ~$branch"
 }
 
 _prompt_venv() {
-	[ $VIRTUAL_ENV ] && echo " ($(basename $VIRTUAL_ENV))"
+	test -n "$VIRTUAL_ENV" && echo -n "venv"
+}
+
+_prompt_user() {
+	echo -n "%F{15}$(whoami)@$(hostname)%f"
 }
 
 _prompt_cwd() {
-	if [ -z "$WORKSPACE" ]; then
-		echo -n "%F{15}${PWD/$HOME/~}%f"
+	if (( DIRTRIM == 1 )); then
+		echo -n "%F{15}%(4~|../%2~|%~)%f"
 	else
-		echo -n "%F{15}${PWD/$WORKSPACE/..}%f"
+		echo -n "%F{15}%~%f"
 	fi
 }
 
-_prompt_ww() {
-	echo -n "%F{15}$(whoami)@$(hostname)%f${sep}"
-}
+DIRTRIM=1
 
-_prompt_exit_code() {
-	local code=$?
-	[ $code -ne 0 ] && echo "%F{red}${code}%f${sep}"
-}
-
-# ›
-sep=' '
-PROMPT='$(_prompt_exit_code)$(_prompt_ww)$(_prompt_cwd) %F{15}%(!.#.$)%f '
-RPROMPT='$(_prompt_git_branch)$(_prompt_venv) '
+PROMPT='%F{red}%(?..%? )%f%(1j.%jj .)$(_prompt_user) $(_prompt_cwd) %F{15}$%f '
+RPROMPT='$(_prompt_git)$(_prompt_venv)'
 
 # BINDKEYS
 # ----------------------------------------------------------------------------

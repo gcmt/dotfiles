@@ -205,47 +205,21 @@ alias open='xdg-open'
 alias rg="rg --color=never -S"
 alias http="http --style=algol"
 
-# CURSOR
+# VI MODE
 # ----------------------------------------------------------------------------
 
-if [ -n "$ITERM_PROFILE" ]; then
-	# 0 -> block
-	# 1 -> bar
-	cursor_cmd="\e]50;CursorShape=0\007"
-	cursor_ins="\e]50;CursorShape=1\007"
-fi
-
-if [ -n "$VTE_VERSION" ]; then
-	# 0 -> blinking block
-	# 1 -> blinking block
-	# 2 -> steady block
-	# 3 -> blinking underline
-	# 4 -> steady underline
-	# 5 -> blinking bar
-	# 6 -> steady bar
-	cursor_cmd="\e[2 q"
-	cursor_ins="\e[6 q"
-fi
-
-if [ -n "$TMUX" ]; then
-	cursor_cmd="\ePtmux;\e$cursor_cmd\e\\"
-	cursor_ins="\ePtmux;\e$cursor_ins\e\\"
-fi
-
-zle-line-init() {
-	print -n $cursor_ins
-}
-
+# use different colors for each mode
 zle-keymap-select() {
 	case $KEYMAP in
-		vicmd) print -n $cursor_cmd;;
-		*) print -n $cursor_ins;;
+		viins|main) zle_highlight=(default:fg=15) ;;
+		vicmd) zle_highlight=(default:fg=white) ;;
 	esac
 	zle reset-prompt
 }
 
-# zle -N zle-line-init
-# zle -N zle-keymap-select
+zle_highlight=(default:fg=15)
+zle -N zle-keymap-select
+
 # HOOKS
 # ----------------------------------------------------------------------------
 
@@ -314,7 +288,7 @@ RPROMPT='$(_prompt_git)$(_prompt_venv)'
 # BINDKEYS
 # ----------------------------------------------------------------------------
 
-bindkey -e
+bindkey -v
 
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search

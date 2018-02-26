@@ -23,8 +23,8 @@ mkdir -p "$XDG_CACHE_HOME"
 mkdir -p "$XDG_CONFIG_HOME"
 
 if [[ "$@" =~ '-x' || "$@" =~ '-all' ]]; then
-	link "$DOTDIR/X11/xinitrc" "$HOME/.xinitrc"
-	link "$DOTDIR/X11/Xmodmap" "$HOME/.Xmodmap"
+	link "$DOTDIR/x/xinitrc" "$HOME/.xinitrc"
+	link "$DOTDIR/x/Xmodmap" "$HOME/.Xmodmap"
 fi
 
 if [[ "$@" =~ '-fontconfig' || "$@" =~ '-all' ]]; then

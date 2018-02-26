@@ -246,6 +246,32 @@ zle-keymap-select() {
 
 # zle -N zle-line-init
 # zle -N zle-keymap-select
+# HOOKS
+# ----------------------------------------------------------------------------
+
+autoload -U add-zsh-hook
+
+set-title() {
+	if [[ "$TERM" == *xterm* ]]; then
+		print -n "\e]2;$PWD - Terminal\a"
+	fi
+}
+add-zsh-hook precmd set-title
+
+forget-commands() {
+	local cmd="${${(z)1}[1]}"
+	# forget mistyped commands
+	if [[ ! -e "$cmd" ]] && ! hash "$cmd" 2>/dev/null; then
+		return 1
+	fi
+	if [[ "$1" =~ '^(fg|rm|mv|cp|l|la|zs|ze|mcd|mkdir)\>' ]]; then
+		return 1
+	fi
+	if [[ "$1" =~ '^(ll|lla|va|ranger|vim|python|py|ipy|pudb)\s+$' ]]; then
+		return 1
+	fi
+}
+add-zsh-hook zshaddhistory forget-commands
 
 # PROMPT
 # ----------------------------------------------------------------------------
@@ -254,12 +280,6 @@ autoload -U colors
 colors
 
 setopt prompt_subst
-
-precmd() {
-	if [[ $TERM == *xterm* ]]; then
-		print -n "\e]2;$PWD - Terminal\a"
-	fi
-}
 
 _prompt_git() {
 	local branch

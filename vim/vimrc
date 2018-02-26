@@ -195,20 +195,16 @@
 		if empty(bufname('%'))
 			return '[no name]'
 		end
-		if !empty(&buftype) || &ft == 'notes'
+		if !empty(&bt) || winwidth(0) < 80 || &ft == 'notes'
 			return expand('%:t')
 		end
-		let path = substitute(expand('%:p'), $HOME, '~', '')
-		if winwidth(0) < 80
-			return fnamemodify(path, ':t')
-		end
-		return join(split(path, '/')[-2:], '/')
+		return join(split(expand('%:p:~'), '/')[-2:], '/')
 	endf
 
 	func! _alternate_buffer()
-		let alternate = expand('#:t')
-		if !&diff && empty(&bt) && winwidth(0) > 60 && !empty(alternate) && expand('#:p') != expand('%:p')
-			return '[' . alternate . '] '
+		let alt = expand('#:t')
+		if empty(&bt) && winwidth(0) > 80 && !empty(alt) && expand('#:p') != expand('%:p')
+			return '[' . alt . '] '
 		end
 		return ''
 	endf
@@ -223,18 +219,19 @@
 	func! _git_branch()
 		let branch = exists('*fugitive#head') ? fugitive#head() : ''
 		if !&diff && !empty(branch) && winwidth(0) > 60
-			return branch . s:sep
+			return 'git:'.branch . s:sep
 		end
 		return ''
 	endf
 
 	func! _meta()
+		let items = []
 		let enc = printf('%s:%s', &fenc ? &fenc : &enc, &ff)
-		if !&diff && !empty(&ft) && empty(&bt) && winwidth(0) > 50
-			let ret = join(filter([&ft], 'len(v:val)'), s:sep)
-			return empty(ret) ? '' : ret . s:sep
+		if empty(&bt) && winwidth(0) > 80
+			call add(items, &ft)
 		end
-		return ''
+		call filter(items, 'len(v:val)')
+		return empty(items) ? '' : join(items, s:sep) . s:sep
 	endf
 
 	func! _flags()
@@ -242,45 +239,26 @@
 			return ''
 		end
 		let flags = []
-		" let strip_flags = []
-		" if get(g:, 'strip_spaces', 1) && get(b:, 'strip_spaces', 0)
-			" call add(strip_flags, 'S')
-		" end
-		" if get(g:, 'strip_lines', 1) && get(b:, 'strip_lines', 0)
-			" call add(strip_flags, 'L')
-		" end
-		" if !empty(strip_flags)
-			" call add(flags, '['.join(strip_flags, ',').']')
-		" end
 		if !empty(getqflist())
 			call add(flags, '[QF]')
 		end
 		if !empty(getloclist(0))
-			call add(flags, '[ERR]')
+			call add(flags, '[LOC]')
 		end
 		return empty(flags) ? '' : '‹ ' . join(flags, '') . ' '
 	endf
 
 	let &stl  = ' '
-
 	let &stl .= '%#StatusLineGreen#%{_venv()}%*'
-
 	let &stl .= '%{_alternate_buffer()}'
-
 	let &stl .= '%(%w%r%h %)'
-
 	let &stl .= '%{&mod ? "" : _current_buffer()}'
 	let &stl .= '%#StatusLineMod#%{&mod ? _current_buffer() : ""}%*'
-
 	let &stl .= '%='
-
 	let &stl .= '%{_git_branch()}'
-
 	let &stl .= '%{_meta()}'
-
 	let &stl .= '%1lL %02cC (%P) '
-
-	" let &stl .= '%{_flags()}'
+	let &stl .= '%{_flags()}'
 
 " TABS
 " ----------------------------------------------------------------------------

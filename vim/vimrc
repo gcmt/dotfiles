@@ -331,21 +331,22 @@
 			exec "norm! g`\""
 		end
 	endf
+	command! -bang -nargs=1 -complete=file Move call <sid>move(<q-bang>, <q-args>, getcwd())
+	command! -bang -nargs=1 -complete=file Rename call <sid>move(<q-bang>, <q-args>, expand('%:p:h'))
 
-	command! -bang -nargs=1 -complete=file Rename call <sid>rename_buffer(<q-bang>, <q-args>)
-
-	" rename the current buffer
-	fun! s:rename_buffer(bang, new_name)
-		let alternate_save = @#
+	func! s:move(bang, dest, cwd)
+		let alternate = @#
+		let source = expand("%:p")
+		let dest = a:cwd . '/' . a:dest
 		try
-			exec 'saveas'.a:bang fnameescape(expand('%:p:h'). '/' . a:new_name)
-			call delete(expand('#:p'))
-			sil exec 'bwipe' fnameescape(expand('#:p'))
+			exec 'saveas'.a:bang fnameescape(dest)
+			call delete(source)
+			sil exec 'bwipe' fnameescape(source)
 		catch
 			let msg = substitute(v:exception, '\v^Vim\([^:]*:', '', '')
 			echohl WarningMsg | echo msg | echohl None
 		finally
-			let @# = alternate_save
+			let @# = alternate
 		endtry
 	endf
 

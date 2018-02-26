@@ -5,3 +5,4 @@ export XDG_CACHE_HOME=$HOME/.cache
 export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
 
 export ZDOTDIR="$XDG_CONFIG_HOME/zsh"
+export ZDATADIR="$XDG_DATA_HOME/zsh"

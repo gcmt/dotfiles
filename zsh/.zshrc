@@ -359,18 +359,16 @@ bindkey '^t' trim-prompt-cwd
 # EXTERNAL
 # ----------------------------------------------------------------------------
 
-if [[ -e "$XDG_DATA_HOME/zsh/ext/rofi.zsh" ]]
-then
-	source "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
+if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
+	source "$ZDATADIR/ext/rofi.zsh"
 	# bindkey '^f' rofi-find
 	# bindkey '^g' rofi-cd
 	# bindkey '^r' rofi-history
 fi
 
-if [[ -f "$XDG_DATA_HOME/zsh/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && ! "$TERM" = "linux" ]]
-then
-	source "$XDG_DATA_HOME/zsh/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
 	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=236'
+if [[ -e "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && "$TERM" != "linux" ]]; then
+	source "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
 	bindkey '^d' autosuggest-execute
 fi
 

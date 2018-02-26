@@ -215,6 +215,14 @@ bindsym $mod+i mode "i3"
 # Controls
 # ----------------------------------------------------------------------------
 
+# Cmus
+bindsym XF86AudioPlay exec --no-startup-id cmus-remote --pause
+bindsym XF86AudioNext exec --no-startup-id cmus-remote --next
+bindsym XF86AudioPrev exec --no-startup-id cmus-remote --prev
+bindsym $mod+XF86AudioPlay exec termite -e "cmus-tmux" --role floating
+bindsym $mod+XF86AudioNext exec --no-startup-id cmus-remote --repeat
+bindsym $mod+XF86AudioPrev exec --no-startup-id cmus-remote --seek 0
+
 # Screenshots (XF86LaunchA = F3)
 bindsym XF86LaunchA exec --no-startup-id capture -window root
 bindsym $mod+XF86LaunchA exec --no-startup-id capture

@@ -1,0 +1,17 @@
+#!/bin/bash
+
+session=cmus
+
+if ! tmux has -t "$session" 2>/dev/null; then
+	tmux new -ds "$session" cmus
+	tmux set -t "$session" set-titles on
+	tmux set -t "$session" set-titles-string 'Cmus'
+	tmux set -t "$session" status off
+	tmux set -t "$session" mouse off
+fi
+
+if [[ -z "$TMUX" ]]; then
+	exec tmux attach -t "$session"
+else
+	tmux switchc -t "$session"
+fi

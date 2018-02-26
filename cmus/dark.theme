@@ -1,0 +1,81 @@
+#
+# 16 = grey lighter
+# 17 = grey darker
+#
+# 0 = black
+# 8 = bright black
+#
+# 7 = white
+# 15 = bright white
+#
+# 1 = red
+# 9 = bright red
+#
+# 5 = magenta
+# 13 = bright magenta
+#
+# 3 = yellow
+# 11 = bright yellow
+#
+# 4 = blue
+# 12 = bright blue
+#
+# 6 = cyan
+# 14 = bright cyan
+#
+# 2 = green
+# 10 = bright green
+#
+
+set color_cmdline_attr=default
+set color_cmdline_bg=default
+set color_cmdline_fg=default
+
+set color_cur_sel_attr=default
+
+set color_error=lightred
+set color_info=lightyellow
+set color_separator=8
+
+set color_win_attr=default
+set color_win_bg=default
+
+# color of the track being executed
+set color_win_cur=1
+
+# cursorline
+set color_win_sel_attr=default
+set color_win_sel_bg=8
+set color_win_sel_fg=default
+
+# cursorline on current track
+set color_win_cur_sel_attr=default
+set color_win_cur_sel_bg=8
+set color_win_cur_sel_fg=1
+
+# top bar
+set color_win_title_attr=default
+set color_win_title_bg=7
+set color_win_title_fg=0
+
+# currently playing song bar (bottom)
+set color_titleline_attr=default
+set color_titleline_bg=8
+set color_titleline_fg=15
+
+# bottom statusline
+set color_statusline_attr=default
+set color_statusline_bg=7
+set color_statusline_fg=0
+
+set color_win_dir=lightblue
+
+set color_win_fg=default
+
+set color_win_inactive_cur_sel_attr=default
+set color_win_inactive_cur_sel_bg=gray
+set color_win_inactive_cur_sel_fg=lightyellow
+
+set color_win_inactive_sel_attr=default
+set color_win_inactive_sel_bg=gray
+set color_win_inactive_sel_fg=black

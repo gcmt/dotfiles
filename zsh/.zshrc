@@ -177,8 +177,8 @@ va() {
 # ALIASES
 # ----------------------------------------------------------------------------
 
-alias ze='vim $XDG_CONFIG_HOME/zsh/.zshrc'
-alias zs='source $XDG_CONFIG_HOME/zsh/.zshrc'
+alias ze='vim $ZDOTDIR/.zshrc'
+alias zs='source $ZDOTDIR/.zshrc'
 
 alias cb='cd -'
 
@@ -186,15 +186,16 @@ alias ..=' ..'
 alias ...=' ../..'
 alias ....=' ../../..'
 
-alias rm=' rm -Iv'
-alias mv=' mv -iv'
-alias cp=' cp -iv'
+alias rm='rm -Iv'
+alias mv='mv -iv'
+alias cp='cp -iv'
 alias mkdir='mkdir -pv'
 
-alias ll='ls -lhp'
-alias lla='ls -lhAp'
-alias lld='ls -lhA | grep "^d"'
-alias llf='ls -lhA | grep -v "^d"'
+alias ls='ls --color=auto --group-directories-first'
+alias l='ls -F'
+alias la='ls -AF'
+alias ll='ls -lhF'
+alias lla='ls -lhAF'
 
 alias py="python"
 alias ipy="ipython"

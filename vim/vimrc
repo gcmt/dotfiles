@@ -323,14 +323,9 @@
 
 	aug _buffers
 		au!
-		au BufReadPost * call <sid>restore_cursor()
+		au BufReadPost * call setpos(".", getpos("'\""))
 	aug END
 
-	func! s:restore_cursor()
-		if line("'\"") > 1 && line("'\"") <= line("$") && &ft !~ 'commit'
-			exec "norm! g`\""
-		end
-	endf
 	command! -bang -nargs=1 -complete=file Move call <sid>move(<q-bang>, <q-args>, getcwd())
 	command! -bang -nargs=1 -complete=file Rename call <sid>move(<q-bang>, <q-args>, expand('%:p:h'))
 

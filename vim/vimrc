@@ -391,6 +391,10 @@
 	nnoremap _ "_
 	xnoremap _ "_
 
+	" + register shortcut
+	nnoremap + "+
+	xnoremap + "+
+
 	" select the last changed text
 	nnoremap <expr> gV '`[' . strpart(getregtype(), 0, 1) . '`]'
 
@@ -536,6 +540,9 @@
 
 	nnoremap Q @q
 	xnoremap <silent> Q :norm! @q<cr>
+
+	" edit register q
+	nnoremap <silent> <leader>@ :<c-r><c-r>='let @q = '.string(getreg('q'))<cr><c-f><left>:res 1<cr>
 
 " TAGS
 " ----------------------------------------------------------------------------

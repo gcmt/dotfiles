@@ -465,13 +465,13 @@
 " SEARCH AND SUBSTITUTE
 " ---------------------------------------------------------------------------
 
-	if has('patch1238')
-		aug _hlsearch
-			au!
+	aug _hlsearch
+		au!
+		if exists("##CmdlineEnter")
 			au CmdlineEnter [/\?] set hlsearch
 			au CmdlineLeave [/\?] set nohlsearch
-		aug END
-	end
+		end
+	aug END
 
 	noremap <c-b> ?
 	noremap <c-f> /

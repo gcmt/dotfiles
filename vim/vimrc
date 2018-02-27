@@ -346,13 +346,7 @@
 	endf
 
 	" switch to the alternate buffer
-	nnoremap <leader>a <c-^>
-
-	" create scratch buffer
-	nnoremap <leader>_ :edit __scratch__<cr>:setl buftype=nofile<cr>
-
-	" delete buffer
-	nnoremap <silent> <leader>d :bdelete<cr>
+	nnoremap <c-a> <c-^>
 
 " QUICKFIX
 " ----------------------------------------------------------------------------
@@ -374,7 +368,6 @@
 " EDITING
 " ----------------------------------------------------------------------------
 
-	inoremap <c-y> <c-d>
 	inoremap <c-e> <esc>O
 	inoremap <c-d> <esc>o
 	inoremap <c-w> <c-g>u<c-w>
@@ -425,10 +418,6 @@
 	vnoremap < <gv
 	vnoremap > >gv
 
-	" repeat last substitute on a selection
-	xnoremap <silent> & :&<cr>
-	xnoremap <silent> <leader>& :&&<cr>
-
 " MOVING AROUND
 " ----------------------------------------------------------------------------
 
@@ -447,9 +436,10 @@
 	noremap J 3gj
 	noremap K 3gk
 
-	noremap H ^
-	noremap L g_
 	noremap M %
+	noremap H ^
+	nnoremap L $
+	xnoremap L g_
 
 	noremap <c-k> {
 	noremap <c-j> }
@@ -464,8 +454,6 @@
 			call searchpos('\v(\W|^)\w', flags)
 		endfor
 	endf
-
-	inoremap <c-a> <esc>A
 
 	" jump after given characters without leaving insert mode
 	inoremap <silent> <c-f> <c-r>=_jump_after('\v['.join([']',')','}','>','"',"'"],'').']')<cr>

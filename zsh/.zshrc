@@ -140,15 +140,6 @@ vimf() {
 	fi
 }
 
-# set/unset workspace (see _prompt_cwd function)
-setw() {
-	if [ $# -eq 0 ]; then
-		WORKSPACE=
-	else
-		WORKSPACE="$(realpath $1)"
-	fi
-}
-
 # create directory and move into it
 mcd() {
 	mkdir -p "$@" && cd "$@"

@@ -5,10 +5,8 @@
 [colors]
 
 ; dark
-
 ; background = #ef1e222b
 ; foreground = #df8e9299
-
 ; blue = #657B99
 ; cyan = #739492
 ; green = #768A78
@@ -16,15 +14,11 @@
 ; red = #945F65
 ; orange = #998068
 ; yellow = #A39465
-
-; secondary = #e60053
 ; alert = #aaaf5d66
 
 ; light
-
 background = #e7e8eb
 foreground = #52565e
-
 blue = #657B99
 cyan = #739492
 green = #768A78
@@ -32,8 +26,6 @@ magenta = #917086
 red = #945F65
 orange = #998068
 yellow = #A39465
-
-secondary = #e60053
 alert = #ce7d86
 
 ; Settings
@@ -193,7 +185,6 @@ ramp-volume-2 = 
 
 ramp-headphones-0 = 
 ramp-headphones-1 = 
-
 format-muted = <label-muted>
 format-muted-foreground = ${colors.foreground}
 label-muted =  Mute

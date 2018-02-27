@@ -17,7 +17,7 @@ notify_volume() {
 	if (( $1 == 0 )); then
 		text="Volume off"
 	else
-		350px -> 37 dashes
+		# 350px -> 37 dashes
 		n=$(seq $(($1 * 37 / 100)))
 		text=$(printf "%0.s─" $n)
 	fi

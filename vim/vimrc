@@ -473,6 +473,10 @@
 		end
 	aug END
 
+	" use <tab> and <s-tab> instead of <c-g> and <c-t>
+	cnoremap <expr> <tab> getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
+	cnoremap <expr> <s-tab> getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
+
 	noremap <c-b> ?
 	noremap <c-f> /
 

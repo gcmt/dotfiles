@@ -1,6 +1,6 @@
 
 " Extract the file name at the given line
-func! s:get_file_at(linenr)
+func! explorer#actions#get_file_at(linenr)
 	let offsets = get(b:explorer.map, a:linenr, [])
 	if empty(offsets)
 		return ""
@@ -22,7 +22,7 @@ endf
 
 " Enter directory or edit file
 func! explorer#actions#enter_or_edit() abort
-	let file = s:get_file_at(line('.'))
+	let file = explorer#actions#get_file_at(line('.'))
 	if empty(file)
 		return
 	end

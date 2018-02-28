@@ -13,9 +13,9 @@ nnoremap <silent> <buffer> a :call explorer#actions#toggle_hidden_files()<cr>
 if get(g:, "loaded_bookmarks", 0)
 
 	func! s:set_mark(mark)
-		let tail = get(b:explorer.table, line('.'), '')
-		if !empty(tail)
-			let path = b:explorer.dir . (b:explorer.dir == '/' ? tail : '/' . tail)
+		let file = explorer#actions#get_file_at(line('.'))
+		if !empty(file)
+			let path = b:explorer.dir . (b:explorer.dir == '/' ? file : '/' . file)
 			call bookmarks#set(a:mark, path)
 		end
 	endf

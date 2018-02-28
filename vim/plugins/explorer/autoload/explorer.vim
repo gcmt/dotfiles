@@ -150,15 +150,12 @@ endf
 
 func! s:ls(path, hidden)
 
-	let out = systemlist(printf("ls %s -lAh", shellescape(a:path)))
+	let out = systemlist(printf("ls %s -lAh --group-directories-first", shellescape(a:path)))
 	if v:shell_error
 		return [[], out[0]]
 	end
 
-	let dirs = []
-	let hidden_dirs = []
-	let files = []
-	let hidden_files = []
+	let content = []
 
 	for line in out[1:]
 
@@ -196,23 +193,10 @@ func! s:ls(path, hidden)
 			\ 'modtime': m[6],
 		\ }]
 
-		if isdirectory(a:path . '/' . fname)
-			if fname[0] == '.'
-				call add(hidden_dirs, file)
-			else
-				call add(dirs, file)
-			end
-		else
-			if fname[0] == '.'
-				call add(hidden_files, file)
-			else
-				call add(files, file)
-			end
-		end
+		call add(content, file)
 
 	endfo
 
-	let content = sort(dirs) + sort(hidden_dirs) + sort(files) + sort(hidden_files)
 	return [content, '']
 endf
 

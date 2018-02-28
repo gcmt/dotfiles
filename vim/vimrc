@@ -522,9 +522,12 @@
 	func! s:yankhl()
 		if v:event.operator != 'y' || v:event.regname == '*'
 			return
-		endif
+		end
 		let lines = v:event.regcontents
-		call map(lines, "empty(v:val) ? '\\n' : escape(v:val, '\\')")
+		call map(lines, {-> escape(v:val, '\\')})
+		if !empty(lines) && empty(lines[-1])
+			let lines[-1] = '\n'
+		end
 		let pattern = printf('\V\%%%dl\%%%dc%s', line("'["), col("'["), join(lines, '\n'))
 		let id = matchadd("Yank", pattern, -1)
 		call timer_start(300, {-> call('matchdelete', [id])})

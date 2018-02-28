@@ -14,7 +14,6 @@ command! -nargs=? Explorer call explorer#open(<q-args>)
 
 let s:options = {
 	\ 'hidden_files': 1,
-	\ 'hide': '',
 \ }
 
 for [s:option, s:default] in items(s:options)
@@ -23,7 +22,9 @@ endfo
 
 func s:setup_colors()
 	hi default link ExplorerDim Comment
-	hi default link ExplorerDir Statement
+	hi default link ExplorerDetails Special
+	hi default link ExplorerDir Blue
+	hi default link ExplorerLink Cyan
 endf
 
 call s:setup_colors()

@@ -25,12 +25,14 @@ func! explorer#open(path) abort
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
-		let b:explorer = {'current': current, 'alt': alternate, 'table': {}}
+		let b:explorer = {'current': current, 'alt': alternate, 'map': {}}
 		let @# = buflisted(current) ? current : @#
 	end
 
 	call explorer#buffer#render(path)
-	call explorer#utils#set_cursor(@#)
+
+	let file = fnamemodify(bufname(b:explorer.current), ':t')
+	call explorer#buffer#goto_file(file)
 
 endf
 

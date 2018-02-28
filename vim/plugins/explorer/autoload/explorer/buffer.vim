@@ -1,64 +1,68 @@
 
-func! s:set_statusline(path)
-	let hidden_flag = g:explorer_hidden_files ? '[H] ' : ''
-	let stl = ' ' . hidden_flag . substitute(a:path, $HOME, '~', '')[:-1] . '%=explorer '
-	call setwinvar(0, '&stl', stl)
+" Returns the column where files are displayed
+func! explorer#buffer#files_column_start()
+	let offset = getline(1) =~ '\v^\s*total' ? len(getline(1)) : 0
+	return get(b:explorer.offsets, 0, offset) - offset
 endf
 
+" Move the cursor to the first file in the buffer
+func! explorer#buffer#goto_first_file()
+	let offset = get(b:explorer.offsets, 0, 0) + 1
+	exec offset . "goto"
+endf
+
+" Move the cursor to the given file
+func! explorer#buffer#goto_file(file, ...)
+	let col = explorer#buffer#files_column_start()
+	let pattern = '\V\%' . col . 'c' . a:file
+	call search(pattern, 'wc')
+endf
+
+" Pupulate the explorer buffer with the output of the ls command
 func! explorer#buffer#render(path) abort
 
-	if !exists('b:explorer')
-		throw "Explorer: not an explorer buffer"
+	if &filetype != 'explorer'
+		throw "Explorer: &filetype must be 'explorer'"
 	end
-
-	let [files, err] = explorer#utils#ls(a:path, g:explorer_hidden_files)
-	if !empty(err)
-		return explorer#err(err)
-	end
-
-	let b:explorer.dir = a:path
-	call s:set_statusline(a:path)
 
 	syntax clear
 	setl modifiable
-	sil %delete _
 
-	let max_length = 0
-	for [fname, _] in files
-		if strlen(fname) > max_length
-			let max_length = strlen(fname)
-		end
-	endfo
+	let b:explorer.map = {}
+	let b:explorer.offsets = []
+	let b:explorer.dir = a:path
 
-	let meta_start = max_length + 4
-	exec 'syn match ExplorerDim /\v%>'.meta_start.'c.*/'
+	" Populate the buffer with the ls command output
+	let flags = "-lhF"
+	let flags = g:explorer_hidden_files ? flags.'A' : flags
+	let cmd = printf("ls %s --dired", flags)
+	exec "%!" . cmd shellescape(a:path)
+	if v:shell_error
+		return
+	end
 
-	let text = []
-	let linenr = 1
-	for [fname, meta] in files
-		let b:explorer.table[linenr] = fname
-		let line = fname
-		if meta.perms[0] == 'd'
-			let line .= '/'
-			exec 'syn match ExplorerDir /\v%'.linenr.'l.%<'.(len(line)+2).'c/'
-		end
-		let line .= repeat(' ', meta_start - len(line))
-		let line .= ',' . meta.perms
-		let line .= ',' . meta.nlinks
-		let line .= ',' . meta.user
-		let line .= ',' . meta.group
-		let line .= ',' . meta.size
-		let line .= ',' . meta.modtime
-		let line .= !empty(meta.link) ? ',-> ' . meta.link : ''
-		call add(text, line)
-		let linenr += 1
-	endfo
+	" Extract dired offsets
+	let linenr = search('\v^//DIRED//', 'n')
+	let offsets = split(substitute(getline(linenr), '\v^//DIRED//', '', ''), '\s')
+	call map(offsets, {i, val -> str2nr(val)})
+	let b:explorer.offsets = offsets
+	g;\v^//DIRED;delete _
 
-	call setline(1, text)
+   " Map lines and offsets
+	let line = 2
+	for idx in range(0, len(offsets)-1, 2)
+		let b:explorer.map[line] = [offsets[idx], offsets[idx+1]]
+		let line += 1
+	endfor
 
-	1,$!column -t -s ',' -o '  '
+	" Highlight details in a different color
+	let col = explorer#buffer#files_column_start()
+	exec 'syn match ExplorerDetails /\v.%<' . col . 'c/'
+
+	" Set the statusline
+	let stl = " " . cmd . " " . fnamemodify(a:path, ":p:~") . "%=explorer "
+	call setwinvar(0, "&stl", stl)
 
 	setl nomodifiable
 
 endf
-

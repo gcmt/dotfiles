@@ -1,25 +1,38 @@
 
+" Extract the file name at the given line
+func! s:get_file_at(linenr)
+	let offsets = get(b:explorer.map, a:linenr, [])
+	if empty(offsets)
+		return ""
+	end
+	exec offsets[0].'goto'
+	let start = col('.')
+	exec offsets[1].'goto'
+	let end = col('.')
+	return strpart(getline(a:linenr), start, end - start)
+endf
+
 " Go to the parent directory
 func! explorer#actions#up_dir() abort
 	if b:explorer.dir == '/'
 		return
 	end
 	let current = b:explorer.dir
-	let parent = fnamemodify(b:explorer.dir, ':h')
+	let parent = fnamemodify(current, ':h')
 	call explorer#buffer#render(parent)
-	call explorer#utils#set_cursor(current)
+	call explorer#buffer#goto_file(fnamemodify(current, ':t'))
 endf
 
 " Enter directory or edit file
 func! explorer#actions#enter_or_edit() abort
-	let file = get(b:explorer.table, line('.'), '')
+	let file = s:get_file_at(line('.'))
 	if empty(file)
 		return
 	end
 	let path = b:explorer.dir . (b:explorer.dir == '/' ? file : '/' . file)
 	if isdirectory(path)
       call explorer#buffer#render(path)
-		norm! gg
+		call explorer#buffer#goto_first_file()
 	else
 		let current = b:explorer.current
 		exec 'edit' fnameescape(path)
@@ -30,10 +43,11 @@ endf
 " Show/hide hidden files
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
-	let line_save = getline('.')
-	let linenr_save = line('.')
+	let current_line = getline('.')
+	let cursor_save = getpos('.')
 	call explorer#buffer#render(b:explorer.dir)
-	if !search('\V\^' . substitute(line_save, '\v\s+', '\\s\\+', 'g'))
-		exec linenr_save
+	if !search('\V\^' . substitute(current_line, '\v\s+', '\\s\\+', 'g'))
+		exec cursor_save[1]
 	end
+	call setpos('.', [0, line('.'), cursor_save[2], 0])
 endf

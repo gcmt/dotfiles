@@ -5,11 +5,8 @@ func! s:get_file_at(linenr)
 	if empty(offsets)
 		return ""
 	end
-	exec offsets[0].'goto'
-	let start = col('.')
-	exec offsets[1].'goto'
-	let end = col('.')
-	return strpart(getline(a:linenr), start, end - start)
+	exec (offsets[0]+1) . 'go'
+	return strpart(getline(a:linenr), col('.')-1, offsets[1] - offsets[0])
 endf
 
 " Go to the parent directory

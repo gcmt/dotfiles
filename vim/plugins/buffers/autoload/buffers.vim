@@ -72,7 +72,7 @@ func! buffers#render_buffers()
 		let line .= getbufvar(nr, '&mod') ? ' * ' : ''
 		if !empty(path) && path != tail
 			exec 'syn match BuffersDim /\%'.i.'l\%'.(len(line)+1).'c.*/'
-			let line .= ',' . path
+			let line .= ' › ' . path
 		end
 
 		call add(text, line)
@@ -80,8 +80,6 @@ func! buffers#render_buffers()
 	endfor
 
 	call setline(1, text)
-
-	%!column -t -s ',' -o '  '
 
 	setl nomodifiable
 

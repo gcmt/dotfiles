@@ -14,7 +14,7 @@ command! -nargs=0 Buffers call buffers#open()
 
 let s:options = {
 	\ 'max_winsize': 50,
-	\ 'min_winsize': 25,
+	\ 'min_winsize': 1,
 \ }
 
 for [s:option, s:default] in items(s:options)

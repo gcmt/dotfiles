@@ -42,7 +42,7 @@ let s:options = {
 	\ 'findgprg': 'rg -l %s',
 	\ 'findprg': 'rg --files | rg %s',
 	\ 'max_winsize': 50,
-	\ 'min_winsize': 25,
+	\ 'min_winsize': 1,
 	\ 'max_results': 100,
 \ }
 

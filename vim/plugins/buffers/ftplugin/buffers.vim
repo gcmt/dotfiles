@@ -27,7 +27,7 @@ func! s:delete(cmd) abort
 		return
 	end
 	if bufnr == b:buffers.current
-		return s:err("Forbidden: can't delete the current buffer")
+		return s:err("Can't delete the current buffer")
 	end
 	try
 		exec a:cmd bufnr

@@ -41,6 +41,8 @@ func! explorer#buffer#render(path) abort
 	" Populate the buffer with the ls command output
 	let flags = "-lhF"
 	let flags = g:explorer_hidden_files ? flags.'A' : flags
+	let flags = g:explorer_hide_group ? flags.'o' : flags
+	let flags = g:explorer_hide_owner ? flags.'g' : flags
 	let cmd = printf("ls %s --dired", flags)
 	exec "%!" . cmd shellescape(a:path)
 	if v:shell_error

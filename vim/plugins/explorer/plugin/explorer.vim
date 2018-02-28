@@ -14,6 +14,8 @@ command! -nargs=? Explorer call explorer#open(<q-args>)
 
 let s:options = {
 	\ 'hidden_files': 1,
+	\ 'hide_owner': 0,
+	\ 'hide_group': 0,
 \ }
 
 for [s:option, s:default] in items(s:options)

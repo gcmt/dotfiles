@@ -10,8 +10,4 @@ if ! tmux has -t "$session" 2>/dev/null; then
 	tmux set -t "$session" mouse off
 fi
 
-if [[ -z "$TMUX" ]]; then
-	exec tmux attach -t "$session"
-else
-	tmux switchc -t "$session"
-fi
+exec tmux attach -t "$session"

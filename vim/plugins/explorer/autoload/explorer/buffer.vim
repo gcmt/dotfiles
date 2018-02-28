@@ -8,7 +8,7 @@ endf
 " Move the cursor to the first file in the buffer
 func! explorer#buffer#goto_first_file()
 	let offset = get(b:explorer.offsets, 0, 0) + 1
-	exec offset . "goto"
+	exec offset . "go"
 endf
 
 " Move the cursor to the given file
@@ -56,7 +56,7 @@ func! explorer#buffer#render(path) abort
 	let b:explorer.offsets = offsets
 	g;\v^//DIRED;delete _
 
-   " Map lines and offsets
+	" Map lines and offsets
 	let line = 2
 	for idx in range(0, len(offsets)-1, 2)
 		let b:explorer.map[line] = [offsets[idx], offsets[idx+1]]

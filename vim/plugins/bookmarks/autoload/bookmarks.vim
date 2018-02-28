@@ -98,7 +98,7 @@ func bookmarks#render_marks()
 		let line .= '['.mark.'] '
 
 		let tail = fnamemodify(target, ':t')
-		let group = isdirectory(target) ? 'BookmarksDirTail' : 'BookmarksFileTail'
+		let group = isdirectory(target) ? 'BookmarksDir' : 'BookmarksFile'
 		exec 'syn match '.group.' /\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(tail)+2).'c/'
 		let line .= tail
 

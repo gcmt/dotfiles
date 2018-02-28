@@ -26,8 +26,8 @@ command! -nargs=1 MarkDir call bookmarks#set(<q-args>, expand("%:p:h"))
 
 func s:setup_colors()
 	hi default link BookmarksMark Magenta
-	hi default link BookmarksFileTail Blue
-	hi default link BookmarksDirTail Cyan
+	hi default link BookmarksFile Normal
+	hi default link BookmarksDir Blue
 	hi default link BookmarksDim Comment
 endf
 

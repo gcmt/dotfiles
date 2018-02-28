@@ -415,9 +415,6 @@
 	" copy to the end of the line
 	nnoremap Y y$
 
-	" select the current line without indentation
-	nnoremap vv ^vg_
-
 	" indent lines without losing selection
 	vnoremap < <gv
 	vnoremap > >gv

@@ -46,5 +46,5 @@ func! explorer#actions#toggle_hidden_files()
 	if !search('\V\^' . substitute(current_line, '\v\s+', '\\s\\+', 'g'))
 		exec cursor_save[1]
 	end
-	call setpos('.', [0, line('.'), cursor_save[2], 0])
+	call cursor(line('.'), cursor_save[2])
 endf

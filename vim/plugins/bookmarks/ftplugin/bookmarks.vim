@@ -1,5 +1,5 @@
 
-func! s:edit(cmd) abort
+func! s:jump(cmd) abort
 	let win = winnr()
 	let mark = get(b:bookmarks.table, line('.'), '')
 	if !empty(mark)
@@ -19,12 +19,8 @@ func! s:unset()
 	end
 endf
 
-sil! nunmap vv
-
 nnoremap <silent> <buffer> q :close<cr>
-nnoremap <silent> <buffer> <enter> :call <sid>edit('edit')<cr>zz
-nnoremap <silent> <buffer> <c-j> :call <sid>edit('edit')<cr>zz
-nnoremap <silent> <buffer> <right> :call <sid>edit('edit')<cr>zz
-nnoremap <silent> <buffer> l :call <sid>edit('edit')<cr>zz
-nnoremap <silent> <buffer> e :call <sid>edit('edit')<cr>zz
+nnoremap <silent> <buffer> <enter> :call <sid>jump('edit')<cr>zz
+nnoremap <silent> <buffer> <c-j> :call <sid>jump('edit')<cr>zz
+nnoremap <silent> <buffer> l :call <sid>jump('edit')<cr>zz
 nnoremap <silent> <buffer> dd :call <sid>unset()<cr>

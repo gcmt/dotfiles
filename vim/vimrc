@@ -384,16 +384,16 @@
 	inoremap <c-u>u <esc>m`bg~iw``a
 
 	" buffer text object
-	xnoremap a% GoggV
+	vnoremap a% GoggV
 	onoremap a% :<c-u>norm va%<cr>
 
 	" blackhole register shortcut
 	nnoremap _ "_
-	xnoremap _ "_
+	vnoremap _ "_
 
 	" + register shortcut
 	nnoremap + "+
-	xnoremap + "+
+	vnoremap + "+
 
 	" select the last changed text
 	nnoremap <expr> gV '`[' . strpart(getregtype(), 0, 1) . '`]'
@@ -439,8 +439,7 @@
 
 	noremap M %
 	noremap H ^
-	nnoremap L $
-	xnoremap L g_
+	noremap L g_
 
 	noremap <c-k> {
 	noremap <c-j> }
@@ -487,7 +486,7 @@
 	" Search for current word or selected text without moving the cursor.
 	" let &hls = &hls is needed to force highlighting
 	nnoremap <silent> S :call <sid>search(0)<cr>:let &hls = &hls<cr>
-	xnoremap <silent> S :<c-u>call <sid>search(1)<cr>:let &hls = &hls<cr>
+	vnoremap <silent> S :<c-u>call <sid>search(1)<cr>:let &hls = &hls<cr>
 
 	" Toggle search for current word or selected text without moving the cursor
 	fun! s:search(visual)
@@ -536,10 +535,10 @@
 " MACROS
 " ----------------------------------------------------------------------------
 
-	xnoremap @ :norm! @
+	vnoremap @ :norm! @
 
 	nnoremap Q @q
-	xnoremap <silent> Q :norm! @q<cr>
+	vnoremap <silent> Q :norm! @q<cr>
 
 	" edit register q
 	nnoremap <silent> <leader>@ :<c-r><c-r>='let @q = '.string(getreg('q'))<cr><c-f><left>:res 1<cr>
@@ -740,15 +739,10 @@
 	nnoremap <leader>s :Grep!<space>
 	nnoremap <silent> <leader>S :Grep! <c-r><c-w><cr>
 
-" Finder
-" ----------------------------------------------------------------------------
-
-	nnoremap <leader>f :Find<space>
-
 " Buffers
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> <leader>b :Buffers<cr>
+	nnoremap <silent> <leader>a :Buffers<cr>
 
 " Bookmarks
 " ----------------------------------------------------------------------------

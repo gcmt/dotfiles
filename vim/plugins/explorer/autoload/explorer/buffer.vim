@@ -13,9 +13,15 @@ endf
 
 " Move the cursor to the given file
 func! explorer#buffer#goto_file(file, ...)
-	let col = explorer#buffer#files_column_start()
-	let pattern = '\V\%' . col . 'c' . a:file
-	call search(pattern, 'wc')
+	call explorer#buffer#goto_first_file()
+	let pattern = '\V\%' . col('.') . 'c' . a:file
+	keepj norm! gg
+	while search(pattern, 'W')
+		let offsets = get(b:explorer.map, line('.'))
+		if len(a:file) == offsets[1] - offsets[0]
+			return
+		end
+	endw
 endf
 
 " Pupulate the explorer buffer with the output of the ls command

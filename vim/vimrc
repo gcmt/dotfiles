@@ -494,7 +494,7 @@
 
 	" Toggle search for current word or selected text without moving the cursor
 	fun! s:search(visual)
-		if line("'<") != line("'>")
+		if a:visual && line("'<") != line("'>")
 			return
 		end
 		if a:visual

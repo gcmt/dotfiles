@@ -561,7 +561,7 @@
 	" To ignore a tag file, prefix its name with an underscore.
 	func! _set_tagfiles()
 		let local_tags = glob('.tags/'.&ft.'/[^_]*', 1, 1)
-		let global_tags = glob($XDG_DATA_HOME . '/ctags/tags/'.&ft.'/[^_]*', 1, 1)
+		let global_tags = glob($XDG_DATA_HOME.'/tags/'.&ft.'/[^_]*', 1, 1)
 		let tagfiles = local_tags + global_tags + g:tags_common
 		call setbufvar(bufnr('%'), '&tags', join(tagfiles, ','))
 	endf

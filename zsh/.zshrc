@@ -253,11 +253,11 @@ _prompt_git() {
 	if (( $? != 0 )); then
 		return
 	fi
-	echo -n " ~$branch"
+	echo -n " git:$branch"
 }
 
 _prompt_venv() {
-	test -n "$VIRTUAL_ENV" && echo -n "venv"
+	test -n "$VIRTUAL_ENV" && echo -n "(venv) "
 }
 
 _prompt_user() {
@@ -274,8 +274,8 @@ _prompt_cwd() {
 
 DIRTRIM=1
 
-PROMPT='%F{red}%(?..%? )%f%(1j.%jj .)$(_prompt_user) $(_prompt_cwd) %F{15}$%f '
-RPROMPT='$(_prompt_git)$(_prompt_venv)'
+PROMPT='%F{red}%(?..%? )%f%(1j.%jj .)$(_prompt_user) $(_prompt_cwd) $(_prompt_venv)%F{15}$%f '
+RPROMPT='$(_prompt_git)'
 
 # BINDINGS
 # ----------------------------------------------------------------------------

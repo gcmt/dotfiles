@@ -10,11 +10,7 @@ if [ -z "$XDG_CONFIG_HOME" -o -z "$XDG_CACHE_HOME" -o -z "$XDG_DATA_HOME" ]; the
 fi
 
 link() {
-	if [[ -d "$1" ]]; then
-		ln -sfn "$1" "$2"
-	else
-		ln -sf "$1" "$2"
-	fi
+	ln -sfn "$1" "$2"
 	echo "$2 -> $1"
 }
 
@@ -47,6 +43,7 @@ fi
 if [[ "$@" =~ '-polybar' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/polybar" "$XDG_CONFIG_HOME/polybar"
 fi
+
 if [[ "$@" =~ '-rofi' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/rofi" "$XDG_CONFIG_HOME/rofi"
 fi
@@ -91,6 +88,7 @@ if [[ "$@" =~ '-elixir' || "$@" =~ '-all' ]]; then
 fi
 
 if [[ "$@" =~ '-gtk' || "$@" =~ '-all' ]]; then
+	link "$DOTDIR/gtk-2.0" "$XDG_CONFIG_HOME/gtk-2.0"
 	link "$DOTDIR/gtk-3.0" "$XDG_CONFIG_HOME/gtk-3.0"
 fi
 

@@ -82,6 +82,9 @@ func! s:do_highlight(offset)
 	if !empty(g:explorer_dirs_color)
 		exec 'syn match' g:explorer_dirs_color '/\v%'.a:offset.'c[^/]+\/$/'
 	end
+	if !empty(g:explorer_execs_color)
+		exec 'syn match' g:explorer_execs_color '/\v%'.a:offset.'c[^/]+\*$/'
+	end
 	if !empty(g:explorer_links_color)
 		exec 'syn match' g:explorer_links_color '/\v%'.a:offset.'c.*\ze-\>\s\//'
 	end

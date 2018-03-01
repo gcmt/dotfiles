@@ -19,6 +19,7 @@ let s:options = {
 	\ 'details_color': 'ExplorerDetails',
 	\ 'dirs_color': 'ExplorerDirs',
 	\ 'links_color': 'ExplorerLinks',
+	\ 'execs_color': 'ExplorerExecs',
 \ }
 
 for [s:option, s:default] in items(s:options)
@@ -26,10 +27,10 @@ for [s:option, s:default] in items(s:options)
 endfo
 
 func s:setup_colors()
-	hi default link ExplorerDim Comment
 	hi default link ExplorerDetails Special
 	hi default link ExplorerDirs Blue
 	hi default link ExplorerLinks Cyan
+	hi default link ExplorerExecs Green
 endf
 
 call s:setup_colors()

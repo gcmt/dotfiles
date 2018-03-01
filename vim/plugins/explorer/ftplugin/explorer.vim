@@ -18,7 +18,7 @@ if get(g:, "loaded_bookmarks", 0)
 	func! s:set_mark(mark)
 		let file = explorer#actions#get_file_at(line('.'))
 		if !empty(file)
-			let path = b:explorer.dir . (b:explorer.dir == '/' ? file : '/' . file)
+			let path = explorer#path#join(b:explorer.dir, file)
 			call bookmarks#set(a:mark, path)
 		end
 	endf

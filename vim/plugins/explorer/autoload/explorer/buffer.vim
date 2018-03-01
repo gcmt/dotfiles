@@ -5,6 +5,12 @@ func! explorer#buffer#goto_first_file()
 	call cursor(2, offsets[0])
 endf
 
+" Move the cursor to the last file in the buffer
+func! explorer#buffer#goto_last_file()
+	let offsets = get(b:explorer.map, line('$'), [0, 0])
+	call cursor(line('$'), offsets[0])
+endf
+
 " Move the cursor to the given file
 func! explorer#buffer#goto_file(file, ...)
 	call explorer#buffer#goto_first_file()

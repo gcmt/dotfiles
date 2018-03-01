@@ -70,6 +70,10 @@ endf
 func! s:ls_command()
 	let flags = "-lhF"
 	let flags .= g:explorer_hide_owner_and_group ? 'go' : ''
+	let columns = g:explorer_auto_hide_owner_and_group
+	if columns && winwidth(0) < columns
+		let flags .= flags =~ 'go' ? '' : 'go'
+	end
 	let flags .= g:explorer_hidden_files ? 'A' : ''
 	return printf("ls %s --dired", flags)
 endf

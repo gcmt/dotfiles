@@ -19,19 +19,19 @@ let g:spotter_active =
 let g:spotter_treshold =
 	\ get(g:, "spotter_treshold", 2)
 
-let g:spotter_banned_filetypes =
-	\ extend({ 'netrw':1 }, get(g:, "spotter_banned_filetypes", {}))
-
 " to ban words by filetype use g:spotter_banned_words_{filetype}
 let g:spotter_banned_words =
 	\ get(g:, "spotter_banned_words", {})
 
+let g:spotter_banned_filetypes =
+	\ extend({ 'netrw':1 }, get(g:, "spotter_banned_filetypes", {}))
+
 " to ban syntax by filetype use g:spotter_banned_syntax_{filetype}
 let g:spotter_banned_syntax =
 	\ extend({
-		\ 'Statement':1, 'Repeat':1, 'Exception':1,
-		\ 'Conditional':1, 'Number':1, 'Float':1, 'Boolean':1, 'Label':1,
-		\ 'Operator':1, 'PreProc':1, 'Include':1, 'Define':1,
+		\ 'Statement':1, 'Repeat':1, 'Exception':1, 'Conditional':1,
+		\ 'Number':1, 'Float':1, 'Boolean':1, 'String': 1, 'Label':1,
+		\ 'Operator':1, 'PreProc':1, 'Include':1, 'Define':1, 'Comment': 1,
 	\ }, get(g:, 'spotter_banned_syntax', {}))
 
 " Main

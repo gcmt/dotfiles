@@ -34,32 +34,24 @@ func! explorer#buffer#render(path) abort
 	syntax clear
 	setl modifiable
 
-	let b:explorer.map = {}
-	let b:explorer.offsets = []
 	let b:explorer.dir = a:path
 
 	" Populate the buffer with the ls command output
-	let flags = "-lhF"
-	let flags = g:explorer_hidden_files ? flags.'A' : flags
-	let flags = g:explorer_hide_group ? flags.'o' : flags
-	let flags = g:explorer_hide_owner ? flags.'g' : flags
-	let cmd = printf("ls %s --dired", flags)
-	exec "%!" . cmd shellescape(a:path)
+	let command = s:ls_command()
+	exec "%!" . command shellescape(a:path)
 	if v:shell_error
 		return
 	end
 
 	" Extract dired offsets
-	let linenr = search('\v^//DIRED//', 'n')
-	let offsets = split(substitute(getline(linenr), '\v^//DIRED//', '', ''), '\s')
-	call map(offsets, {i, val -> str2nr(val)})
-	let b:explorer.offsets = offsets
+	let b:explorer.offsets = s:parse_offsets()
 	g;\v^//DIRED;delete _
 
 	" Map lines and offsets
 	let line = 2
-	for idx in range(0, len(offsets)-1, 2)
-		let b:explorer.map[line] = [offsets[idx], offsets[idx+1]]
+	let b:explorer.map = {}
+	for idx in range(0, len(b:explorer.offsets)-1, 2)
+		let b:explorer.map[line] = [b:explorer.offsets[idx], b:explorer.offsets[idx+1]]
 		let line += 1
 	endfor
 
@@ -68,9 +60,23 @@ func! explorer#buffer#render(path) abort
 	exec 'syn match ExplorerDetails /\v.%<' . col . 'c/'
 
 	" Set the statusline
-	let stl = " " . cmd . " " . fnamemodify(a:path, ":p:~") . "%=explorer "
+	let stl = " " . command . " " . fnamemodify(a:path, ":p:~") . "%=explorer "
 	call setwinvar(0, "&stl", stl)
 
 	setl nomodifiable
 
+endf
+
+func! s:ls_command()
+	let flags = "-lhF"
+	let flags .= g:explorer_hide_owner_and_group ? 'go' : ''
+	let flags .= g:explorer_hidden_files ? 'A' : ''
+	return printf("ls %s --dired", flags)
+endf
+
+func! s:parse_offsets()
+	let nr = search('\v^//DIRED//', 'n')
+	let offsets = split(substitute(getline(nr), '\v^//DIRED//', '', ''), '\s')
+	call map(offsets, {i, val -> str2nr(val)})
+	return offsets
 endf

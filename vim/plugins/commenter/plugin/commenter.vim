@@ -10,7 +10,7 @@ if exists("g:loaded_commenter") || &cp
 end
 let g:loaded_commenter = 1
 
-xnoremap <silent> gc :call commenter#do(mode())<cr>
+vnoremap <silent> gc :call commenter#do(mode())<cr>
 nnoremap <silent> gc :<c-u>set opfunc=commenter#do<cr>g@
 nnoremap <silent> gcc :<c-u>set opfunc=commenter#do<bar>exec 'norm!' v:count1.'g@_'<cr>
 

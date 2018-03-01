@@ -15,7 +15,6 @@ endf
 func! explorer#buffer#goto_file(file, ...)
 	call explorer#buffer#goto_first_file()
 	let pattern = '\V\%' . col('.') . 'c' . a:file
-	keepj norm! gg
 	while search(pattern, 'W')
 		let offsets = get(b:explorer.map, line('.'))
 		if len(a:file) == offsets[1] - offsets[0]

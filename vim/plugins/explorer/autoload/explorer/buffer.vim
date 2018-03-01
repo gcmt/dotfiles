@@ -53,9 +53,18 @@ func! explorer#buffer#render(path) abort
 		let line += 1
 	endfor
 
-	" Highlight details in a different color
-	exec 'syn match ExplorerDetails /\v^\s*total.*/'
-	exec 'syn match ExplorerDetails /\v.%<' . start . 'c/'
+	" Colors
+	if !empty(g:explorer_details_color)
+		exec 'syn match' g:explorer_details_color '/\v^\s*total.*/'
+		exec 'syn match' g:explorer_details_color '/\v.%<'.start.'c/'
+		exec 'syn match' g:explorer_details_color '/\v-\>\s\/.*/'
+	end
+	if !empty(g:explorer_dirs_color)
+		exec 'syn match' g:explorer_dirs_color '/\v%'.start.'c[^/]+\/$/'
+	end
+	if !empty(g:explorer_links_color)
+		exec 'syn match' g:explorer_links_color '/\v%'.start.'c.*\ze-\>\s\//'
+	end
 
 	" Set the statusline
 	let command = substitute(command, '\v\s*--dired', '', '')

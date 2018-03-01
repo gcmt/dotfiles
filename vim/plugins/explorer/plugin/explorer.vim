@@ -16,6 +16,9 @@ let s:options = {
 	\ 'hidden_files': 1,
 	\ 'auto_hide_owner_and_group': 80,
 	\ 'hide_owner_and_group': 0,
+	\ 'details_color': 'ExplorerDetails',
+	\ 'dirs_color': 'ExplorerDirs',
+	\ 'links_color': 'ExplorerLinks',
 \ }
 
 for [s:option, s:default] in items(s:options)
@@ -25,8 +28,8 @@ endfo
 func s:setup_colors()
 	hi default link ExplorerDim Comment
 	hi default link ExplorerDetails Special
-	hi default link ExplorerDir Blue
-	hi default link ExplorerLink Cyan
+	hi default link ExplorerDirs Blue
+	hi default link ExplorerLinks Cyan
 endf
 
 call s:setup_colors()

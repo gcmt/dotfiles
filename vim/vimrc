@@ -797,8 +797,6 @@
 	nnoremap <silent> <leader>e :exec 'Explorer' expand('%:p:h')<cr>
 	nnoremap <silent> <leader>E :exec 'Explorer' getcwd()<cr>
 
-	let g:explorer_hide = '^\.git$'
-
 " Netrw
 " ----------------------------------------------------------------------------
 

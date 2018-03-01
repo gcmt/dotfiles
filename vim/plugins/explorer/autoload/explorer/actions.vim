@@ -1,12 +1,11 @@
 
 " Extract the file name at the given line
-func! explorer#actions#get_file_at(linenr)
-	let offsets = get(b:explorer.map, a:linenr, [])
+func! explorer#actions#get_file_at(nr)
+	let offsets = get(b:explorer.map, a:nr, [])
 	if empty(offsets)
 		return ""
 	end
-	exec (offsets[0]+1) . 'go'
-	return strpart(getline(a:linenr), col('.')-1, offsets[1] - offsets[0])
+	return strpart(getline(a:nr), offsets[0]-1, offsets[1] - offsets[0])
 endf
 
 " Go to the parent directory
@@ -28,7 +27,7 @@ func! explorer#actions#enter_or_edit() abort
 	end
 	let path = explorer#path#join(b:explorer.dir, file)
 	if isdirectory(path)
-      call explorer#buffer#render(path)
+		call explorer#buffer#render(path)
 		call explorer#buffer#goto_first_file()
 	else
 		let current = b:explorer.current

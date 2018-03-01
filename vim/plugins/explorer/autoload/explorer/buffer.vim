@@ -1,14 +1,8 @@
 
-" Returns the column where files are displayed
-func! explorer#buffer#files_column_start()
-	let offset = getline(1) =~ '\v^\s*total' ? len(getline(1)) : 0
-	return get(b:explorer.offsets, 0, offset) - offset
-endf
-
 " Move the cursor to the first file in the buffer
 func! explorer#buffer#goto_first_file()
-	let offset = get(b:explorer.offsets, 0, 0) + 1
-	exec offset . "go"
+	let offsets = get(b:explorer.map, 2, [0, 0])
+	call cursor(2, offsets[0])
 endf
 
 " Move the cursor to the given file
@@ -42,21 +36,25 @@ func! explorer#buffer#render(path) abort
 		return
 	end
 
-	" Extract dired offsets
-	let b:explorer.offsets = s:parse_offsets()
+	" Extract offsets
+	let offsets = s:parse_offsets()
 	g;\v^//DIRED;delete _
 
-	" Map lines and offsets
+	" Find the start of the file names column
+	let offset = getline(1) =~ '\v^\s*total' ? len(getline(1)) : 0
+	let start = get(offsets, 0, offset) - offset
+
+	" Make offsets relative to each line
 	let line = 2
 	let b:explorer.map = {}
-	for idx in range(0, len(b:explorer.offsets)-1, 2)
-		let b:explorer.map[line] = [b:explorer.offsets[idx], b:explorer.offsets[idx+1]]
+	for idx in range(0, len(offsets)-1, 2)
+		let end = start + offsets[idx+1] - offsets[idx]
+		let b:explorer.map[line] = [start, end]
 		let line += 1
 	endfor
 
 	" Highlight details in a different color
-	let col = explorer#buffer#files_column_start()
-	exec 'syn match ExplorerDetails /\v.%<' . col . 'c/'
+	exec 'syn match ExplorerDetails /\v.%<' . start . 'c/'
 
 	" Set the statusline
 	let command = substitute(command, '\v\s*--dired', '', '')

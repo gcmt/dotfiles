@@ -53,18 +53,8 @@ func! explorer#buffer#render(path) abort
 		let line += 1
 	endfor
 
-	" Colors
-	if !empty(g:explorer_details_color)
-		exec 'syn match' g:explorer_details_color '/\v^\s*total.*/'
-		exec 'syn match' g:explorer_details_color '/\v.%<'.start.'c/'
-		exec 'syn match' g:explorer_details_color '/\v-\>\s\/.*/'
-	end
-	if !empty(g:explorer_dirs_color)
-		exec 'syn match' g:explorer_dirs_color '/\v%'.start.'c[^/]+\/$/'
-	end
-	if !empty(g:explorer_links_color)
-		exec 'syn match' g:explorer_links_color '/\v%'.start.'c.*\ze-\>\s\//'
-	end
+	" Highlight things
+	call s:do_highlight(start)
 
 	" Set the statusline
 	let command = substitute(command, '\v\s*--dired', '', '')
@@ -74,6 +64,22 @@ func! explorer#buffer#render(path) abort
 
 	setl nomodifiable
 
+endf
+
+" Highlight directories, links and details with different colors.
+" The only argument 'col' is the column where file names start.
+func! s:do_highlight(col)
+	if !empty(g:explorer_details_color)
+		exec 'syn match' g:explorer_details_color '/\v^\s*total.*/'
+		exec 'syn match' g:explorer_details_color '/\v.%<'.a:col.'c/'
+		exec 'syn match' g:explorer_details_color '/\v-\>\s\/.*/'
+	end
+	if !empty(g:explorer_dirs_color)
+		exec 'syn match' g:explorer_dirs_color '/\v%'.a:col.'c[^/]+\/$/'
+	end
+	if !empty(g:explorer_links_color)
+		exec 'syn match' g:explorer_links_color '/\v%'.a:col.'c.*\ze-\>\s\//'
+	end
 endf
 
 func! s:ls_command()

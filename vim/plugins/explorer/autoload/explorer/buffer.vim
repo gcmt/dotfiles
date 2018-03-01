@@ -54,6 +54,7 @@ func! explorer#buffer#render(path) abort
 	endfor
 
 	" Highlight details in a different color
+	exec 'syn match ExplorerDetails /\v^\s*total.*/'
 	exec 'syn match ExplorerDetails /\v.%<' . start . 'c/'
 
 	" Set the statusline

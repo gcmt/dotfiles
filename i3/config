@@ -180,23 +180,6 @@ mode "edit" {
 
 bindsym $mod+e mode "edit"
 
-# go to container
-mode "goto" {
-
-	bindsym b [class="(?i)google-chrome|firefox"] focus; mode "default"
-	bindsym x [class="(?i)termite" title="(?i)tmux"] focus; mode "default"
-	bindsym t [class="(?i)termite"] focus; mode "default"
-	bindsym p [class="(?i)mupdf"] focus; mode "default"
-	bindsym d [class="(?i)zeal"] focus; mode "default"
-	bindsym m [class="(?i)rhythmbox"] focus; mode "default"
-
-	bindsym Return mode "default"
-	bindsym Escape mode "default"
-	bindsym Control+c mode "default"
-}
-
-bindsym $mod+g mode "goto"
-
 # i3 commands
 mode "i3" {
 

@@ -59,7 +59,9 @@ func! explorer#buffer#render(path) abort
 	exec 'syn match ExplorerDetails /\v.%<' . col . 'c/'
 
 	" Set the statusline
-	let stl = " " . command . " " . fnamemodify(a:path, ":p:~") . "%=explorer "
+	let command = substitute(command, '\v\s*--dired', '', '')
+	let path = substitute(fnamemodify(a:path, ":p:~"), '\v/$', '', '')
+	let stl = " " . command . " " . path . "%=explorer "
 	call setwinvar(0, "&stl", stl)
 
 	setl nomodifiable

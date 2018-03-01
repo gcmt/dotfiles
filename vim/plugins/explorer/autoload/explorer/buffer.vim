@@ -27,34 +27,21 @@ func! explorer#buffer#render(path) abort
 	syntax clear
 	setl modifiable
 
-	let b:explorer.dir = a:path
-
-	" Populate the buffer with the ls command output
 	let command = s:ls_command()
 	exec "%!" . command shellescape(a:path)
 	if v:shell_error
 		return
 	end
 
-	" Extract offsets
 	let offsets = s:parse_offsets()
 	g;\v^//DIRED;delete _
 
-	" Find the start of the file names column
-	let offset = getline(1) =~ '\v^\s*total' ? len(getline(1)) : 0
-	let start = get(offsets, 0, offset) - offset
+	let offset = s:files_offset(offsets)
 
-	" Make offsets relative to each line
-	let line = 2
-	let b:explorer.map = {}
-	for idx in range(0, len(offsets)-1, 2)
-		let end = start + offsets[idx+1] - offsets[idx]
-		let b:explorer.map[line] = [start, end]
-		let line += 1
-	endfor
+	let b:explorer.dir = a:path
+	let b:explorer.map = s:build_map(offsets, offset)
 
-	" Highlight things
-	call s:do_highlight(start)
+	call s:do_highlight(offset)
 
 	" Set the statusline
 	let command = substitute(command, '\v\s*--dired', '', '')
@@ -66,19 +53,37 @@ func! explorer#buffer#render(path) abort
 
 endf
 
-" Highlight directories, links and details with different colors.
-" The only argument 'col' is the column where file names start.
-func! s:do_highlight(col)
+" Find the start of the file names column.
+func! s:files_offset(offsets)
+	let offset = getline(1) =~ '\v^\s*total' ? len(getline(1)) : 0
+	return get(a:offsets, 0, offset) - offset
+endf
+
+" Map each line with the start/end offsets of the file on the line.
+func! s:build_map(offsets, start)
+	let map = {}
+	let line = 2
+	for idx in range(0, len(a:offsets)-1, 2)
+		let end = a:start + a:offsets[idx+1] - a:offsets[idx]
+		let map[line] = [a:start, end]
+		let line += 1
+	endfor
+	return map
+endf
+
+" Highlight things with different colors.
+" The only argument 'offset' is the column where file names start.
+func! s:do_highlight(offset)
 	if !empty(g:explorer_details_color)
 		exec 'syn match' g:explorer_details_color '/\v^\s*total.*/'
-		exec 'syn match' g:explorer_details_color '/\v.%<'.a:col.'c/'
+		exec 'syn match' g:explorer_details_color '/\v.%<'.a:offset.'c/'
 		exec 'syn match' g:explorer_details_color '/\v-\>\s\/.*/'
 	end
 	if !empty(g:explorer_dirs_color)
-		exec 'syn match' g:explorer_dirs_color '/\v%'.a:col.'c[^/]+\/$/'
+		exec 'syn match' g:explorer_dirs_color '/\v%'.a:offset.'c[^/]+\/$/'
 	end
 	if !empty(g:explorer_links_color)
-		exec 'syn match' g:explorer_links_color '/\v%'.a:col.'c.*\ze-\>\s\//'
+		exec 'syn match' g:explorer_links_color '/\v%'.a:offset.'c.*\ze-\>\s\//'
 	end
 endf
 

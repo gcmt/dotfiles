@@ -10,6 +10,9 @@ nnoremap <silent> <buffer> <left> :call explorer#actions#up_dir()<cr>
 
 nnoremap <silent> <buffer> a :call explorer#actions#toggle_hidden_files()<cr>
 
+nnoremap <silent> <buffer> % :call explorer#actions#create_file()<cr>
+nnoremap <silent> <buffer> D :call explorer#actions#create_directory()<cr>
+
 if get(g:, "loaded_bookmarks", 0)
 
 	func! s:set_mark(mark)

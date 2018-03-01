@@ -26,7 +26,7 @@ func! explorer#actions#enter_or_edit() abort
 	if empty(file)
 		return
 	end
-	let path = b:explorer.dir . (b:explorer.dir == '/' ? file : '/' . file)
+	let path = explorer#path#join(b:explorer.dir, file)
 	if isdirectory(path)
       call explorer#buffer#render(path)
 		call explorer#buffer#goto_first_file()
@@ -35,6 +35,46 @@ func! explorer#actions#enter_or_edit() abort
 		exec 'edit' fnameescape(path)
 		let @# = buflisted(current) ? current : bufnr('%')
 	end
+endf
+
+" Create a new file in the current directory.
+" Intermediate directories are created as necessary.
+func! explorer#actions#create_file() abort
+	let file = input("New file: ") | redraw
+	if empty(file)
+		return
+	end
+	let dir = fnamemodify(file, ':h')
+	let path = explorer#path#join(b:explorer.dir, dir)
+	if !isdirectory(path)
+		call mkdir(path, 'p')
+		echo printf("Created intermediate directory '%s'", dir)
+	end
+	let path = explorer#path#join(b:explorer.dir, file)
+	if filereadable(path)
+		return explorer#err(printf("Cannot create file '%s': File exists", file))
+	end
+	exec "edit" fnameescape(path)
+endf
+
+" Create a new directory in the current one.
+" Intermediate directories are created as necessary.
+func! explorer#actions#create_directory() abort
+	let dir = input("New directory: ") | redraw
+	if empty(dir)
+		return
+	end
+	let path = explorer#path#join(b:explorer.dir, dir)
+	if isdirectory(path)
+		return explorer#err(printf("Directory '%s' already exists", dir))
+	end
+	if filereadable(path)
+		return explorer#err(printf("Cannot create directory '%s': File exists", dir))
+	end
+	call mkdir(path, 'p')
+	echo printf("Created directory '%s'", dir)
+	call explorer#buffer#render(b:explorer.dir)
+	call explorer#buffer#goto_file(split(dir, '/')[0])
 endf
 
 " Show/hide hidden files

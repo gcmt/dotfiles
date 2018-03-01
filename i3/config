@@ -17,9 +17,6 @@ new_float normal 0
 default_orientation auto
 workspace_layout default
 
-# floating_minimum_size 75 x 25
-# floating_maximum_size -1 x -1
-
 gaps inner 5
 gaps outer 1
 
@@ -28,7 +25,7 @@ gaps outer 1
 
 for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable
-for_window [class="ssh-askpass"] floating enable
+for_window [class="Ssh-askpass"] floating enable
 for_window [class="KeepassXC"] layout stacking
 for_window [class="Firefox" title="Library"] layout stacking
 for_window [class="Termite" window_role="floating"] floating enable, resize set 900 500, move position center
@@ -43,31 +40,38 @@ for_window [class=".*"] title_format " %title"
 # Bindings
 # ----------------------------------------------------------------------------
 
+# Shortcuts
+bindsym $mod+Control+m [class="Rhythmbox"] focus
+bindsym $mod+Control+b [class="Firefox"] focus
+bindsym $mod+Control+t [class="Termite" title="Tmux"] focus
+
 # Kill window
 bindsym $mod+Shift+q kill
 
-# Open tmux
+# Open last active tmux session
 bindsym $mod+u exec termite -e "t"
+bindsym $mod+Shift+u exec termite -e "t" --role floating
 
-# Open tmux in a floating window
-bindsym $mod+Shift+u exec termite -e "t" --role "floating"
-# Pick tmux session with rofi
+# Open the scratch tmux session
+bindsym $mod+plus exec termite -e "t scratch"
+bindsym $mod+Shift+plus exec termite -e "t scratch" --role floating
+
+# Pick tmux session
 bindsym $mod+Control+u exec rofi-tmux
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace
-for_window [title="i3-rename-workspace"] floating enable, border pixel 0
 
 # Create new workspace
-bindsym $mod+c exec --no-startup-id i3-new-workspace
+bindsym $mod+Tab exec --no-startup-id i3-new-workspace
 
 # Youtube-dl (download selected url)
 bindsym $mod+y exec --no-startup-id ydl-mp3
 
 # Rofi bindings
-bindsym $mod+space exec "rofi -show drun -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
-bindsym $alt+space exec "rofi -show run -kb-accept-custom 'Control+j,Return' -kb-accept-entry 'Control+d' -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
-bindsym $mod+w exec "rofi -show window -theme-str '#prompt { text-color: rgba(0,0,0,0%); }'"
+bindsym $mod+space exec "rofi -show drun"
+bindsym $alt+space exec "rofi -show window"
+bindsym Control+space exec "rofi -show run -kb-accept-custom 'Control+j,Return' -kb-accept-entry 'Control+d'"
 
 # Toggle Polybar visibility
 bindsym $mod+Return exec --no-startup-id polybar-toggle
@@ -106,13 +110,6 @@ bindsym $mod+Shift+j move down 10px
 bindsym $mod+Shift+k move up 10px
 bindsym $mod+Shift+l move right 10px
 
-# Swap containers
-bindsym $mod+Control+i exec --no-startup-id i3-swap-window -interactive
-bindsym $mod+Control+h exec --no-startup-id i3-swap-window -left
-bindsym $mod+Control+j exec --no-startup-id i3-swap-window -below
-bindsym $mod+Control+k exec --no-startup-id i3-swap-window -above
-bindsym $mod+Control+l exec --no-startup-id i3-swap-window -right
-
 # Resize container
 bindsym $mod+Left resize shrink left 5px or 2ppt
 bindsym $mod+Down resize shrink down 5px or 2ppt
@@ -150,6 +147,7 @@ bindsym $mod+Shift+0 move container to workspace number 10; workspace number 10
 # Move window to new workspace and back
 bindsym $mod+Shift+Tab exec --no-startup-id i3-move-container-to-new-workspace
 bindsym $mod+Shift+a move container to workspace back_and_forth; workspace back_and_forth
+
 # Move to last focused workspace
 bindsym $mod+a workspace back_and_forth
 
@@ -184,7 +182,7 @@ bindsym $mod+e mode "edit"
 mode "i3" {
 
 	bindsym c exec termite -e 'vim .config/i3/config'; mode "default"
-	bindsym BackSpace exit
+	bindsym $alt+Control+BackSpace exit
 	bindsym Shift+r restart
 	bindsym r reload
 

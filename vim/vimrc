@@ -117,7 +117,7 @@
 
 	set guioptions=c
 
-	let &guifont = 'SF Mono ' . (has('unix') ? '12' : 'h12')
+	let &guifont = 'Noto Mono 10'
 	set linespace=1
 
 	set title

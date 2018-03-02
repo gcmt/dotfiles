@@ -80,8 +80,22 @@ func! s:select(type, inner) abort
 
 	if item_start == start && item_end == end
 		call cursor(item_start[0], item_start[1]+1)
+		if a:inner
+			call search('\S', 'Wc')
+			if getcurpos()[1:2] == end
+				" when there is no argument/item/etc but only empty space
+				call cursor(item_start[0], item_start[1]+1)
+			end
+		end
 		norm! v
 		call cursor(item_end[0], item_end[1]-1)
+		if a:inner
+			call search('\S', 'Wbc')
+			if getcurpos()[1:2] == start
+				" when there is no argument/item/etc but only empty space
+				call cursor(item_end[0], item_end[1]-1)
+			end
+		end
 		return
 	end
 

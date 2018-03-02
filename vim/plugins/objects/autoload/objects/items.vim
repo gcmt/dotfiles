@@ -101,12 +101,14 @@ func! s:select(type, inner) abort
 
 	if item_start == start
 		call cursor(item_start[0], item_start[1]+1)
-		norm! v
 		if a:inner
-			call cursor(item_end[0], item_end[1])
+			call search('\S', 'Wc')
+		end
+		norm! v
+		call cursor(item_end[0], item_end[1])
+		if a:inner
 			call search('\S', 'Wb')
 		else
-			call cursor(item_end[0], item_end[1])
 			call search('\v\s\ze\S', 'W')
 		end
 		return
@@ -114,12 +116,13 @@ func! s:select(type, inner) abort
 
 	if item_end == end
 		call cursor(item_end[0], item_end[1]-1)
-		norm! v
 		if a:inner
-			call cursor(item_start[0], item_start[1])
+			call search('\S', 'Wbc')
+		end
+		norm! v
+		call cursor(item_start[0], item_start[1])
+		if a:inner
 			call search('\S', 'W')
-		else
-			call cursor(item_start[0], item_start[1])
 		end
 		return
 	end

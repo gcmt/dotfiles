@@ -116,6 +116,13 @@ func! s:select(curpos, start, end, inner)
 		return
 	end
 
+	if argstart == a:start && argend == a:end
+		call cursor(argstart[0], argstart[1]+1)
+		norm! v
+		call cursor(argend[0], argend[1]-1)
+		return
+	end
+
 	if argstart == a:start
 		call cursor(argstart[0], argstart[1]+1)
 		norm! v

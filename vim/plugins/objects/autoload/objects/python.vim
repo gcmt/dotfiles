@@ -40,7 +40,7 @@ func! s:select(type, inner, outermost_def)
 	end
 
 	let indent = indent(start[0])
-	let end = searchpos('\v(^\s{,'.indent.'}\S|%$)', 'Wn')
+	let end = searchpos('\v(\n\ze^\s{,'.indent.'}\S|\S%$)', 'Wn')
 	if end == [0, 0]
 		return
 	end
@@ -57,9 +57,6 @@ func! s:select(type, inner, outermost_def)
 		end
 		norm! V
 		call cursor(end)
-		if end[0] != line('$')
-			norm! k
-		end
 	end
 
 endf

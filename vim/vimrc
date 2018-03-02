@@ -1,4 +1,3 @@
-
 " INIT
 " ----------------------------------------------------------------------------
 
@@ -703,9 +702,6 @@
 
 	" Save the current buffer as sudo
 	command! -nargs=0 Sudow exec 'write !sudo tee % > /dev/null'
-
-	" Execute commands silently and redraw
-	command! -nargs=+ Sil exec 'sil!' <q-args> | redraw!
 
 	" Returns the syntax group under the cursor
 	func! _syntax()

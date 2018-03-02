@@ -14,18 +14,18 @@ func! objects#items#dict(inner)
 	call s:select('{', a:inner)
 endf
 
-func! s:select(p, inner) abort
+func! s:select(type, inner) abort
 
 	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
-	let start = searchpairpos('\V'.a:p, '', '\V'.s:pairs[a:p], 'Wbnc', skip, line('w0'))
-	let end = searchpairpos('\V'.a:p, '', '\V'.s:pairs[a:p], 'Wn', skip, line('w$'))
+	let start = searchpairpos('\V'.a:type, '', '\V'.s:pairs[a:type], 'Wbnc', skip, line('w0'))
+	let end = searchpairpos('\V'.a:type, '', '\V'.s:pairs[a:type], 'Wn', skip, line('w$'))
 	if start == [0, 0] || end == [0, 0]
 		return
 	end
 
-	let curpos = getcurpos()[1:2]
-	let argstart = start
-	let argend = end
+	let cursor_pos = getcurpos()[1:2]
+	let item_start = start
+	let item_end = end
 	let stack = []
 	let stop = 0
 
@@ -44,12 +44,12 @@ func! s:select(p, inner) abort
 			let char = line[i-1]
 
 			if char == ',' && empty(stack)
-				if nr < curpos[0] || nr == curpos[0] && i <= curpos[1]
-					let argstart = [nr, i]
+				if nr < cursor_pos[0] || nr == cursor_pos[0] && i <= cursor_pos[1]
+					let item_start = [nr, i]
 					continue
 				end
-				if nr > curpos[0] || nr == curpos[0] && i >= curpos[1]
-					let argend = [nr, i]
+				if nr > cursor_pos[0] || nr == cursor_pos[0] && i >= cursor_pos[1]
+					let item_end = [nr, i]
 					let stop = 1
 					break
 				end
@@ -73,52 +73,52 @@ func! s:select(p, inner) abort
 
 	endfo
 
-	if argstart == curpos && argend == curpos
+	if item_start == cursor_pos && item_end == cursor_pos
 		return
 	end
 
-	if argstart == start && argend == end
-		call cursor(argstart[0], argstart[1]+1)
+	if item_start == start && item_end == end
+		call cursor(item_start[0], item_start[1]+1)
 		norm! v
-		call cursor(argend[0], argend[1]-1)
+		call cursor(item_end[0], item_end[1]-1)
 		return
 	end
 
-	if argstart == start
-		call cursor(argstart[0], argstart[1]+1)
+	if item_start == start
+		call cursor(item_start[0], item_start[1]+1)
 		norm! v
 		if a:inner
-			call cursor(argend[0], argend[1])
+			call cursor(item_end[0], item_end[1])
 			call search('\S', 'Wb')
 		else
-			call cursor(argend[0], argend[1])
+			call cursor(item_end[0], item_end[1])
 			call search('\v\s\ze\S', 'W')
 		end
 		return
 	end
 
-	if argend == end
-		call cursor(argend[0], argend[1]-1)
+	if item_end == end
+		call cursor(item_end[0], item_end[1]-1)
 		norm! v
 		if a:inner
-			call cursor(argstart[0], argstart[1])
+			call cursor(item_start[0], item_start[1])
 			call search('\S', 'W')
 		else
-			call cursor(argstart[0], argstart[1])
+			call cursor(item_start[0], item_start[1])
 		end
 		return
 	end
 
 	if a:inner
-		call cursor(argstart[0], argstart[1])
+		call cursor(item_start[0], item_start[1])
 		call search('\S', 'W')
 		norm! v
-		call cursor(argend[0], argend[1])
+		call cursor(item_end[0], item_end[1])
 		call search('\S', 'Wb')
 	else
-		call cursor(argstart[0], argstart[1])
+		call cursor(item_start[0], item_start[1])
 		norm! v
-		call cursor(argend[0], argend[1])
+		call cursor(item_end[0], item_end[1])
 		call search('\S', 'Wb')
 	end
 

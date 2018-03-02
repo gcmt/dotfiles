@@ -51,6 +51,7 @@ func! explorer#buffer#render(path) abort
 
 	" Set the statusline
 	let command = substitute(command, '\v\s*--dired', '', '')
+	let command = substitute(command, '\v\s*--group-directories-first', '', '')
 	let path = substitute(fnamemodify(a:path, ":p:~"), '\v/$', '', '')
 	let stl = " " . command . " " . path . "%=explorer "
 	call setwinvar(0, "&stl", stl)
@@ -99,11 +100,10 @@ endf
 func! s:ls_command()
 	let flags = "-lhF"
 	let flags .= g:explorer_hide_owner_and_group ? 'go' : ''
-	let columns = g:explorer_auto_hide_owner_and_group
-	if columns && winwidth(0) < columns
-		let flags .= flags =~ 'go' ? '' : 'go'
-	end
+	let cols = g:explorer_auto_hide_owner_and_group
+	let flags .= cols && winwidth(0) < cols && flags !~ 'go' ? 'go' : ''
 	let flags .= g:explorer_hidden_files ? 'A' : ''
+	let flags .= g:explorer_directories_first ? ' --group-directories-first' : ''
 	return printf("ls %s --dired", flags)
 endf
 

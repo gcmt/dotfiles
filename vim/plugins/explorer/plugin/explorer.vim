@@ -14,6 +14,7 @@ command! -nargs=? Explorer call explorer#open(<q-args>)
 
 let s:options = {
 	\ 'hidden_files': 1,
+	\ 'directories_first': 1,
 	\ 'auto_hide_owner_and_group': 80,
 	\ 'hide_owner_and_group': 0,
 	\ 'details_color': 'ExplorerDetails',

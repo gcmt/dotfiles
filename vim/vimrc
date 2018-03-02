@@ -29,7 +29,6 @@
 	Plug 'tpope/vim-fugitive'
 	Plug 'airblade/vim-gitgutter'
 	Plug 'SirVer/ultisnips'
-	Plug 'wellle/targets.vim'
 	Plug 'ap/vim-css-color'
 	Plug 'prabirshrestha/vim-lsp'
 	Plug 'prabirshrestha/async.vim'
@@ -48,6 +47,7 @@
 	Local 'taggify'
 	Local 'qfedit'
 	Local 'spotter'
+	Local 'objects'
 	Local 'explorer'
 	Local 'commenter'
 	Local 'bookmarks'
@@ -809,15 +809,6 @@
 
 	let g:UltiSnipsExpandTrigger = '<c-s>'
 	let g:UltiSnipsJumpForwardTrigger = '<c-s>'
-
-" Targets
-" ----------------------------------------------------------------------------
-
-	omap ia Ia
-	omap i, I,
-
-	let g:targets_argOpening = '[({[]'
-	let g:targets_argClosing = '[]})]'
 
 " GitGutter
 " ----------------------------------------------------------------------------

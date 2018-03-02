@@ -84,14 +84,6 @@ fun! s:setup(tmux)
 	cnoremap <silent> <f24> <c-\>e<sid>doau_cmdline('FocusLost')<cr>
 	cnoremap <silent> <f25> <c-\>e<sid>doau_cmdline('FocusGained')<cr>
 
-	aug _term
-		au!
-		" Make sure to keep cursor shape and mode consistent when
-		" switching tmux panes or starting/suspending vim.
-		au FocusGained * call feedkeys("\<esc>r\<esc>")
-		au FocusLost * if &ma && !&ro | call feedkeys("\<esc>a") | end
-	aug END
-
 endf
 
 fun! s:doau_cmdline(event)

@@ -36,9 +36,7 @@ fun! s:setup(tmux)
 		let cursor_normal = "\<Esc>]50;CursorShape=0\x7"
 		let cursor_insert = "\<Esc>]50;CursorShape=1\x7"
 		let cursor_replace = "\<Esc>]50;CursorShape=2\x7"
-	end
-
-	if exists('$VTE_VERSION')
+	else
 		" 0 -> blinking block
 		" 1 -> blinking block
 		" 2 -> steady block

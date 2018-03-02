@@ -86,7 +86,7 @@ func! s:select(start, end, argstart, argend, inner)
 			call search('\S', 'Wb')
 		else
 			call cursor(a:argend[0], a:argend[1])
-			call search('\v\s\ze\_S', 'We')
+			call search('\v\s\ze\S', 'W')
 		end
 		return
 	end

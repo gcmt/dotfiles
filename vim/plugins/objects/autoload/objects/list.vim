@@ -1,58 +1,14 @@
 
 let s:pairs = {'(': ')', '[': ']', '{': '}'}
-let s:invpairs = {')': '(', ']': '[', '}': '{'}
+let s:inv = {')': '(', ']': '[', '}': '{'}
 
-" Select the current function argument/parameter
-func! objects#list#argument(inner)
-
+func! objects#list#item(p, inner) abort
 	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
-	let start = searchpairpos('(', '', ')', 'Wbnc', skip, line('w0'))
-	let end = searchpairpos('(', '', ')', 'Wn', skip, line('w$'))
-
+	let start = searchpairpos('\V'.a:p, '', '\V'.s:pairs[a:p], 'Wbnc', skip, line('w0'))
+	let end = searchpairpos('\V'.a:p, '', '\V'.s:pairs[a:p], 'Wn', skip, line('w$'))
 	if start != [0, 0] && end != [0, 0]
 		call s:select(getcurpos()[1:2], start, end, a:inner)
 	end
-
-endf
-
-" Select the current list/dictionary item
-func! objects#list#item(inner)
-
-	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
-	let start_a = searchpairpos('\[', '', '\]', 'Wbnc', skip, line('w0'))
-	let end_a = searchpairpos('\[', '', '\]', 'Wn', skip, line('w$'))
-	let start_b = searchpairpos('{', '', '}', 'Wbnc', skip, line('w0'))
-	let end_b = searchpairpos('{', '', '}', 'Wn', skip, line('w$'))
-
-	" find smallest text object
-	let start = [0, 0]
-	let end = [0, 0]
-	let size = v:null
-	for [start_, end_] in [[start_a, end_a], [start_b, end_b]]
-		if start_ != [0, 0] && end_ != [0, 0]
-			let size_ = s:size(start_, end_)
-			if size == v:null || size_ < size
-				let size = size_
-				let start = start_
-				let end = end_
-			end
-		end
-	endfo
-
-	if start != [0, 0] && end != [0, 0]
-		call s:select(getcurpos()[1:2], start, end, a:inner)
-	end
-
-endf
-
-" To return the size of a text object
-func! s:size(start, end)
-	if a:start[0] == a:end[0]
-		return a:end[1] - a:start[1] + 1
-	end
-	let size = len(getline(a:start[0])) - a:start[1] + a:end[1] + 1
-	let size += winwidth(0) * (a:end[0] - a:start[0] - 1)
-	return size
 endf
 
 func! s:select(curpos, start, end, inner)
@@ -96,7 +52,7 @@ func! s:select(curpos, start, end, inner)
 				call add(stack, char)
 				continue
 			end
-			if has_key(s:invpairs, char) && get(stack, -1, '') == s:invpairs[char]
+			if has_key(s:inv, char) && get(stack, -1, '') == s:inv[char]
 				call remove(stack, -1)
 				continue
 			end

@@ -221,7 +221,7 @@ rofi.display-windowcd:
 ! - len: maximum field length (0 for auto-size).
 ! If length negative and window width is negative, field length is width - len.
 ! If length is positive, the entry will be truncated or padded to fill that length.
-rofi.window-format: {t}
+rofi.window-format: [ {w} ]  {t}
 
 ! Set command to execute on selected window for custom action.
 rofi.window-command: xkill -id {window}
@@ -327,7 +327,7 @@ rofi.kb-row-first:
 rofi.kb-row-last:
 
 ! Set selected item as input text
-rofi.kb-row-select: Control+a
+rofi.kb-row-select: Control+y
 
 ! Take a screenshot of the rofi window
 rofi.kb-screenshot: Control+space

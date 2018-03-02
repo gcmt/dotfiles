@@ -29,8 +29,7 @@
     # the top and down respectively.
     # The width can be negative.  In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-	 geometry = "400x10-15+15"
-    # geometry = "400x10-15+52"
+    geometry = "350x10-15+15"
 
     # Show how many messages are currently hidden (because of geometry).
     indicate_hidden = yes
@@ -324,5 +323,9 @@
 #    summary = *twitter.com*
 #    urgency = normal
 #
+
+[volume]
+	summary = "Volume"
+	format = "%b"
 
 # vim: ft=cfg cms=#\ %s

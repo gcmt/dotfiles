@@ -42,7 +42,6 @@
 	Plug 'tpope/vim-markdown'
 	Plug 'stephpy/vim-yaml'
 
-	Local 'rofi'
 	Local 'grep'
 	Local 'pairs'
 	Local 'autotype'
@@ -767,10 +766,6 @@
 	   \ 'text':1, 'markdown':1, 'notes':1,
 	\ }
 
-	let g:spotter_banned_syntax = {
-		\ 'String':1, 'Comment':1,
-	\ }
-
 	let g:spotter_banned_syntax_elixir = {
 		\ 'elixirDocString':1
 	\ }
@@ -814,7 +809,6 @@
 
 	let g:UltiSnipsExpandTrigger = '<c-s>'
 	let g:UltiSnipsJumpForwardTrigger = '<c-s>'
-	" let g:UltiSnipsSnippetsDir = $VIMHOME . '/UltiSnips'
 
 " Targets
 " ----------------------------------------------------------------------------

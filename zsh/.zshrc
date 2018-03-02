@@ -8,7 +8,7 @@ export MANPAGER="/bin/bash -c \
 	< /dev/tty <(col -b)\""
 
 export EDITOR=vim
-
+export BORG_REMOTE_PATH=borg1
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
 export LC_ALL=en_US.UTF-8
@@ -62,7 +62,6 @@ zle -N edit-command-line
 # enable completions
 autoload -U compinit
 compinit
-
 
 zstyle ':completion:*' matcher-list '' 'r:|?=** m:{a-z\-}={A-Z\_}'
 zstyle ':completion:*' completer _complete _match _approximate
@@ -358,9 +357,9 @@ if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
 	# bindkey '^r' rofi-history
 fi
 
-	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=236'
 if [[ -e "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && "$TERM" != "linux" ]]; then
 	source "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
+	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=237'
 	bindkey '^d' autosuggest-execute
 fi
 

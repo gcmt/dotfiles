@@ -5,22 +5,18 @@ let s:invpairs = {')': '(', ']': '[', '}': '{'}
 " Select the current function argument/parameter
 func! objects#list#argument(inner)
 
-	let curpos = getcurpos()[1:2]
-
 	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
 	let start = searchpairpos('(', '', ')', 'Wbnc', skip, line('w0'))
 	let end = searchpairpos('(', '', ')', 'Wn', skip, line('w$'))
 
 	if start != [0, 0] && end != [0, 0]
-		call s:select(curpos, start, end, a:inner)
+		call s:select(getcurpos()[1:2], start, end, a:inner)
 	end
 
 endf
 
 " Select the current list/dictionary item
 func! objects#list#item(inner)
-
-	let curpos = getcurpos()[1:2]
 
 	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
 	let start_a = searchpairpos('\[', '', '\]', 'Wbnc', skip, line('w0'))
@@ -44,7 +40,7 @@ func! objects#list#item(inner)
 	endfo
 
 	if start != [0, 0] && end != [0, 0]
-		call s:select(curpos, start, end, a:inner)
+		call s:select(getcurpos()[1:2], start, end, a:inner)
 	end
 
 endf

@@ -73,7 +73,8 @@ func! s:select(type, inner) abort
 
 	endfo
 
-	if item_start == cursor_pos && item_end == cursor_pos
+	" Do nothing when there is no argument/item/etc, not even empty space
+	if start[0] == end[0] && start[1] == end[1]-1
 		return
 	end
 

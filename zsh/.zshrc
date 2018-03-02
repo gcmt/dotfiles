@@ -124,14 +124,14 @@ rgfa() {
 
 # search and open files with vim
 vimf() {
-	local f=$(mktemp -d)/flist
+	local flist=$(mktemp -d)/filelist
 	rg --files \
 		-g "!node_modules/*" -g "!venv/*" -g "!dist/*" -g "!build/*" \
 		-g "!*.pyc" -g "!*.beam" -g "!*.pdf" -g "!*.jpg" -g "!*.png" -g "!*.gif" -g "!*.mp4" -g "!*.gpg" \
-		| grep "$(echo "$@" | sed 's/\s\+/.*/')" > "$f"
-	if [ -s "$f" ]; then
-		vim \
-			-c "argd %" "$f" \
+		| grep "$(echo "$@" | sed 's/\s\+/.*/')" > "$flist"
+	if [[ -s "$flist" ]]; then
+		vim "$flist" \
+			-c "argd %" \
 			-c "setl bt=nofile nomodifiable" \
 			-c "nn <silent> <buffer> gf ^vg_gf" -c "nmap <buffer> l gf" \
 			-c "nn <silent> <buffer> gF :set bh=wipe<bar>norm gf<cr>" -c "nmap <buffer> L gF"

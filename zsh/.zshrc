@@ -85,7 +85,7 @@ stty -ixon
 
 function lb() {
 	local name=${1:-$(date '+%Y-%m-%d')}
-	vim ~/Documents/logbook/$name.md
+	vim ~/Documents/logbook/$name.txt
 }
 
 # create virtual environment

@@ -31,8 +31,8 @@ for_window [class="Firefox" title="Library"] layout stacking
 for_window [class="Termite" window_role="floating"] floating enable, resize set 900 500, move position center
 
 for_window [class="Termite" title="i3/config"] floating enable, resize set 1000 600, move position center
-for_window [class="Termite" window_role="Notes"] floating enable, resize set 1000 600, move position center
-for_window [class="Termite" window_role="Logbook"] floating enable, resize set 1000 600, move position center
+for_window [class="Termite" window_role="notes"] floating enable, resize set 1000 600, move position center
+for_window [class="Termite" window_role="logbook"] floating enable, resize set 1000 600, move position center
 
 # ›
 for_window [class=".*"] title_format " %title"
@@ -168,8 +168,8 @@ bindsym $mod+Shift+minus move scratchpad
 # Edit shortcut
 mode "edit" {
 
-	bindsym l exec termite -e "vim $(date '+%Y-%m-%d').md" -d 'Documents/logbook' --role 'Logbook'; mode "default"
-	bindsym n exec termite -e 'vim wall.md' -d 'Notes' --role 'Notes'; mode "default"
+	bindsym l exec termite -e "vim $(date '+%Y-%m-%d').txt" -d 'Documents/logbook' --role logbook; mode "default"
+	bindsym n exec termite -e 'vim wall.md' -d 'Documents/notes' --role notes; mode "default"
 
 	bindsym Return mode "default"
 	bindsym Escape mode "default"

@@ -723,6 +723,8 @@
 	nnoremap <silent> <leader>n :set number!<bar>set number?<cr>
 	nnoremap <silent> <leader>z :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
 
+	inoremap <c-r>!d <c-r>=substitute(system('date -Iseconds'), "\n", "", "")<cr>
+
 	iabbrev teh the
 	iabbrev wiht with
 	iabbrev lenght length

@@ -1,47 +1,53 @@
 
-func! objects#python#function(inner, outermost_def)
-	call s:select('def', a:inner, a:outermost_def)
+func! objects#python#function(inner, outermost)
+	call s:select('def', a:inner, a:outermost)
 endf
 
-func! objects#python#class(inner, outermost_def)
-	call s:select('class', a:inner, a:outermost_def)
+func! objects#python#class(inner, outermost)
+	call s:select('class', a:inner, a:outermost)
 endf
 
-func! s:select(type, inner, outermost_def)
+func! s:select(kw, inner, outermost)
 
 	let curpos = getcurpos()[1:2]
+	let wanted = a:kw == 'class' ? 'class>' : 'def>|async def>'
 
-	if getline(curpos[0]) =~ '\v^\s*'.a:type.'>'
-		let start = searchpos('\v^\s*'.a:type.'>', 'Wbc')
-	else
-		let indent = indent(prevnonblank(curpos[0]))
-		let start = searchpos('\v^\s{,'.max([indent-4, 0]).'}'.a:type.'>', 'Wbc')
+	if getline(curpos[0]) =~ '\v^\s*\@'
+		let indent = indent(curpos[0])
+		call search('\v\s{'.indent.'}(class|def|async def)>', 'W')
 	end
+
+	if getline(line('.')) =~ '\v^\s*('.wanted.')'
+		let start = searchpos('\v(^$\n\zs(^\s*(\@|'.wanted.'))|%^)', 'Wbc')
+	else
+		let start = [0, 0]
+		let indent = indent(prevnonblank(curpos[0]))
+		while indent > 0
+			let indent -= &shiftwidth
+			let candidate = searchpos('\v^\s{'.indent.'}\w', 'Wb')
+			if candidate == [0, 0]
+				continue
+			end
+			if getline(candidate[0]) =~ '\v^\s*('.wanted.')'
+				let start = searchpos('\v(^$\n\zs(^\s*(\@|'.wanted.'))|%^)', 'Wbc')
+				if !a:outermost
+					break
+				end
+			end
+		endw
+	end
+
 	if start == [0, 0]
+		call cursor(curpos)
 		return
 	end
 
-	" select the outermost definition of the same type
-	if a:outermost_def
-		let indent = indent(start[0])
-		while 1
-			if indent == 0
-				break
-			end
-			let indent -= 4
-			let candidate = searchpos('\v^\s{'.indent.'}(class|def)>', 'Wb')
-			let type = a:type == 'class' ? 'def' : 'class'
-			if candidate == [0, 0] || getline(candidate[0]) =~ '\v^\s*'.type.'>'
-				break
-			end
-			let start = candidate
-		endw
-		call cursor(curpos)
-	end
-
+	call cursor(start)
 	let indent = indent(start[0])
-	let end = searchpos('\v(\n\ze^\s{,'.indent.'}\S|\S%$)', 'Wn')
+	let end = searchpos('\v(^$\n\ze^\s{,'.indent.'}\S|\S%$)', 'W')
+
 	if end == [0, 0]
+		call cursor(curpos)
 		return
 	end
 

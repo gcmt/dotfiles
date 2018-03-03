@@ -1,32 +1,28 @@
 #!/bin/bash
 
-cache_dir="$HOME/.cache/polybar/modules/datetime"
-verbosity_file="$cache_dir/verbosity"
+timer="$HOME/.cache/timer"
+verbosity=0
 
-mkdir -p "$cache_dir"
-
-save_verbosity() {
-	echo "$1" > "$verbosity_file"
+toggle() {
+	verbosity=$((1 - $verbosity))
 }
 
-get_verbosity() {
-	cat "$verbosity_file"
-}
+trap "toggle" SIGUSR1
 
-if [[ ! -f "$verbosity_file" ]]; then
-	verbosity=0
-	save_verbosity $verbosity
-else
-	verbosity=$(get_verbosity)
-fi
+while true; do
 
-if [[ "$1" == "-toggle-verbosity" ]]; then
-	verbosity=$(expr 1 - $verbosity)
-	save_verbosity $verbosity
-fi
+	padding="  "
+	if [[ -e "$timer" ]]; then
+		padding=
+	fi
 
-if [[ $verbosity == 1 ]]; then
-	echo "$(date '+%a %d %H:%M:%S')"
-else
-	echo "$(date '+%a %d %H:%M')"
-fi
+	if (( $verbosity == 1 )); then
+		echo "$(date +'%a %d %H:%M:%S')$padding"
+	else
+		echo "$(date +'%a %d %H:%M')$padding"
+	fi
+
+	sleep 1 &
+	wait
+
+done

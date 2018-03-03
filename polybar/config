@@ -65,10 +65,10 @@ border-bottom-size = 0
 border-color = #00000000
 
 padding-left = 0
-padding-right = 2
+padding-right = 0
 
-module-margin-left = 1
-module-margin-right = 2
+module-margin-left = 3
+module-margin-right = 0
 
 font-0 = "Noto Mono:style=Medium:size=10;3"
 font-1 = "FontAwesome:size=10;3"
@@ -76,7 +76,7 @@ font-2 = "Ionicons:size=10;0"
 
 modules-left = i3
 modules-center =
-modules-right = wlan eth volume battery datetime
+modules-right = wlan eth volume battery datetime timer
 
 ; separator = ‹
 ; separator = 
@@ -121,7 +121,7 @@ label-urgent-padding = 2
 
 type = custom/script
 exec = ~/.config/polybar/modules/battery.sh
-interval = 10
+tail = true
 
 ; Date & time
 ; ----------------------------------------------------------------------------
@@ -130,8 +130,20 @@ interval = 10
 
 type = custom/script
 exec = ~/.config/polybar/modules/datetime.sh
-click-left = ~/.config/polybar/modules/datetime.sh -toggle-verbosity
-interval = 1
+click-left = bash -c "kill -SIGUSR1 %pid%"
+tail = true
+
+; Timer
+; ----------------------------------------------------------------------------
+
+[module/timer]
+
+type = custom/script
+exec = ~/.config/polybar/modules/timer.sh
+tail = true
+
+format-background = #c2c7ce
+format-padding = 2
 
 ; Wifi
 ; ----------------------------------------------------------------------------
@@ -169,7 +181,7 @@ label-disconnected =
 
 [module/volume]
 
-type = internal/volume
+type = internal/alsa
 
 ; master-mixer = Master
 ; speaker-mixer = Speaker

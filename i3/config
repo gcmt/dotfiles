@@ -221,6 +221,10 @@ bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 5
 bindsym XF86KbdBrightnessUp exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -inc 5
 bindsym XF86KbdBrightnessDown exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -dec 5
 
+# Pomodoro
+bindsym XF86LaunchB exec --no-startup-id timer -start 45
+bindsym $mod+XF86LaunchB exec --no-startup-id timer -stop
+
 # Dark Colors
 # ----------------------------------------------------------------------------
 

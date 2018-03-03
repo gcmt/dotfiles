@@ -1,0 +1,26 @@
+#!/bin/bash
+
+timer="$HOME/.cache/timer"
+
+case $1 in
+
+	-start)
+		if [[ -z "$2" ]]; then
+			echo 2>&1 "Usage: timer -start minutes"
+			exit 1
+		fi
+		echo $(expr $(date +'%s') + $2 "*" 60) > "$timer"
+	;;
+
+	-stop)
+      if [[ -e "$timer" ]]; then
+			rm "$timer"
+		fi
+	;;
+
+	*)
+		echo 2>&1 "Usage: timer [-start|-stop] [minutes]"
+		exit 1
+	;;
+
+esac

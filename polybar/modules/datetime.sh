@@ -1,6 +1,5 @@
 #!/bin/bash
 
-timer="$HOME/.cache/timer"
 verbosity=0
 
 toggle() {
@@ -11,15 +10,10 @@ trap "toggle" SIGUSR1
 
 while true; do
 
-	padding="  "
-	if [[ -e "$timer" ]]; then
-		padding=
-	fi
-
 	if (( $verbosity == 1 )); then
-		echo "$(date +'%a %d %H:%M:%S')$padding"
+		date +'%a %d %H:%M:%S'
 	else
-		echo "$(date +'%a %d %H:%M')$padding"
+		date +'%a %d %H:%M'
 	fi
 
 	sleep 1 &

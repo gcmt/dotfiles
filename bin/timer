@@ -1,26 +1,54 @@
 #!/bin/bash
 
-timer="$HOME/.cache/timer"
+timer="/tmp/timer"
 
-case $1 in
+get_duration() {
+	local n mod total=0
+	for arg in "$@"; do
+		n=$(echo "$arg" | grep -o '^[0-9]\+')
+		(( $? != 0 )) && continue
+		mod=$(echo "$arg" | grep -o '\([sm]$\|$\)')
+		(( $? != 0 )) && continue
+		case $mod in
+			s) total=$(expr $total + $n);;
+			m) total=$(expr $total + $n "*" 60);;
+			*) total=$(expr $total + $n "*" 60);;
+		esac
+	done
+	echo "$total"
+}
 
-	-start)
-		if [[ -z "$2" ]]; then
-			echo 2>&1 "Usage: timer -start minutes"
-			exit 1
+start_timer() {
+	local seconds="$(get_duration "$@")"
+	[[ -z "$seconds" ]] && return 1
+	expr $(date +'%s') + "$seconds" > "$timer"
+}
+
+stop_timer() {
+	rm -f "$timer"
+}
+
+case "$1" in
+
+	start)
+		start_timer "$@" || exit 1
+		;;
+
+	toggle)
+		if [[ -e "$timer" ]]; then
+			stop_timer
+		else
+			start_timer "$@" || exit 1
 		fi
-		echo $(expr $(date +'%s') + $2 "*" 60) > "$timer"
-	;;
+		;;
 
-	-stop)
-      if [[ -e "$timer" ]]; then
-			rm "$timer"
-		fi
-	;;
+	stop)
+		stop_timer
+		;;
 
 	*)
-		echo 2>&1 "Usage: timer [-start|-stop] [minutes]"
+		echo 2>&1 "Usage: timer [start|stop|toggle] [durations]"
 		exit 1
-	;;
+		;;
 
 esac

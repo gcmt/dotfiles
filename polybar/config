@@ -65,7 +65,7 @@ border-bottom-size = 0
 border-color = #00000000
 
 padding-left = 0
-padding-right = 0
+padding-right = 2
 
 module-margin-left = 3
 module-margin-right = 0
@@ -140,10 +140,10 @@ tail = true
 
 type = custom/script
 exec = ~/.config/polybar/modules/timer.sh
+click-left = bash -c "kill -SIGUSR1 %pid%"
 tail = true
 
-format-background = #c2c7ce
-format-padding = 2
+label = "%{B#00e7e8eb} %{B-}   %output%"
 
 ; Wifi
 ; ----------------------------------------------------------------------------

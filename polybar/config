@@ -218,42 +218,5 @@ bar-volume-empty = ─
 bar-volume-empty-font = 2
 bar-volume-empty-foreground = ${colors.foreground}
 
-; Cpu
-; ----------------------------------------------------------------------------
-
-[module/cpu]
-
-type = internal/cpu
-interval = 2
-format-prefix = " "
-format-prefix-foreground = ${colors.foreground}
-format-underline = #f90000
-label = %percentage%%
-
-; Memory
-; ----------------------------------------------------------------------------
-
-[module/memory]
-
-type = internal/memory
-interval = 2
-format-prefix = " "
-format-prefix-foreground = ${colors.foreground}
-format-underline = #4bffdc
-label = %percentage_used%%
-
-; Filesystem
-; ----------------------------------------------------------------------------
-
-[module/filesystem]
-
-type = internal/fs
-interval = 25
-
-mount-0 = /
-mount-1 = /boot
-mount-2 = /home
-
-label-mounted = %mountpoint% %percentage_used%%
 
 ; vim:ft=dosini cms=;\ %s

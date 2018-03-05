@@ -121,7 +121,7 @@ label-urgent-padding = 2
 
 type = custom/script
 exec = ~/.config/polybar/modules/battery.sh
-tail = true
+interval = 30
 
 ; Date & time
 ; ----------------------------------------------------------------------------

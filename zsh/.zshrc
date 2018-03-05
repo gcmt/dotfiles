@@ -226,7 +226,7 @@ add-zsh-hook precmd set-title
 forget-commands() {
 	local cmd="${${(z)1}[1]}"
 	# forget mistyped commands
-	if [[ ! -e "$cmd" ]] && ! hash "$cmd" 2>/dev/null; then
+	if [[ ! -e "$cmd" ]] && ! type "$cmd" >/dev/null 2>&1; then
 		return 1
 	fi
 	if [[ "$1" =~ '^(fg|rm|mv|cp|l|la|zs|ze|mcd|mkdir)\>' ]]; then

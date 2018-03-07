@@ -41,7 +41,10 @@ func! s:setup_buffer(current)
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
-	setl stl=\ :Buffers
+	let b:buffers_laststatus_save = &laststatus
+	au BufLeave <buffer> let &laststatus = b:buffers_laststatus_save
+	setl laststatus=0
+	echo
 endf
 
 func! buffers#render_buffers()

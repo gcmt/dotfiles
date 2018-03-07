@@ -1,64 +1,65 @@
 
 let s:bufname = '__finder__'
 
-func finder#find(prg, query) abort
-	let res = s:search(a:prg, a:query)
-	if !empty(res.err)
-		return s:err(res.err)
+func finder#findg(path, query) abort
+	if empty(a:query)
+		return s:err('Empty query')
 	end
-	if empty(res.matches)
-		return s:err("Nothing found")
+	let cmd = printf('rg -l %s %s', shellescape(a:query), shellescape(a:path))
+	let results = systemlist(cmd)
+	if v:shell_error
+		return s:err(join(results, "\n"))
 	end
-	if len(res.matches) == 1
-		exec 'edit' fnameescape(res.matches[0])
-	else
-		call s:view_results(a:query, res.matches)
-	end
+	call s:view_results(results)
 endf
 
-func s:view_results(query, matches) abort
+
+func finder#find(path, query) abort
+	if empty(a:query)
+		return s:err('Empty query')
+	end
+	let input = system('rg --files ' . shellescape(a:path))
+	let results = systemlist('rg ' . shellescape(a:query), input)
+	if v:shell_error
+		return s:err(join(results, "\n"))
+	end
+	call s:view_results(results)
+endf
+
+func s:view_results(results) abort
+	if empty(a:results)
+		return s:err("Nothing found")
+	end
 	if bufwinnr(s:bufname) != -1
 		" if the buffer is already visible, just move there
 		exec bufwinnr(s:bufname).'wincmd w'
 	else
 		exec 'sil keepj keepa botright 1new' s:bufname
+		let b:finder = {'table': {}}
 		setl filetype=finder buftype=nofile bufhidden=delete nobuflisted
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
-		let b:finder = {'table': {}}
 		let b:finder_laststatus_save = &laststatus
 		au BufLeave <buffer> let &laststatus = b:finder_laststatus_save
 		setl laststatus=0
 		echo
 	end
-	call s:render(a:matches)
+	call s:render(a:results[:g:finder_max_results])
 	norm! gg
 endf
 
-" Return all files that match the given query
-func s:search(prg, query) abort
-	let last_err = ''
-	let query = join(map(split(a:query), 'shellescape(v:val)'))
-	let out = systemlist(printf(a:prg, query))
-	if v:shell_error
-		return {'matches': [], 'err': join(out, "\n")}
-	end
-	let matches = out[:g:finder_max_results]
-	return {'matches': matches, 'err': ''}
-endf
-
-func s:render(matches) abort
+func s:render(files) abort
 
 	syntax clear
 	setl modifiable
 	sil %delete _
 
-	call s:resize_window(len(a:matches))
+	call s:resize_window(len(a:files))
 
 	let text = []
 	let b:finder.table = {}
-	for [i, path] in map(copy(a:matches), '[v:key+1, v:val]')
+	for [i, path] in map(copy(a:files), '[v:key+1, v:val]')
 
 		let line = ''
 		let b:finder.table[i] = path
@@ -69,7 +70,7 @@ func s:render(matches) abort
 
 		if path != tail
 			exec 'syn match FinderDim /\%'.i.'l\%'.(len(line)+1).'c.*/'
-			let line .= ' › ' . path
+			let line .= ' ' . path
 		end
 
 		call add(text, line)

@@ -19,11 +19,11 @@ command! -nargs=+ -complete=custom,<sid>findg_preview Findg call <sid>findg(<q-a
 
 func s:find(args)
 	let args = join(split(a:args), '.*')
-	call finder#find(g:finder_findprg, args)
+	call finder#find(getcwd(), args)
 endf
 
 func s:findg(args)
-	call finder#find(g:finder_findgprg, a:args)
+	call finder#findg(getcwd(), a:args)
 endf
 
 func s:find_preview(ArgLead, CmdLine, CursorPos)
@@ -39,8 +39,6 @@ func s:findg_preview(ArgLead, CmdLine, CursorPos)
 endf
 
 let s:options = {
-	\ 'findgprg': 'rg -l %s',
-	\ 'findprg': 'rg --files | rg %s',
 	\ 'max_winsize': 50,
 	\ 'min_winsize': 1,
 	\ 'max_results': 100,

@@ -66,14 +66,7 @@ def main():
     exclude = ('Trash', 'Spam', 'Sent', 'Queue', 'Drafts', 'Archive', 'Notes', 'LinkedIn', 'News')
     unread_mailboxes = {k: v for k, v in unread_mailboxes.items() if k not in exclude}
     unread_count = sum(unread_mailboxes.values())
-
-    if unread_mailboxes:
-        filler = "a total of " if len(unread_mailboxes) > 1 else ""
-        messages = "message" if unread_count == 1 else "messages"
-        mailboxes = ', '.join(unread_mailboxes)
-        msg = f"You have {filler}{unread_count} unread {messages} in {mailboxes}"
-        notify(msg)
-        print(msg)
+    print(unread_count)
 
     conn.logout()
 
@@ -81,6 +74,6 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except imaplib.IMAP4.error as e:
+    except (imaplib.IMAP4.error, OSError) as e:
         print(f'ERROR: {e}', file=sys.stderr)
         sys.exit(1)

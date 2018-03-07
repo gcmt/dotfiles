@@ -23,18 +23,20 @@ notify() {
 
 charge=$(acpi -b | grep -Po '[0-9]+(?=%)')
 
-if (( $charge < 15 )); then
+if is_charging; then
+	icon=""
+elif (( $charge < 15 )); then
 	notify 120 "Remaining charge:  $charge%"
-	icon=""
+	icon=""
 elif (( $charge < 30 )); then
 	notify 240 "Remaining charge:  $charge%"
-	icon=""
+	icon=""
 elif (( $charge < 50 )); then
-	icon=""
+	icon=""
 elif (( $charge < 75 )); then
-	icon=""
+	icon=""
 else
-	icon=""
+	icon=""
 fi
 
 echo "$icon $charge%"

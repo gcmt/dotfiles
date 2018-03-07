@@ -209,7 +209,7 @@
 
 	func! _venv()
 		if !&diff && &ft == 'python' && !empty($VIRTUAL_ENV)
-			return '[' . fnamemodify($VIRTUAL_ENV, ':t') . '] '
+			return 'py:' . fnamemodify($VIRTUAL_ENV, ':t') . s:sep
 		end
 		return ''
 	endf
@@ -247,13 +247,13 @@
 	endf
 
 	let &stl  = ' '
-	let &stl .= '%#StatusLineGreen#%{_venv()}%*'
 	let &stl .= '%{_alternate_buffer()}'
 	let &stl .= '%(%w%r%h %)'
 	let &stl .= '%{&mod ? "" : _current_buffer()}'
 	let &stl .= '%#StatusLineMod#%{&mod ? _current_buffer() : ""}%*'
 	let &stl .= '%='
 	let &stl .= '%{_git_branch()}'
+	let &stl .= '%{_venv()}'
 	let &stl .= '%{_meta()}'
 	let &stl .= '%1lL %02cC (%P) '
 	let &stl .= '%{_flags()}'

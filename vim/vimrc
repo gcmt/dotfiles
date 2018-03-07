@@ -681,20 +681,9 @@
 
 	" Edit filetype plugin
 	command! -nargs=? -complete=filetype Ftedit call <sid>ft_edit(<q-args>)
-
 	func! s:ft_edit(ft)
 		let ft = empty(a:ft) ? &ft : a:ft
-		let paths = []
-		call extend(paths, split(globpath(&rtp, 'after/ftplugin/'.ft.'.vim')))
-		call extend(paths, split(globpath(&rtp, 'plugins/ftplugin/'.ft.'.vim')))
-		call filter(paths, "v:val =~ '\\V\\^'.$VIMHOME")
-		if !empty(paths)
-			exec 'edit' fnameescape(paths[0])
-		else
-			" create the file if it doesn't exist
-			let path = $VIMHOME.'/after/ftplugin/'.ft.'.vim'
-			exec 'edit' fnameescape(path)
-		end
+		call finder#find($HOME . '/.dotfiles', 'ftplugin.*'.ft.'\.vim$')
 	endf
 
 	command! -nargs=0 Vimrc edit $MYVIMRC

@@ -1,13 +1,13 @@
 * {
 
-	font: "Noto Sans Regular 11";
+	font: "Noto Sans Regular 14";
 
 	background: rgba(237, 237, 239, 100%);
 	foreground: rgba(82, 86, 94, 100%);
 	scrollbar: rgba(215, 219, 224, 100%);
 
 	shadow: rgba(0, 0, 0, 0%);
-	inputbar-background: rgba(222, 225, 229, 100%);
+	inputbar-background: @background;
 	border-color: rgba(222, 225, 229, 100%);
 	separator-color: rgba(222, 225, 229, 100%);
 	background-color: rgba(0, 0, 0, 0%);
@@ -56,7 +56,7 @@ inputbar {
 	spacing: 0;
 	text-color: @normal-foreground;
 	background-color: @inputbar-background;
-	padding: 10 8;
+	padding: 8 8;
 }
 
 case-indicator {
@@ -83,6 +83,7 @@ listview {
 }
 
 element {
+	font: "Noto Sans Regular 11";
 	border: 0px 0px 1px solid;
 	border-color: @separator-color;
 	padding: 6 8;

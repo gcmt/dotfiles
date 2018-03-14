@@ -1,12 +1,12 @@
 * {
 
-	font: "Noto Mono 10";
+	font: "Noto Sans Mono 9.5";
 
 	background: rgba(37, 41, 51, 100%);
 	foreground: rgba(142, 146, 153, 100%);
 
 	scrollbar: rgba(30, 34, 43, 100%);
-	inputbar-background: rgba(43, 47, 58, 100%);
+	inputbar-background: @background;
 	border-color: rgba(30, 34, 43, 100%);
 	separator-color: rgba(43, 47, 58, 100%);
 	background-color: rgba(0, 0, 0, 0%);

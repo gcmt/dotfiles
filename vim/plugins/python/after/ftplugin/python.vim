@@ -5,8 +5,11 @@ iabbrev <buffer> none None
 iabbrev <buffer> true True
 iabbrev <buffer> false False
 
-nnoremap <silent> <buffer> <f5> :!python %<cr>
-inoremap <silent> <buffer> <f5> <esc>:!python %<cr>
+if exists('$TMUX')
+	nnoremap <silent> <buffer> <leader>r :call python#utils#tmux_run()<cr>
+else
+	nnoremap <silent> <buffer> <leader>r :python %<cr>
+end
 
 inoremap <buffer> <c-b> <c-r>="import pudb; pudb.set_trace()\n"<cr>
 

@@ -113,14 +113,6 @@ activate() {
 	echo "virtual environment activated: $venv"
 }
 
-# quick file search with ripgrep
-rgf() {
-	rg --files -g "!node_modules/*" -g "!venv/*" | rg "$@"
-}
-rgfa() {
-	rg --files --hidden -g "!node_modules/*" -g "!venv/*" -g "!.git/*" | rg "$@"
-}
-
 # search and open files with vim
 vimf() {
 	local flist=$(mktemp -d)/filelist
@@ -171,10 +163,13 @@ alias ze='vim $ZDOTDIR/.zshrc'
 alias zs='source $ZDOTDIR/.zshrc'
 
 alias cb='cd -'
-
 alias ..=' ..'
 alias ...=' ../..'
 alias ....=' ../../..'
+
+alias tree1='tree -L 1'
+alias tree2='tree -L 2'
+alias tree3='tree -L 3'
 
 alias rm='rm -Iv'
 alias mv='mv -iv'
@@ -182,10 +177,10 @@ alias cp='cp -iv'
 alias mkdir='mkdir -pv'
 
 alias ls='ls --color=auto --group-directories-first'
-alias l='ls -F'
-alias la='ls -AF'
-alias ll='ls -lhF'
-alias lla='ls -lhAF'
+alias l='ls'
+alias la='ls -A'
+alias ll='ls -lh'
+alias lla='ls -lhA'
 
 alias py="python"
 alias ipy="ipython"

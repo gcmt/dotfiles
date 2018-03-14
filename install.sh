@@ -52,6 +52,10 @@ if [[ "$@" =~ '-termite' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/termite" "$XDG_CONFIG_HOME/termite"
 fi
 
+if [[ "$@" =~ '-alacritty' || "$@" =~ '-all' ]]; then
+	link "$DOTDIR/alacritty" "$XDG_CONFIG_HOME/alacritty"
+fi
+
 if [[ "$@" =~ '-vim' || "$@" =~ '-all' ]]; then
 	mkdir -p "$XDG_DATA_HOME/vim"
 	mkdir -p "$XDG_CACHE_HOME/vim/undofiles"

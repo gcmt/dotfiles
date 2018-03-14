@@ -14,18 +14,18 @@ let g:colors_name = 'dark'
 set background=dark
 
 let  s:bg           =  ['#1e222b', 0]
-let  s:bg_lighter   =  ['#252933', 255]
-let  s:fg           =  ['#8e9299', 255]
-let  s:fg_dim       =  ['#636770', 255]
-let  s:fg_very_dim  =  ['#444751', 255]
-let  s:fg_vvery_dim =  ['#3a3e4a', 255]
-let  s:blue         =  ['#657B99', 255]
-let  s:cyan         =  ['#739492', 255]
-let  s:green        =  ['#768A78', 255]
-let  s:magenta      =  ['#917086', 255]
-let  s:red          =  ['#945F65', 255]
-let  s:orange       =  ['#998068', 255]
-let  s:yellow       =  ['#A39465', 255]
+let  s:bg_lighter   =  ['#252933', 0]
+let  s:fg           =  ['#8e9299', 15]
+let  s:fg_dim       =  ['#636770', 7]
+let  s:fg_very_dim  =  ['#444751', 7]
+let  s:fg_vvery_dim =  ['#3a3e4a', 7]
+let  s:red          =  ['#945F65', 1]
+let  s:green        =  ['#768A78', 2]
+let  s:yellow       =  ['#A39465', 3]
+let  s:blue         =  ['#657B99', 4]
+let  s:magenta      =  ['#917086', 5]
+let  s:cyan         =  ['#739492', 6]
+let  s:orange       =  ['#998068', 15]
 
 fun! s:h(group, fg, bg, attr, sp)
 	if !empty(a:fg)

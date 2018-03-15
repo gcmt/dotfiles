@@ -212,9 +212,7 @@ zle -N zle-keymap-select
 autoload -U add-zsh-hook
 
 set-title() {
-	if [[ "$TERM" == *xterm* ]]; then
-		print -n "\e]2;$PWD - Terminal\a"
-	fi
+	print -n "\e]2;$PWD - Terminal\a"
 }
 add-zsh-hook precmd set-title
 

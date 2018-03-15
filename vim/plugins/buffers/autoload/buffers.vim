@@ -68,14 +68,14 @@ func! buffers#render_buffers()
 
 		let name = bufname(nr)
 		let path = empty(name) ? '' : s:prettify_path(fnamemodify(name, ':p'))
-		let tail = empty(name) ? 'unnamed_'.nr : fnamemodify(path, ':t')
+		let tail = empty(name) ? 'unnamed ('.nr.')' : fnamemodify(path, ':t')
 
 		let line = ''
 		let line .= tail
 		let line .= getbufvar(nr, '&mod') ? ' * ' : ''
 		if !empty(path) && path != tail
 			exec 'syn match BuffersDim /\%'.i.'l\%'.(len(line)+1).'c.*/'
-			let line .= ' › ' . path
+			let line .= ' ' . path
 		end
 
 		call add(text, line)

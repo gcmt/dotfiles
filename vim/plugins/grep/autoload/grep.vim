@@ -55,6 +55,7 @@ func! grep#render() abort
 	endfor
 	call matchadd('LineNr', '\v^\s*\d+')
 	setl nomodifiable nomodified
+	norm! ^w
 endf
 
 func! grep#try_render()

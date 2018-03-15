@@ -28,13 +28,12 @@ for_window [class="Qalculate"] floating enable
 for_window [class="Ssh-askpass"] floating enable
 for_window [class="KeepassXC"] layout stacking
 for_window [class="Firefox" title="Library"] layout stacking
-for_window [class="Termite" window_role="floating"] floating enable, resize set 900 500, move position center
 
-for_window [class="Termite" title="i3/config"] floating enable, resize set 1000 600, move position center
-for_window [class="Termite" window_role="notes"] floating enable, resize set 1000 600, move position center
-for_window [class="Termite" window_role="logbook"] floating enable, resize set 1000 600, move position center
+for_window [class="st-256color" instance="st-floating"] floating enable, resize set 80ppt 70ppt, move position center
+for_window [class="st-256color" title="i3/config"] floating enable, resize set 80ppt 70ppt, move position center
+for_window [class="st-256color" instance="notes"] floating enable, resize set 80ppt 70ppt, move position center
+for_window [class="st-256color" instance="logbook"] floating enable, resize set 80ppt 70ppt, move position center
 
-# ›
 for_window [class=".*"] title_format " %title"
 
 # Bindings
@@ -43,18 +42,18 @@ for_window [class=".*"] title_format " %title"
 # Shortcuts
 bindsym $mod+Control+m [class="Rhythmbox"] focus
 bindsym $mod+Control+b [class="Firefox"] focus
-bindsym $mod+Control+t [class="Termite" title="Tmux"] focus
+bindsym $mod+Control+t [class="st-256color" title="Tmux"] focus
 
 # Kill window
 bindsym $mod+Shift+q kill
 
 # Open last active tmux session
-bindsym $mod+u exec termite -e "t"
-bindsym $mod+Shift+u exec termite -e "t" --role floating
+bindsym $mod+u exec --no-startup-id st -e t
+bindsym $mod+Shift+u exec --no-startup-id st -n st-floating -e t
 
 # Open the scratch tmux session
-bindsym $mod+plus exec termite -e "t scratch"
-bindsym $mod+Shift+plus exec termite -e "t scratch" --role floating
+bindsym $mod+plus exec --no-startup-id st -e t scratch
+bindsym $mod+Shift+plus exec --no-startup-id st -n st-floating -e t scratch
 
 # Pick tmux session
 bindsym $mod+Control+u exec rofi-tmux
@@ -168,8 +167,8 @@ bindsym $mod+Shift+minus move scratchpad
 # Edit shortcut
 mode "edit" {
 
-	bindsym l exec termite -e "vim $(date '+%Y-%m-%d').txt" -d 'Documents/logbook' --role logbook; mode "default"
-	bindsym n exec termite -e 'vim wall.md' -d 'Documents/notes' --role notes; mode "default"
+	bindsym l exec --no-startup-id st -n logbook -e vim Documents/logbook/$(date '+%Y-%m-%d').txt +'cd %:p:h'; mode "default"
+	bindsym n exec --no-startup-id st -n notes -e vim Documents/notes/wall.md +'cd %:p:h'; mode "default"
 
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
@@ -181,7 +180,7 @@ bindsym $mod+e mode "edit"
 # i3 commands
 mode "i3" {
 
-	bindsym c exec termite -e 'vim .config/i3/config'; mode "default"
+	bindsym c exec --no-startup-id st -n st-floating -e vim .config/i3/config; mode "default"
 	bindsym $alt+Control+BackSpace exit
 	bindsym Shift+r restart
 	bindsym r reload
@@ -200,7 +199,7 @@ bindsym $mod+i mode "i3"
 bindsym XF86AudioPlay exec --no-startup-id cmus-remote --pause
 bindsym XF86AudioNext exec --no-startup-id cmus-remote --next
 bindsym XF86AudioPrev exec --no-startup-id cmus-remote --prev
-bindsym $mod+XF86AudioPlay exec termite -e "cmus-tmux" --role floating
+bindsym $mod+XF86AudioPlay exec --no-startup-id st -n st-floating -e cmus-tmux
 bindsym $mod+XF86AudioNext exec --no-startup-id cmus-remote --repeat
 bindsym $mod+XF86AudioPrev exec --no-startup-id cmus-remote --seek 0
 

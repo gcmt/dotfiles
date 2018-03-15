@@ -56,6 +56,12 @@ if [[ "$@" =~ '-alacritty' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/alacritty" "$XDG_CONFIG_HOME/alacritty"
 fi
 
+if [[ "$@" =~ '-st' || "$@" =~ '-all' ]]; then
+	mkdir -p "$XDG_DATA_HOME/st"
+	link "$DOTDIR/st/config.h" "$XDG_CONFIG_HOME/st/config.h"
+	link "$DOTDIR/st/PKGBUILD" "$XDG_CONFIG_HOME/st/PKGBUILD"
+fi
+
 if [[ "$@" =~ '-vim' || "$@" =~ '-all' ]]; then
 	mkdir -p "$XDG_DATA_HOME/vim"
 	mkdir -p "$XDG_CACHE_HOME/vim/undofiles"

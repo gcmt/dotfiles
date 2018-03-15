@@ -47,7 +47,7 @@ submenu() {
 			notify-send "Pass" "Copied $1 '$choice' to clipboard. Will clear in 45 seconds."
 			;;
 		11)
-			termite -e "pass edit $1"
+			st -e pass edit "$1"
 			;;
 	esac
 
@@ -88,7 +88,7 @@ main() {
 			submenu "$entry"
 			;;
 		10)
-			termite -e "pass edit $entry"
+			st -e pass edit "$entry"
 			;;
 		11)
 			pass -c "$entry"

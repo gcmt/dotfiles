@@ -10,7 +10,7 @@ fi
 
 case $rofi_exit in
 	10|11)
-		exec termite -e "t '$session'" --role "floating" ;;
+		exec st -n st-floating -e t "$session" ;;
 	*)
-		exec termite -e "t '$session'" ;;
+		exec st -e t "$session" ;;
 esac

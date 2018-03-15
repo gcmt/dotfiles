@@ -106,6 +106,8 @@
 	colorscheme dark
 
 	if has('termguicolors')
+		let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+		let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
 		set termguicolors
 	end
 
@@ -138,6 +140,10 @@
 
 	set virtualedit=all
 	set mouse=a
+
+	if $TERM == 'st-256color'
+		set ttymouse=sgr
+	end
 
 	set noexpandtab
 	set tabstop=3

@@ -61,7 +61,7 @@ rofi.pid: /run/user/1000/rofi.pid
 rofi.click-to-exit: false
 
 ! Terminal to use
-rofi.terminal: rofi-sensible-terminal
+rofi.terminal: st
 
 ! THEMING
 ! ----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ rofi.ssh-client: ssh
 
 ! Set the command to execute when starting a ssh session.
 ! The pattern {host} is replaced by the selected ssh entry.
-rofi.ssh-command: {terminal} -e {ssh-client} {host}
+rofi.ssh-command: st -e {ssh-client} {host}
 
 ! Parse the /etc/hosts file for entries.
 rofi.parse-hosts: false
@@ -189,7 +189,7 @@ rofi.display-drun:
 rofi.run-command: {cmd}
 
 ! Set command to execute when running an application in a shell.
-rofi.run-shell-command: termite -e {cmd}
+rofi.run-shell-command: st -e {cmd}
 
 ! If set, use an external tool to generate list of executable commands.
 ! Uses 'run-command'.

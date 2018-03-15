@@ -328,19 +328,19 @@ trim-prompt-cwd() {
 zle -N trim-prompt-cwd
 bindkey '^t' trim-prompt-cwd
 
-# cd-back() {
-	# popd
-	# zle reset-prompt
-# }
-# zle -N cd-back
-# bindkey '^[b' cd-back
+cd-back() {
+	popd
+	zle reset-prompt
+}
+zle -N cd-back
+bindkey '^b' cd-back
 
-# cd-parent() {
-	# pushd ..
-	# zle reset-prompt
-# }
-# zle -N cd-parent
-# bindkey '^[u' cd-parent
+cd-parent() {
+	pushd ..
+	zle reset-prompt
+}
+zle -N cd-parent
+bindkey '^u' cd-parent
 
 # EXTERNAL
 # ----------------------------------------------------------------------------

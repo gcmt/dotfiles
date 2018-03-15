@@ -197,13 +197,12 @@ alias http="http --style=algol"
 # use different colors for each mode
 zle-keymap-select() {
 	case $KEYMAP in
-		viins|main) zle_highlight=(default:fg=15) ;;
+		viins|main) zle_highlight=(default:fg=magenta) ;;
 		vicmd) zle_highlight=(default:fg=white) ;;
 	esac
-	zle reset-prompt
 }
 
-zle_highlight=(default:fg=15)
+zle_highlight=(default:fg=magenta)
 zle -N zle-keymap-select
 
 # HOOKS

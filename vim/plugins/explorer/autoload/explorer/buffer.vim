@@ -98,7 +98,7 @@ func! s:do_highlight(offset)
 endf
 
 func! s:ls_command()
-	let flags = "-lhF"
+	let flags = "-lhFH"
 	let flags .= g:explorer_hide_owner_and_group ? 'go' : ''
 	let cols = g:explorer_auto_hide_owner_and_group
 	let flags .= cols && winwidth(0) < cols && flags !~ 'go' ? 'go' : ''

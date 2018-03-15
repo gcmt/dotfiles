@@ -1,0 +1,4 @@
+#!/bin/bash
+
+props=$(xprop | grep 'WM_WINDOW_ROLE\|WM_CLASS' | sed 's/(STRING)//')
+notify-send -t 20000 "xprop" "$props"

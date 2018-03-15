@@ -12,29 +12,33 @@ let g:finder_loaded = 1
 
 " Search for files that match the given pattern.
 " Without arguments, the last search results are shown.
-command! -nargs=+ -complete=custom,<sid>find_preview Find call <sid>find(<q-args>)
+command! -bang -nargs=+ -complete=custom,<sid>find_preview Find call <sid>find(<q-bang>, <q-args>)
 
 " Search for files that contain the given pattern.
-command! -nargs=+ -complete=custom,<sid>findg_preview Findg call <sid>findg(<q-args>)
+command! -bang -nargs=+ -complete=custom,<sid>findg_preview Findg call <sid>findg(<q-bang>, <q-args>)
 
-func s:find(args)
+func s:find(bang, args)
 	let args = join(split(a:args), '.*')
-	call finder#find(getcwd(), args)
+	let path = empty(a:bang) ? getcwd() : expand('%:p:h')
+	call finder#find(path, args)
 endf
 
-func s:findg(args)
-	call finder#findg(getcwd(), a:args)
+func s:findg(bang, args)
+	let path = empty(a:bang) ? getcwd() : expand('%:p:h')
+	call finder#findg(path, a:args)
 endf
 
 func s:find_preview(ArgLead, CmdLine, CursorPos)
-	let args = join(split(a:CmdLine)[1:])
-	call s:find(args)
+	let cmd = split(a:CmdLine)
+	let bang = matchstr(cmd[0], '\v!$')
+	call s:find(bang, join(cmd[1:]))
 	redraw | return ''
 endf
 
 func s:findg_preview(ArgLead, CmdLine, CursorPos)
-	let args = join(split(a:CmdLine)[1:])
-	call s:findg(args)
+	let cmd = split(a:CmdLine)
+	let bang = matchstr(cmd[0], '\v!$')
+	call s:findg(bang, join(cmd[1:]))
 	redraw | return ''
 endf
 

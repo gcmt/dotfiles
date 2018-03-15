@@ -11,6 +11,8 @@ export EDITOR=vim
 export BORG_REMOTE_PATH=borg1
 export VIRTUAL_ENV_DISABLE_PROMPT=1
 
+export LS_COLORS='fi=97'
+
 export LC_ALL=en_US.UTF-8
 export LANG=en_US.UTF-8
 

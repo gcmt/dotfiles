@@ -4,7 +4,7 @@
 
 # use vim for viewing man pages
 export MANPAGER="/bin/bash -c \
-	\"vim -M -c 'setl ft=man ts=8 nolist nonu' -c 'nn <buffer> q :q<cr>' \
+	\"vim -M -c 'setl ft=man ts=8 nolist nonu' -c 'nn <silent> <buffer> q :q<cr>' \
 	< /dev/tty <(col -b)\""
 
 export EDITOR=vim

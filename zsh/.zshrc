@@ -2,19 +2,9 @@
 # EXPORTS
 # ----------------------------------------------------------------------------
 
-# use vim for viewing man pages
-export MANPAGER="/bin/bash -c \
-	\"vim -M -c 'setl ft=man ts=8 nolist nonu' -c 'nn <silent> <buffer> q :q<cr>' \
-	< /dev/tty <(col -b)\""
-
-export EDITOR=vim
 export BORG_REMOTE_PATH=borg1
 export VIRTUAL_ENV_DISABLE_PROMPT=1
-
 export LS_COLORS='fi=97'
-
-export LC_ALL=en_US.UTF-8
-export LANG=en_US.UTF-8
 
 export LESSKEY="$XDG_CONFIG_HOME/less/keys"
 export LESSHISTFILE="$XDG_DATA_HOME/less/history"
@@ -346,8 +336,8 @@ bindkey '^u' cd-parent
 
 if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
 	source "$ZDATADIR/ext/rofi.zsh"
-	# bindkey '^f' rofi-find
-	# bindkey '^g' rofi-cd
+	bindkey '^v' rofi-find
+	bindkey '^e' rofi-cd
 	# bindkey '^r' rofi-history
 fi
 

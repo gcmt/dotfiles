@@ -40,8 +40,11 @@ for_window [class=".*"] title_format " %title"
 
 # Shortcuts
 bindsym $mod+Control+m [class="Rhythmbox"] focus
-bindsym $mod+Control+b [class="Firefox"] focus
+bindsym $mod+Control+w [class="Firefox"] focus
 bindsym $mod+Control+t [class="st-256color" title="Tmux"] focus
+
+# Open Fastmail
+bindsym $mod+m exec --no-startup-id firefox -new-tab 'https://www.fastmail.com/mail/'
 
 # Kill window
 bindsym $mod+Shift+q kill
@@ -102,7 +105,7 @@ bindsym $mod+period focus child
 bindsym $mod+Shift+period focus parent
 
 # Move container
-bindsym $mod+Shift+c move position center
+bindsym $mod+c move position center
 bindsym $mod+Shift+h move left 10px
 bindsym $mod+Shift+j move down 10px
 bindsym $mod+Shift+k move up 10px
@@ -155,6 +158,7 @@ bindsym $mod+p workspace prev
 
 # Toggle tiling / floating
 bindsym $mod+f floating toggle
+bindsym $mod+shift+f floating enable; resize set 80ppt 70ppt; move position center
 
 # Change focus between tiling / floating windows
 bindsym $mod+z focus mode_toggle
@@ -189,7 +193,7 @@ mode "i3" {
 	bindsym Control+c mode "default"
 }
 
-bindsym $mod+i mode "i3"
+bindsym XF86Eject mode "i3"
 
 # Controls
 # ----------------------------------------------------------------------------

@@ -2,20 +2,20 @@
 
 	font: "Noto Sans Regular 14";
 
-	background: rgba(237, 237, 239, 100%);
+	background: rgba(231, 232, 235, 100%);
 	foreground: rgba(82, 86, 94, 100%);
 	scrollbar: rgba(215, 219, 224, 100%);
 
 	shadow: rgba(0, 0, 0, 0%);
 	inputbar-background: @background;
-	border-color: rgba(222, 225, 229, 100%);
-	separator-color: rgba(222, 225, 229, 100%);
-	background-color: rgba(0, 0, 0, 0%);
+	border-color: rgba(216, 217, 219, 100%);
+	separator-color: rgba(216, 217, 219, 100%);
+	background-color: @background;
 
 	normal-foreground: @foreground;
 	normal-background: @background;
 	selected-normal-foreground: @foreground;
-	selected-normal-background: rgba(222, 225, 229, 100%);
+	selected-normal-background: rgba(216, 217, 219, 100%);
 	alternate-normal-foreground: @foreground;
 	alternate-normal-background: @background;
 
@@ -44,12 +44,11 @@ window {
 mainbox {
 	border: 0;
 	padding: 7;
-	background-color: @background;
 }
 
 message {
 	border-color: @separator-color;
-	padding: 1px;
+	padding: 7;
 }
 
 inputbar {

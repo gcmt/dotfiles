@@ -41,20 +41,13 @@ def get_state(conn):
 
 def write_state(base_path, state):
     for mailbox, unread in state.items():
-        path = os.path.join(base_path, mailbox)
+        path = pathlib.Path(base_path, mailbox)
         try:
-            try:
-                with open(path, 'r') as f:
-                    prev_data = f.read()
-            except FileNotFoundError as e:
-                prev_data = None
+            prev_data = path.read_text() if path.exists() else None
             if unread != prev_data:
-                with open(path, 'w') as f:
-                    f.write(unread)
-                    pass
-
+                path.write_text(unread)
         except OSError as e:
-            pass
+            print(e, file=sys.stderr)
 
 
 def print_state(state):
@@ -68,7 +61,7 @@ def main():
 
     try:
         pathlib.Path(base_path).mkdir(exist_ok=True)
-    except FileExistsError as e:
+    except OSError as e:
         print(f"ERROR: Could not create directory {base_path}, {e}", file=sys.stderr)
         sys.exit(1)
 

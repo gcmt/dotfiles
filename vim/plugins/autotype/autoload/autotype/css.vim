@@ -12,18 +12,18 @@ endf
 
 func! autotype#css#outward_parenthesis()
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
-		return get(g:, 'loaded_pairs', 0) ? pairs#insert('(') : '('
+		return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
 	end
 	let before = autotype#before()
 	if before =~ '\v^\s*\@mixin \w*$'
 		return "(\<esc>m`a) {\<cr>}\<esc>k``a"
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#insert('(') : '('
+	return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
 endf
 
 func! autotype#css#outward_brace()
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
-		return get(g:, 'loaded_pairs', 0) ? pairs#insert('{') : '{'
+		return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('{') : '{'
 	end
 	let space = autotype#before() =~ '\v\s+$' ? '' : ' '
 	return "" . space . "{\<cr>}\<esc>O"

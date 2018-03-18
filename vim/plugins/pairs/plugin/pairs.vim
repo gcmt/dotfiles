@@ -10,9 +10,9 @@ if exists("g:loaded_pairs") || &cp
 end
 let g:loaded_pairs = 1
 
-inoremap <expr> { pairs#insert_par('{')
-inoremap <expr> [ pairs#insert_par('[')
-inoremap <expr> ( pairs#insert_par('(')
+inoremap <expr> { pairs#insert_paren('{')
+inoremap <expr> [ pairs#insert_paren('[')
+inoremap <expr> ( pairs#insert_paren('(')
 inoremap <expr> " pairs#insert_quote('"')
 inoremap <expr> ' pairs#insert_quote("'")
 inoremap <expr> ` pairs#insert_quote("`")

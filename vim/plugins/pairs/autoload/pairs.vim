@@ -3,23 +3,23 @@ let s:closing = {'{': '}', '[': ']', '(': ')', '"': '"', "'": "'", '`': '`'}
 
 " Returns the characters to the left of the cursor as a list
 " The last character is the current character
-func s:before()
+func! s:before()
 	return strpart(getline('.'), 0, col('.') - 1)
 endf
 
 " Returns the characters to the right of the cursor as a list
-func s:after()
+func! s:after()
 	return strpart(getline('.'), col('.') - 1)
 endf
 
-func pairs#insert_par(par)
+func! pairs#insert_paren(par)
 	if s:after() =~ '\v^\w'
 		return a:par
 	end
 	return a:par . get(s:closing, a:par, '') . "\<c-g>U\<left>"
 endf
 
-func pairs#insert_quote(quote)
+func! pairs#insert_quote(quote)
 	let after = s:after()
 	let before = s:before()
 	if &ft == 'vim' && a:quote == '"' && before =~ '\v^\s*$'
@@ -34,7 +34,7 @@ func pairs#insert_quote(quote)
 	return a:quote . a:quote . "\<c-g>U\<left>"
 endf
 
-func pairs#space()
+func! pairs#space()
 	let opening = matchstr(s:before(), '\v[[{(]\ze\s*$')
 	let closing = matchstr(s:after(), '\v^\s*\zs[]})]')
 	if !empty(opening) && closing == s:closing[opening]
@@ -43,7 +43,7 @@ func pairs#space()
 	return "\<c-]>\<space>"
 endf
 
-func pairs#delete(word)
+func! pairs#delete(word)
 	let default_action= a:word ? "\<c-w>" : "\<bs>"
 	let after = s:after()
 	let before = s:before()
@@ -63,7 +63,7 @@ func pairs#delete(word)
 	return default_action
 endf
 
-func pairs#newline()
+func! pairs#newline()
 	let opening = matchstr(s:before(), '\v[[{(]$')
 	let closing = matchstr(s:after(), '\v^[]})]')
 	if !empty(opening) && closing == s:closing[opening]

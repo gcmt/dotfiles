@@ -24,7 +24,7 @@ endf
 
 func! autotype#javascript#outward_parenthesis()
 	if g:autotype_disabled || autotype#inside('String', 'Comment') || indent(line('.')) < indent(nextnonblank(line('.')+1))
-		return get(g:, 'loaded_pairs', 0) ? pairs#insert('(') : '('
+		return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
 	end
 	let before = autotype#before()
 	let after = autotype#after()
@@ -38,19 +38,19 @@ func! autotype#javascript#outward_parenthesis()
 			return "() {\<cr>}\<esc>kg_F(a"
 		end
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#insert('(') : '('
+	return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
 endf
 
 func! autotype#javascript#outward_brace()
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
-		return get(g:, 'loaded_pairs', 0) ? pairs#insert('{') : '{'
+		return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('{') : '{'
 	end
 	let before = autotype#before()
 	let after = autotype#after()
 	if before =~ '\v\{$' && after =~ '\v^}'
 		return "\<cr>\<esc>O"
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#insert('{') : '{'
+	return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('{') : '{'
 endf
 
 func! autotype#javascript#colon()

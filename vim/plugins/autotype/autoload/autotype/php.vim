@@ -22,14 +22,14 @@ endf
 
 fun! autotype#php#outward_parenthesis()
 	if g:autotype_disabled || autotype#inside('String', 'Comment') || indent(line('.')) < indent(line('.')+1)
-		return get(g:, 'loaded_pairs', 0) ? pairs#insert('(') : '('
+		return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
 	end
 	let before = autotype#before()
 	let after = autotype#after()
 	if before =~ '\v<function \w*$' && after !~ '\v^\s*\{'
 		return "(\<esc>m`a) {\<cr>}\<esc>k``a"
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#insert('(') : '('
+	return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
 endf
 
 fun! autotype#php#dot()

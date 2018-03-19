@@ -4,8 +4,9 @@ func! autotype#vim#space()
 	let nextline = getline(nextnonblank(line('.')+1))
 	let indent = matchstr(line, '\v^\s*')
 	let nextindent = matchstr(nextline, '\v^\s*')
+	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
 	if g:autotype_disabled || autotype#inside('String', 'Comment') || len(indent) < len(nextindent)
-		return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+		return Space()
 	end
 	if line =~ '\v^\s*if$' && nextline !~ '\v^'.indent.'(else|end%[if])>'
 		return " \<cr>end\<esc>kA"
@@ -19,5 +20,5 @@ func! autotype#vim#space()
 	if line =~ '\v^\s*while$' && nextline !~ '\v^'.indent.'endw%[hile]>'
 		return " \<cr>endw\<esc>kA"
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+	return Space()
 endf

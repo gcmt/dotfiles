@@ -11,31 +11,34 @@ func! autotype#css#newline()
 endf
 
 func! autotype#css#outward_parenthesis()
+	let Paren = {-> exists('*pairs#insert_paren') ? pairs#insert_paren('(') : '('}
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
-		return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
+		return Paren()
 	end
 	let before = autotype#before()
 	if before =~ '\v^\s*\@mixin \w*$'
 		return "(\<esc>m`a) {\<cr>}\<esc>k``a"
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
+	return Paren()
 endf
 
 func! autotype#css#outward_brace()
+	let Brace = {-> exists('*pairs#insert_paren') ? pairs#insert_paren('{') : '{'}
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
-		return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('{') : '{'
+		return Brace()
 	end
 	let space = autotype#before() =~ '\v\s+$' ? '' : ' '
 	return "" . space . "{\<cr>}\<esc>O"
 endf
 
 func! autotype#css#space()
+	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
-		return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+		return Space()
 	end
 	let before = autotype#before()
 	if before =~ '\v^\s+[^@][-a-z]+$' || before =~ '\v^\$[-a-z]+'
 		return ': '
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+	return Space()
 endf

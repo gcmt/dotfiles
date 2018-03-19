@@ -18,10 +18,11 @@ endf
 
 func! autotype#vue#space()
 	let linenr = line('.')
+	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
 	if linenr > s:style[0] && linenr <= s:style[1]
 		return autotype#css#space()
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+	return Space()
 endf
 
 func! autotype#vue#newline()

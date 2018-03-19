@@ -1,14 +1,15 @@
 
 func! autotype#elixir#space()
 	let line = getline('.')
+	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
 	if g:autotype_disabled || autotype#inside('String', 'Comment') || s:nextline_indented()
-		return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+		return Space()
 	end
 	let after = autotype#after()
 	if line =~ '\v^\s*def' && line =~ '\v,$' && after =~ '\v^\s*$'
 		return ' do: '
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+	return Space()
 endf
 
 fun! autotype#elixir#newline()

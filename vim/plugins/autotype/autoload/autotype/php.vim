@@ -1,7 +1,8 @@
 
 fun! autotype#php#space()
+	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
 	if g:autotype_disabled || autotype#inside('String', 'Comment') || indent(line('.')) < indent(line('.')+1)
-		return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+		return Space()
 	end
 	let before = autotype#before()
 	let after = autotype#after()
@@ -17,19 +18,20 @@ fun! autotype#php#space()
 	if before =~ '\v<class \w+$'
 		return " {\<cr>}\<esc>O"
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#space() : ' '
+	return Space()
 endf
 
 fun! autotype#php#outward_parenthesis()
+	let Paren = {-> exists('*pairs#insert_paren') ? pairs#insert_paren('(') : '('}
 	if g:autotype_disabled || autotype#inside('String', 'Comment') || indent(line('.')) < indent(line('.')+1)
-		return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
+		return Paren()
 	end
 	let before = autotype#before()
 	let after = autotype#after()
 	if before =~ '\v<function \w*$' && after !~ '\v^\s*\{'
 		return "(\<esc>m`a) {\<cr>}\<esc>k``a"
 	end
-	return get(g:, 'loaded_pairs', 0) ? pairs#insert_paren('(') : '('
+	return Paren()
 endf
 
 fun! autotype#php#dot()

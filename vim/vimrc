@@ -731,8 +731,8 @@
 " Grep
 " ----------------------------------------------------------------------------
 
-	nnoremap <leader>s :Grep!<space>
-	nnoremap <silent> <leader>S :Grep! <c-r><c-w><cr>
+	nnoremap gs :Greb!<space>
+	nnoremap <silent> gS :Greb! <c-r><c-w><cr>
 
 " Buffers
 " ----------------------------------------------------------------------------

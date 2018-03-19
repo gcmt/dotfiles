@@ -41,6 +41,7 @@
 	Plug 'stephpy/vim-yaml'
 
 	Local 'grep'
+	Local 'ctags'
 	Local 'pairs'
 	Local 'autotype'
 	Local 'taggify'
@@ -52,7 +53,6 @@
 	Local 'bookmarks'
 	Local 'finder'
 	Local 'buffers'
-	Local 'tagmaker'
 	Local 'taglist'
 	Local 'python'
 	Local 'term'
@@ -556,7 +556,7 @@
 	aug _tags
 		au!
 		au FileType * call _set_tagfiles()
-		au User TagMakerPost call _set_tagfiles()
+		au User CtagsPost call _set_tagfiles()
 	aug END
 
 	" The order of tags file will determine in what position Taglist will display
@@ -564,10 +564,13 @@
 	" ie. results from 0.project will always be displayed on top.
 	" To ignore a tag file, prefix its name with an underscore.
 	func! _set_tagfiles()
-		let local_tags = glob('.tags/'.&ft.'/[^_]*', 1, 1)
-		let global_tags = glob($XDG_DATA_HOME.'/tags/'.&ft.'/[^_]*', 1, 1)
+		if &filetype == 'taglist'
+			return
+		end
+		let local_tags = glob('.tags/'.&filetype.'/[^_]*', 1, 1)
+		let global_tags = glob($XDG_DATA_HOME.'/tags/'.&filetype.'/[^_]*', 1, 1)
 		let tagfiles = local_tags + global_tags + g:tags_common
-		call setbufvar(bufnr('%'), '&tags', join(tagfiles, ','))
+		call setbufvar('%', '&tags', join(tagfiles, ','))
 	endf
 
 " PROJECT
@@ -750,6 +753,12 @@
 	nnoremap <leader>t :Tag!<space>
 	nnoremap <silent> <leader>T :Tag! <c-r><c-w><cr>
 	nnoremap <silent> <c-]> :Tag <c-r><c-w><cr>
+
+" Ctags
+" ----------------------------------------------------------------------------
+
+	let g:ctags_python_options = '--exclude=venv'
+	let g:ctags_javascript_options = '--exclude=node_modules'
 
 " Spotter
 " ----------------------------------------------------------------------------

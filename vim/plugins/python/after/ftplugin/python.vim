@@ -17,8 +17,7 @@ inoremap <buffer> <c-b> <c-r>="import pudb; pudb.set_trace()\n"<cr>
 command! -buffer -nargs=? Activate call python#venv#activate(<q-args>)
 
 " generate tags
-nnoremap <buffer> <f3> :TagMaker --languages=python -f .tags/python/0.project<cr>
-nnoremap <buffer> <leader><f3> :TagMaker --languages=python -f .tags/python/X.package venv/**/package
+nnoremap <buffer> <f3> :Ctags --languages=python -f .tags/python/0.project<cr>
 
 " outline python module
 nnoremap <silent> <buffer> <leader>o :Grep! ^\s*(class\\|def)\b<cr>

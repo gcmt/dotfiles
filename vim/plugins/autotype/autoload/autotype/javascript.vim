@@ -8,11 +8,11 @@ fun! autotype#javascript#space()
 	if before =~ '\v<(for|while|if)$' || before =~ '\v^\s*}\selse\sif$'
 		return " () {\<cr>}\<esc>k^f(a"
 	end
-	if before =~ '\v<else\s$'
-		return "{\<cr>}\<esc>O"
+	if before =~ '\v<else$'
+		return " {\<cr>}\<esc>O"
 	end
-	if before =~ '\v<(class)$'
-		return "  {\<cr>}\<esc>O\<esc>kg_hi"
+	if before =~ '\v<class$'
+		return " {\<cr>}\<esc>O\<esc>kg_hi"
 	end
 	if before =~ '\v<(try|finally)$'
 		return " {\<cr>}\<esc>O"

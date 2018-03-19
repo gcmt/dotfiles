@@ -4,7 +4,7 @@ setl commentstring=//\ %s
 nnoremap <buffer> <f5> :!node %<cr>
 inoremap <buffer> <f5> <esc>:!node %<cr>
 
-nnoremap <silent> <buffer> <leader>o :Grep! ^(exports\\|module\.exports)\b<cr>
+nnoremap <silent> <buffer> <leader>o :Greb ^(exports\\|module\.exports)\b<cr>
 
 nnoremap <silent> <leader>; :call autotype#javascript#complete_line()<cr>
 inoremap <silent> <c-g><c-c> <c-]><esc>:call autotype#javascript#complete_line()<cr>

@@ -3,10 +3,10 @@ setl nonumber
 setl norelativenumber
 setl matchpairs+=<:>
 
-" switch to tab
-imap <buffer> <c-t> <plug>(taggify-inline)
+imap <buffer> <c-t><c-t> <plug>(taggify)
+imap <buffer> <c-t><c-i> <plug>(taggify-inline)
 
-inoremap <silent> <buffer> <c-a> <c-r>=_jump_after('\v\</\a+\>')<cr>
+inoremap <silent> <buffer> <c-g><c-f> <c-r>=_jump_after('\v\</\a+\>')<cr>
 
 nnoremap <buffer> <silent> <c-n> :call <sid>next_tag(0)<cr>
 nnoremap <buffer> <silent> <c-p> :call <sid>next_tag(1)<cr>

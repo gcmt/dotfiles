@@ -11,7 +11,7 @@ else
 	nnoremap <silent> <buffer> <leader>r :python %<cr>
 end
 
-inoremap <buffer> <c-b> <c-r>="import pudb; pudb.set_trace()\n"<cr>
+inoremap <buffer> <c-g><c-t> <c-r>="import pudb; pudb.set_trace()\n"<cr>
 
 " activate local virtualenv (default name  is 'venv')
 command! -buffer -nargs=? Activate call python#venv#activate(<q-args>)
@@ -20,10 +20,10 @@ command! -buffer -nargs=? Activate call python#venv#activate(<q-args>)
 nnoremap <buffer> <f3> :Ctags --languages=python -f .tags/python/0.project<cr>
 
 " outline python module
-nnoremap <silent> <buffer> <leader>o :Grep! ^\s*(class\\|def)\b<cr>
+nnoremap <silent> <buffer> <leader>o :Greb ^\s*(class\\|def)\b<cr>
 
 " expand current name into a function definition
-inoremap <silent> <buffer> <c-t> <c-r>=python#snippets#func()<cr>
+inoremap <silent> <buffer> <c-g><c-x> <c-r>=python#snippets#func()<cr>
 
 " Yapf
 command! -range Yapf <line1>,<line2>call python#yapf#format()

@@ -18,13 +18,7 @@ else
 	set grepformat=%f:%l:%m
 end
 
-command! -nargs=* -bang Grep call <sid>grep(<q-bang>, 'grep!', <q-args>)
-command! -nargs=* -bang Grepa call <sid>grep(<q-bang>, 'grepadd!', <q-args>)
-
-func! s:grep(bang, grepcmd, args)
-	if empty(a:bang)
-		call grep#run(a:grepcmd, a:args)
-	else
-		call grep#buffer(a:grepcmd, a:args)
-	end
-endf
+command! -nargs=* -bang Grep call grep#run('grep!', <q-args>)
+command! -nargs=* -bang Grepa call grep#run('grepadd!', <q-args>)
+command! -nargs=* -bang Greb call grep#run_buffer(<q-bang>, 'grep!', <q-args>)
+command! -nargs=* -bang Greba call grep#run_buffer(<q-bang>, 'grepadd!', <q-args>)

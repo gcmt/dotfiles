@@ -20,20 +20,20 @@ func! grep#run(grepcmd, args) abort
 	end
 
 	copen
-	if w:quickfix_title !~ '\V\^[Grep'
-		call setqflist([], 'a', {'title': '[Grep]' . w:quickfix_title})
+	if w:quickfix_title !~ '\V\^[Grep]'
+		call setqflist([], 'a', {'title': '[Grep] ' . w:quickfix_title})
 	end
 
 endf
 
-func! grep#buffer(grepcmd, args) abort
+func! grep#run_buffer(bang, grepcmd, args) abort
 	let scope = expand((&ft == 'qf' ? '#' : '%').':p')
 	call grep#run(a:grepcmd, join([a:args, scope]))
 	if len(getqflist()) == 0
 		return
 	end
-	if w:quickfix_title !~ '\V\^[Grep!'
-		let title = substitute(w:quickfix_title, '\V\^[Grep\zs', '!', '')
+	if w:quickfix_title !~ '\V\^[Greb]'
+		let title = substitute(w:quickfix_title, '\V\^[Grep]', '[Greb]', '')
 		call setqflist([], 'a', {'title': title})
 	end
 	call grep#prettify()

@@ -1,5 +1,5 @@
 
-func! grep#run(grepcmd, args) abort
+func! s:run(cmd, args)
 
 	" https://github.com/mileszs/ack.vim/issues/18
 	let t_ti_save = &t_ti
@@ -8,11 +8,17 @@ func! grep#run(grepcmd, args) abort
 	let sp_save = &shellpipe
 	set shellpipe=>
 
-	sil! exec a:grepcmd join(map(split(a:args), 'shellescape(v:val)'))
+	sil! exec a:cmd join(map(split(a:args), 'shellescape(v:val)'))
 
 	let &shellpipe = sp_save
 	let &t_ti = t_ti_save
 	let &t_te = t_te_save
+
+endf
+
+func! grep#run(grepcmd, args) abort
+
+	call s:run(a:grepcmd, a:args)
 
 	if len(getqflist()) == 0
 		call s:err("Nothing found") | cclose
@@ -27,16 +33,33 @@ func! grep#run(grepcmd, args) abort
 endf
 
 func! grep#run_buffer(bang, grepcmd, args) abort
-	let scope = expand((&ft == 'qf' ? '#' : '%').':p')
-	call grep#run(a:grepcmd, join([a:args, scope]))
+
+	let scope = expand((&filetype == 'qf' ? '#' : '%').':p')
+	call s:run(a:grepcmd, join([a:args, scope]))
+
+	if empty(a:bang)
+		" remove matches in comments or strings
+		wincmd p
+		let fn = "synIDattr(synIDtrans(synID(v:val['lnum'], v:val['col'], 0)), 'name') !~ '\\v(String|Comment)'"
+		let qf = filter(getqflist(), fn)
+		wincmd p
+		let title_save = get(getqflist({'title': 1}), 'title', '')
+		call setqflist(qf, 'r')
+		call setqflist([], 'a', {'title': title_save})
+	end
+
 	if len(getqflist()) == 0
+		call s:err("Nothing found") | cclose
 		return
 	end
+
+	copen
 	if w:quickfix_title !~ '\V\^[Greb]'
-		let title = substitute(w:quickfix_title, '\V\^[Grep]', '[Greb]', '')
-		call setqflist([], 'a', {'title': title})
+		call setqflist([], 'a', {'title': '[Greb] ' . w:quickfix_title})
 	end
+
 	call grep#prettify()
+
 endf
 
 func! grep#prettify() abort
@@ -55,7 +78,7 @@ func! grep#prettify() abort
 	endfor
 	call matchadd('LineNr', '\v^\s*\d+')
 	setl nomodifiable nomodified
-	norm! ^bell
+	norm! 0ell
 endf
 
 func! grep#try_prettify()

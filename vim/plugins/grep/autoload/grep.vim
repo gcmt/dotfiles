@@ -36,10 +36,10 @@ func! grep#buffer(grepcmd, args) abort
 		let title = substitute(w:quickfix_title, '\V\^[Grep\zs', '!', '')
 		call setqflist([], 'a', {'title': title})
 	end
-	call grep#render()
+	call grep#prettify()
 endf
 
-func! grep#render() abort
+func! grep#prettify() abort
 	if &bt != 'quickfix'
 		throw "Grep: Not inside a quickfix buffer"
 	end
@@ -58,9 +58,9 @@ func! grep#render() abort
 	norm! ^w
 endf
 
-func! grep#try_render()
-	if get(w:, 'quickfix_title', '') =~ '\V\^[Grep!]'
-		call grep#render()
+func! grep#try_prettify()
+	if get(w:, 'quickfix_title', '') =~ '\V\^[Greb]'
+		call grep#prettify()
 	end
 endf
 
@@ -70,6 +70,6 @@ endf
 
 aug _grep
 	au!
-	au BufWinEnter quickfix call grep#try_render()
-	au User QfEditPostEdit call grep#try_render()
+	au BufWinEnter quickfix call grep#try_prettify()
+	au User QfEditPostEdit call grep#try_prettify()
 aug END

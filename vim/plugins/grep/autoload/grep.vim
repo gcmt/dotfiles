@@ -77,7 +77,6 @@ func! grep#prettify() abort
 	endfor
 	call matchadd('LineNr', '\v^\s*\d+')
 	setl nomodifiable nomodified
-	norm! 0ell
 endf
 
 func! grep#try_prettify()

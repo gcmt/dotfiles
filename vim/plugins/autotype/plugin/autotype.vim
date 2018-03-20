@@ -29,10 +29,10 @@ aug _autotype
 	au BufWritePost */autoload/autotype/* source %
 
 	" au BufEnter *.js inoremap <silent> <buffer> : <c-]><c-g>u<c-r>=autotype#javascript#colon()<cr>
+	au BufEnter *.js inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#javascript#outward_parenthesis()<cr>
 	au BufEnter *.js inoremap <silent> <buffer> <c-g><c-f> <c-]><c-g>u<c-r>=autotype#javascript#skip_to('\v\}')<cr>
-	" au BufEnter *.js inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#javascript#outward_parenthesis()<cr>
 	au BufEnter *.js inoremap <silent> <buffer> { <c-]><c-g>u<c-r>=autotype#javascript#outward_brace()<cr>
-	" au BufEnter *.js inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#javascript#space()<cr>
+	au BufEnter *.js inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#javascript#space()<cr>
 	au BufEnter *.js inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#javascript#newline()<cr>
 
 	au BufEnter *.css,*.scss inoremap <silent> <buffer> { <c-]><c-g>u<c-r>=autotype#css#outward_brace()<cr>

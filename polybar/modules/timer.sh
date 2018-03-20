@@ -10,7 +10,7 @@ trap "stop_timer" SIGUSR1
 
 while true; do
 
-	if [[ -e "$timer" ]]; then
+	if [[ -f "$timer" ]]; then
 		seconds=$(expr $(cat "$timer") - $(date +'%s'))
 		if (( $seconds < 0 )); then
 			notify-send 'Timer' 'Timer finished!'

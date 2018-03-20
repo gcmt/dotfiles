@@ -10,6 +10,8 @@ if [[ ! -d "$dir" ]]; then
 	exit 1
 fi
 
+echo $$ > /tmp/polybar-mail.pid
+
 hide_notification() {
 	hidden=1
 	echo

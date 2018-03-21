@@ -569,7 +569,7 @@
 
 	aug _tags
 		au!
-		au FileType * call <sid>set_tagfiles()
+		au FileType * if &ft != 'taglist' | call <sid>set_tagfiles() | end
 		au User UpdateTagfiles call <sid>set_tagfiles()
 	aug END
 
@@ -578,9 +578,6 @@
 	" ie. results from 0.project will always be displayed on top.
 	" To ignore a tag file, prefix its name with an underscore.
 	func! s:set_tagfiles()
-		if &filetype == 'taglist'
-			return
-		end
 		let local_tags = glob('.tags/'.&filetype.'/[^_]*', 1, 1)
 		let global_tags = glob($XDG_DATA_HOME.'/tags/'.&filetype.'/[^_]*', 1, 1)
 		let tagfiles = local_tags + global_tags + g:tags_common

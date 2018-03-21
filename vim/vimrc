@@ -569,15 +569,15 @@
 
 	aug _tags
 		au!
-		au FileType * call _set_tagfiles()
-		au User CtagsPost call _set_tagfiles()
+		au FileType * call <sid>set_tagfiles()
+		au User UpdateTagfiles call <sid>set_tagfiles()
 	aug END
 
 	" The order of tags file will determine in what position Taglist will display
 	" them. Prefix them with a number followed by a dot to enforce an ordering:
 	" ie. results from 0.project will always be displayed on top.
 	" To ignore a tag file, prefix its name with an underscore.
-	func! _set_tagfiles()
+	func! s:set_tagfiles()
 		if &filetype == 'taglist'
 			return
 		end

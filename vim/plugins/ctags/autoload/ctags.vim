@@ -25,7 +25,7 @@ func ctags#sync(args) abort
 		return s:err(out)
 	end
 	let s:status = 'ready'
-	doau User CtagsPost
+	doau User UpdateTagfiles
 	echom "Tags successfully generated"
 endf
 
@@ -46,7 +46,7 @@ func ctags#exit_handler(job, status)
 		let s:status = 'error'
 		call s:err("Failed to generate tags (exit status " . a:status . ")")
 	end
-	doau User CtagsPost
+	doau User UpdateTagfiles
 	if !empty(s:queue)
 		call ctags#async(remove(s:queue, -1))
 	end

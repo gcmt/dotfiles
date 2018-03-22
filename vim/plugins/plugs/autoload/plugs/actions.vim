@@ -27,6 +27,21 @@ func! plugs#actions#install() abort
 	call plugs#render()
 endf
 
+func! plugs#actions#install_all() abort
+	for entry in values(b:plugs.table)
+		let dest = s:pathjoin(g:plugs_path, entry.name)
+		if isdirectory(dest) || empty(entry.url)
+			continue
+		end
+		echo "Installing plugin" entry.url . "..."
+		let out = system(printf('git clone %s %s', shellescape(entry.url), shellescape(dest)))
+		if v:shell_error
+			call s:err(out)
+		end
+	endfo
+	call plugs#render()
+endf
+
 func! plugs#actions#delete() abort
 	let entry = get(b:plugs.table, line('.'), {})
 	if empty(entry)

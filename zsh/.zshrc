@@ -95,10 +95,7 @@ mkvenv() {
 activate() {
 	local venv=${1:-venv}
 	if [ ! -f "$venv/bin/activate" ]; then
-		venv="$HOME/.virtualenvs/$venv"
-	fi
-	if [ ! -f "$venv/bin/activate" ]; then
-		echo >&2 "activate: virtual environment doesn't exist"
+		echo >&2 "activate: virtual environment '$venv' doesn't exist"
 		return 1
 	fi
 	source "$venv/bin/activate"

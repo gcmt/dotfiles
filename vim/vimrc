@@ -56,7 +56,7 @@
 " PLUGINS
 " ----------------------------------------------------------------------------
 
-	let g:plugs_dir = $VIMDATA.'/plugins'
+	let g:plugs_path = $VIMDATA.'/plugins'
 
 	let g:plugs_list = [
 		\ 'https://github.com/w0rp/ale',
@@ -670,7 +670,7 @@
 		au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q :bdelete<cr> | end
 
 		" Show cursorline only for a short amount of time
-		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|netrw|explorer|buffers|finder|bookmarks|taglist)$' | set nocul | end
+		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|netrw|explorer|buffers|finder|bookmarks|taglist|plugs)$' | set nocul | end
 
 		au BufReadPost * if &key != '' | setl noudf noswf nowb nobk nostmp secure hi=0 vi= | end
 		au BufNewFile,BufReadPre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl secure nostmp nowb nobk noswf hi=0 vi=

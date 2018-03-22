@@ -25,6 +25,7 @@ func! plugs#actions#install() abort
 		return s:err(out)
 	end
 	call plugs#render()
+	redraw | echo
 endf
 
 func! plugs#actions#install_all() abort
@@ -40,6 +41,7 @@ func! plugs#actions#install_all() abort
 		end
 	endfo
 	call plugs#render()
+	redraw | echo
 endf
 
 func! plugs#actions#delete() abort
@@ -55,4 +57,5 @@ func! plugs#actions#delete() abort
 		call delete(dest, 'rf')
 	end
 	call plugs#render()
+	redraw | echo
 endf

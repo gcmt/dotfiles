@@ -20,7 +20,7 @@
 	func! s:find_plugins()
 		let plugins = []
 		for path in split($PLUGPATH, ':')
-			call extend(plugins, glob(path.'/[^_]*', 1, 1))
+			call extend(plugins, filter(glob(path.'/[^_]*', 1, 1), 'isdirectory(v:val)'))
 		endfor
 		return plugins
 	endf

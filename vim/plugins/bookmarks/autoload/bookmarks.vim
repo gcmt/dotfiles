@@ -54,18 +54,14 @@ func bookmarks#view_marks() abort
 		return s:err("No bookmarks found")
 	end
 	exec 'sil keepj keepa botright 1new' s:bufname
-	call s:setup_buffer()
-	call bookmarks#render_marks()
-	norm! ggl
-endf
-
-func s:setup_buffer()
 	let b:bookmarks = {'table': {}}
 	setl filetype=bookmarks buftype=nofile bufhidden=delete nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
 	setl stl=\ :Bookmarks
+	call bookmarks#render_marks()
+	norm! ggl
 endf
 
 func bookmarks#render_marks()

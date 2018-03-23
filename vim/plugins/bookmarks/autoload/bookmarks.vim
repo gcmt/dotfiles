@@ -47,17 +47,16 @@ func bookmarks#jump(mark, ...) abort
 endf
 
 func bookmarks#view_marks() abort
+	if bufwinnr(s:bufname) != -1
+		return
+	end
 	if empty(s:marks)
 		return s:err("No bookmarks found")
 	end
-	if bufwinnr(s:bufname) != -1
-		exec bufwinnr(s:bufname).'wincmd w'
-	else
-		exec 'sil keepj keepa botright 1new' s:bufname
-		call s:setup_buffer()
-		call bookmarks#render_marks()
-		norm! ggl
-	end
+	exec 'sil keepj keepa botright 1new' s:bufname
+	call s:setup_buffer()
+	call bookmarks#render_marks()
+	norm! ggl
 endf
 
 func s:setup_buffer()

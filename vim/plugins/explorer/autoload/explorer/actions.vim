@@ -76,6 +76,21 @@ func! explorer#actions#create_directory() abort
 	call explorer#buffer#goto_file(split(dir, '/')[0])
 endf
 
+func! explorer#actions#delete() abort
+	let file = explorer#actions#get_file_at(line('.'))
+	if empty(file)
+		return
+	end
+	let path = explorer#path#join(b:explorer.dir, file)
+	echo printf("Deleting %s... Are you sure? [yn] ", fnamemodify(path, ':~'))
+	if nr2char(getchar()) =~ 'y'
+		call delete(path, 'rf')
+		sil! exec 'bwipe' path
+		call explorer#buffer#render(b:explorer.dir)
+	end
+	redraw | echo
+endf
+
 " Show/hide hidden files
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files

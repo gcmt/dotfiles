@@ -13,6 +13,8 @@ nnoremap <silent> <buffer> a :call explorer#actions#toggle_hidden_files()<cr>
 nnoremap <silent> <buffer> % :call explorer#actions#create_file()<cr>
 nnoremap <silent> <buffer> D :call explorer#actions#create_directory()<cr>
 
+nnoremap <silent> <buffer> d :call explorer#actions#delete()<cr>
+
 nnoremap <silent> <buffer> gg :call explorer#buffer#goto_first_file()<cr>
 nnoremap <silent> <buffer> G :call explorer#buffer#goto_last_file()<cr>
 

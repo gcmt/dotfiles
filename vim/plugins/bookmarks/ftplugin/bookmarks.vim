@@ -17,6 +17,9 @@ func! s:unset()
 		call bookmarks#render()
 		call setpos('.', pos)
 	end
+	if empty(bookmarks#marks())
+		close
+	end
 endf
 
 nnoremap <silent> <buffer> q :close<cr>

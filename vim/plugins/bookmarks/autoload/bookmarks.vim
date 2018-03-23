@@ -2,6 +2,10 @@
 let s:marks = {}
 let s:bufname = '__bookmarks__'
 
+func bookmarks#marks()
+	return s:marks
+endf
+
 func bookmarks#unset(mark)
 	call remove(s:marks, a:mark)
 endf
@@ -112,10 +116,6 @@ func bookmarks#render()
 		call add(text, line)
 
 	endfor
-
-	if empty(marks)
-		call add(text, "No bookmarks found..")
-	end
 
 	call setline(1, text)
 	setl nomodifiable

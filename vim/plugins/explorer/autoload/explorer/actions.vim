@@ -79,11 +79,5 @@ endf
 " Show/hide hidden files
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
-	let current_line = getline('.')
-	let cursor_save = getpos('.')
 	call explorer#buffer#render(b:explorer.dir)
-	if !search('\V\^' . substitute(current_line, '\v\s+', '\\s\\+', 'g'))
-		exec cursor_save[1]
-	end
-	call cursor(line('.'), cursor_save[2])
 endf

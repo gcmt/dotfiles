@@ -30,6 +30,13 @@ func! explorer#buffer#render(path) abort
 		throw "Explorer: &filetype must be 'explorer'"
 	end
 
+	let retain_position = a:path == get(b:explorer, 'dir', '')
+
+	if retain_position
+		let line_save = getline('.')
+		let cursor_save = getpos('.')
+	end
+
 	syntax clear
 	setl modifiable
 
@@ -55,6 +62,13 @@ func! explorer#buffer#render(path) abort
 	let path = substitute(fnamemodify(a:path, ":p:~"), '\v/$', '', '')
 	let stl = " " . command . " " . path . "%=explorer "
 	call setwinvar(0, "&stl", stl)
+
+	if retain_position
+		if !search('\V\^' . substitute(line_save, '\v\s+', '\\s\\+', 'g'))
+			exec cursor_save[1]
+		end
+		call cursor(line('.'), cursor_save[2])
+	end
 
 	setl nomodifiable
 

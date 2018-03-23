@@ -14,7 +14,7 @@ func! s:unset()
 	if !empty(mark)
 		call bookmarks#unset(mark)
 		let pos = getpos('.')
-		call bookmarks#render_marks()
+		call bookmarks#render()
 		call setpos('.', pos)
 	end
 endf

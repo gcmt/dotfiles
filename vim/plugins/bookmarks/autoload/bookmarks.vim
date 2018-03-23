@@ -46,7 +46,7 @@ func bookmarks#jump(mark, ...) abort
 	end
 endf
 
-func bookmarks#view_marks() abort
+func bookmarks#view() abort
 	if bufwinnr(s:bufname) != -1
 		return
 	end
@@ -60,11 +60,11 @@ func bookmarks#view_marks() abort
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
 	setl stl=\ :Bookmarks
-	call bookmarks#render_marks()
+	call bookmarks#render()
 	norm! ggl
 endf
 
-func bookmarks#render_marks()
+func bookmarks#render()
 
 	if &filetype != 'bookmarks'
 		throw "Bookmarks: not allowed here"

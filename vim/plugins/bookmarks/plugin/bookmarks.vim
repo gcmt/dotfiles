@@ -20,7 +20,7 @@ for [s:option, s:default] in items(s:options)
 endfor
 
 command! -nargs=1 Jump call bookmarks#jump(<q-args>)
-command! -nargs=0 Bookmarks call bookmarks#view_marks()
+command! -nargs=0 Bookmarks call bookmarks#view()
 command! -nargs=1 MarkFile call bookmarks#set(<q-args>, expand("%:p"))
 command! -nargs=1 MarkDir call bookmarks#set(<q-args>, expand("%:p:h"))
 

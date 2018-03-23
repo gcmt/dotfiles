@@ -16,27 +16,7 @@ func! buffers#open() abort
 
 	let current = bufnr('%')
 	exec 'sil keepj keepa botright 1new' s:bufname
-	call s:setup_buffer(current)
-
-	call buffers#render_buffers()
-	norm! gg
-
-	" position the cursor on the current buffer
-	for [line, bufnr] in items(b:buffers.table)
-		if bufnr == current
-			call cursor(line, 1)
-			break
-		end
-	endfor
-
-endf
-
-func! s:buffers()
-	return filter(range(1, bufnr('$')), 'buflisted(v:val)')
-endf
-
-func! s:setup_buffer(current)
-	let b:buffers = {'table': {}, 'current': a:current}
+	let b:buffers = {'table': {}, 'current': current}
 	setl filetype=buffers buftype=nofile bufhidden=delete nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
@@ -45,6 +25,18 @@ func! s:setup_buffer(current)
 	au BufLeave <buffer> let &laststatus = b:buffers_laststatus_save
 	setl laststatus=0
 	echo
+
+	call buffers#render_buffers()
+
+	" move the cursor to the current buffer
+	call cursor(1, 1)
+	for [line, bufnr] in items(b:buffers.table)
+		if bufnr == current
+			call cursor(line, 1)
+			break
+		end
+	endfor
+
 endf
 
 func! buffers#render_buffers()
@@ -86,6 +78,10 @@ func! buffers#render_buffers()
 
 	setl nomodifiable
 
+endf
+
+func! s:buffers()
+	return filter(range(1, bufnr('$')), 'buflisted(v:val)')
 endf
 
 func! s:prettify_path(path)

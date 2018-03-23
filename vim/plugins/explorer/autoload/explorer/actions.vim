@@ -76,6 +76,7 @@ func! explorer#actions#create_directory() abort
 	call explorer#buffer#goto_file(split(dir, '/')[0])
 endf
 
+" Delete the current file or directory
 func! explorer#actions#delete() abort
 	let file = s:file_at(line('.'))
 	if empty(file)
@@ -97,6 +98,7 @@ func! explorer#actions#toggle_hidden_files()
 	call explorer#buffer#render(b:explorer.dir)
 endf
 
+" Mark the current file/directory (requires the 'bookmarks' plugin)
 func! explorer#actions#set_mark(mark)
 	if !get(g:, 'loaded_bookmarks')
 		return explorer#err("Bookmarks not available")

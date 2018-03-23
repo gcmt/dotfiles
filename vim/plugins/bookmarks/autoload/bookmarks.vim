@@ -87,21 +87,16 @@ func bookmarks#render()
 	let pos_save = getpos('.')
 	sil %delete _
 
-	let marks = sort(items(s:marks))
-
 	syn match BookmarksDim /\v(\[|\])/
 
-	let text = []
+	let i = 1
 	let b:bookmarks.table = {}
-	for i in range(1, len(marks))
+	for [mark, target] in sort(items(s:marks))
 
-		let [mark, target] = marks[i-1]
 		let b:bookmarks.table[i] = mark
 
-		let line = ''
-
 		exec 'syn match BookmarksMark /\v%'.i.'l%'.(2).'c./'
-		let line .= '['.mark.'] '
+		let line = '['.mark.'] '
 
 		let tail = fnamemodify(target, ':t')
 		let group = isdirectory(target) ? 'BookmarksDir' : 'BookmarksFile'
@@ -112,11 +107,11 @@ func bookmarks#render()
 		exec 'syn match BookmarksDim /\v%'.i.'l%>'.(len(line)).'c.*/'
 		let line .= ' ' . target
 
-		call add(text, line)
+		call setline(i, line)
+		let i += 1
 
 	endfor
 
-	call setline(1, text)
 	call s:resize_window(line('$'))
 	call setpos('.', pos_save)
 	setl nomodifiable

@@ -47,21 +47,29 @@ func bookmarks#jump(mark, ...) abort
 endf
 
 func bookmarks#view() abort
+
 	if bufwinnr(s:bufname) != -1
 		return
 	end
+
 	if empty(s:marks)
 		return s:err("No bookmarks found")
 	end
+
 	exec 'sil keepj keepa botright 1new' s:bufname
 	let b:bookmarks = {'table': {}}
 	setl filetype=bookmarks buftype=nofile bufhidden=delete nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
-	setl stl=\ :Bookmarks
+	let b:bookmarks_laststatus_save = &laststatus
+	au BufLeave <buffer> let &laststatus = b:bookmarks_laststatus_save
+	setl laststatus=0
+	echo
+
 	call bookmarks#render()
 	call cursor(1, 2)
+
 endf
 
 func bookmarks#render()

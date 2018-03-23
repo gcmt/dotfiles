@@ -84,11 +84,10 @@ func bookmarks#render()
 
 	syntax clear
 	setl modifiable
+	let pos_save = getpos('.')
 	sil %delete _
 
 	let marks = sort(items(s:marks))
-
-	call s:resize_window(len(marks))
 
 	syn match BookmarksDim /\v(\[|\])/
 
@@ -118,6 +117,8 @@ func bookmarks#render()
 	endfor
 
 	call setline(1, text)
+	call s:resize_window(line('$'))
+	call setpos('.', pos_save)
 	setl nomodifiable
 
 endf

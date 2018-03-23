@@ -13,9 +13,7 @@ func! s:unset()
 	let mark = get(b:bookmarks.table, line('.'), {})
 	if !empty(mark)
 		call bookmarks#unset(mark)
-		let pos = getpos('.')
 		call bookmarks#render()
-		call setpos('.', pos)
 	end
 	if empty(bookmarks#marks())
 		close

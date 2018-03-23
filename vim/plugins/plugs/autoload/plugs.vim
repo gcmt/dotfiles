@@ -34,10 +34,9 @@ func! plugs#render()
 		throw "Plugs: not allowed here"
 	end
 
-	let pos_save = getpos('.')
-
 	syntax clear
 	setl modifiable
+	let pos_save = getpos('.')
 	sil %delete _
 
 	let listed = {}

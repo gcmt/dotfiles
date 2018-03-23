@@ -34,5 +34,5 @@ func! buffers#actions#delete(cmd) abort
 	catch /E.*/
 		return s:err(matchstr(v:exception, '\vE\d+:.*'))
 	endtry
-	call buffers#render_buffers()
+	call buffers#render()
 endf

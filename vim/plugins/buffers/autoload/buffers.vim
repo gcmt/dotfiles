@@ -23,7 +23,7 @@ func! buffers#open() abort
 	setl laststatus=0
 	echo
 
-	call buffers#render_buffers()
+	call buffers#render()
 
 	" move the cursor to the current buffer
 	call cursor(1, 1)
@@ -36,7 +36,7 @@ func! buffers#open() abort
 
 endf
 
-func! buffers#render_buffers()
+func! buffers#render()
 
 	if &filetype != 'buffers'
 		throw "Buffers: not allowed here"

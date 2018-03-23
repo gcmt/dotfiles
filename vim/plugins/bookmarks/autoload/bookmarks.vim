@@ -61,7 +61,7 @@ func bookmarks#view() abort
 	setl cursorline nocursorcolumn colorcolumn=0
 	setl stl=\ :Bookmarks
 	call bookmarks#render()
-	norm! ggl
+	call cursor(1, 2)
 endf
 
 func bookmarks#render()

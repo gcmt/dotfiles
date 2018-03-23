@@ -53,7 +53,8 @@ func! plugs#actions#delete() abort
 	if !isdirectory(dest)
 		return s:err("Plugin not intalled")
 	end
-	if input(printf("Deleting %s... Are you sure? [yn] ", fnamemodify(dest, ':~'))) =~ '\vy%[es]'
+	echo printf("Deleting %s... Are you sure? [yn] ", fnamemodify(dest, ':~'))
+	if nr2char(getchar()) =~ 'y'
 		call delete(dest, 'rf')
 	end
 	call plugs#render()

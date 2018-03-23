@@ -44,6 +44,7 @@ func! buffers#render_buffers()
 
 	syntax clear
 	setl modifiable
+	let pos_save = getpos('.')
 	sil %delete _
 
 	let buffers = s:buffers()
@@ -72,7 +73,7 @@ func! buffers#render_buffers()
 	endfor
 
 	call setline(1, text)
-
+	call setpos('.', pos_save)
 	setl nomodifiable
 
 endf

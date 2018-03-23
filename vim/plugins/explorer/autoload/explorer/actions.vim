@@ -1,11 +1,11 @@
 
 " Extract the file name at the given line
-func! explorer#actions#get_file_at(nr)
-	let offsets = get(b:explorer.map, a:nr, [])
+func! s:file_at(linenr)
+	let offsets = get(b:explorer.map, a:linenr, [])
 	if empty(offsets)
 		return ""
 	end
-	return strpart(getline(a:nr), offsets[0]-1, offsets[1] - offsets[0])
+	return strpart(getline(a:linenr), offsets[0]-1, offsets[1] - offsets[0])
 endf
 
 " Go to the parent directory
@@ -21,7 +21,7 @@ endf
 
 " Enter directory or edit file
 func! explorer#actions#enter_or_edit() abort
-	let file = explorer#actions#get_file_at(line('.'))
+	let file = s:file_at(line('.'))
 	if empty(file)
 		return
 	end
@@ -77,7 +77,7 @@ func! explorer#actions#create_directory() abort
 endf
 
 func! explorer#actions#delete() abort
-	let file = explorer#actions#get_file_at(line('.'))
+	let file = s:file_at(line('.'))
 	if empty(file)
 		return
 	end
@@ -95,4 +95,15 @@ endf
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
 	call explorer#buffer#render(b:explorer.dir)
+endf
+
+func! explorer#actions#set_mark(mark)
+	if !get(g:, 'loaded_bookmarks')
+		return explorer#err("Bookmarks not available")
+	end
+	let file = s:file_at(line('.'))
+	if !empty(file)
+		let path = explorer#path#join(b:explorer.dir, file)
+		call bookmarks#set(a:mark, path)
+	end
 endf

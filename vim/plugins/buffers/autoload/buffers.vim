@@ -3,10 +3,7 @@ let s:bufname = '__buffers__'
 
 func! buffers#open() abort
 
-	" if the buffer is already visible, just move there
-	let winnr = bufwinnr(s:bufname)
-	if winnr != -1
-		exec winnr.'wincmd w'
+	if bufwinnr(s:bufname) != -1
 		return
 	end
 

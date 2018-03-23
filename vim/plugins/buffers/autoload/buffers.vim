@@ -47,12 +47,9 @@ func! buffers#render()
 	let pos_save = getpos('.')
 	sil %delete _
 
-	let buffers = s:buffers()
-	call s:resize_window(len(buffers))
-
 	let text = []
 	let b:buffers.table = {}
-	for [i, nr] in map(copy(buffers), '[v:key+1, v:val]')
+	for [i, nr] in map(s:buffers(), '[v:key+1, v:val]')
 
 		let b:buffers.table[i] = nr
 
@@ -73,6 +70,7 @@ func! buffers#render()
 	endfor
 
 	call setline(1, text)
+	call s:resize_window(line('$'))
 	call setpos('.', pos_save)
 	setl nomodifiable
 

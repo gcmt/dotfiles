@@ -16,39 +16,39 @@ endf
 
 func! s:select(type, inner, count) abort
 
-	let cursor_pos = getcurpos()[1:2]
+	let curpos = getcurpos()[1:2]
 
-	let start = [0, 0]
-	let end = [0, 0]
+	let list_start = [0, 0]
+	let list_end = [0, 0]
 	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
 
 	for i in range(1, a:count)
 		if searchpair('\V'.a:type, '', '\V'.s:pairs[a:type], 'Wb', skip, line('w0'))
-			let start = getcurpos()[1:2]
+			let list_start = getcurpos()[1:2]
 			norm! %
-			let end = getcurpos()[1:2]
-			call cursor(start)
+			let list_end = getcurpos()[1:2]
+			call cursor(list_start)
 		else
 			break
 		end
 	endfo
 
-	call cursor(cursor_pos)
+	call cursor(curpos)
 
-	if start == [0, 0]
+	if list_start == [0, 0]
 		return
 	end
 
-	let item_start = start
-	let item_end = end
+	let item_start = list_start
+	let item_end = list_end
 	let stack = []
 	let stop = 0
 
-	for nr in range(start[0], end[0])
+	for nr in range(list_start[0], list_end[0])
 
 		let line = getline(nr)
-		let start_i = nr == start[0] ? start[1]+1 : 0
-		let end_i = nr == end[0] ? end[1]-1 : len(line)
+		let start_i = nr == list_start[0] ? list_start[1]+1 : 0
+		let end_i = nr == list_end[0] ? list_end[1]-1 : len(line)
 
 		for i in range(start_i, end_i)
 
@@ -59,11 +59,11 @@ func! s:select(type, inner, count) abort
 			let char = line[i-1]
 
 			if char == ',' && empty(stack)
-				if nr < cursor_pos[0] || nr == cursor_pos[0] && i <= cursor_pos[1]
+				if nr < curpos[0] || nr == curpos[0] && i <= curpos[1]
 					let item_start = [nr, i]
 					continue
 				end
-				if nr > cursor_pos[0] || nr == cursor_pos[0] && i >= cursor_pos[1]
+				if nr > curpos[0] || nr == curpos[0] && i >= curpos[1]
 					let item_end = [nr, i]
 					let stop = 1
 					break
@@ -89,15 +89,15 @@ func! s:select(type, inner, count) abort
 	endfo
 
 	" Do nothing when there is no argument/item/etc, not even empty space
-	if start[0] == end[0] && start[1] == end[1]-1
+	if list_start[0] == list_end[0] && list_start[1] == list_end[1]-1
 		return
 	end
 
-	if item_start == start && item_end == end
+	if item_start == list_start && item_end == list_end
 		call cursor(item_start[0], item_start[1]+1)
 		if a:inner
 			call search('\S', 'Wc')
-			if getcurpos()[1:2] == end
+			if getcurpos()[1:2] == list_end
 				" when there is no argument/item/etc but only empty space
 				call cursor(item_start[0], item_start[1]+1)
 			end
@@ -106,7 +106,7 @@ func! s:select(type, inner, count) abort
 		call cursor(item_end[0], item_end[1]-1)
 		if a:inner
 			call search('\S', 'Wbc')
-			if getcurpos()[1:2] == start
+			if getcurpos()[1:2] == list_start
 				" when there is no argument/item/etc but only empty space
 				call cursor(item_end[0], item_end[1]-1)
 			end
@@ -114,7 +114,7 @@ func! s:select(type, inner, count) abort
 		return
 	end
 
-	if item_start == start
+	if item_start == list_start
 		call cursor(item_start[0], item_start[1]+1)
 		if a:inner
 			call search('\S', 'Wc')
@@ -129,7 +129,7 @@ func! s:select(type, inner, count) abort
 		return
 	end
 
-	if item_end == end
+	if item_end == list_end
 		call cursor(item_end[0], item_end[1]-1)
 		if a:inner
 			call search('\S', 'Wbc')

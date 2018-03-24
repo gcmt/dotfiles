@@ -39,13 +39,13 @@ func! s:select(kw, inner, outermost, count)
 	end
 	if linenr == curpos[0] || linenr == curpos[0]+1
 		for i in range(linenr, line('$'))
-			if getline(i) =~ '\v^\s*$' || indent(i) != indent(linenr)
+			if s:emptyline(i) || indent(i) != indent(linenr)
 				break
 			end
 			if getline(i) =~ '\v^\s*('.wanted.')'
 				" definition found, now start searching backwards for the start
 				for k in range(i, 0, -1)
-					if k == 0 || getline(k-1) =~ '\v^\s*$' || indent(k-1) != indent(i)
+					if k == 0 || s:emptyline(k-1) || indent(k-1) != indent(i)
 						let start = [k, 1]
 						break
 					end
@@ -110,4 +110,9 @@ func! s:select(kw, inner, outermost, count)
 		call s:select(a:kw, a:inner, a:outermost, a:count-1)
 	end
 
+endf
+
+func! s:emptyline(line)
+	let line = type(a:line) == v:t_number ? getline(a:line) : a:line
+	return line =~ '\v^\s*$'
 endf

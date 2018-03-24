@@ -2,7 +2,7 @@
 let s:pairs = {'(': ')', '[': ']', '{': '}'}
 let s:inv = {')': '(', ']': '[', '}': '{'}
 
-func! objects#items#func(inner)
+func! objects#items#args(inner)
 	call s:select('(', a:inner)
 endf
 

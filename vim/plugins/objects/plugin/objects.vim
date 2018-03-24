@@ -10,9 +10,9 @@ if exists("g:loaded_objects") || &cp
 end
 let g:loaded_objects = 1
 
-vnoremap <silent> aa :<c-u>call objects#items#func(0)<cr>
+vnoremap <silent> aa :<c-u>call objects#items#args(0)<cr>
 onoremap <silent> aa :<c-u>norm vaa<cr>
-vnoremap <silent> ia :<c-u>call objects#items#func(1)<cr>
+vnoremap <silent> ia :<c-u>call objects#items#args(1)<cr>
 onoremap <silent> ia :<c-u>norm via<cr>
 
 vnoremap <silent> ai :<c-u>call objects#items#list(0)<cr>

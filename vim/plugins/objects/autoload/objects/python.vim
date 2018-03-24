@@ -58,7 +58,7 @@ func! s:select(kw, inner, outermost, count)
 	while indent >= 0
 		if getline(start) =~ '\v^\s*('.wanted.')'
 			for i in range(start, 0, -1)
-				if i == 0 || s:emptyline(i-1) || indent(i-1) != indent(start)
+				if i == 0 || getline(i-1) !~ '\v^\s*(\@|#)'
 					let start = i
 					break
 				end

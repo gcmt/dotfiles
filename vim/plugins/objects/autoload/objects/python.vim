@@ -73,6 +73,11 @@ func! s:select(kw, inner, outermost, count)
 		endw
 	end
 
+	if start == [0, 0]
+		call cursor(curpos)
+		return
+	end
+
 	" search for the end
 	call cursor(start)
 	let indent = indent(start[0])

@@ -40,15 +40,17 @@ func! s:select(kw, inner, outermost, count)
 	if s:emptyline(linenr) && !s:emptyline(linenr+1)
 		let linenr += 1
 	end
-	for i in range(linenr, line('$'))
-		if s:emptyline(i) || indent(i) != indent(linenr)
-			break
-		end
-		if getline(i) =~ '\v^\s*('.wanted.')'
-			let start = i
-			let indent = indent(i)
-		end
-	endfo
+	if getline(linenr) =~ '\v^\s*(\@|#|'.wanted.')'
+		for i in range(linenr, line('$'))
+			if s:emptyline(i) || indent(i) != indent(linenr)
+				break
+			end
+			if getline(i) =~ '\v^\s*('.wanted.')'
+				let start = i
+				let indent = indent(i)
+			end
+		endfo
+	end
 
 	if start == 0
 		let start = prevnonblank(curpos[0])

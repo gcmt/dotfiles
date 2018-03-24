@@ -79,9 +79,23 @@ func! s:select(kw, inner, outermost, count)
 	end
 
 	" search for the end
-	call cursor(start)
+	let end = [0, 0]
 	let indent = indent(start[0])
-	let end = searchpos('\v(^$\n\ze^\s{,'.indent.'}\S|\S%$)', 'W')
+	for i in range(start[0], line('$'))
+		if s:emptyline(i) || indent(i) != indent
+			for k in range(i, line('$'))
+				if k == line('$')
+					let end = [k, len(getline(k))]
+					break
+				end
+				if !s:emptyline(k) && indent(k) == indent
+					let end = [k-1, len(getline(k-1))]
+					break
+				end
+			endfo
+			break
+		end
+	endfo
 
 	if end == [0, 0]
 		call cursor(curpos)

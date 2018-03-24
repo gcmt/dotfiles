@@ -30,57 +30,46 @@ func! s:select(kw, inner, outermost, count)
 	exec "norm! \<esc>"
 
 	let start = [0, 0]
+	let indent = -1
 
-	" start searching for a definition in the current block
-	if getline(curpos[0]) =~ '\v^\s*$'
-		let linenr = nextnonblank(curpos[0])
-	else
-		let linenr = curpos[0]
+	let linenr = curpos[0]
+	if s:emptyline(linenr) && !s:emptyline(linenr+1)
+		let linenr += 1
 	end
-	if linenr == curpos[0] || linenr == curpos[0]+1
-		for i in range(linenr, line('$'))
-			if s:emptyline(i) || indent(i) != indent(linenr)
-				break
-			end
-			if getline(i) =~ '\v^\s*('.wanted.')'
-				" definition found, now start searching backwards for the start
-				for k in range(i, 0, -1)
-					if k == 0 || s:emptyline(k-1) || indent(k-1) != indent(i)
-						let start = [k, 1]
-						break
-					end
-				endfo
-			end
-		endfo
-	end
+	for i in range(linenr, line('$'))
+		if s:emptyline(i) || indent(i) != indent(linenr)
+			break
+		end
+		if getline(i) =~ '\v^\s*('.wanted.')'
+			let start = [i, 1]
+			let indent = indent(i)
+		end
+	endfo
 
-	" if no definition is found in the current block,
-	" search backwards for a definition
 	if start == [0, 0]
-		let found = 0
-		let indent = indent(prevnonblank(curpos[0]))
-		while indent > 0
-			let indent -= &shiftwidth
-			let candidate = searchpos('\v^\s{'.indent.'}\w', 'Wb')
-			if candidate == [0, 0]
-				continue
-			end
-			if getline(candidate[0]) =~ '\v^\s*('.wanted.')'
-				for k in range(candidate[0], 0, -1)
-					if k == 0 || s:emptyline(k-1) || indent(k-1) != indent(candidate[0])
-						let start = [k, 1]
-						if !a:outermost
-							let found = 1
-						end
-						break
-					end
-				endfo
-			end
-			if found
+		let prev = prevnonblank(curpos[0])
+		let start = prev ? [prev, 1] : [0, 0]
+		let indent = indent(prev)
+	end
+
+	" search backwards for a definition
+	while indent >= 0
+		if getline(start[0]) =~ '\v^\s*('.wanted.')'
+			for i in range(start[0], 0, -1)
+				if i == 0 || s:emptyline(i-1) || indent(i-1) != indent(start[0])
+					let start = [i, 1]
+					break
+				end
+			endfo
+			if !a:outermost
 				break
 			end
-		endw
-	end
+		end
+		let indent -= &shiftwidth
+		if indent >= 0
+			let start = searchpos('\v^\s{'.indent.'}\w', 'Wb')
+		end
+	endw
 
 	if start == [0, 0]
 		call cursor(curpos)

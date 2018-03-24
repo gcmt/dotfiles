@@ -70,9 +70,7 @@ func! s:select(kw, inner, outermost, count)
 			end
 		end
 		let indent -= &shiftwidth
-		if indent >= 0
-			let start = searchpos('\v^\s{'.indent.'}\w', 'Wb')[0]
-		end
+		let start = indent >= 0 ? searchpos('\v^\s{'.indent.'}\w', 'Wb')[0] : 0
 	endw
 
 	if start == 0

@@ -90,7 +90,7 @@ func! s:select(kw, inner, outermost, count)
 					let end = k
 					break
 				end
-				if !s:emptyline(k) && indent(k) == indent
+				if !s:emptyline(k) && indent(k) <= indent
 					let end = k-1
 					break
 				end

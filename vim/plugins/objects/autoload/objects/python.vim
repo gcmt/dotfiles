@@ -57,6 +57,7 @@ func! s:select(kw, inner, outermost, count)
 	" if no definition is found in the current block,
 	" search backwards for a definition
 	if start == [0, 0]
+		let found = 0
 		let indent = indent(prevnonblank(curpos[0]))
 		while indent > 0
 			let indent -= &shiftwidth
@@ -65,10 +66,18 @@ func! s:select(kw, inner, outermost, count)
 				continue
 			end
 			if getline(candidate[0]) =~ '\v^\s*('.wanted.')'
-				let start = searchpos('\v(^$\n\zs(^\s*(\@|#|'.wanted.'))|%^)', 'Wbc')
-				if !a:outermost
-					break
-				end
+				for k in range(candidate[0], 0, -1)
+					if k == 0 || s:emptyline(k-1) || indent(k-1) != indent(candidate[0])
+						let start = [k, 1]
+						if !a:outermost
+							let found = 1
+						end
+						break
+					end
+				endfo
+			end
+			if found
+				break
 			end
 		endw
 	end

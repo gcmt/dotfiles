@@ -3,27 +3,42 @@ let s:pairs = {'(': ')', '[': ']', '{': '}'}
 let s:inv = {')': '(', ']': '[', '}': '{'}
 
 func! objects#items#args(inner)
-	call s:select('(', a:inner)
+	call s:select('(', a:inner, v:count1)
 endf
 
 func! objects#items#list(inner)
-	call s:select('[', a:inner)
+	call s:select('[', a:inner, v:count1)
 endf
 
 func! objects#items#dict(inner)
-	call s:select('{', a:inner)
+	call s:select('{', a:inner, v:count1)
 endf
 
-func! s:select(type, inner) abort
+func! s:select(type, inner, count) abort
 
+	let cursor_pos = getcurpos()[1:2]
+
+	let start = [0, 0]
+	let end = [0, 0]
 	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
-	let start = searchpairpos('\V'.a:type, '', '\V'.s:pairs[a:type], 'Wbnc', skip, line('w0'))
-	let end = searchpairpos('\V'.a:type, '', '\V'.s:pairs[a:type], 'Wn', skip, line('w$'))
-	if start == [0, 0] || end == [0, 0]
+
+	for i in range(1, a:count)
+		if searchpair('\V'.a:type, '', '\V'.s:pairs[a:type], 'Wb', skip, line('w0'))
+			let start = getcurpos()[1:2]
+			norm! %
+			let end = getcurpos()[1:2]
+			call cursor(start)
+		else
+			break
+		end
+	endfo
+
+	call cursor(cursor_pos)
+
+	if start == [0, 0]
 		return
 	end
 
-	let cursor_pos = getcurpos()[1:2]
 	let item_start = start
 	let item_end = end
 	let stack = []

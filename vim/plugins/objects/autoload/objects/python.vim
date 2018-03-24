@@ -19,19 +19,23 @@ func! s:select(kw, inner, outermost, count)
 	norm! gv
 
 	let extend_selection = 0
-	let sel_start = getpos("'<")[1:2]
-	let sel_end = getpos("'>")[1:2]
+	let sel_start = getpos("'<")[1]
+	let sel_end = getpos("'>")[1]
 
 	if sel_start != sel_end
-		let curpos = sel_end
+		let curpos = [sel_end, 1]
 		let extend_selection = 1
 	end
 
 	exec "norm! \<esc>"
 
-	let start = [0, 0]
+	" search for the definition start
+	" --------------------------------------------------------------------
+
+	let start = 0
 	let indent = -1
 
+	" check for a definition in the current indent block
 	let linenr = curpos[0]
 	if s:emptyline(linenr) && !s:emptyline(linenr+1)
 		let linenr += 1
@@ -41,23 +45,21 @@ func! s:select(kw, inner, outermost, count)
 			break
 		end
 		if getline(i) =~ '\v^\s*('.wanted.')'
-			let start = [i, 1]
+			let start = i
 			let indent = indent(i)
 		end
 	endfo
 
-	if start == [0, 0]
-		let prev = prevnonblank(curpos[0])
-		let start = prev ? [prev, 1] : [0, 0]
-		let indent = indent(prev)
+	if start == 0
+		let start = prevnonblank(curpos[0])
+		let indent = indent(start)
 	end
 
-	" search backwards for a definition
 	while indent >= 0
-		if getline(start[0]) =~ '\v^\s*('.wanted.')'
-			for i in range(start[0], 0, -1)
-				if i == 0 || s:emptyline(i-1) || indent(i-1) != indent(start[0])
-					let start = [i, 1]
+		if getline(start) =~ '\v^\s*('.wanted.')'
+			for i in range(start, 0, -1)
+				if i == 0 || s:emptyline(i-1) || indent(i-1) != indent(start)
+					let start = i
 					break
 				end
 			endfo
@@ -67,27 +69,29 @@ func! s:select(kw, inner, outermost, count)
 		end
 		let indent -= &shiftwidth
 		if indent >= 0
-			let start = searchpos('\v^\s{'.indent.'}\w', 'Wb')
+			let start = searchpos('\v^\s{'.indent.'}\w', 'Wb')[0]
 		end
 	endw
 
-	if start == [0, 0]
+	if start == 0
 		call cursor(curpos)
 		return
 	end
 
-	" search for the end
-	let end = [0, 0]
-	let indent = indent(start[0])
-	for i in range(start[0], line('$'))
+	" search for the definition end
+	" --------------------------------------------------------------------
+
+	let end = 0
+	let indent = indent(start)
+	for i in range(start, line('$'))
 		if s:emptyline(i) || indent(i) != indent
 			for k in range(i, line('$'))
 				if k == line('$')
-					let end = [k, len(getline(k))]
+					let end = k
 					break
 				end
 				if !s:emptyline(k) && indent(k) == indent
-					let end = [k-1, len(getline(k-1))]
+					let end = k-1
 					break
 				end
 			endfo
@@ -95,35 +99,37 @@ func! s:select(kw, inner, outermost, count)
 		end
 	endfo
 
-	if end == [0, 0]
+	if end == 0
 		call cursor(curpos)
 		return
 	end
 
 	" do selection
+	" --------------------------------------------------------------------
+
 	if a:inner
 		if extend_selection
-			call cursor(sel_start)
+			call cursor(sel_start, 1)
 		else
-			call cursor(start)
+			call cursor(start, 1)
 		end
 		norm! V
-		call cursor(end)
+		call cursor(end, len(getline(end)))
 		call search('\v\S', 'Wbc')
 	else
 		if extend_selection
-			call cursor(sel_start)
+			call cursor(sel_start, 1)
 		else
-			call cursor(start)
+			call cursor(start, 1)
 		end
-		if end[0] == line('$')
+		if end == line('$')
 			call cursor(prevnonblank(line('.')-1)+1, 1)
 		end
 		norm! V
-		call cursor(end)
+		call cursor(end, len(getline(end)))
 	end
 
-	if end[0] != line('$')
+	if end != line('$')
 		call s:select(a:kw, a:inner, a:outermost, a:count-1)
 	end
 

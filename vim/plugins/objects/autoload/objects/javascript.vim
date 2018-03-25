@@ -9,6 +9,7 @@ func! objects#javascript#function(inner)
 	let end = [0, 0]
 
 	for i in range(1, v:count1)
+
 		while 1
 
 			if search('{', 'W', line('.')) || searchpair('{', '', '}', 'Wb', skip, line('w0'))
@@ -65,6 +66,9 @@ func! objects#javascript#function(inner)
 			call cursor(body_start)
 
 		endw
+
+		call cursor(body_start)
+
 	endfo
 
 	if start == [0, 0]

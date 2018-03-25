@@ -28,6 +28,10 @@ func! s:select(type, inner, count) abort
 			norm! %
 			let list_end = getcurpos()[1:2]
 			call cursor(list_start)
+			if list_start == list_end
+				let list_start = [0, 0]
+				break
+			end
 		else
 			break
 		end

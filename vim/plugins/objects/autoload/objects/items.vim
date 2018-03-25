@@ -1,7 +1,4 @@
 
-let s:pairs = {'(': ')', '[': ']', '{': '}'}
-let s:inv = {')': '(', ']': '[', '}': '{'}
-
 func! objects#items#args(inner)
 	call s:select('(', a:inner, v:count1)
 endf
@@ -21,9 +18,10 @@ func! s:select(type, inner, count) abort
 	let list_start = [0, 0]
 	let list_end = [0, 0]
 	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
+	let pairs = {'(': ')', '[': ']', '{': '}'}
 
 	for i in range(1, a:count)
-		if searchpair('\V'.a:type, '', '\V'.s:pairs[a:type], 'Wb', skip, line('w0'))
+		if searchpair('\V'.a:type, '', '\V'.pairs[a:type], 'Wb', skip, line('w0'))
 			let list_start = getcurpos()[1:2]
 			norm! %
 			let list_end = getcurpos()[1:2]
@@ -74,14 +72,10 @@ func! s:select(type, inner, count) abort
 				end
 			end
 
-			if has_key(s:pairs, char)
+			if has_key(pairs, char)
 				call add(stack, char)
-				continue
-			end
-
-			if has_key(s:inv, char) && get(stack, -1, '') == s:inv[char]
+			elseif get(pairs, get(stack, -1, ''), '') == char
 				call remove(stack, -1)
-				continue
 			end
 
 		endfo

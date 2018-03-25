@@ -56,6 +56,15 @@ func! objects#javascript#function(inner)
 				break
 			end
 
+			" detect computed property names
+			call cursor(body_start)
+			if search('\V)\s\*\%'.start_candidate[1].'c{', 'Wb', line('.')) &&
+				\ searchpair('(', '', ')', 'Wb', skip) &&
+				\ search('\v^\s*\zs((get|set)\s+)?\[.*\]\s*%'.col('.').'c\(', 'Wb', line('.'))
+				let start = getcurpos()[1:2]
+				break
+			end
+
 			call cursor(start_candidate)
 
 		endw

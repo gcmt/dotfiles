@@ -24,12 +24,22 @@ func! objects#javascript#function(inner)
 				break
 			end
 
+			" detect arrow function
 			if search('\V)\s\*=>\s\*\%'.candidate_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip)
 				let start = getcurpos()[1:2]
 				let end = candidate_end
 				break
 			end
+
+			" detect arrow function with one parameter and no parentheses
+			if search('\V\w\+\s\*=>\s\*\%'.candidate_start[1].'c{', 'Wb', line('.'))
+				let start = getcurpos()[1:2]
+				let end = candidate_end
+				break
+			end
+
+			" detect regular function
 			if search('\V)\s\*\%'.candidate_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
 				\ search('\v(async\s+)?<function>', 'Wb', line('.'))

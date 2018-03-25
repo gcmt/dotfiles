@@ -24,14 +24,14 @@ func! objects#javascript#function(inner)
 				break
 			end
 
-			if search('\V)\s\*=>\s\*\%'.start[1].'c{', 'Wb', line('.'), skip) &&
+			if search('\V)\s\*=>\s\*\%'.candidate_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip)
 				let start = getcurpos()[1:2]
 				break
 			end
-			if search('\V)\s\*\%'.start[1].'c{', 'Wb', line('.'), skip) &&
+			if search('\V)\s\*\%'.candidate_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
-				\ search('\v(async\s+)?<function>', 'Wb', skip, line('.'))
+				\ search('\v(async\s+)?<function>', 'Wb', line('.'))
 				let start = getcurpos()[1:2]
 				break
 			end

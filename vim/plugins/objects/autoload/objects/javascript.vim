@@ -11,11 +11,8 @@ func! objects#javascript#function(inner)
 	for i in range(1, v:count1)
 		while 1
 
-			let start_candidate = [0, 0]
-
 			if search('{', 'W', line('.')) || searchpair('{', '', '}', 'Wb', skip, line('w0'))
-				let start_candidate = getcurpos()[1:2]
-				let body_start = start_candidate
+				let body_start = getcurpos()[1:2]
 				norm! %
 				let end = getcurpos()[1:2]
 			else
@@ -24,7 +21,7 @@ func! objects#javascript#function(inner)
 
 			" detect arrow function
 			call cursor(body_start)
-			if search('\V)\s\*=>\s\*\%'.start_candidate[1].'c{', 'Wb', line('.')) &&
+			if search('\V)\s\*=>\s\*\%'.body_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip)
 				let start = getcurpos()[1:2]
 				break
@@ -32,14 +29,14 @@ func! objects#javascript#function(inner)
 
 			" detect arrow function with one parameter and no parentheses
 			call cursor(body_start)
-			if search('\V\w\+\s\*=>\s\*\%'.start_candidate[1].'c{', 'Wb', line('.'))
+			if search('\V\w\+\s\*=>\s\*\%'.body_start[1].'c{', 'Wb', line('.'))
 				let start = getcurpos()[1:2]
 				break
 			end
 
 			" detect regular function
 			call cursor(body_start)
-			if search('\V)\s\*\%'.start_candidate[1].'c{', 'Wb', line('.')) &&
+			if search('\V)\s\*\%'.body_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
 				\ search('\v(async\s+)?<function>', 'Wb', line('.'))
 				let start = getcurpos()[1:2]
@@ -48,7 +45,7 @@ func! objects#javascript#function(inner)
 
 			" detect short form and getter/setters
 			call cursor(body_start)
-			if search('\V)\s\*\%'.start_candidate[1].'c{', 'Wb', line('.')) &&
+			if search('\V)\s\*\%'.body_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
 				\ search('\v^\s*\zs((get|set)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.col('.').'c\(', 'Wb', line('.')) &&
 				\ getline('.') !~ '\v^\s*(for|while|if)>'
@@ -58,14 +55,14 @@ func! objects#javascript#function(inner)
 
 			" detect computed property names
 			call cursor(body_start)
-			if search('\V)\s\*\%'.start_candidate[1].'c{', 'Wb', line('.')) &&
+			if search('\V)\s\*\%'.body_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
 				\ search('\v^\s*\zs((get|set)\s+)?\[.*\]\s*%'.col('.').'c\(', 'Wb', line('.'))
 				let start = getcurpos()[1:2]
 				break
 			end
 
-			call cursor(start_candidate)
+			call cursor(body_start)
 
 		endw
 	endfo

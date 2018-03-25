@@ -19,12 +19,12 @@ func! objects#javascript#function(inner)
 				let start_body = candidate_start
 				norm! %
 				let candidate_end = getcurpos()[1:2]
-				call cursor(candidate_start)
 			else
 				break
 			end
 
 			" detect arrow function
+			call cursor(start_body)
 			if search('\V)\s\*=>\s\*\%'.candidate_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip)
 				let start = getcurpos()[1:2]
@@ -33,6 +33,7 @@ func! objects#javascript#function(inner)
 			end
 
 			" detect arrow function with one parameter and no parentheses
+			call cursor(start_body)
 			if search('\V\w\+\s\*=>\s\*\%'.candidate_start[1].'c{', 'Wb', line('.'))
 				let start = getcurpos()[1:2]
 				let end = candidate_end
@@ -40,9 +41,21 @@ func! objects#javascript#function(inner)
 			end
 
 			" detect regular function
+			call cursor(start_body)
 			if search('\V)\s\*\%'.candidate_start[1].'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
 				\ search('\v(async\s+)?<function>', 'Wb', line('.'))
+				let start = getcurpos()[1:2]
+				let end = candidate_end
+				break
+			end
+
+			" detect short form and getter/setters
+			call cursor(start_body)
+			if search('\V)\s\*\%'.candidate_start[1].'c{', 'Wb', line('.')) &&
+				\ searchpair('(', '', ')', 'Wb', skip) &&
+				\ search('\v^\s*\zs((get|set)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.col('.').'c\(', 'Wb', line('.')) &&
+				\ getline('.') !~ '\v^\s*(for|while|if)>'
 				let start = getcurpos()[1:2]
 				let end = candidate_end
 				break

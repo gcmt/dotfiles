@@ -46,8 +46,8 @@
 	call s:set_rtp()
 
 	func! s:helptags()
-		for plugin in s:find_plugins()
-			exec 'helptags' plugin
+		for docdir in globpath(join(s:find_plugins(), ','), 'doc', 1, 1)
+			exec 'helptags' docdir
 		endfor
 	endf
 

@@ -14,7 +14,7 @@ func! objects#javascript#function(inner)
 			let candidate_start = [0, 0]
 			let candidate_end = [0, 0]
 
-			if searchpair('{', '', '}', 'Wb', skip, line('w0'))
+			if search('{', 'W', line('.')) || searchpair('{', '', '}', 'Wb', skip, line('w0'))
 				let candidate_start = getcurpos()[1:2]
 				let start_body = candidate_start
 				norm! %

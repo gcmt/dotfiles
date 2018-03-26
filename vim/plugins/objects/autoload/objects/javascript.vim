@@ -127,9 +127,9 @@ func! s:detect_inline_arrow_function()
 		endfo
 
 		call cursor(candidate.body)
-		if (search('\V\w\+\s\*=>\s\*\%'.(candidate.body[1]).'c\S', 'Wb', line('.')) ||
-			\ search('\V)\s\*=>\s\*\%'.(candidate.body[1]).'c\S', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip))
 		let skip = "objects#syntax() =~ 'String'"
+		if (search('\V\w\+\s\*=>', 'Wb', line('.')) ||
+			\ search('\V)\s\*=>', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip))
 			let candidate.start = getcurpos()[1:2]
 		end
 

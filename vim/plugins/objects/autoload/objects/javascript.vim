@@ -21,14 +21,16 @@ func! objects#javascript#function(inner)
 			" detect arrow function
 			call cursor(candidate.body)
 			if search('\V)\s\*=>\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) &&
-				\ searchpair('(', '', ')', 'Wb', skip)
+				\ searchpair('(', '', ')', 'Wb', skip) &&
+				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end
 
 			" detect arrow function with one parameter and no parentheses
 			call cursor(candidate.body)
-			if search('\V\w\+\s\*=>\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.'))
+			if search('\V\w\+\s\*=>\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) &&
+				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end
@@ -37,7 +39,8 @@ func! objects#javascript#function(inner)
 			call cursor(candidate.body)
 			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
-				\ search('\v(async\s+)?<function>', 'Wb', line('.'))
+				\ search('\v(async\s+)?<function>', 'Wb', line('.')) &&
+				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end
@@ -47,7 +50,8 @@ func! objects#javascript#function(inner)
 			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
 				\ search('\v^\s*\zs((get|set)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.col('.').'c\(', 'Wb', line('.')) &&
-				\ getline('.') !~ '\v^\s*(for|while|if)>'
+				\ getline('.') !~ '\v^\s*(for|while|if)>' &&
+				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end
@@ -56,7 +60,8 @@ func! objects#javascript#function(inner)
 			call cursor(candidate.body)
 			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) &&
 				\ searchpair('(', '', ')', 'Wb', skip) &&
-				\ search('\v^\s*\zs((get|set)\s+)?\[.*\]\s*%'.col('.').'c\(', 'Wb', line('.'))
+				\ search('\v^\s*\zs((get|set)\s+)?\[.*\]\s*%'.col('.').'c\(', 'Wb', line('.')) &&
+				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end

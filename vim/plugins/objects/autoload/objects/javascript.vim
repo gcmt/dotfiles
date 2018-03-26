@@ -2,7 +2,7 @@
 func! objects#javascript#function(inner)
 
 	let curpos = getcurpos()[1:2]
-	let skip = "objects#syntax() =~ '\\v^(String|Comment)$'"
+	let skip = "objects#cursyn() =~ '\\v^(String|Comment)$'"
 
 	let match = {"start": [0, 0], "body": [0, 0], "end": [0, 0]}
 	for i in range(1, v:count1)
@@ -126,7 +126,7 @@ func! s:detect_inline_arrow_function()
 		let line = getline('.')
 
 		for i in range(col('.'), col('$')-1)
-			if objects#syntax(line('.'), i) =~ 'String'
+			if objects#synat(line('.'), i) =~ 'String'
 				continue
 			end
 			let char = line[i-1]
@@ -142,7 +142,7 @@ func! s:detect_inline_arrow_function()
 		endfo
 
 		call cursor(candidate.body)
-		let skip = "objects#syntax() =~ 'String'"
+		let skip = "objects#cursyn() =~ 'String'"
 		if (search('\V\w\+\s\*=>', 'Wb', line('.')) ||
 			\ search('\V)\s\*=>', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip))
 			let candidate.start = getcurpos()[1:2]

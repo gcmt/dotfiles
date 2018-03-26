@@ -13,7 +13,7 @@ let g:rofi_loaded = 1
 " Options
 " ----------------------------------------------------------------------------
 
-let s:theme = $XDG_CONFIG_HOME . '/rofi/themes/term-dark.theme'
+let s:theme = expand('<sfile>:p:h') . '/theme'
 
 let s:default_options = "-monitor '-2' -i -hide-scrollbar -show-match"
 let s:default_options .= " -theme " . fnameescape(s:theme)

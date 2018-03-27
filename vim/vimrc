@@ -751,8 +751,8 @@
 	cnoremap <c-j> <c-]><c-\>e<sid>expand_aliases()<cr><cr>
 
 	func! s:expand_aliases()
-		let cmd = matchstr(getcmdline(), '\v^\w+')
-		return substitute(getcmdline(), '\v^\w+', get(g:aliases, cmd, cmd), '')
+		let cmd = matchstr(getcmdline(), '\v\w+')
+		return substitute(getcmdline(), '\v\w+', get(g:aliases, cmd, cmd), '')
 	endf
 
 " Grep

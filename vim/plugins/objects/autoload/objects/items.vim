@@ -95,15 +95,15 @@ func! s:select(type, inner, count) abort
 	end
 
 	if item_start == list_start && item_end == list_end
-		call cursor(item_start[0], item_start[1]+1)
-		call search('\S', 'Wc')
+		call cursor(item_start[0], item_start[1])
+		call search('\S', 'W')
 		if getcurpos()[1:2] == list_end
 			" when there is no argument/item/etc but only empty space
 			call cursor(item_start[0], item_start[1]+1)
 		end
 		norm! v
-		call cursor(item_end[0], item_end[1]-1)
-		call search('\S', 'Wbc')
+		call cursor(item_end[0], item_end[1])
+		call search('\S', 'Wb')
 		if getcurpos()[1:2] == list_start
 			" when there is no argument/item/etc but only empty space
 			call cursor(item_end[0], item_end[1]-1)
@@ -112,8 +112,8 @@ func! s:select(type, inner, count) abort
 	end
 
 	if item_end == list_end
-		call cursor(item_end[0], item_end[1]-1)
-		call search('\S', 'Wbc')
+		call cursor(item_end[0], item_end[1])
+		call search('\S', 'Wb')
 		norm! v
 		call cursor(item_start[0], item_start[1])
 		if a:inner

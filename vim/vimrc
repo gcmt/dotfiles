@@ -685,9 +685,8 @@
 		call winrestview(view)
 	endf
 
-	command! -nargs=0 ClearUndo call <sid>clear_undo()
-
 	" Clear undo history (:h clear-undo)
+	command! -nargs=0 ClearUndo call <sid>clear_undo()
 	func! s:clear_undo()
 		let modified_save = &modified
 		let undolevels_save = &undolevels
@@ -700,17 +699,17 @@
 	endf
 
 	" Edit filetype plugin
-	command! -nargs=? -complete=filetype Ftedit call <sid>ft_edit(<q-args>)
+	command! -nargs=? -complete=filetype FtEdit call <sid>ft_edit(<q-args>)
 	func! s:ft_edit(ft)
 		let ft = empty(a:ft) ? &ft : a:ft
 		call finder#find($HOME . '/.dotfiles', 'ftplugin.*'.ft.'\.vim$')
 	endf
 
 	command! -nargs=0 Vimrc edit $MYVIMRC
-	command! -nargs=0 Coloredit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
+	command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 
 	" Save the current buffer as sudo
-	command! -nargs=0 Sudow exec 'write !sudo tee % > /dev/null'
+	command! -nargs=0 WriteSudo exec 'write !sudo tee % > /dev/null'
 
 	" Returns the syntax group under the cursor
 	func! _syntax()

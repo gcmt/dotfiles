@@ -1,5 +1,5 @@
 
-func! objects#javascript#function(inner)
+func! objects#javascript#function(inner, leftside)
 
 	let curpos = getcurpos()[1:2]
 	let skip = "objects#cursyn() =~ '\\v^(String|Comment)$'"
@@ -88,11 +88,12 @@ func! objects#javascript#function(inner)
 		norm! v
 		call cursor(match.end)
 	else
-		let first = getline(match.start[0])
-		let last = getline(match.end[0])
-		if strpart(first, 0, match.start[1]-1) =~ '\v^\s*$' && strpart(last, match.end[1]) =~ '\v^\s*$'
-			" Do linewise selection when the function is not an expression. All empty lines after the
-			" function are also selected.
+		let before = strpart(getline(match.start[0]), 0, match.start[1]-1)
+		let after = strpart(getline(match.end[0]), match.end[1])
+		if before =~ '\v^\s*$' && after =~ '\v^\s*$' || a:leftside && before =~ '\v(:|\=)\s*\(?$'
+			" Do linewise selection when the function is not an expression or the function is assigned
+			" to something and a:leftseide is 1.
+			" All empty lines after the function are also selected.
 			call cursor(match.start)
 			norm! 0
 			norm! V

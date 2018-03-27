@@ -49,8 +49,11 @@ func! s:select(type, inner, count) abort
 	for nr in range(list_start[0], list_end[0])
 
 		let line = getline(nr)
-		let start_i = nr == list_start[0] ? list_start[1]+1 : 0
+		let start_i = nr == list_start[0] ? list_start[1]+1 : 1
 		let end_i = nr == list_end[0] ? list_end[1]-1 : len(line)
+		if start_i > len(line) || end_i == 0
+			continue
+		end
 
 		for i in range(start_i, end_i)
 

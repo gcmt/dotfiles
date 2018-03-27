@@ -131,6 +131,10 @@ func! s:detect_inline_arrow_function()
 				continue
 			end
 			let char = line[i-1]
+			if i == len(line) && empty(stack)
+				let candidate.end = [line('.'), i]
+				break
+			end
 			if char =~ '\v(,|;|\)|\]|})' && empty(stack)
 				let candidate.end = [line('.'), i-1]
 				break

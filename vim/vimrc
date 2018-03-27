@@ -764,7 +764,7 @@
 " Buffers
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gh :Buffers<cr>
+	nnoremap <silent> gl :Buffers<cr>
 
 " Rofi
 " ----------------------------------------------------------------------------
@@ -821,8 +821,8 @@
 " Explorer
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gl :exec 'Explorer' expand('%:p:h')<cr>
-	nnoremap <silent> gL :exec 'Explorer' getcwd()<cr>
+	nnoremap <silent> gd :exec 'Explorer' expand('%:p:h')<cr>
+	nnoremap <silent> gD :exec 'Explorer' getcwd()<cr>
 
 " Netrw
 " ----------------------------------------------------------------------------
@@ -841,6 +841,8 @@
 
 	let g:UltiSnipsExpandTrigger = '<c-s>'
 	let g:UltiSnipsJumpForwardTrigger = '<c-s>'
+	let g:UltiSnipsJumpBackwardTrigger = '<c-b>'
+	let g:UltiSnipsSnippetsDir = $VIMHOME . '/UltiSnips'
 
 " GitGutter
 " ----------------------------------------------------------------------------

@@ -738,6 +738,23 @@
 	iabbrev lenght length
 	iabbrev retrun return
 
+" Command aliases
+" ----------------------------------------------------------------------------
+
+	let g:aliases = {
+		\ 'find': 'Find', 'grep': 'Grep', 'greb': 'Greb', 'vimrc': 'Vimrc',
+		\ 'cdroot': 'CdRoot', 'ws': 'WriteSudo',
+	\ }
+
+	cnoremap <cr> <c-]><c-r>=<sid>expand_aliases()<cr>
+	cnoremap <c-j> <c-]><c-r>=<sid>expand_aliases()<cr>
+
+	func! s:expand_aliases()
+		call feedkeys("\<cr>", "n")
+		let cmd = matchstr(getcmdline(), '\v^\w+')
+		return "\<c-u>" . substitute(getcmdline(), '\v^\w+', get(g:aliases, cmd, cmd), '')
+	endf
+
 " Grep
 " ----------------------------------------------------------------------------
 

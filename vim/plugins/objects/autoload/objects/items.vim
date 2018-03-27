@@ -96,30 +96,24 @@ func! s:select(type, inner, count) abort
 
 	if item_start == list_start && item_end == list_end
 		call cursor(item_start[0], item_start[1]+1)
-		if a:inner
-			call search('\S', 'Wc')
-			if getcurpos()[1:2] == list_end
-				" when there is no argument/item/etc but only empty space
-				call cursor(item_start[0], item_start[1]+1)
-			end
+		call search('\S', 'Wc')
+		if getcurpos()[1:2] == list_end
+			" when there is no argument/item/etc but only empty space
+			call cursor(item_start[0], item_start[1]+1)
 		end
 		norm! v
 		call cursor(item_end[0], item_end[1]-1)
-		if a:inner
-			call search('\S', 'Wbc')
-			if getcurpos()[1:2] == list_start
-				" when there is no argument/item/etc but only empty space
-				call cursor(item_end[0], item_end[1]-1)
-			end
+		call search('\S', 'Wbc')
+		if getcurpos()[1:2] == list_start
+			" when there is no argument/item/etc but only empty space
+			call cursor(item_end[0], item_end[1]-1)
 		end
 		return
 	end
 
 	if item_start == list_start
 		call cursor(item_start[0], item_start[1]+1)
-		if a:inner
-			call search('\S', 'Wc')
-		end
+		call search('\S', 'Wc')
 		norm! v
 		call cursor(item_end[0], item_end[1])
 		if a:inner
@@ -132,9 +126,7 @@ func! s:select(type, inner, count) abort
 
 	if item_end == list_end
 		call cursor(item_end[0], item_end[1]-1)
-		if a:inner
-			call search('\S', 'Wbc')
-		end
+		call search('\S', 'Wbc')
 		norm! v
 		call cursor(item_start[0], item_start[1])
 		if a:inner

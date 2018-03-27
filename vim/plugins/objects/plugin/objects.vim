@@ -5,11 +5,6 @@
 " Licence: MIT
 " =============================================================================
 
-if exists("g:loaded_objects") || &cp
-	finish
-end
-let g:loaded_objects = 1
-
 vnoremap <silent> aa :<c-u>call objects#items#args(0)<cr>
 onoremap <silent> aa :<c-u>exec 'norm v'.v:count1.'aa'<cr>
 vnoremap <silent> ia :<c-u>call objects#items#args(1)<cr>

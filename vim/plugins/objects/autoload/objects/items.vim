@@ -129,7 +129,10 @@ func! s:select(type, inner, count) abort
 	if a:inner
 		call search('\S', 'Wb')
 	else
-		call search('\v\s\ze\S', 'W')
+		call search('\v\s\S', 'W')
+		if strpart(getline('.'), col('.')-1, 1) == "\t"
+			norm! l
+		end
 	end
 
 endf

@@ -594,11 +594,6 @@
 		au VimEnter * sil! CdRoot
 	aug END
 
-	nnoremap gz :lcd %:p:h<cr>:pwd<cr>
-	nnoremap gZ :CdRoot<cr>
-
-	command! -bang -nargs=0 CdRoot call <sid>cd_into_root(<q-bang>)
-
 	" Find project root
 	func! s:find_root(path)
 		if empty(a:path) || a:path == '/'
@@ -616,11 +611,24 @@
 	func! s:cd_into_root(bang)
 		let path = s:find_root(expand('%:p:h'))
 		if !empty(path)
-			let cmd = empty(a:bang) ? 'cd' : 'lcd'
-			exec cmd fnameescape(path)
+			let cd = empty(a:bang) ? 'cd' : 'lcd'
+			exec cd fnameescape(path)
 			pwd
 		end
 	endf
+
+	func! s:cd_into_bufdir(bang)
+		let path = expand('%:p:h')
+		let cd = empty(a:bang) ? 'cd' : 'lcd'
+		exec cd fnameescape(path)
+		pwd
+	endf
+
+	command! -bang -nargs=0 CdHere call <sid>cd_into_bufdir(<q-bang>)
+	command! -bang -nargs=0 CdRoot call <sid>cd_into_root(<q-bang>)
+
+	nnoremap gz :CdHere<cr>
+	nnoremap gZ :CdRoot<cr>
 
 " TRAILINGS
 " ----------------------------------------------------------------------------
@@ -744,7 +752,7 @@
 
 	let g:aliases = {
 		\ 'find': 'Find', 'grep': 'Grep', 'greb': 'Greb', 'vimrc': 'Vimrc',
-		\ 'cdroot': 'CdRoot', 'ws': 'WriteSudo',
+		\ 'cdr': 'CdRoot', 'cdh': 'CdHere', 'ws': 'WriteSudo',
 	\ }
 
 	cnoremap <cr> <c-]><c-\>e<sid>expand_aliases()<cr><cr>

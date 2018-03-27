@@ -199,7 +199,7 @@
 	let g:listchars = ',trail:·,precedes:‹,extends:›'
 	let &listchars = 'tab:  ' . listchars
 
-	nnoremap <silent> <leader>i :call <sid>toggle_indent_guides()<cr>
+	nnoremap <silent> goi :call <sid>toggle_indent_guides()<cr>
 	func! s:toggle_indent_guides()
 		let &listchars = (&listchars =~ 'tab:│' ? 'tab:  ' : 'tab:│ ') . g:listchars
 	endf
@@ -371,13 +371,13 @@
 
 	let g:quickfix_height = 50
 
-	nnoremap <silent> <leader>q :cwindow<cr>
+	nnoremap <silent> gxq :cwindow<cr>
 	nnoremap <silent> ]q :cnext<cr>zz:set cul<cr>
 	nnoremap <silent> ]Q :clast<cr>zz:set cul<cr>
 	nnoremap <silent> [q :cprev<cr>zz:set cul<cr>
 	nnoremap <silent> [Q :cfirst<cr>zz:set cul<cr>
 
-	nnoremap <silent> <leader>l :lwindow<cr>
+	nnoremap <silent> gxl :lwindow<cr>
 	nnoremap <silent> ]l :lnext<cr>zz:set cul<cr>
 	nnoremap <silent> ]L :llast<cr>zz:set cul<cr>
 	nnoremap <silent> [l :lprev<cr>zz:set cul<cr>
@@ -428,7 +428,7 @@
 	vmap <expr> ]P '_d"' . v:register . ']P'
 
 	" toggle paste
-	nnoremap <leader>p :set paste!<bar>set paste?<cr>
+	nnoremap gop :set paste!<bar>set paste?<cr>
 
 	" copy to the end of the line
 	nnoremap Y y$
@@ -559,7 +559,7 @@
 	vnoremap <silent> Q :norm! @q<cr>
 
 	" edit register q
-	nnoremap <silent> <leader>@ :<c-r><c-r>='let @q = '.string(getreg('q'))<cr><c-f><left>:res 1<cr>
+	nnoremap <silent> gQ :<c-r><c-r>='let @q = '.string(getreg('q'))<cr><c-f><left>:res 1<cr>
 
 " TAGS
 " ----------------------------------------------------------------------------
@@ -594,8 +594,8 @@
 		au VimEnter * sil! CdRoot
 	aug END
 
-	nnoremap <leader>c :lcd %:p:h<cr>:pwd<cr>
-	nnoremap <leader>C :CdRoot<cr>
+	nnoremap gz :lcd %:p:h<cr>:pwd<cr>
+	nnoremap gZ :CdRoot<cr>
 
 	command! -bang -nargs=0 CdRoot call <sid>cd_into_root(<q-bang>)
 
@@ -716,20 +716,21 @@
 		return synIDattr(synIDtrans(synID(line('.'), col('.'), 0)), 'name')
 	endf
 
-	inoremap <c-c> <c-]><esc>
-	inoremap <c-z> <esc><c-z>
-
 	cnoremap <c-n> <down>
 	cnoremap <c-p> <up>
 
-	noremap <leader>j J
-	noremap <leader>k K
+	inoremap <c-c> <c-]><esc>
+	inoremap <c-z> <esc><c-z>
 
-	nnoremap <leader>v :source .vimrc<cr>
+	noremap gj J
+	noremap gk K
 
-	nnoremap <silent> <leader>w :set wrap!<bar>set wrap?<cr>
-	nnoremap <silent> <leader>n :set number!<bar>set number?<cr>
-	nnoremap <silent> <leader>z :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
+	noremap gq gw
+	nnoremap gqq gww
+
+	nnoremap <silent> gow :set wrap!<bar>set wrap?<cr>
+	nnoremap <silent> gon :set number!<bar>set number?<cr>
+	nnoremap <silent> goz :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
 
 	inoremap <c-r>!d <c-r>=substitute(system('date -Iseconds'), "\n", "", "")<cr>
 
@@ -764,21 +765,24 @@
 " Buffers
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> <leader>a :Buffers<cr>
+	nnoremap <silent> gh :Buffers<cr>
+
+" Rofi
+" ----------------------------------------------------------------------------
+
+	nnoremap <silent> gr :RofiEdit<cr>
 
 " Bookmarks
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> <leader>? :Bookmarks<cr>
-	nnoremap <silent> <leader>' :call bookmarks#jump(getchar())<cr>
-	nnoremap <silent> <leader>m :call bookmarks#set(getchar(), expand('%:p'))<cr>
-	nnoremap <silent> <leader>M :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
+	nnoremap <silent> gml :Bookmarks<cr>
+	nnoremap <silent> gm' :call bookmarks#jump(getchar())<cr>
+	nnoremap <silent> gmm :call bookmarks#set(getchar(), expand('%:p'))<cr>
+	nnoremap <silent> gmM :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
 
 " Taglist
 " ----------------------------------------------------------------------------
 
-	nnoremap <leader>t :Tag!<space>
-	nnoremap <silent> <leader>T :Tag! <c-r><c-w><cr>
 	nnoremap <silent> <c-]> :Tag <c-r><c-w><cr>
 
 " Ctags
@@ -818,8 +822,8 @@
 " Explorer
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> <leader>e :exec 'Explorer' expand('%:p:h')<cr>
-	nnoremap <silent> <leader>E :exec 'Explorer' getcwd()<cr>
+	nnoremap <silent> gl :exec 'Explorer' expand('%:p:h')<cr>
+	nnoremap <silent> gL :exec 'Explorer' getcwd()<cr>
 
 " Netrw
 " ----------------------------------------------------------------------------

@@ -42,7 +42,7 @@ func! s:search(pattern, exclude_syn)
 		if empty(match[0])
 			continue
 		end
-		if index(a:exclude_syn, s:synat(i, match[1]+1)) != -1
+		if !empty(a:exclude_syn) && index(a:exclude_syn, s:synat(i, match[1]+1)) != -1
 			continue
 		end
 		call add(matches, [i, match[1]+1, getline(i)])

@@ -123,9 +123,14 @@ func! explorer#actions#delete() abort
 		return
 	end
 	let path = explorer#path#join(b:explorer.dir, file)
-	echo printf("Deleting %s... Are you sure? [yn] ", fnamemodify(path, ':~'))
-	if nr2char(getchar()) =~ 'y'
-		call delete(path, 'rf')
+	echo printf("The file '%s' will be deleted. Are you sure? [yn] ", fnamemodify(path, ':~'))
+	if nr2char(getchar()) !~ 'y'
+		return
+	end
+	redraw
+	if delete(path, 'rf') != 0
+		return explorer#err("Operation failed")
+	else
 		sil! exec 'bwipe' path
 		call explorer#buffer#render(b:explorer.dir)
 	end

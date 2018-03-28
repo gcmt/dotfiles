@@ -7,7 +7,11 @@ aug _explorer
 aug END
 
 func! s:restore_alternate_buffer()
-	let @# = buflisted(b:explorer.alt) ? b:explorer.alt : b:explorer.current
+	if buflisted(b:explorer.alt)
+		let @# = b:explorer.alt
+	elseif buflisted(b:explorer.current)
+		let @# = b:explorer.current
+	end
 endf
 
 func! explorer#open(path) abort

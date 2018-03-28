@@ -659,7 +659,7 @@
 		au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q :bdelete<cr> | end
 
 		" Show cursorline only for a short amount of time
-		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|netrw|explorer|buffers|finder|bookmarks|taglist|plugs)$' | set nocul | end
+		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|explorer|buffers|finder|bookmarks|taglist|plugs|search)$' | set nocul | end
 
 		au BufReadPost * if &key != '' | setl noudf noswf nowb nobk nostmp secure hi=0 vi= | end
 		au BufNewFile,BufReadPre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl secure nostmp nowb nobk noswf hi=0 vi=
@@ -729,7 +729,7 @@
 
 	let g:aliases = {
 		\ 'find': 'Find', 'grep': 'Grep', 'greb': 'Greb', 'vimrc': 'Vimrc',
-		\ 'cdr': 'CdRoot', 'cdh': 'CdHere', 'ws': 'WriteSudo',
+		\ 'cdr': 'CdRoot', 'cdh': 'CdHere', 'ws': 'WriteSudo', 'search': 'Search'
 	\ }
 
 	cnoremap <cr> <c-]><c-\>e<sid>expand_aliases()<cr><cr>
@@ -743,11 +743,12 @@
 		return getcmdline()
 	endf
 
-" Grep
+" Search
 " ----------------------------------------------------------------------------
 
-	nnoremap gs :Greb!<space>
-	nnoremap <silent> gS :Greb! <c-r><c-w><cr>
+	nnoremap gs :Search<space>
+	nnoremap <silent> gS :Search <c-r><c-w><cr>
+	nnoremap gxs :Search<cr>
 
 " Buffers
 " ----------------------------------------------------------------------------

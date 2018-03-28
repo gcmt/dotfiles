@@ -503,8 +503,8 @@
 
 	" Search for current word or selected text without moving the cursor.
 	" let &hls = &hls is needed to force highlighting
-	nnoremap <silent> S :call <sid>search(0)<cr>:let &hls = &hls<cr>
-	vnoremap <silent> S :<c-u>call <sid>search(1)<cr>:let &hls = &hls<cr>
+	nnoremap <silent> gh :call <sid>search(0)<cr>:let &hls = &hls<cr>
+	vnoremap <silent> gh :<c-u>call <sid>search(1)<cr>:let &hls = &hls<cr>
 
 	" Toggle search for current word or selected text without moving the cursor
 	fun! s:search(visual)
@@ -728,13 +728,9 @@
 	cnoremap <c-p> <up>
 
 	inoremap <c-c> <c-]><esc>
-	inoremap <c-z> <esc><c-z>
 
 	noremap gj J
 	noremap gk K
-
-	noremap gq gw
-	nnoremap gqq gww
 
 	nnoremap <silent> gow :set wrap!<bar>set wrap?<cr>
 	nnoremap <silent> gon :set number!<bar>set number?<cr>
@@ -832,8 +828,8 @@
 " Explorer
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gd :exec 'Explorer' expand('%:p:h')<cr>
-	nnoremap <silent> gD :exec 'Explorer' getcwd()<cr>
+	nnoremap <silent> gt :exec 'Explorer' expand('%:p:h')<cr>
+	nnoremap <silent> gT :exec 'Explorer' getcwd()<cr>
 
 " Netrw
 " ----------------------------------------------------------------------------

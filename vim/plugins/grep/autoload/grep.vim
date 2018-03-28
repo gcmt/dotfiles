@@ -16,7 +16,7 @@ func! s:run(cmd, args)
 
 endf
 
-func! grep#run(grepcmd, args) abort
+func! grep#grep(grepcmd, args) abort
 
 	call s:run(a:grepcmd, a:args)
 
@@ -32,7 +32,7 @@ func! grep#run(grepcmd, args) abort
 
 endf
 
-func! grep#run_buffer(bang, grepcmd, args) abort
+func! grep#grep_buffer(grepcmd, bang, args) abort
 
 	let scope = expand((&filetype == 'qf' ? '#' : '%').':p')
 	call s:run(a:grepcmd, join([a:args, scope]))

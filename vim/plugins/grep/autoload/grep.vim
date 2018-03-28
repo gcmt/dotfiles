@@ -41,7 +41,7 @@ func! grep#run_buffer(bang, grepcmd, args) abort
 		" remove matches in comments or strings
 		wincmd p
 		let title = get(getqflist({'title': 1}), 'title', '')
-		let fn = "synIDattr(synIDtrans(synID(v:val['lnum'], v:val['col'], 0)), 'name') !~ '\\v(String|Comment)'"
+		let fn = "s:synat(v:val['lnum'], v:val['col']) !~ '\\v(String|Comment)'"
 		call setqflist(filter(getqflist(), fn), 'r')
 		call setqflist([], 'a', {'title': title})
 		wincmd p
@@ -83,6 +83,10 @@ func! grep#try_prettify()
 	if get(w:, 'quickfix_title', '') =~ '\V\^[Greb]'
 		call grep#prettify()
 	end
+endf
+
+func! s:synat(line, col)
+	return synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name')
 endf
 
 func! s:err(msg)

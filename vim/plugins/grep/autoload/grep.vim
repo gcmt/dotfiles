@@ -37,7 +37,7 @@ func! grep#run_buffer(bang, grepcmd, args) abort
 	let scope = expand((&filetype == 'qf' ? '#' : '%').':p')
 	call s:run(a:grepcmd, join([a:args, scope]))
 
-	if empty(a:bang)
+	if !empty(a:bang)
 		" remove matches in comments or strings
 		let title = get(getqflist({'title': 1}), 'title', '')
 		let fn = "s:synat(v:val['lnum'], v:val['col']) !~ '\\v(String|Comment)'"

@@ -37,25 +37,17 @@ endf
 func! s:search(pattern, exclude_syn)
 
 	let matches = []
-	let winsave = winsaveview()
-	call cursor(1, 1)
-
-	while 1
-		let pos = searchpos(a:pattern, 'W')
-		if pos == [0, 0]
-			break
-		end
-		if index(a:exclude_syn, s:synat(pos[0], pos[1])) != -1
+	for i in range(1, line('$'))
+		let match = matchstrpos(getline(i), a:pattern)
+		if empty(match[0])
 			continue
 		end
-		let prev = get(matches, -1, [0, 0, ''])
-		if pos[0] == prev[0] && getline(pos[0]) == prev[2]
+		if index(a:exclude_syn, s:synat(i, match[1]+1)) != -1
 			continue
 		end
-		call add(matches, pos + [getline(pos[0])])
-	endw
+		call add(matches, [i, match[1]+1, getline(i)])
+	endfo
 
-	call winrestview(winsave)
 	return matches
 
 endf

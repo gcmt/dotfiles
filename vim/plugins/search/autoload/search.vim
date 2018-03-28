@@ -47,7 +47,7 @@ func! s:search(pattern, exclude_syn)
 		if !empty(a:exclude_syn) && index(a:exclude_syn, s:synat(i, match[1]+1)) != -1
 			continue
 		end
-		call add(matches, [i, match[1]+1, getline(i)])
+		call add(matches, [i, match[1]+1, bufnr('%')])
 	endfo
 
 	return matches
@@ -63,7 +63,8 @@ func! s:render(matches)
 	let width = len(max(map(copy(a:matches), 'v:val[0]')))
 	for i in range(len(a:matches))
 		let b:search.table[i+1] = a:matches[i][:1]
-		let line = printf("%".width."s %s", a:matches[i][0], a:matches[i][2])
+		let ln = getbufline(a:matches[i][2], a:matches[i][0])[0]
+		let line = printf("%".width."s %s", a:matches[i][0], ln)
 		call setline(i+1, line)
 	endfor
 

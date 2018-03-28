@@ -154,3 +154,9 @@ func! explorer#actions#set_mark(mark)
 		call bookmarks#set(a:mark, path)
 	end
 endf
+
+func! explorer#actions#help()
+	let mappings = sort(filter(split(execute('nmap'), "\n"), {-> v:val =~ '\vexplorer#'}))
+	call map(mappings, {-> substitute(v:val, '\V\(\^n  \|*@:call explorer#\(actions\|buffer\)#\|<CR>\$\)', '', 'g')})
+	echo join(mappings, "\n")
+endf

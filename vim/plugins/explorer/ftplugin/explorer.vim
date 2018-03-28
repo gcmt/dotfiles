@@ -20,3 +20,5 @@ nnoremap <silent> <buffer> gg :call explorer#buffer#goto_first_file()<cr>
 nnoremap <silent> <buffer> G :call explorer#buffer#goto_last_file()<cr>
 
 nnoremap <silent> <buffer> m :call explorer#actions#set_mark(getchar())<cr>
+
+nnoremap <silent> <buffer> ? :call explorer#actions#help()<cr>

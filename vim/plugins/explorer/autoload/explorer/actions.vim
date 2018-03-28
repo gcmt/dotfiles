@@ -100,23 +100,22 @@ func! explorer#actions#rename() abort
 	end
 	if rename(path, to) != 0
 		return explorer#err("Operation failed")
-	else
-		if bufnr(path) != -1
-			exec 'split' fnameescape(to)
-			close
-			if bufnr(@#) == bufnr(path)
-				let @# = bufnr(to)
-			end
-			if b:explorer.current == bufnr(path)
-				let b:explorer.current = bufnr(to)
-			end
-			if b:explorer.alt == bufnr(path)
-				let b:explorer.alt = bufnr(to)
-			end
-			sil! exec 'bwipe' path
-		end
-		call explorer#buffer#render(b:explorer.dir)
 	end
+	if bufnr(path) != -1
+		exec 'split' fnameescape(to)
+		close
+		if bufnr(@#) == bufnr(path)
+			let @# = bufnr(to)
+		end
+		if b:explorer.current == bufnr(path)
+			let b:explorer.current = bufnr(to)
+		end
+		if b:explorer.alt == bufnr(path)
+			let b:explorer.alt = bufnr(to)
+		end
+		sil! exec 'bwipe' path
+	end
+	call explorer#buffer#render(b:explorer.dir)
 	echo | redraw
 endf
 

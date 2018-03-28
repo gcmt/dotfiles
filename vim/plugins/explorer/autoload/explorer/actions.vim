@@ -85,13 +85,6 @@ func! explorer#actions#rename() abort
 	if bufnr(path) != -1 && getbufvar(bufnr(path), '&mod')
 		return explorer#err('File is open and contain changes')
 	end
-	if bufnr(path) != -1
-		echo printf("The file '%s' is open and it will be closed. Are you sure? [yn] ", fnamemodify(path, ':~'))
-		if nr2char(getchar()) !~ 'y'
-			return
-		end
-		redraw
-	end
 	let name = input(printf("Rename '%s' to: ", file)) | redraw
 	if empty(name)
 		return
@@ -109,6 +102,17 @@ func! explorer#actions#rename() abort
 		return explorer#err("Operation failed")
 	else
 		if bufnr(path) != -1
+			exec 'split' fnameescape(to)
+			close
+			if bufnr(@#) == bufnr(path)
+				let @# = bufnr(to)
+			end
+			if b:explorer.current == bufnr(path)
+				let b:explorer.current = bufnr(to)
+			end
+			if b:explorer.alt == bufnr(path)
+				let b:explorer.alt = bufnr(to)
+			end
 			sil! exec 'bwipe' path
 		end
 		call explorer#buffer#render(b:explorer.dir)

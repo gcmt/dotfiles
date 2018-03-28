@@ -90,7 +90,7 @@ func! s:find_closest_match()
 endf
 
 func! s:do_highlight()
-	call matchadd('LineNr', '\v^\s*\d+')
+	syn match LineNr /\v^\s*\d+/
 endf
 
 func! s:resize_window()

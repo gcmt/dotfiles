@@ -76,6 +76,46 @@ func! explorer#actions#create_directory() abort
 	call explorer#buffer#goto_file(split(dir, '/')[0])
 endf
 
+func! explorer#actions#rename() abort
+	let file = s:file_at(line('.'))
+	if empty(file)
+		return
+	end
+	let path = explorer#path#join(b:explorer.dir, file)
+	if bufnr(path) != -1 && getbufvar(bufnr(path), '&mod')
+		return explorer#err('File is open and contain changes')
+	end
+	if bufnr(path) != -1
+		echo printf("The file '%s' is open and it will be closed. Are you sure? [yn] ", fnamemodify(path, ':~'))
+		if nr2char(getchar()) !~ 'y'
+			return
+		end
+		redraw
+	end
+	let name = input(printf("Rename '%s' to: ", file)) | redraw
+	if empty(name)
+		return
+	end
+	redraw
+	let to = explorer#path#join(b:explorer.dir, name)
+ 	if isdirectory(to) || filereadable(to)
+		echo printf("The file '%s' already exists and it will be overwritten. Are you sure? [yn] ", fnamemodify(to, ':~'))
+		if nr2char(getchar()) !~ 'y'
+			return
+		end
+		redraw
+	end
+	if rename(path, to) != 0
+		return explorer#err("Operation failed")
+	else
+		if bufnr(path) != -1
+			sil! exec 'bwipe' path
+		end
+		call explorer#buffer#render(b:explorer.dir)
+	end
+	echo | redraw
+endf
+
 " Delete the current file or directory
 func! explorer#actions#delete() abort
 	let file = s:file_at(line('.'))

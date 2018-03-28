@@ -140,6 +140,40 @@ func! explorer#actions#delete() abort
 	redraw | echo
 endf
 
+" Mark/unmark current file or directory
+func! explorer#actions#mark_toggle()
+	let file = s:file_at(line('.'))
+	if empty(file)
+		return
+	end
+	let path = explorer#path#join(b:explorer.dir, file)
+	let idx = index(g:explorer_marked, path)
+	if idx == -1
+		for marked in g:explorer_marked
+			if path =~ '\V\^'.marked.'\(/\|\$\)' || marked =~ '\V\^'.path.'\(/\|\$\)'
+				return explorer#err("You cannot have nested marked files")
+			end
+		endfo
+		call add(g:explorer_marked, path)
+	else
+		call remove(g:explorer_marked, idx)
+	end
+	call explorer#buffer#render(b:explorer.dir)
+endf
+
+" Clear all marked files
+func! explorer#actions#clear_marked_files()
+	let g:explorer_marked = []
+	call explorer#buffer#render(b:explorer.dir)
+endf
+
+" Print all marked files
+func! explorer#actions#print_marked_files()
+	for marked in g:explorer_marked
+		echo marked
+	endfo
+endf
+
 " Show/hide hidden files
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files

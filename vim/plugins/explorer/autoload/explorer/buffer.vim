@@ -60,7 +60,8 @@ func! explorer#buffer#render(path) abort
 	let command = substitute(command, '\v\s*--dired', '', '')
 	let command = substitute(command, '\v\s*--group-directories-first', '', '')
 	let path = substitute(fnamemodify(a:path, ":p:~"), '\v/$', '', '')
-	let stl = " " . command . " " . path . "%=explorer "
+	let marked = empty(g:explorer_marked) ? "" : len(g:explorer_marked) . " marked files | "
+	let stl = " " . command . " " . path . "%=" . marked . "explorer "
 	call setwinvar(0, "&stl", stl)
 
 	if retain_position
@@ -109,6 +110,12 @@ func! s:do_highlight(offset)
 	if !empty(g:explorer_links_color)
 		exec 'syn match' g:explorer_links_color '/\v%'.a:offset.'c.*\ze-\>\s\//'
 	end
+	for marked in g:explorer_marked
+		if b:explorer.dir == fnamemodify(marked, ':h')
+			let slash = isdirectory(marked) ? '\/' : ''
+			exec 'syn match' g:explorer_marked_color '/\V\%'.a:offset.'c'.fnamemodify(marked, ':t').slash.'\.\*/'
+		end
+	endfo
 endf
 
 func! s:ls_command()

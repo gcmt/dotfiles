@@ -13,6 +13,7 @@ let g:explorer_loaded = 1
 command! -nargs=? Explorer call explorer#open(<q-args>)
 
 let s:options = {
+	\ 'marked': [],
 	\ 'hidden_files': 1,
 	\ 'directories_first': 1,
 	\ 'auto_hide_owner_and_group': 80,
@@ -21,6 +22,7 @@ let s:options = {
 	\ 'dirs_color': 'ExplorerDirs',
 	\ 'links_color': 'ExplorerLinks',
 	\ 'execs_color': 'ExplorerExecs',
+	\ 'marked_color': 'ErrorMsg',
 \ }
 
 for [s:option, s:default] in items(s:options)

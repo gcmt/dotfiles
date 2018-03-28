@@ -16,6 +16,11 @@ nnoremap <silent> <buffer> c :call explorer#actions#create_directory()<cr>
 nnoremap <silent> <buffer> r :call explorer#actions#rename()<cr>
 nnoremap <silent> <buffer> d :call explorer#actions#delete()<cr>
 
+nnoremap <silent> <buffer> mm :call explorer#actions#mark_toggle()<cr>
+vnoremap <silent> <buffer> m :call explorer#actions#mark_toggle()<cr>
+nnoremap <silent> <buffer> mp :call explorer#actions#print_marked_files()<cr>
+nnoremap <silent> <buffer> mc :call explorer#actions#clear_marked_files()<cr>
+
 nnoremap <silent> <buffer> gg :call explorer#buffer#goto_first_file()<cr>
 nnoremap <silent> <buffer> G :call explorer#buffer#goto_last_file()<cr>
 

@@ -5,7 +5,7 @@ nnoremap <silent> <buffer> <cr> :call <sid>jump()<cr>
 nnoremap <silent> <buffer> <c-j> :call <sid>jump()<cr>
 
 func! s:jump()
-	let pos = get(b:search_table, line('.'), [])
+	let pos = get(b:search.table, line('.'), [])
 	if empty(pos)
 		return
 	end

@@ -30,6 +30,8 @@ func! search#do(bang, args)
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0 laststatus=2
 	call setwinvar(0, '&stl', " /" . args . "/%=search ")
+	let b:search = {'table': {}, 'pattern': args}
+
 	call s:render(matches)
 
 endf
@@ -57,10 +59,10 @@ func! s:render(matches)
 	setl ma nolist
 	sil %delete _
 
-	let b:search_table = {}
+	let b:search.table = {}
 	let width = len(max(map(copy(a:matches), 'v:val[0]')))
 	for i in range(len(a:matches))
-		let b:search_table[i+1] = a:matches[i][:1]
+		let b:search.table[i+1] = a:matches[i][:1]
 		let line = printf("%".width."s %s", a:matches[i][0], a:matches[i][2])
 		call setline(i+1, line)
 	endfor
@@ -78,7 +80,7 @@ func! s:find_closest_match()
 	wincmd p
 	let mindist = 99999
 	let closest = line('.')
-	for [line, entry] in items(b:search_table)
+	for [line, entry] in items(b:search.table)
 		let dist = abs(curline - entry[0])
 		if dist < mindist
 			let mindist = dist

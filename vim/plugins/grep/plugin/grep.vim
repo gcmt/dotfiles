@@ -18,7 +18,8 @@ else
 	set grepformat=%f:%l:%m
 end
 
-command! -nargs=* -bang Grep call grep#grep('grep!', <q-args>)
-command! -nargs=* -bang Grepa call grep#grep('grepadd!', <q-args>)
-command! -nargs=* -bang Greb call grep#grep_buffer('grep!', <q-bang>, <q-args>)
-command! -nargs=* -bang Greba call grep#grep_buffer('grepadd!', <q-bang>, <q-args>)
+command! -nargs=* -bang Grep call grep#grep('grep', <q-args>)
+command! -nargs=* -bang Grepa call grep#grep('grepadd', <q-args>)
+command! -nargs=* -bang Greb call grep#grep_buffer('grep', <q-bang>, <q-args>)
+command! -nargs=* -bang Greba call grep#grep_buffer('grepadd', <q-bang>, <q-args>)
+command! -nargs=* -bang Search call grep#grep_buffer('vimgrep', <q-bang>, <q-args>)

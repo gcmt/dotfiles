@@ -8,7 +8,8 @@ func! s:run(cmd, args)
 	let sp_save = &shellpipe
 	set shellpipe=>
 
-	sil! exec a:cmd join(map(split(a:args), 'shellescape(v:val)'))
+	let args = a:cmd =~ 'vim' ? a:args : join(map(split(a:args), 'shellescape(v:val)'))
+	sil! exec a:cmd args
 
 	let &shellpipe = sp_save
 	let &t_ti = t_ti_save
@@ -34,8 +35,9 @@ endf
 
 func! grep#grep_buffer(grepcmd, bang, args) abort
 
+	let args = a:grepcmd =~ 'vim' ? '/'.a:args.'/' : a:args
 	let scope = expand((&filetype == 'qf' ? '#' : '%').':p')
-	call s:run(a:grepcmd, join([a:args, scope]))
+	call s:run(a:grepcmd, join([args, scope]))
 
 	if !empty(a:bang)
 		" remove matches in comments or strings
@@ -51,8 +53,8 @@ func! grep#grep_buffer(grepcmd, bang, args) abort
 	end
 
 	copen
-	if w:quickfix_title !~ '\V\^[Greb]'
-		call setqflist([], 'a', {'title': '[Greb] ' . w:quickfix_title})
+	if w:quickfix_title !~ '\V\^[Buffer]'
+		call setqflist([], 'a', {'title': '[Buffer] ' . w:quickfix_title})
 	end
 
 	call grep#prettify()
@@ -64,21 +66,19 @@ func! grep#prettify() abort
 		throw "Grep: Not inside a quickfix buffer"
 	end
 	syntax clear
-	setl modifiable nolist
+	setl ma nolist
 	let qf = getqflist()
-	let tabstop = getbufvar('#', '&tabstop')
-	let num_width = len(max(map(copy(qf), 'v:val["lnum"]')))
+	let width = len(max(map(copy(qf), 'v:val["lnum"]')))
 	for linenr in range(len(qf))
-		let text = substitute(qf[linenr].text, "\t", repeat(" ", tabstop), 'g')
-		let line = printf("%".num_width."s %s", qf[linenr].lnum, text)
+		let line = printf("%".width."s %s", qf[linenr].lnum, qf[linenr].text)
 		call setline(linenr+1, line)
 	endfor
 	call matchadd('LineNr', '\v^\s*\d+')
-	setl nomodifiable nomodified
+	setl noma nomod
 endf
 
 func! grep#try_prettify()
-	if get(w:, 'quickfix_title', '') =~ '\V\^[Greb]'
+	if get(w:, 'quickfix_title', '') =~ '\V\^[Buffer]'
 		call grep#prettify()
 	end
 endf

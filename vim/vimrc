@@ -747,8 +747,8 @@
 " ----------------------------------------------------------------------------
 
 	nnoremap gs :Search<space>
-	nnoremap <silent> gS :Search <c-r><c-w><cr>
 	nnoremap gxs :Search<cr>
+	nnoremap <silent> gS :Search \<<c-r><c-w>\><cr>
 
 " Buffers
 " ----------------------------------------------------------------------------

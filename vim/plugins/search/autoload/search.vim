@@ -48,11 +48,11 @@ func! s:search(pattern, exclude_syn)
 		if index(a:exclude_syn, s:synat(pos[0], pos[1])) != -1
 			continue
 		end
-		let line = getline(pos[0])
-		if line == get(matches, -1, [0, 0, ''])[2]
+		let prev = get(matches, -1, [0, 0, ''])
+		if pos[0] == prev[0] && getline(pos[0]) == prev[2]
 			continue
 		end
-		call add(matches, pos + [line])
+		call add(matches, pos + [getline(pos[0])])
 	endw
 
 	call winrestview(winsave)

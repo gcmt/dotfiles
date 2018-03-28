@@ -146,8 +146,8 @@ func! explorer#actions#toggle_hidden_files()
 	call explorer#buffer#render(b:explorer.dir)
 endf
 
-" Mark the current file/directory (requires the 'bookmarks' plugin)
-func! explorer#actions#set_mark(mark)
+" Add bookmark (requires the 'bookmarks' plugin)
+func! explorer#actions#bookmarks_set(mark)
 	if !get(g:, 'loaded_bookmarks')
 		return explorer#err("Bookmarks not available")
 	end

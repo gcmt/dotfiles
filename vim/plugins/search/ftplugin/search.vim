@@ -10,6 +10,7 @@ func! s:jump()
 		return
 	end
 	close
+	norm! m'
 	call cursor(pos)
 	setl cursorline
 	norm! zz

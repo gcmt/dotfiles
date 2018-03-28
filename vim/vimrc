@@ -344,25 +344,6 @@
 		au BufReadPost * call setpos(".", getpos("'\""))
 	aug END
 
-	command! -bang -nargs=1 -complete=file Move call <sid>move(<q-bang>, <q-args>, getcwd())
-	command! -bang -nargs=1 -complete=file Rename call <sid>move(<q-bang>, <q-args>, expand('%:p:h'))
-
-	func! s:move(bang, dest, cwd)
-		let alternate = @#
-		let source = expand("%:p")
-		let dest = a:cwd . '/' . a:dest
-		try
-			exec 'saveas'.a:bang fnameescape(dest)
-			call delete(source)
-			sil exec 'bwipe' fnameescape(source)
-		catch
-			let msg = substitute(v:exception, '\v^Vim\([^:]*:', '', '')
-			echohl WarningMsg | echo msg | echohl None
-		finally
-			let @# = alternate
-		endtry
-	endf
-
 	" switch to the alternate buffer
 	nnoremap <c-a> <c-^>
 

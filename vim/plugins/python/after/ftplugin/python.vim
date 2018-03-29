@@ -20,7 +20,7 @@ command! -buffer -nargs=? Activate call python#venv#activate(<q-args>)
 nnoremap <buffer> <f3> :Ctags --languages=python -f .tags/python/0.project<cr>
 
 " outline python module
-nnoremap <silent> <buffer> <leader>o :Greb ^\s*(class\\|def)\b<cr>
+nnoremap <silent> <buffer> <leader>o :Search! \v^\s*\zs(class\|def)><cr>
 
 " expand current name into a function definition
 inoremap <silent> <buffer> <c-g><c-x> <c-r>=python#snippets#func()<cr>

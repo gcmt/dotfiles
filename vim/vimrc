@@ -83,11 +83,12 @@
 
 	set history=100
 	set viminfo=!,'100,h,n$VIMCACHE/viminfo
-
 	set undofile
 	set undodir=$VIMCACHE/undofiles
 
+	set directory=
 	set noswapfile
+
 	set nobackup
 
 	set backspace=indent,eol,start

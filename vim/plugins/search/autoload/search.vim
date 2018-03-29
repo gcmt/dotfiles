@@ -1,25 +1,26 @@
 
 let s:bufname = '__search__'
 
-func! search#do(bang, args)
+func! search#do(bang, pattern)
 
 	if bufwinnr(s:bufname) != -1
 		exec bufwinnr(s:bufname) . 'wincmd c'
 	end
 
-	if empty(a:args) && !empty(get(g:, 'search_last_args', ''))
-		let args = g:search_last_args
+	if empty(a:pattern)
+		if empty(g:search_history)
+			return s:err("No previous searches")
+		end
+		let ctx = g:search_history[-1]
 	else
-		let args = a:args
-		let g:search_last_args = a:args
+		let exclude_syn = empty(a:bang) ? [] : g:search_exclude_syn
+		let ctx = {'bufnr': bufnr('%'), 'pattern': a:pattern, 'exclude_syn': exclude_syn}
+		if ctx != get(g:search_history, -1, {})
+			call add(g:search_history, ctx)
+		end
 	end
 
-	let exclude_syn = []
-	if !empty(a:bang)
-		let exclude_syn = g:search_exclude_syn
-	end
-
-	let matches = s:search(args, exclude_syn)
+	let matches = s:search(ctx)
 	if len(matches) == 0
 		return s:err("Nothing found")
 	end
@@ -29,25 +30,27 @@ func! search#do(bang, args)
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0 laststatus=2
-	call setwinvar(0, '&stl', " /" . args . "/%=search ")
-	let b:search = {'table': {}, 'pattern': args}
+	let buf = join(split(fnamemodify(bufname(ctx.bufnr), ':p:~'), '/')[-1:], '/')
+	call setwinvar(0, '&stl', " /" . ctx.pattern . "/ " . buf . "%=search ")
+	let b:search = {'table': {}, 'ctx': ctx}
 
 	call s:render(matches)
 
 endf
 
-func! s:search(pattern, exclude_syn)
+func! s:search(ctx)
 
 	let matches = []
-	for i in range(1, line('$'))
-		let match = matchstrpos(getline(i), a:pattern)
+	let lines = getbufline(a:ctx.bufnr, 1, '$')
+	for i in range(0, len(lines)-1)
+		let match = matchstrpos(lines[i], a:ctx.pattern)
 		if empty(match[0])
 			continue
 		end
-		if !empty(a:exclude_syn) && index(a:exclude_syn, s:synat(i, match[1]+1)) != -1
+		if !empty(a:ctx.exclude_syn) && index(a:ctx.exclude_syn, s:synat(i+1, match[1]+1)) != -1
 			continue
 		end
-		call add(matches, [i, match[1]+1, bufnr('%')])
+		call add(matches, [i+1, match[1]+1])
 	endfo
 
 	return matches
@@ -56,6 +59,7 @@ endf
 
 func! s:render(matches)
 
+	syn clear
 	setl ma nolist
 	sil %delete _
 
@@ -64,7 +68,7 @@ func! s:render(matches)
 	for i in range(len(a:matches))
 		let m = a:matches[i]
 		let b:search.table[i+1] = m
-		let line = printf("%".width."s %s", m[0], getbufline(m[2], m[0])[0])
+		let line = printf("%".width."s %s", m[0], getbufline(b:search.ctx.bufnr, m[0])[0])
 		call setline(i+1, line)
 	endfor
 
@@ -76,7 +80,12 @@ func! s:render(matches)
 endf
 
 func! s:find_closest_match()
-	wincmd p
+	call cursor(1, 1)
+	let winnr = bufwinnr(b:search.ctx.bufnr)
+	if winnr == -1
+		return
+	end
+	exec winnr.'wincmd w'
 	let curline = line('.')
 	wincmd p
 	let mindist = 99999
@@ -88,7 +97,6 @@ func! s:find_closest_match()
 			let closest = line
 		end
 	endfo
-	call cursor(1, 1)
 	call cursor(closest, 1)
 endf
 

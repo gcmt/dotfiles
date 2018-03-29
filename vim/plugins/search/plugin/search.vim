@@ -12,6 +12,8 @@ let g:search_loaded = 1
 
 command! -bang -nargs=* Search call search#do(<q-bang>, <q-args>)
 
+let g:search_history = []
+
 let s:options = {
 	\ 'max_winsize': 50,
 	\ 'exclude_syn': ['Comment', 'String'],

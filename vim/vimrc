@@ -484,8 +484,8 @@
 
 	" Search for current word or selected text without moving the cursor.
 	" let &hls = &hls is needed to force highlighting
-	nnoremap <silent> gh :call <sid>search(0)<cr>:let &hls = &hls<cr>
-	vnoremap <silent> gh :<c-u>call <sid>search(1)<cr>:let &hls = &hls<cr>
+	nnoremap <silent> S :call <sid>search(0)<cr>:let &hls = &hls<cr>
+	vnoremap <silent> S :<c-u>call <sid>search(1)<cr>:let &hls = &hls<cr>
 
 	" Toggle search for current word or selected text without moving the cursor
 	fun! s:search(visual)
@@ -758,7 +758,8 @@
 " Rofi
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gr :RofiEdit<cr>
+	nnoremap <silent> gr :RofiSearch<cr>
+	nnoremap <silent> gp :RofiEdit<cr>
 
 " Bookmarks
 " ----------------------------------------------------------------------------
@@ -810,8 +811,8 @@
 " Explorer
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gt :exec 'Explorer' expand('%:p:h')<cr>
-	nnoremap <silent> gT :exec 'Explorer' getcwd()<cr>
+	nnoremap <silent> gd :exec 'Explorer' expand('%:p:h')<cr>
+	nnoremap <silent> gD :exec 'Explorer' getcwd()<cr>
 
 " Netrw
 " ----------------------------------------------------------------------------

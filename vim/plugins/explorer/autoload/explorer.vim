@@ -35,7 +35,7 @@ func! explorer#open(path) abort
 
 	call explorer#buffer#render(path)
 
-	let file = fnamemodify(bufname(b:explorer.current), ':t')
+	let file = split(fnamemodify(bufname(b:explorer.current), ':p'), '/')[-1]
 	call explorer#buffer#goto_file(file)
 
 endf

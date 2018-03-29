@@ -22,13 +22,10 @@ func! grep#grep(grepcmd, args) abort
 	call s:run(a:grepcmd, a:args)
 
 	if len(getqflist()) == 0
-		call s:err("Nothing found") | cclose
-		return
-	end
-
-	copen
-	if w:quickfix_title !~ '\V\^[Grep]'
-		call setqflist([], 'a', {'title': '[Grep] ' . w:quickfix_title})
+		call s:err("Nothing found")
+		cclose
+	else
+		copen
 	end
 
 endf
@@ -48,16 +45,13 @@ func! grep#grep_buffer(grepcmd, bang, args) abort
 	end
 
 	if len(getqflist()) == 0
-		call s:err("Nothing found") | cclose
-		return
+		call s:err("Nothing found")
+		cclose
+	else
+		let title = get(getqflist({'title': 1}), 'title', '')
+		call setqflist([], 'a', {'title': substitute(title, '\V\^:', '%:', '')})
+		copen
 	end
-
-	copen
-	if w:quickfix_title !~ '\V\^[Buffer]'
-		call setqflist([], 'a', {'title': '[Buffer] ' . w:quickfix_title})
-	end
-
-	call grep#prettify()
 
 endf
 
@@ -65,7 +59,7 @@ func! grep#prettify() abort
 	if &bt != 'quickfix'
 		throw "Grep: Not inside a quickfix buffer"
 	end
-	syntax clear
+	syn clear
 	setl ma nolist
 	let qf = getqflist()
 	let width = len(max(map(copy(qf), 'v:val["lnum"]')))
@@ -78,7 +72,7 @@ func! grep#prettify() abort
 endf
 
 func! grep#try_prettify()
-	if get(w:, 'quickfix_title', '') =~ '\V\^[Buffer]'
+	if get(w:, 'quickfix_title', '') =~ '\V\^%'
 		call grep#prettify()
 	end
 endf

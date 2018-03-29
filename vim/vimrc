@@ -837,18 +837,6 @@
 	nnoremap <silent> gd :exec 'Explorer' expand('%:p:h')<cr>
 	nnoremap <silent> gD :exec 'Explorer' getcwd()<cr>
 
-" Netrw
-" ----------------------------------------------------------------------------
-
-	let g:netrw_banner = 0
-	let g:netrw_altfile = 1
-	let g:netrw_liststyle = 0
-
-	let g:netrw_list_hide = ''
-	let g:netrw_list_hide .= '\(^\|\s\s\)\zs\.\S\+,'
-	let g:netrw_list_hide .= '\./,\.\./,'
-	let g:netrw_list_hide .= '\.DS_Store,\.pyc$'
-
 " Ultisnips
 " ----------------------------------------------------------------------------
 

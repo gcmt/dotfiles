@@ -44,7 +44,7 @@ func! plugs#actions#install_all() abort
 	redraw | echo
 endf
 
-func! plugs#actions#delete() abort
+func! plugs#actions#uninstall() abort
 	let entry = get(b:plugs.table, line('.'), {})
 	if empty(entry)
 		return
@@ -53,7 +53,7 @@ func! plugs#actions#delete() abort
 	if !isdirectory(dest)
 		return s:err("Plugin not intalled")
 	end
-	echo printf("Deleting %s... Are you sure? [yn] ", fnamemodify(dest, ':~'))
+	echo printf("Removing %s... Are you sure? [yn] ", fnamemodify(dest, ':~'))
 	if nr2char(getchar()) =~ 'y'
 		call delete(dest, 'rf')
 	end

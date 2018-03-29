@@ -701,7 +701,7 @@
 	command! -nargs=0 WriteSudo exec 'write !sudo tee % > /dev/null'
 
 	" Returns the syntax group under the cursor
-	func! _syntax()
+	func! _cursyn()
 		return synIDattr(synIDtrans(synID(line('.'), col('.'), 0)), 'name')
 	endf
 

@@ -41,4 +41,5 @@ call s:setup_colors()
 aug _explorer
 	au BufWritePost .vimrc call <sid>setup_colors()
 	au Colorscheme * call <sid>setup_colors()
+	au BufEnter * if isdirectory(expand('%:p')) | bwipe | call explorer#open(expand('%:p')) | end
 aug END

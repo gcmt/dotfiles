@@ -20,6 +20,9 @@ end
 
 command! -nargs=* -bang Grep call grep#grep('grep', <q-args>)
 command! -nargs=* -bang Grepa call grep#grep('grepadd', <q-args>)
+command! -nargs=* -bang Vim call grep#grep('vimgrep', <q-args>)
+command! -nargs=* -bang Vima call grep#grep('vimgrepadd', <q-args>)
+command! -nargs=* -bang Vimb call grep#grep_buffer('vimgrep', <q-bang>, <q-args>)
+command! -nargs=* -bang Vimba call grep#grep_buffer('vimgrepadd', <q-bang>, <q-args>)
 command! -nargs=* -bang Greb call grep#grep_buffer('grep', <q-bang>, <q-args>)
 command! -nargs=* -bang Greba call grep#grep_buffer('grepadd', <q-bang>, <q-args>)
-command! -nargs=* -bang Grebv call grep#grep_buffer('vimgrep', <q-bang>, <q-args>)

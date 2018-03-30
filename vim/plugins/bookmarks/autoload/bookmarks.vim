@@ -65,11 +65,8 @@ func bookmarks#view() abort
 	setl filetype=bookmarks buftype=nofile bufhidden=delete nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
-	setl cursorline nocursorcolumn colorcolumn=0
-	let b:bookmarks_laststatus_save = &laststatus
-	au BufLeave <buffer> let &laststatus = b:bookmarks_laststatus_save
-	setl laststatus=0
-	echo
+	setl cursorline nocursorcolumn colorcolumn=0 laststatus=2
+	call setwinvar(0, '&stl', ' bookmarks')
 
 	call bookmarks#render()
 	call cursor(1, 2)

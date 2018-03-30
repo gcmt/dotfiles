@@ -19,7 +19,7 @@ func! s:jump(...) abort
 	if mode =~ '\vv?split$'
 		exec (v:count > 0 ? v:count : '') mode
 	elseif mode == 'tab'
-      tabedit %
+		exec (v:count > 0 ? v:count : '') 'tab split'
 	end
 	exec 'norm! `' . mark.letter
 	norm! zz

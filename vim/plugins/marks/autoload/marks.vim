@@ -23,7 +23,7 @@ endf
 
 " Automatically mark the current line with uppercase letters (file marks).
 " If the mark already exists, then it is deleted.
-func! marks#set_auto() abort
+func! marks#set_auto(local) abort
 	let marks = marks#marks()
 	let path = fnamemodify(bufname('%'), ':p')
 	for mark in values(marks)
@@ -33,7 +33,12 @@ func! marks#set_auto() abort
 			return
 		end
 	endfo
-	for letter in split('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\ze')
+	if a:local
+		let letters = split('abcdefghijklmnopqrstuvwxyz', '\ze')
+	else
+		let letters = split('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\ze')
+	end
+	for letter in letters
 		if !has_key(marks, letter)
 			exec 'mark' letter
 			echo printf("line \"%s\" marked with [%s]", line('.'), letter)

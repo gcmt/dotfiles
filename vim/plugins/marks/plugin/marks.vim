@@ -19,7 +19,8 @@ for [s:option, s:default] in items(s:options)
 endfor
 
 command! -nargs=0 Marks call marks#view()
-command! -nargs=0 MarkAuto call marks#set_auto()
+command! -nargs=0 Mark call marks#set_auto(1)
+command! -nargs=0 Markg call marks#set_auto(0)
 
 func s:setup_colors()
 	hi default link MarksMark Magenta

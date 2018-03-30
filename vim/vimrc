@@ -787,7 +787,8 @@
 " ----------------------------------------------------------------------------
 
 	nnoremap <silent> m, :call marks#view()<cr>
-	nnoremap <silent> m. :call marks#set_auto()<cr>
+	nnoremap <silent> m. :call marks#set_auto(1)<cr>
+	nnoremap <silent> m: :call marks#set_auto(0)<cr>
 
 " Bookmarks
 " ----------------------------------------------------------------------------

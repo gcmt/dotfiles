@@ -793,10 +793,10 @@
 " Bookmarks
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gml :Bookmarks<cr>
+	nnoremap <silent> gm, :Bookmarks<cr>
 	nnoremap <silent> gm' :call bookmarks#jump(getchar())<cr>
 	nnoremap <silent> gmm :call bookmarks#set(getchar(), expand('%:p'))<cr>
-	nnoremap <silent> gmM :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
+	nnoremap <silent> gmd :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
 
 " Taglist
 " ----------------------------------------------------------------------------

@@ -17,7 +17,7 @@ func! s:jump(...) abort
 	close
 	let mode = a:0 > 0 ? a:1 : ''
 	if mode =~ '\vv?split$'
-		exec (v:count > 0 ? v:count : '') mode '%'
+		exec (v:count > 0 ? v:count : '') mode
 	elseif mode == 'tab'
       tabedit %
 	end

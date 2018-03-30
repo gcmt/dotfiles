@@ -25,8 +25,8 @@ func s:setup_colors()
 	hi default link MarksMark Magenta
 	hi default link MarksFile Blue
 	hi default link MarksLine Normal
-	hi default link MarksColNr Comment
-	hi default link MarksLineNr Comment
+	hi default link MarksColNr LineNr
+	hi default link MarksLineNr LineNr
 	hi default link MarksLink Special
 endf
 

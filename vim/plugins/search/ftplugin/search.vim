@@ -19,15 +19,15 @@ func! s:jump()
 	norm! zz
 endf
 
-nnoremap <silent> <buffer> c :call <sid>show_context()<cr>
+nnoremap <silent> <buffer> c :<c-u>call <sid>show_context()<cr>
 
-func! s:show_context() range
+func! s:show_context()
 	let ctx = b:search.ctx
 	let entry = get(b:search.table, line('.'), [])
 	if empty(entry)
 		return
 	end
-	let start = entry[0] - v:count1
+	let start = max([entry[0] - v:count1, 1])
 	let end = entry[0] + v:count1
 	echo join(getbufline(ctx.bufnr, start, end), "\n")
 endf

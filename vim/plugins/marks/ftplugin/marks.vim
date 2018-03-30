@@ -32,10 +32,10 @@ func! s:delete() abort
 	end
 endf
 
-nnoremap <silent> <buffer> c :call <sid>show_context()<cr>
+nnoremap <silent> <buffer> c :<c-u>call <sid>show_context()<cr>
 
 " Show the current mark context.
-func! s:show_context() range
+func! s:show_context()
 	let mark = get(b:marks.table, line('.'), {})
 	if empty(mark)
 		return
@@ -43,7 +43,7 @@ func! s:show_context() range
 	if !bufexists(mark.file)
 		echo "file not available"
 	end
-	let start = mark.linenr - v:count1
+	let start = max([mark.linenr - v:count1, 1])
 	let end = mark.linenr + v:count1
 	echo join(getbufline(mark.file, start, end), "\n")
 endf

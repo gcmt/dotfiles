@@ -1,18 +1,28 @@
 
 nnoremap <silent> <buffer> q :close<cr>
 
-nnoremap <silent> <buffer> <enter> :call <sid>jump('')<cr>zz
-nnoremap <silent> <buffer> <c-j> :call <sid>jump('')<cr>zz
-nnoremap <silent> <buffer> l :call <sid>jump('')<cr>zz
+nnoremap <silent> <buffer> <enter> :<c-u>call <sid>jump()<cr>
+nnoremap <silent> <buffer> <c-j> :<c-u>call <sid>jump()<cr>
+nnoremap <silent> <buffer> l :<c-u>call <sid>jump()<cr>
+nnoremap <silent> <buffer> s :<c-u>call <sid>jump('split')<cr>
+nnoremap <silent> <buffer> v :<c-u>call <sid>jump('vsplit')<cr>
+nnoremap <silent> <buffer> t :<c-u>call <sid>jump('tab')<cr>
 
 " Jump to the current mark.
-func! s:jump(mode) abort
+func! s:jump(...) abort
 	let mark = get(b:marks.table, line('.'), {})
-	if !empty(mark)
-		close
-		exec 'norm! `' . mark.letter
-		norm! zz
+	if empty(mark)
+		return
 	end
+	close
+	let mode = a:0 > 0 ? a:1 : ''
+	if mode =~ '\vv?split$'
+		exec (v:count > 0 ? v:count : '') mode '%'
+	elseif mode == 'tab'
+      tabedit %
+	end
+	exec 'norm! `' . mark.letter
+	norm! zz
 endf
 
 nnoremap <silent> <buffer> dd :call <sid>delete()<cr>

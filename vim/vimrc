@@ -82,7 +82,7 @@
 	filetype plugin indent on
 
 	set history=100
-	set viminfo=!,'100,f0,h,n$VIMCACHE/viminfo
+	set viminfo=!,'100,f0,n$VIMCACHE/viminfo
 	set undofile
 	set undodir=$VIMCACHE/undofiles
 
@@ -484,9 +484,8 @@
 	nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
 
 	" Search for current word or selected text without moving the cursor.
-	" let &hls = &hls is needed to force highlighting
-	nnoremap <silent> S :call <sid>search(0)<cr>:let &hls = &hls<cr>
-	vnoremap <silent> S :<c-u>call <sid>search(1)<cr>:let &hls = &hls<cr>
+	nnoremap <silent> S :call <sid>search(0)<cr>
+	vnoremap <silent> S :<c-u>call <sid>search(1)<cr>
 
 	" Toggle search for current word or selected text without moving the cursor
 	fun! s:search(visual)

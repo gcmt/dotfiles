@@ -27,7 +27,7 @@ func bookmarks#set(mark, target) abort
 		call remove(s:marks, keys(s:marks)[i])
 	end
 	let s:marks[mark] = a:target
-	echom '"'.s:prettify_path(a:target).'" marked with ['.mark.']'
+	echo printf("file \"%s\" marked with [%s]", s:prettify_path(a:target), mark)
 endf
 
 func bookmarks#jump(mark, ...) abort

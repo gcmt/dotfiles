@@ -82,7 +82,7 @@
 	filetype plugin indent on
 
 	set history=100
-	set viminfo=!,'100,h,n$VIMCACHE/viminfo
+	set viminfo=!,'100,f0,h,n$VIMCACHE/viminfo
 	set undofile
 	set undodir=$VIMCACHE/undofiles
 

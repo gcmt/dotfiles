@@ -1,7 +1,7 @@
 
 let s:bufname = '__marks__'
 
-" Return all [a-zA-z] marks.
+" Return all [a-zA-Z] marks.
 func! marks#marks()
 	let marks = {}
 	for line in split(execute('marks'), "\n")[1:]
@@ -25,7 +25,6 @@ endf
 " If the mark already exists, then it is deleted.
 func! marks#set_auto() abort
 	let marks = marks#marks()
-	let available = split('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\ze')
 	let path = fnamemodify(bufname('%'), ':p')
 	for mark in values(marks)
 		if mark.letter =~ '\u' && mark.file == path && mark.linenr == line('.') && mark.line == getline('.')
@@ -34,7 +33,7 @@ func! marks#set_auto() abort
 			return
 		end
 	endfo
-	for letter in available
+	for letter in split('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\ze')
 		if !has_key(marks, letter)
 			exec 'mark' letter
 			echo printf("line \"%s\" marked with [%s]", line('.'), letter)

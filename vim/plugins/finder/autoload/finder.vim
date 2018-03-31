@@ -52,7 +52,6 @@ func s:render(files) abort
 	setl modifiable
 	sil %delete _
 
-	call s:resize_window(len(a:files))
 
 	let text = []
 	let b:finder.table = {}
@@ -75,15 +74,16 @@ func s:render(files) abort
 	endfor
 
 	call setline(1, text)
-
+	call s:resize_window()
 	setl nomodifiable
 
 endf
 
-func s:resize_window(entries_num)
+" Resize the current window according to g:finder_max_winsize.
+" That value is expected to be expressed in percentage.
+func s:resize_window()
 	let max = float2nr(&lines * g:finder_max_winsize / 100)
-	let min = float2nr(&lines * g:finder_min_winsize / 100)
-	exec 'resize' max([min([a:entries_num, max]), min])
+	exec 'resize' min([line('$'), max])
 endf
 
 func s:prettify_path(path)

@@ -44,7 +44,6 @@ endf
 
 let s:options = {
 	\ 'max_winsize': 50,
-	\ 'min_winsize': 1,
 	\ 'max_results': 100,
 \ }
 

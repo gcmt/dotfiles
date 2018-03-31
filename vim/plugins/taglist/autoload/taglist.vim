@@ -1,7 +1,11 @@
 
 let s:bufname = '__taglist__'
 
-func taglist#find(bang, query) abort
+" Open the Taglist buffer and display all search matches.
+" If there is only one match and a bang is provided, then it jumps directly to
+" that match.
+func taglist#open(bang, query) abort
+
 	let matches = s:search(a:query)
 	if v:shell_error
 		if empty(matches)
@@ -9,11 +13,10 @@ func taglist#find(bang, query) abort
 		end
 		return s:err(join(matches, "\n"))
 	end
+
 	if !empty(a:bang) && len(matches) == 1
-		" when a bang is provided and there is just one match,
-		" jump directly to that match
 		if bufwinnr(s:bufname) != -1
-			exec bufwinnr(s:bufname).'wincmd c'
+			exec bufwinnr(s:bufname) . 'wincmd c'
 		end
 		let match = matchstr(matches[0], '\v:\zs.*')
 		let tag = s:parse_match(match)
@@ -22,24 +25,22 @@ func taglist#find(bang, query) abort
 		exec tag.address
 		return
 	end
-	call s:open(a:query)
-	call s:render(matches)
-	norm! ggj
-endf
 
-" Create the Taglist buffer or just move to it if already visible.
-func s:open(query) abort
 	if bufwinnr(s:bufname) != -1
-		exec bufwinnr(s:bufname).'wincmd w'
+		exec bufwinnr(s:bufname) . 'wincmd w'
 	else
-		exec 'sil keepj keepa botright 1new' s:bufname
+		exec 'sil keepa botright 1new' s:bufname
 		setl filetype=taglist buftype=nofile bufhidden=delete nobuflisted
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
-		call setwinvar(0, '&stl', ' taglist')
+		call setwinvar(0, '&stl', ' taglist /'.a:query.'/%=')
 		let b:taglist = {'table': {}}
 	end
+
+	call s:render(matches)
+	call cursor(1, 1)
+
 endf
 
 " Search for 'query' in all tagfiles using grep.

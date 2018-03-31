@@ -10,7 +10,7 @@ if !executable('rg') || exists('g:taglist_loaded') || &cp
 end
 let g:taglist_loaded = 1
 
-command! -bang -nargs=1 -complete=tag Tag call taglist#find(<q-bang>, <q-args>)
+command! -bang -nargs=1 -complete=tag Tag call taglist#open(<q-bang>, <q-args>)
 
 let s:options = {
 	\ 'grepprg': 'rg -j 1 -N -H --no-heading --no-messages',

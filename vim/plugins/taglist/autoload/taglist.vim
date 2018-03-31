@@ -109,7 +109,9 @@ func s:render(tags) abort
 
 			let line = y == len(groups[tagfile])-1 ? '└─ ' : '├─ '
 			call matchadd('TaglistFile', '\v%'.i.'l%'.(len(line)+1).'c.*')
-			let line .= s:prettify_path(file)
+			let path = s:prettify_path(file)
+			let path = substitute(path, '\v^venv/.*/site-packages/', '$venv/', '')
+			let line .= path
 			call setline(i, line)
 			let i += 1
 

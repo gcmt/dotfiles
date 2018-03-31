@@ -87,6 +87,9 @@ func s:render(matches) abort
 			call matchadd('TaglistTagname', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(tagname)+1).'c')
 			let line .= tagname
 			let meta = ' ' . join(map(tag.meta, '"[".v:val."]"'))
+			if tag.address =~ '\v^\d+'
+				let meta .= ' [line:' . matchstr(tag.address, '\v\d+') . ']'
+			end
 			call matchadd('TaglistMeta', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(meta)+1).'c')
 			let line .= meta
 			call matchadd('TaglistPath', '\v%'.i.'l%'.(len(line)+1).'c.*')

@@ -40,13 +40,10 @@ func s:view_results(results) abort
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
-		let b:finder_laststatus_save = &laststatus
-		au BufLeave <buffer> let &laststatus = b:finder_laststatus_save
-		setl laststatus=0
-		echo
+		call setwinvar(0, '&stl', ' finder')
 	end
 	call s:render(a:results[:g:finder_max_results])
-	norm! gg
+	call cursor(1, 1)
 endf
 
 func s:render(files) abort

@@ -5,10 +5,7 @@ let s:bufname = '__marks__'
 func! marks#marks()
 	let marks = {}
 	for line in split(execute('marks'), "\n")[1:]
-		if line !~ '\v^\s+[a-z]'
-			continue
-		end
-		let match = matchlist(line, '\v\s*(.)\s+(\d+)\s+(\d+)\s+(.*)')
+		let match = matchlist(line, '\v\s([a-zA-Z])\s+(\d+)\s+(\d+)\s+(.*)')
 		if empty(match)
 			continue
 		end

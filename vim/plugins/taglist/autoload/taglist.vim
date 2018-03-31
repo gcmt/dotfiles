@@ -121,8 +121,11 @@ func taglist#render(...) abort
 			end
 
 			call matchadd('TaglistFile', '\v%'.i.'l%'.(len(line)+1).'c.*')
-			let path = s:prettify_path(file)
-			let path = substitute(path, '\v^venv/.*/site-packages/', '$venv/', '')
+			if !empty($VIRTUAL_ENV) && file =~ '\V\^'.$VIRTUAL_ENV . '/'
+				let path = substitute(file, '\V\^'.$VIRTUAL_ENV.'/\.\*/site-packages/', '$venv/', '')
+			else
+				let path = s:prettify_path(file)
+			end
 			let line .= path
 			call setline(i, line)
 			let i += 1

@@ -27,16 +27,17 @@ func taglist#open(bang, query) abort
 
 	if bufwinnr(s:bufname) != -1
 		exec bufwinnr(s:bufname) . 'wincmd w'
+		let b:taglist.query = a:query
 	else
 		exec 'sil keepa botright 1new' s:bufname
-		let b:taglist = {'table': {}, 'tagfiles': tagfiles, 'tags': []}
+		let b:taglist = {'table': {}, 'tagfiles': tagfiles, 'query': a:query, 'tags': []}
 		setl filetype=taglist buftype=nofile bufhidden=delete nobuflisted
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
-		call setwinvar(0, '&stl', ' taglist /'.a:query.'/%=')
 	end
 
+	call setwinvar(0, '&stl', ' taglist /'.b:taglist.query.'/%=')
 	call taglist#render(tags)
 	call cursor(1, 1)
 

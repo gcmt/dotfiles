@@ -23,11 +23,12 @@ for [s:option, s:default] in items(s:options)
 endfor
 
 func s:setup_colors()
-	hi default link TaglistTagfile Statement
-	hi default link TaglistTagname magenta
-	hi default link TaglistLink Special
+	hi default link TaglistTagfile Magenta
+	hi default link TaglistFile Blue
+	hi default link TaglistLineNr LineNr
+	hi default link TaglistTagname Normal
 	hi default link TaglistMeta Special
-	hi default link TaglistPath Comment
+	hi default link TaglistLink Special
 endf
 
 call s:setup_colors()

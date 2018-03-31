@@ -7,23 +7,21 @@ let s:bufname = '__taglist__'
 func taglist#open(bang, query) abort
 
 	let tagfiles = s:tagfiles()
-	let matches = s:search(a:query, tagfiles)
+	let tags = s:search(a:query, tagfiles)
 	if v:shell_error
-		if empty(matches)
+		if empty(tags)
 			return s:err("Nothing found")
 		end
-		return s:err(join(matches, "\n"))
+		return s:err(join(tags, "\n"))
 	end
 
-	if !empty(a:bang) && len(matches) == 1
+	if !empty(a:bang) && len(tags) == 1
 		if bufwinnr(s:bufname) != -1
 			exec bufwinnr(s:bufname) . 'wincmd c'
 		end
-		let match = matchstr(matches[0], '\v:\zs.*')
-		let tag = s:parse_match(match)
-		let path = substitute(tag.file, getcwd().'/', '', '')
+		let path = substitute(tags[0].file, getcwd().'/', '', '')
 		exec 'edit' fnameescape(path)
-		exec tag.address
+		exec tags[0].address
 		return
 	end
 
@@ -39,16 +37,9 @@ func taglist#open(bang, query) abort
 		call setwinvar(0, '&stl', ' taglist /'.a:query.'/%=')
 	end
 
-	call s:render(matches)
+	call s:render(tags)
 	call cursor(1, 1)
 
-endf
-
-" Search for 'query' in all tagfiles using grep.
-func s:search(query, tagfiles) abort
-	let args = ['-m', g:taglist_max_results, '^'.a:query, '-w'] + a:tagfiles
-	let args = map(args, 'shellescape(v:val)')
-	return systemlist(g:taglist_grepprg . ' ' . join(args))
 endf
 
 " Return all tagfiles.
@@ -56,8 +47,38 @@ func s:tagfiles() abort
 	return split(&tags, ',')
 endf
 
-" Render the Taglist buffer with the given matches
-func s:render(matches) abort
+" Search for 'query' in all tagfiles using grep.
+func s:search(query, tagfiles) abort
+	let args = ['-m', g:taglist_max_results, '^'.a:query, '-w'] + a:tagfiles
+	let args = map(args, 'shellescape(v:val)')
+	let lines = systemlist(g:taglist_grepprg . ' ' . join(args))
+	if v:shell_error
+		return lines
+	end
+	return s:parse_matches(lines)
+endf
+
+" Parse ctags lines
+func! s:parse_matches(lines) abort
+	let tags = []
+	for line in a:lines
+		let tag = {}
+		let tag.tagfile = matchstr(line, '\v^[^:]+')
+		let tokens = split(matchstr(line, '\v:\zs.*'), '\t')
+		let tag.name = tokens[0]
+		let tag.file = tokens[1]
+		let tag.address = tokens[2]
+		let tag.meta = tokens[3:]
+		if tag.address !~ '\v^\d+'
+			let tag.address = '/\V\^' . tag.address[2:-5] . '\$/;"'
+		end
+		call add(tags, tag)
+	endfo
+	return tags
+endf
+
+" Render the Taglist buffer with the given tags
+func s:render(tags) abort
 
 	if &filetype != 'taglist'
 		throw "Taglist: not allowed here"
@@ -67,9 +88,15 @@ func s:render(matches) abort
 	setl modifiable
 	sil %delete _
 
+	syn match TaglistLink /└/
+	syn match TaglistLink /─/
+	syn match TaglistLink /├/
+	syn match TaglistLink /│/
+
 	let i = 1
 	let b:taglist.table = {}
-	for [tagfile, matches] in s:group_matches_by_file(a:matches)
+	let groups = s:group_tags(a:tags)
+	for tagfile in sort(keys(groups))
 
 		call matchadd('TaglistTagfile', '\v%'.i.'l.*')
 		let head = s:prettify_path(fnamemodify(tagfile, ':h'))
@@ -77,27 +104,40 @@ func s:render(matches) abort
 		call setline(i, head . '/' . tail)
 		let i += 1
 
-		let k = 0
-		for m in matches
-			let line = k == len(matches)-1 ? '└──' : '├──'
-			call matchadd('TaglistLink', '\v%'.i.'l%<'.(len(line)).'c')
-			let tag = s:parse_match(m)
-			let b:taglist.table[i] = tag
-			let tagname = ' ' . tag.name
-			call matchadd('TaglistTagname', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(tagname)+1).'c')
-			let line .= tagname
-			let meta = ' ' . join(map(tag.meta, '"[".v:val."]"'))
-			if tag.address =~ '\v^\d+'
-				let meta .= ' [line:' . matchstr(tag.address, '\v\d+') . ']'
-			end
-			call matchadd('TaglistMeta', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(meta)+1).'c')
-			let line .= meta
-			call matchadd('TaglistPath', '\v%'.i.'l%'.(len(line)+1).'c.*')
-			let line .= ' ' . s:prettify_path(tag.file)
+		let y = 0
+		for file in sort(keys(groups[tagfile]))
+
+			let line = y == len(groups[tagfile])-1 ? '└─ ' : '├─ '
+			call matchadd('TaglistFile', '\v%'.i.'l%'.(len(line)+1).'c.*')
+			let line .= s:prettify_path(file)
 			call setline(i, line)
-			let k += 1
 			let i += 1
-		endfor
+
+			let k = 0
+			for tag in groups[tagfile][file]
+				let link = y == len(groups[tagfile])-1 ? '   ' : '│  '
+				let link .= k == len(groups[tagfile][file])-1 ? '└─' : '├─'
+				let line = link
+				let b:taglist.table[i] = tag
+				if tag.address =~ '\v^\d+'
+					let linenr = ' ' . matchstr(tag.address, '\v\d+')
+					call matchadd('TaglistLineNr', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(linenr)+1).'c')
+					let line .= linenr
+				end
+				let tagname = ' ' . tag.name
+				call matchadd('TaglistTagname', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(tagname)+1).'c')
+				let line .= tagname
+				let meta = ' ' . join(tag.meta, ' ')
+				call matchadd('TaglistMeta', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(meta)+1).'c')
+				let line .= meta
+				call setline(i, line)
+				let k += 1
+				let i += 1
+			endfor
+
+			let y += 1
+		endfo
+
 
 	endfor
 
@@ -106,39 +146,26 @@ func s:render(matches) abort
 
 endf
 
-" Group matches of the same tag file.
-" Matches are grep results in the form <tagfile>:<match>
-" Groups are in the form [[<tagfile>, [<match1>, <match2>, ..]], ..]
-func s:group_matches_by_file(matches) abort
-	let groups = []
-	for m in a:matches
-		let tagfile = matchstr(m, '\v^[^:]+')
-		if get(groups, -1, ['', []])[0] != tagfile
-			call add(groups, [tagfile, []])
+" Group tags.
+" Output structure: {tagfile1: {file1: [tag1, tag2, ..], ..}, ..}
+func! s:group_tags(tags)
+	let groups = {}
+	for tag in a:tags
+		if !has_key(groups, tag.tagfile)
+			let groups[tag.tagfile] = {}
 		end
-		call add(groups[-1][1], matchstr(m, '\v:\zs.*'))
+		if !has_key(groups[tag.tagfile], tag.file)
+			let groups[tag.tagfile][tag.file] = []
+		end
+		call add(groups[tag.tagfile][tag.file], tag)
 	endfor
 	return groups
 endf
 
-" Remove noise from a path.
+" Prettify path.
 func s:prettify_path(path) abort
 	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
 	return substitute(path, '\V\^'.$HOME, '~', '')
-endf
-
-" Parse a single tagfile line.
-func s:parse_match(line) abort
-	let tag = {}
-	let tokens = split(a:line, '\t')
-	let tag.name = tokens[0]
-	let tag.file = tokens[1]
-	let tag.address = tokens[2]
-	let tag.meta = tokens[3:]
-	if tag.address !~ '\v^\d+'
-		let tag.address = '/\V\^' . tag.address[2:-5] . '\$/;"'
-	end
-	return tag
 endf
 
 " Resize the current window according to g:taglist_max_winsize.

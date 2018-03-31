@@ -70,7 +70,7 @@ func! buffers#render()
 	endfor
 
 	call setline(1, text)
-	call s:resize_window(line('$'))
+	call s:resize_window()
 	call setpos('.', pos_save)
 	setl nomodifiable
 
@@ -86,10 +86,11 @@ func! s:prettify_path(path)
 	return path
 endf
 
-func! s:resize_window(entries_num)
+" Resize the current window according to g:taglist_max_winsize.
+" That value is expected to be expressed in percentage.
+func s:resize_window() abort
 	let max = float2nr(&lines * g:buffers_max_winsize / 100)
-	let min = float2nr(&lines * g:buffers_min_winsize / 100)
-	exec 'resize' max([min([a:entries_num, max]), min])
+	exec 'resize' min([line('$'), max])
 endf
 
 func! s:err(msg)

@@ -80,18 +80,9 @@ func! marks#render(marks)
 	let pos_save = getpos('.')
 	sil %delete _
 
-	" Group marks by the file they belong to
-	let groups = {}
-	for mark in values(a:marks)
-		if !has_key(groups, mark.file)
-			let groups[mark.file] = []
-		end
-		call add(groups[mark.file], mark)
-	endfo
-
 	let i = 1
 	let b:marks.table = {}
-	for [path, marks] in items(groups)
+	for [path, marks] in items(s:group_marks_by_file(a:marks))
 
 		call matchadd('MarksFile', '\v%'.i.'l.*')
 		let line = s:prettify_path(path)
@@ -120,6 +111,18 @@ func! marks#render(marks)
 	call setpos('.', pos_save)
 	setl nomodifiable
 
+endf
+
+" Group marks by the file they belong to.
+func! s:group_marks_by_file(marks)
+	let groups = {}
+	for mark in values(a:marks)
+		if !has_key(groups, mark.file)
+			let groups[mark.file] = []
+		end
+		call add(groups[mark.file], mark)
+	endfo
+	return groups
 endf
 
 " Resize the current window according to g:marks_max_winsize.

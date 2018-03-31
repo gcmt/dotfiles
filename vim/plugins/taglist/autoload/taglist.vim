@@ -72,8 +72,9 @@ func s:render(matches) abort
 	for [tagfile, matches] in s:group_matches_by_file(a:matches)
 
 		call matchadd('TaglistTagfile', '\v%'.i.'l.*')
-		let line = s:prettify_path(tagfile)
-		call setline(i, line)
+		let head = s:prettify_path(fnamemodify(tagfile, ':h'))
+		let tail = substitute(fnamemodify(tagfile, ':t'), '\V\^\d\+\(.\|_\|-\)', '', '')
+		call setline(i, head . '/' . tail)
 		let i += 1
 
 		let k = 0

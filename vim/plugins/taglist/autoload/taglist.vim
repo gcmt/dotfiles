@@ -6,7 +6,8 @@ let s:bufname = '__taglist__'
 " that match.
 func taglist#open(bang, query) abort
 
-	let matches = s:search(a:query)
+	let tagfiles = s:tagfiles()
+	let matches = s:search(a:query, tagfiles)
 	if v:shell_error
 		if empty(matches)
 			return s:err("Nothing found")
@@ -30,12 +31,12 @@ func taglist#open(bang, query) abort
 		exec bufwinnr(s:bufname) . 'wincmd w'
 	else
 		exec 'sil keepa botright 1new' s:bufname
+		let b:taglist = {'table': {}, 'tagfiles': tagfiles}
 		setl filetype=taglist buftype=nofile bufhidden=delete nobuflisted
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
 		call setwinvar(0, '&stl', ' taglist /'.a:query.'/%=')
-		let b:taglist = {'table': {}}
 	end
 
 	call s:render(matches)
@@ -44,8 +45,8 @@ func taglist#open(bang, query) abort
 endf
 
 " Search for 'query' in all tagfiles using grep.
-func s:search(query) abort
-	let args = ['-m', g:taglist_max_results, '^'.a:query, '-w'] + s:tagfiles()
+func s:search(query, tagfiles) abort
+	let args = ['-m', g:taglist_max_results, '^'.a:query, '-w'] + a:tagfiles
 	let args = map(args, 'shellescape(v:val)')
 	return systemlist(g:taglist_grepprg . ' ' . join(args))
 endf

@@ -2,7 +2,7 @@
 " Set 'tags' using the value from the window we came from.
 " Since 'tags' is set per filetype, this allows searches from the
 " taglist buffer
-let &tags = getwinvar(winnr('#'), '&tags', '')
+let &tags = join(b:taglist.tagfiles, ',')
 
 nnoremap <silent> <buffer> q :close<cr>
 

@@ -29,7 +29,7 @@ func taglist#open(bang, query) abort
 		exec bufwinnr(s:bufname) . 'wincmd w'
 	else
 		exec 'sil keepa botright 1new' s:bufname
-		let b:taglist = {'table': {}, 'tagfiles': tagfiles}
+		let b:taglist = {'table': {}, 'tagfiles': tagfiles, 'tags': []}
 		setl filetype=taglist buftype=nofile bufhidden=delete nobuflisted
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
@@ -37,7 +37,7 @@ func taglist#open(bang, query) abort
 		call setwinvar(0, '&stl', ' taglist /'.a:query.'/%=')
 	end
 
-	call s:render(tags)
+	call taglist#render(tags)
 	call cursor(1, 1)
 
 endf
@@ -78,13 +78,18 @@ func! s:parse_matches(lines) abort
 endf
 
 " Render the Taglist buffer with the given tags
-func s:render(tags) abort
+func taglist#render(...) abort
 
 	if &filetype != 'taglist'
 		throw "Taglist: not allowed here"
 	end
 
+	" If no tags are provided, use the ones that already exist
+	let tags = a:0 > 0 && type(a:1) == v:t_list ? a:1 : b:taglist.tags
+	let b:taglist.tags = tags
+
 	syn clear
+	call clearmatches()
 	setl modifiable
 	sil %delete _
 
@@ -95,7 +100,7 @@ func s:render(tags) abort
 
 	let i = 1
 	let b:taglist.table = {}
-	let groups = s:group_tags(a:tags)
+	let groups = s:group_tags(tags)
 	for tagfile in sort(keys(groups))
 
 		if g:taglist_visible_tagfiles

@@ -27,6 +27,19 @@ func! s:jump(cmd) abort
 	norm! zz
 endf
 
+nnoremap <silent> <buffer> a :<c-u>call <sid>toggle_tagfiles()<cr>
+
+func! s:toggle_tagfiles()
+	let g:taglist_visible_tagfiles = 1 - g:taglist_visible_tagfiles
+	let pos_save = getcurpos()[1:2]
+	let line_save = matchstr(getline('.'), '\v\w.*')
+	call taglist#render()
+	if !search('\V' . escape(line_save, '\') . '\$')
+		call cursor(pos_save)
+	end
+	norm! 0
+endf
+
 nnoremap <buffer> c :<c-u>call <sid>show_context()<cr>
 
 " Display the line where the tag is located. If a count N is given,

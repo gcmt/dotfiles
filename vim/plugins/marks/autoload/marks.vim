@@ -29,7 +29,7 @@ func! marks#set_auto(local) abort
 	for mark in values(marks)
 		if mark.file == path && mark.linenr == line('.') && mark.line == getline('.')
 			exec 'delmarks' mark.letter
-			echo printf("line \"%s\" unmarked", line('.'))
+			echo printf("line \"%s\" unmarked [%s]", line('.'), mark.letter)
 			return
 		end
 	endfo

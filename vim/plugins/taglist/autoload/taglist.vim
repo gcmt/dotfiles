@@ -37,9 +37,7 @@ func s:open(query) abort
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
-		let b:taglist_laststatus_save = &laststatus
-		au BufLeave <buffer> let &laststatus = b:taglist_laststatus_save
-		setl laststatus=0
+		call setwinvar(0, '&stl', ' taglist')
 		let b:taglist = {'table': {}}
 	end
 endf

@@ -27,7 +27,7 @@ func! marks#set_auto(local) abort
 	let marks = marks#marks()
 	let path = fnamemodify(bufname('%'), ':p')
 	for mark in values(marks)
-		if mark.letter =~ '\u' && mark.file == path && mark.linenr == line('.') && mark.line == getline('.')
+		if mark.file == path && mark.linenr == line('.') && mark.line == getline('.')
 			exec 'delmarks' mark.letter
 			echo printf("line \"%s\" unmarked", line('.'))
 			return

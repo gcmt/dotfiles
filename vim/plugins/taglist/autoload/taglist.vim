@@ -130,6 +130,9 @@ func s:parse_match(line) abort
 	let tag.file = tokens[1]
 	let tag.address = tokens[2]
 	let tag.meta = tokens[3:]
+	if tag.address !~ '\v^\d+'
+		let tag.address = '/\V\^' . tag.address[2:-5] . '\$/;"'
+	end
 	return tag
 endf
 

@@ -29,16 +29,12 @@ func! marks#set_auto(local) abort
 	for mark in values(marks)
 		if mark.letter =~ '\u' && mark.file == path && mark.linenr == line('.') && mark.line == getline('.')
 			exec 'delmarks' mark.letter
-			echo printf("line %s unmarked", line('.'))
+			echo printf("line \"%s\" unmarked", line('.'))
 			return
 		end
 	endfo
-	if a:local
-		let letters = split('abcdefghijklmnopqrstuvwxyz', '\ze')
-	else
-		let letters = split('ABCDEFGHIJKLMNOPQRSTUVWXYZ', '\ze')
-	end
-	for letter in letters
+	let letters = a:local ? 'abcdefghijklmnopqrstuvwxyz' : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	for letter in split(letters, '\ze')
 		if !has_key(marks, letter)
 			exec 'mark' letter
 			echo printf("line \"%s\" marked with [%s]", line('.'), letter)

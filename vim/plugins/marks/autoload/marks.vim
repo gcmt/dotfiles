@@ -18,7 +18,7 @@ func! marks#marks()
 	return marks
 endf
 
-" Automatically mark the current line with uppercase letters (file marks).
+" Automatically mark the current line.
 " If the mark already exists, then it is deleted.
 func! marks#set_auto(local) abort
 	let marks = marks#marks()

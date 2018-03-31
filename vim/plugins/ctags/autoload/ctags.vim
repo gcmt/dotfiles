@@ -12,7 +12,7 @@ endf
 
 func s:cmd(args)
 	let options = get(g:, 'ctags_'.&ft.'_options', '')
-	return ['ctags', '-R', options] + split(a:args)
+	return ['ctags', '-Rn', options] + split(a:args)
 endf
 
 func ctags#sync(args) abort

@@ -4,45 +4,48 @@
 " taglist buffer
 let &tags = getwinvar(winnr('#'), '&tags', '')
 
+nnoremap <silent> <buffer> q :close<cr>
+
+nnoremap <silent> <buffer> <enter> :call <sid>jump('edit')<cr>
+nnoremap <silent> <buffer> <c-j> :call <sid>jump('edit')<cr>
+nnoremap <silent> <buffer> l :call <sid>jump('edit')<cr>
+nnoremap <silent> <buffer> t :call <sid>jump('tabedit')<cr>
+nnoremap <silent> <buffer> s :call <sid>jump('split')<cr>
+nnoremap <silent> <buffer> v :call <sid>jump('vsplit')<cr>
+nnoremap <silent> <buffer> p :call <sid>jump('pedit')<cr>
+
 " Jump to the tag un the current line.
-fun! s:jump(cmd) abort
-	let taglist_win = winnr()
+func! s:jump(cmd) abort
 	let tag = get(b:taglist.table, line('.'), '')
 	if empty(tag)
 		return
 	end
-	wincmd p
-	exec taglist_win.'wincmd c'
+	close
 	let path = substitute(tag.file, getcwd().'/', '', '')
 	exec a:cmd fnameescape(path)
 	exec tag.address
+	norm! zz
 endf
+
+nnoremap <buffer> c :<c-u>call <sid>show_context()<cr>
 
 " Display the line where the tag is located. If a count N is given,
 " then N lines of context below and above the tag line are displayed.
-fun! s:echo_context() abort
+func! s:show_context() abort
 	let tag = get(b:taglist.table, line('.'), '')
-	if !empty(tag) && tag.address =~ '\v^\d+'
-		let linenr = str2nr(matchstr(tag.address, '\v^\d+'))
-		let start = linenr - 1 - v:count
-		let end = linenr - 1 + v:count
+	if empty(tag)
+		return
+	end
+	if tag.address =~ '\v^\d+'
+		let line = matchstr(tag.address, '\v\d+')
+		let start = line - 1 - v:count
+		let end = line - 1 + v:count
 		echo join(readfile(tag.file)[start:end], "\n")
+	elseif
+		echo tag.address[2:-5]
 	end
 endf
 
-sil! nunmap vv
-
-nnoremap <buffer> c :<c-u>call <sid>echo_context()<cr>
-
-nnoremap <silent> <buffer> q :close<cr>
-nnoremap <silent> <buffer> <enter> :call <sid>jump('edit')<cr>zz
-nnoremap <silent> <buffer> <c-j> :call <sid>jump('edit')<cr>zz
-nnoremap <silent> <buffer> o :call <sid>jump('edit')<cr>zz
-nnoremap <silent> <buffer> e :call <sid>jump('edit')<cr>zz
-nnoremap <silent> <buffer> t :call <sid>jump('tabedit')<cr>zz
-nnoremap <silent> <buffer> s :call <sid>jump('split')<cr>zz
-nnoremap <silent> <buffer> v :call <sid>jump('vsplit')<cr>zz
-nnoremap <silent> <buffer> p :call <sid>jump('pedit')<cr>
-
-nnoremap <silent> <buffer> <c-n> :call search('##', 'W')<cr>zz
-nnoremap <silent> <buffer> <c-p> :call search('##', 'Wb')<cr>zz
+func! s:err(msg)
+	echohl WarningMsg | echo a:msg | echohl None
+endf

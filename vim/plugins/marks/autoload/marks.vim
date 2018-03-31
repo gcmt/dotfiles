@@ -80,6 +80,10 @@ func! marks#render(marks)
 	let pos_save = getpos('.')
 	sil %delete _
 
+	syn match MarksLink /─/
+	syn match MarksLink /└/
+	syn match MarksLink /├/
+
 	let i = 1
 	let b:marks.table = {}
 	for [path, marks] in items(s:group_marks_by_file(a:marks))
@@ -93,8 +97,7 @@ func! marks#render(marks)
 		let width = len(max(map(copy(marks), 'v:val["linenr"]')))
 		for mark in sort(marks, {a, b -> a['linenr'] - b['linenr']})
 			let b:marks.table[i] = mark
-			let line = k == len(marks)-1 ? '└── ' : '├── '
-			call matchadd('MarksLink', '\v%'.i.'l%<'.(len(line)).'c')
+			let line = k == len(marks)-1 ? '└─ ' : '├─ '
 			let line .= printf('%s', mark.letter)
 			call matchadd('MarksMark', '\v%'.i.'l%'.(len(line)).'c')
 			let line .= printf(' %'.width.'S', mark.linenr)

@@ -98,16 +98,22 @@ func s:render(tags) abort
 	let groups = s:group_tags(a:tags)
 	for tagfile in sort(keys(groups))
 
-		call matchadd('TaglistTagfile', '\v%'.i.'l.*')
-		let head = s:prettify_path(fnamemodify(tagfile, ':h'))
-		let tail = substitute(fnamemodify(tagfile, ':t'), '\V\^\d\+\(.\|_\|-\)', '', '')
-		call setline(i, head . '/' . tail)
-		let i += 1
+		if g:taglist_visible_tagfiles
+			call matchadd('TaglistTagfile', '\v%'.i.'l.*')
+			let head = s:prettify_path(fnamemodify(tagfile, ':h'))
+			let tail = substitute(fnamemodify(tagfile, ':t'), '\V\^\d\+\(.\|_\|-\)', '', '')
+			call setline(i, head . '/' . tail)
+			let i += 1
+		end
 
 		let y = 0
 		for file in sort(keys(groups[tagfile]))
 
-			let line = y == len(groups[tagfile])-1 ? '└─ ' : '├─ '
+			let line = ''
+			if g:taglist_visible_tagfiles
+				let line = y == len(groups[tagfile])-1 ? '└─ ' : '├─ '
+			end
+
 			call matchadd('TaglistFile', '\v%'.i.'l%'.(len(line)+1).'c.*')
 			let path = s:prettify_path(file)
 			let path = substitute(path, '\v^venv/.*/site-packages/', '$venv/', '')
@@ -115,11 +121,14 @@ func s:render(tags) abort
 			call setline(i, line)
 			let i += 1
 
+			let link = ''
+			if g:taglist_visible_tagfiles
+				let link = y == len(groups[tagfile])-1 ? '   ' : '│  '
+			end
+
 			let k = 0
 			for tag in groups[tagfile][file]
-				let link = y == len(groups[tagfile])-1 ? '   ' : '│  '
-				let link .= k == len(groups[tagfile][file])-1 ? '└─' : '├─'
-				let line = link
+				let line = link . (k == len(groups[tagfile][file])-1 ? '└─' : '├─')
 				let b:taglist.table[i] = tag
 				if tag.address =~ '\v^\d+'
 					let linenr = ' ' . matchstr(tag.address, '\v\d+')
@@ -139,7 +148,6 @@ func s:render(tags) abort
 
 			let y += 1
 		endfo
-
 
 	endfor
 

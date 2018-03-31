@@ -14,6 +14,7 @@ command! -bang -nargs=1 -complete=tag Tag call taglist#open(<q-bang>, <q-args>)
 
 let s:options = {
 	\ 'grepprg': 'rg -j 1 -N -H --no-heading --no-messages',
+	\ 'visible_tagfiles': 0,
 	\ 'max_winsize': 75,
 	\ 'max_results': 100,
 \ }

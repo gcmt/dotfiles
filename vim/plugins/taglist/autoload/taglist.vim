@@ -118,9 +118,7 @@ endf
 " Remove noise from a path.
 func s:prettify_path(path) abort
 	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
-	let path = substitute(path, '\V\^/usr/local/Cellar', '/..', '')
-	let path = substitute(path, '\V\^'.$HOME, '~', '')
-	return path
+	return substitute(path, '\V\^'.$HOME, '~', '')
 endf
 
 " Parse a single tagfile line.

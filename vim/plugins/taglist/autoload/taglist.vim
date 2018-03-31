@@ -63,37 +63,41 @@ func s:render(matches) abort
 		throw "Taglist: not allowed here"
 	end
 
-	syntax clear
+	syn clear
 	setl modifiable
 	sil %delete _
 
-	exec 'syn match TaglistPath /\v[^]]+$/'
-	exec 'syn match TaglistTitle /\v^##.*/'
-	exec 'syn match TaglistMeta /\v\[[^]]+\]/'
-
-	let groups = s:group_matches(a:matches)
-	call s:resize_window(len(a:matches) + len(groups))
-
 	let i = 1
-	let text = []
 	let b:taglist.table = {}
-	for [group, matches] in groups
-		" strip leading numbers followed by dot (used to enforce ordering)
-		let title = substitute(fnamemodify(group, ':t'), '\v^\d+\.?', '', '')
-		call add(text, '## ' . title)
+	for [tagfile, matches] in s:group_matches_by_file(a:matches)
+
+		call matchadd('TaglistTagfile', '\v%'.i.'l.*')
+		let line = s:prettify_path(tagfile)
+		call setline(i, line)
+		let i += 1
+
+		let k = 0
 		for m in matches
-			let i += 1
+			let line = k == len(matches)-1 ? '└──' : '├──'
+			call matchadd('TaglistLink', '\v%'.i.'l%<'.(len(line)).'c')
 			let tag = s:parse_match(m)
 			let b:taglist.table[i] = tag
-			let path = s:prettify_path(tag.file)
-			let meta = join(map(tag.meta, '"[".v:val."]"'))
-			let line = tag.name . ' ' . meta . ' ' . path
-			call add(text, line)
+			let tagname = ' ' . tag.name
+			call matchadd('TaglistTagname', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(tagname)+1).'c')
+			let line .= tagname
+			let meta = ' ' . join(map(tag.meta, '"[".v:val."]"'))
+			call matchadd('TaglistMeta', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(meta)+1).'c')
+			let line .= meta
+			call matchadd('TaglistPath', '\v%'.i.'l%'.(len(line)+1).'c.*')
+			let line .= ' ' . s:prettify_path(tag.file)
+			call setline(i, line)
+			let k += 1
+			let i += 1
 		endfor
-		let i += 1
+
 	endfor
 
-	call setline(1, text)
+	call s:resize_window()
 	setl nomodifiable
 
 endf
@@ -101,7 +105,7 @@ endf
 " Group matches of the same tag file.
 " Matches are grep results in the form <tagfile>:<match>
 " Groups are in the form [[<tagfile>, [<match1>, <match2>, ..]], ..]
-func s:group_matches(matches) abort
+func s:group_matches_by_file(matches) abort
 	let groups = []
 	for m in a:matches
 		let tagfile = matchstr(m, '\v^[^:]+')
@@ -132,9 +136,11 @@ func s:parse_match(line) abort
 	return tag
 endf
 
-func s:resize_window(lines) abort
+" Resize the current window according to g:taglist_max_winsize.
+" That value is expected to be expressed in percentage.
+func s:resize_window() abort
 	let max = float2nr(&lines * g:taglist_max_winsize / 100)
-	exec 'resize' min([a:lines, max])
+	exec 'resize' min([line('$'), max])
 endf
 
 func s:err(msg)

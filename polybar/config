@@ -76,8 +76,8 @@ font-0 = "Noto Mono:style=Medium:size=10;3"
 font-1 = "Ionicons:size=12;3"
 
 modules-left = i3
-modules-center =
-modules-right = mail wlan eth volume battery datetime timer
+modules-center = datetime
+modules-right = wlan eth volume battery timer
 
 ; i3 workspaces
 ; ----------------------------------------------------------------------------

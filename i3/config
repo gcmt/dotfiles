@@ -170,8 +170,8 @@ bindsym $mod+Shift+minus move scratchpad
 # Edit shortcut
 mode "edit" {
 
-	bindsym l exec --no-startup-id st -n logbook -e vim Documents/logbook/$(date '+%Y-%m-%d').txt +'cd %:p:h'; mode "default"
-	bindsym n exec --no-startup-id st -n notes -e vim Documents/notes/wall.md +'cd %:p:h'; mode "default"
+	bindsym l exec --no-startup-id st -n logbook -e vim Docs/logbook/$(date '+%Y-%m-%d').txt +'cd %:p:h'; mode "default"
+	bindsym n exec --no-startup-id st -n notes -e vim Docs/notes/wall.md +'cd %:p:h'; mode "default"
 
 	bindsym Return mode "default"
 	bindsym Escape mode "default"

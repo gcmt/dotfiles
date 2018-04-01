@@ -23,16 +23,20 @@ endf
 " Automatically generate tags for the current project, but only when
 " there are some tagfiles already
 
+let g:ctags_auto = get(g:, 'ctags_auto', {
+	\ 'tagfile': {-> isdirectory('.tags') ? printf('.tags/%s/0.project', &ft) : 'tags'},
+\ })
+
 aug _ctags
 	au VimEnter,BufWritePost * call <sid>auto()
 aug END
 
 func s:auto()
-	let tagfiles = glob('.tags/'.&ft.'/*', 1, 1)
-	if empty(&filetype) || empty(tagfiles)
+	if empty(&filetype)
 		return
 	end
-	let output = '.tags/'.&ft.'/0.project'
-	let options = get(g:, 'ctags_'.&ft.'_options', '')
-	exec 'Ctags!' '--languages='.&ft '-f' output options
+	let tagfile = call(g:ctags_auto.tagfile, [])
+	if filereadable(tagfile)
+		exec 'Ctags!' '--languages='.&filetype '-f' tagfile
+	end
 endf

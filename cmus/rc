@@ -30,7 +30,6 @@ set format_treewin=  %l
 set format_treewin_artist=%a
 set icecast_default_charset=ISO-8859-1
 set id3_default_charset=ISO-8859-1
-set input.cdio.cddb_url=freedb.freedb.org:8880
 set lib_sort=albumartist date album title filename
 set mixer.alsa.channel=
 set mixer.alsa.device=

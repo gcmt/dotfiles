@@ -281,35 +281,35 @@ rofi.kb-remove-to-sol:
 ! ----------------------------------------------------------------------------
 
 ! Accept entry
-rofi.kb-accept-entry: Control+j,Return
+rofi.kb-accept-entry: Control+d,Return
 
 ! Use entered text as command (in ssh/run modi)
-rofi.kb-accept-custom: Control+d
+rofi.kb-accept-custom: Control+f
 
 ! Launch the application in a terminal (in run mode).
 ! Return the selected entry and move to the next item while keeping Rofi open. (in dmenu)
-rofi.kb-accept-alt: Control+t
+rofi.kb-accept-alt: Shift+Return
 
 ! Delete entry from history
 rofi.kb-delete-entry: Control+r
 
 ! Switch to the next mode.
-rofi.kb-mode-next: Control+Right
+rofi.kb-mode-next:
 
 ! Switch to the previous mode.
-rofi.kb-mode-previous: Control+Left
+rofi.kb-mode-previous:
 
 ! Go to the previous column
-rofi.kb-row-left: Shift+Left
+rofi.kb-row-left:
 
 ! Go to the next column
-rofi.kb-row-right: Shift+Right
+rofi.kb-row-right:
 
 ! Select previous entry
-rofi.kb-row-up: Up,Control+p,Shift+Tab,Shift+ISO_Left_Tab
+rofi.kb-row-up: Up,Control+k
 
 ! Select next entry
-rofi.kb-row-down: Down,Control+n
+rofi.kb-row-down: Down,Control+j
 
 ! Go to next row, if one left, accept it, if no left next mode.
 rofi.kb-row-tab: Tab
@@ -330,13 +330,13 @@ rofi.kb-row-last:
 rofi.kb-row-select: Control+y
 
 ! Take a screenshot of the rofi window
-rofi.kb-screenshot: Control+space
+rofi.kb-screenshot:
 
 ! Toggle case sensitivity
 rofi.kb-toggle-case-sensitivity: Control+i
 
 ! Toggle sort
-rofi.kb-toggle-sort: Control+s
+rofi.kb-toggle-sort:
 
 ! Quit rofi
 rofi.kb-cancel: Escape,Control+c

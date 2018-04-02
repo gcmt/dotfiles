@@ -90,7 +90,6 @@ func taglist#render(...) abort
 	let b:taglist.tags = tags
 
 	syn clear
-	call clearmatches()
 	setl modifiable
 	sil %delete _
 
@@ -105,7 +104,7 @@ func taglist#render(...) abort
 	for tagfile in sort(keys(groups))
 
 		if g:taglist_visible_tagfiles
-			call matchadd('TaglistTagfile', '\v%'.i.'l.*')
+			call s:highlight('TaglistTagfile', i)
 			let head = s:prettify_path(fnamemodify(tagfile, ':h'))
 			let tail = substitute(fnamemodify(tagfile, ':t'), '\V\^\d\+\(.\|_\|-\)', '', '')
 			call setline(i, head . '/' . tail)
@@ -120,7 +119,7 @@ func taglist#render(...) abort
 				let line = y == len(groups[tagfile])-1 ? '└─ ' : '├─ '
 			end
 
-			call matchadd('TaglistFile', '\v%'.i.'l%'.(len(line)+1).'c.*')
+			call s:highlight('TaglistFile', i, len(line))
 			if !empty($VIRTUAL_ENV) && file =~ '\V\^'.$VIRTUAL_ENV . '/'
 				let path = substitute(file, '\V\^'.$VIRTUAL_ENV.'/\.\*/site-packages/', '$venv/', '')
 			else
@@ -141,14 +140,14 @@ func taglist#render(...) abort
 				let b:taglist.table[i] = tag
 				if tag.address =~ '\v^\d+'
 					let linenr = ' ' . matchstr(tag.address, '\v\d+')
-					call matchadd('TaglistLineNr', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(linenr)+1).'c')
+					call s:highlight('TaglistLineNr', i, len(line)+1, len(line)+len(linenr)+2)
 					let line .= linenr
 				end
 				let tagname = ' ' . tag.name
-				call matchadd('TaglistTagname', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(tagname)+1).'c')
+				call s:highlight('TaglistTagname', i, len(line), len(line)+len(tagname)+2)
 				let line .= tagname
 				let meta = ' ' . join(tag.meta, ' ')
-				call matchadd('TaglistMeta', '\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(meta)+1).'c')
+				call s:highlight('TaglistMeta', i, len(line), len(line)+len(meta)+2)
 				let line .= meta
 				call setline(i, line)
 				let k += 1
@@ -179,6 +178,15 @@ func! s:group_tags(tags)
 		call add(groups[tag.tagfile][tag.file], tag)
 	endfor
 	return groups
+endf
+
+" Highlight a line with the given highlight group.
+" Start and end columns might be given as well.
+func! s:highlight(group, line, ...)
+	let start = a:0 > 0 && type(a:1) == v:t_number ? '%>'.a:1.'c.*' : ''
+	let end = a:0 > 1 && type(a:2) == v:t_number ? '%<'.a:2.'c' : ''
+	let line = '%'.a:line.'l' . (empty(start.end) ? '.*' : '')
+	exec printf('syn match %s /\v%s%s%s/', a:group, line, start, end)
 endf
 
 " Prettify path.

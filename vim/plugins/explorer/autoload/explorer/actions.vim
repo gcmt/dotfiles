@@ -1,37 +1,81 @@
 
-" Extract the file name at the given line
-func! s:file_at(linenr)
-	let offsets = get(b:explorer.map, a:linenr, [])
-	if empty(offsets)
-		return ""
-	end
-	return strpart(getline(a:linenr), offsets[0]-1, offsets[1] - offsets[0])
-endf
-
-" Go to the parent directory
-func! explorer#actions#up_dir() abort
-	if b:explorer.dir == '/'
+" Show file info (details that are returned by ls -l)
+func! explorer#actions#show_info()
+	let entry = get(b:explorer.map, line('.'), {})
+	if empty(entry)
 		return
 	end
-	let current = b:explorer.dir
-	let parent = fnamemodify(current, ':h')
-	call explorer#buffer#render(parent)
-	call explorer#buffer#goto_file(fnamemodify(current, ':t'))
+	echo entry.node.info
+endf
+
+" Close the current directory.
+func! explorer#actions#close_dir() abort
+	let entry = get(b:explorer.map, line('.'), {})
+	if empty(entry) || empty(entry.node.parent) || empty(entry.node.parent.parent)
+		return
+	end
+	let entry.node.parent.content = []
+	call explorer#tree#render()
+	call explorer#tree#goto(entry.node.parent.path)
+endf
+
+" Move root up one directory.
+func! explorer#actions#up_root() abort
+	let current = b:explorer.tree.path
+	let parent = fnamemodify(b:explorer.tree.path, ':h')
+	let node = {}
+	let node['path'] = parent
+	let node['filename'] = fnamemodify(parent, ':t')
+	let node['info'] = ''
+	let node['content'] = []
+	let node['parent'] = {}
+	if !explorer#tree#get_content(node)
+		return explorer#err('Could not retrieve content for ' . node.path)
+	end
+	let b:explorer.tree = node
+	call explorer#tree#render()
+	call explorer#tree#goto(current)
+endf
+
+" Set the current directory as root.
+func! explorer#actions#set_root() abort
+	let entry = get(b:explorer.map, line('.'), {})
+	if empty(entry)
+		return
+	end
+	if !isdirectory(entry.path)
+		return explorer#err('Not a directory')
+	end
+	if !explorer#tree#get_content(entry.node)
+		return explorer#err('Could not retrieve content for ' . entry.node.path)
+	end
+	let b:explorer.tree = extend(entry.node, {'parent': {}}, 'force')
+	call explorer#tree#render()
 endf
 
 " Enter directory or edit file
 func! explorer#actions#enter_or_edit() abort
-	let file = s:file_at(line('.'))
-	if empty(file)
+	let entry = get(b:explorer.map, line('.'), {})
+	if empty(entry)
 		return
 	end
-	let path = explorer#path#join(b:explorer.dir, file)
-	if isdirectory(path)
-		call explorer#buffer#render(path)
-		call explorer#buffer#goto_first_file()
+	if isdirectory(entry.path)
+		if !explorer#tree#get_content(entry.node)
+			return explorer#err('Could not retrieve content for ' . entry.node.path)
+		end
+		call explorer#tree#render()
+		call explorer#tree#goto(entry.path)
+		if !empty(entry.node.content)
+			" Pick the first visible file (hidden files might not be visible)
+			for node in entry.node.content
+				if explorer#tree#goto(node.path)
+					break
+				end
+			endfo
+		end
 	else
 		let current = b:explorer.current
-		exec 'edit' fnameescape(path)
+		exec 'edit' fnameescape(entry.path)
 		let @# = buflisted(current) ? current : bufnr('%')
 	end
 endf
@@ -39,6 +83,7 @@ endf
 " Create a new file in the current directory.
 " Intermediate directories are created as necessary.
 func! explorer#actions#create_file() abort
+	return 0
 	let file = input("New file: ") | redraw
 	if empty(file)
 		return
@@ -59,6 +104,7 @@ endf
 " Create a new directory in the current one.
 " Intermediate directories are created as necessary.
 func! explorer#actions#create_directory() abort
+	return 0
 	let dir = input("New directory: ") | redraw
 	if empty(dir)
 		return
@@ -72,25 +118,24 @@ func! explorer#actions#create_directory() abort
 	end
 	call mkdir(path, 'p')
 	echo printf("Created directory '%s'", dir)
-	call explorer#buffer#render(b:explorer.dir)
-	call explorer#buffer#goto_file(split(dir, '/')[0])
+	call explorer#tree#render(b:explorer.dir)
+	call explorer#tree#goto_file(split(dir, '/')[0])
 endf
 
 func! explorer#actions#rename() abort
-	let file = s:file_at(line('.'))
-	if empty(file)
+	let entry = get(b:explorer.map, line('.'), {})
+	if empty(entry)
 		return
 	end
-	let path = explorer#path#join(b:explorer.dir, file)
-	if bufnr(path) != -1 && getbufvar(bufnr(path), '&mod')
+	if bufnr(entry.path) != -1 && getbufvar(bufnr(entry.path), '&mod')
 		return explorer#err('File is open and contain changes')
 	end
-	let name = input(printf("Rename '%s' to: ", file)) | redraw
+	let name = input(printf("Rename '%s' to: ", fnamemodify(entry.path, ':~'))) | redraw
 	if empty(name)
 		return
 	end
 	redraw
-	let to = explorer#path#join(b:explorer.dir, name)
+	let to = explorer#path#join(entry.node.parent.path, name)
  	if isdirectory(to) || filereadable(to)
 		echo printf("The file '%s' already exists and it will be overwritten. Are you sure? [yn] ", fnamemodify(to, ':~'))
 		if nr2char(getchar()) !~ 'y'
@@ -98,100 +143,70 @@ func! explorer#actions#rename() abort
 		end
 		redraw
 	end
-	if rename(path, to) != 0
+	if rename(entry.path, to) != 0
 		return explorer#err("Operation failed")
 	end
-	if bufnr(path) != -1
+	if bufnr(entry.path) != -1
 		exec 'split' fnameescape(to)
 		close
-		if bufnr(@#) == bufnr(path)
+		if bufnr(@#) == bufnr(entry.path)
 			let @# = bufnr(to)
 		end
-		if b:explorer.current == bufnr(path)
+		if b:explorer.current == bufnr(entry.path)
 			let b:explorer.current = bufnr(to)
 		end
-		if b:explorer.alt == bufnr(path)
+		if b:explorer.alt == bufnr(entry.path)
 			let b:explorer.alt = bufnr(to)
 		end
-		sil! exec 'bwipe' path
+		sil! exec 'bwipe' entry.path
 	end
-	call explorer#buffer#render(b:explorer.dir)
-	echo | redraw
+	if !explorer#tree#get_content(entry.node.parent)
+		return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
+	end
+	call explorer#tree#render()
+	call explorer#tree#goto(to)
 endf
 
-" Delete the current file or directory
+" Delete the current file or directory.
 func! explorer#actions#delete() abort
-	let file = s:file_at(line('.'))
-	if empty(file)
+	let entry = get(b:explorer.map, line('.'), {})
+	if empty(entry)
 		return
 	end
-	let path = explorer#path#join(b:explorer.dir, file)
-	echo printf("The file '%s' will be deleted. Are you sure? [yn] ", fnamemodify(path, ':~'))
+	echo printf("The file '%s' will be deleted. Are you sure? [yn] ", fnamemodify(entry.path, ':~'))
 	if nr2char(getchar()) !~ 'y'
 		return
 	end
 	redraw
-	if delete(path, 'rf') != 0
+	if delete(entry.path, 'rf') != 0
 		return explorer#err("Operation failed")
 	else
-		sil! exec 'bwipe' path
-		call explorer#buffer#render(b:explorer.dir)
+		sil! exec 'bwipe' entry.path
+		if !explorer#tree#get_content(entry.node.parent)
+			return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
+		end
+		call explorer#tree#render()
 	end
-	redraw | echo
 endf
 
-" Mark/unmark current file or directory
-func! explorer#actions#mark_toggle()
-	let file = s:file_at(line('.'))
-	if empty(file)
-		return
-	end
-	let path = explorer#path#join(b:explorer.dir, file)
-	let idx = index(g:explorer_marked, path)
-	if idx == -1
-		for marked in g:explorer_marked
-			if path =~ '\V\^'.marked.'\(/\|\$\)' || marked =~ '\V\^'.path.'\(/\|\$\)'
-				return explorer#err("You cannot have nested marked files")
-			end
-		endfo
-		call add(g:explorer_marked, path)
-	else
-		call remove(g:explorer_marked, idx)
-	end
-	call explorer#buffer#render(b:explorer.dir)
-endf
-
-" Clear all marked files
-func! explorer#actions#clear_marked_files()
-	let g:explorer_marked = []
-	call explorer#buffer#render(b:explorer.dir)
-endf
-
-" Print all marked files
-func! explorer#actions#print_marked_files()
-	for marked in g:explorer_marked
-		echo marked
-	endfo
-endf
-
-" Show/hide hidden files
+" Show/hide hidden files.
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
-	call explorer#buffer#render(b:explorer.dir)
+	call explorer#tree#render()
 endf
 
-" Add bookmark (requires the 'bookmarks' plugin)
+" Add bookmark (requires the 'bookmarks' plugin).
 func! explorer#actions#bookmarks_set(mark)
 	if !get(g:, 'loaded_bookmarks')
 		return explorer#err("Bookmarks not available")
 	end
-	let file = s:file_at(line('.'))
-	if !empty(file)
-		let path = explorer#path#join(b:explorer.dir, file)
-		call bookmarks#set(a:mark, path)
+	let entry = get(b:explorer.map, line('.'), {})
+	if !empty(entry)
+		call bookmarks#set(a:mark, entry.path)
 	end
 endf
 
+" Show very basic help.
 func! explorer#actions#help()
 	let mappings = sort(filter(split(execute('nmap'), "\n"), {-> v:val =~ '\vexplorer#'}))
 	call map(mappings, {-> substitute(v:val, '\V\(\^n  \|*@:call explorer#\(actions\|buffer\)#\|<CR>\$\)', '', 'g')})

@@ -29,14 +29,20 @@ func! explorer#open(path) abort
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
-		let b:explorer = {'current': current, 'alt': alternate, 'map': {}}
+		let b:explorer = {'current': current, 'alt': alternate, 'map': {}, 'tree': {}}
 		let @# = buflisted(current) ? current : @#
 	end
 
-	call explorer#buffer#render(path)
+	let node = {}
+	let node['path'] = path
+	let node['filename'] = fnamemodify(path, ':t')
+	let node['info'] = ''
+	let node['content'] = []
+	let node['parent'] = {}
+	call explorer#tree#get_content(node)
+	let b:explorer.tree = node
 
-	let file = split(fnamemodify(bufname(b:explorer.current), ':p'), '/')[-1]
-	call explorer#buffer#goto_file(file)
+	call explorer#tree#render()
 
 endf
 

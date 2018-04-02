@@ -30,16 +30,23 @@ for [s:option, s:default] in items(s:options)
 endfo
 
 func s:setup_colors()
-	hi default link ExplorerDetails Special
-	hi default link ExplorerDirs Blue
-	hi default link ExplorerLinks Cyan
-	hi default link ExplorerExecs Green
+	hi default link ExplorerTitle Magenta
+	hi default link ExplorerPipe Special
+	hi default link ExplorerDir Blue
+	hi default link ExplorerLink Cyan
+	hi default link ExplorerExec Green
+	hi default link ExplorerDim Comment
 endf
 
 call s:setup_colors()
 
+func s:edit_directory(path)
+	bwipe
+	call explorer#open(a:path)
+endf
+
 aug _explorer
 	au BufWritePost .vimrc call <sid>setup_colors()
 	au Colorscheme * call <sid>setup_colors()
-	au BufEnter * if isdirectory(expand('%:p')) | bwipe | call explorer#open(expand('%:p')) | end
+	au VimEnter,BufReadPost * if isdirectory(expand('%:p')) | call <sid>edit_directory(expand('%:p')) | end
 aug END

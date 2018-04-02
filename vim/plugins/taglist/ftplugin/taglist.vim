@@ -21,7 +21,7 @@ func! s:jump(cmd) abort
 		return
 	end
 	close
-	let path = substitute(tag.file, getcwd().'/', '', '')
+	let path = substitute(tag.file, '\V\^'.getcwd().'/', '', '')
 	exec a:cmd fnameescape(path)
 	exec tag.address
 	norm! zz

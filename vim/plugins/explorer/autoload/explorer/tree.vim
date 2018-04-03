@@ -82,7 +82,7 @@ func! explorer#tree#node.render() abort
 	let b:explorer.map = {}
 
 	let filters = []
-	if g:explorer_hidden_files
+	if !g:explorer_hidden_files
 		call add(filters, {node -> node.filename !~ '\V\^.'})
 	end
 

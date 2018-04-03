@@ -37,8 +37,7 @@ func explorer#tree#node.get_content()
 		let path = explorer#path#join(self.path, filename)
 		let node = g:explorer#tree#node.new(path)
 		let node.meta = strpart(lines[n], start-1 + offsets[i+1] - offsets[i])
-		let node.info = substitute(strpart(lines[n], 0, start-2), '\v^\s+', '', '')
-		let node.info = substitute(node.info, '\v\s\s+', ' ', '')
+		let node.info = substitute(s:trim(strpart(lines[n], 0, start-2)), '\v\s\s+', ' ', '')
 		let node.parent = self
 		call add(files, node)
 		let n += 1
@@ -165,4 +164,10 @@ endf
 func! s:prettify_path(path)
 	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
 	return substitute(path, '\V\^'.$HOME, '~', '')
+endf
+
+" s:trim({s:string}) -> string
+" Trim leading and trailing whitespaces from a string {s}.
+func! s:trim(s)
+	return substitute(a:s, '\v(^\s+|\s+$)', '', 'g')
 endf

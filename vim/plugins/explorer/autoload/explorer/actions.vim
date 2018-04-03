@@ -224,7 +224,11 @@ endf
 " Show/hide hidden files.
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
+	let current = get(b:explorer.map, line('.'), {})
 	call b:explorer.tree.render()
+	if !empty(current)
+		call explorer#actions#goto(current.path)
+	end
 endf
 
 " Add bookmark (requires the 'bookmarks' plugin).

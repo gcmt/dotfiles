@@ -1,7 +1,11 @@
 
 " explorer#actions#goto({path:string}) -> 0
 " Move the cursor to the line with the given {path}.
+" If not found, the parent directory is looked for, and so on..
 func! explorer#actions#goto(path)
+	if a:path == '/'
+		return 0
+	end
 	for [line, entry] in items(b:explorer.map)
 		if a:path == entry.path
 			exec line
@@ -9,7 +13,7 @@ func! explorer#actions#goto(path)
 			return 1
 		end
 	endfo
-	return 0
+	return explorer#actions#goto(fnamemodify(a:path, ':h'))
 endf
 
 " Show file info (details that are returned by ls -l)

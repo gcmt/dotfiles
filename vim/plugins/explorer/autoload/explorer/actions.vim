@@ -1,4 +1,10 @@
 
+" s:selected_node() -> dict
+" Return the node on the current line.
+func! s:selected_node()
+	return get(b:explorer.map, line('.'), {})
+endf
+
 " explorer#actions#goto({path:string}) -> 0
 " Move the cursor to the line with the given {path}.
 " If not found, the parent directory is looked for, and so on..
@@ -18,7 +24,7 @@ endf
 
 " Show file info (details that are returned by ls -l)
 func! explorer#actions#show_info()
-	let node = get(b:explorer.map, line('.'), {})
+	let node = s:selected_node()
 	if empty(node)
 		return
 	end
@@ -27,7 +33,7 @@ endf
 
 " Close the current directory.
 func! explorer#actions#close_dir() abort
-	let node = get(b:explorer.map, line('.'), {})
+	let node = s:selected_node()
 	if empty(node) || empty(node.parent) || empty(node.parent.parent)
 		return
 	end
@@ -51,7 +57,7 @@ endf
 
 " Set the current directory as root.
 func! explorer#actions#set_root() abort
-	let node = get(b:explorer.map, line('.'), {})
+	let node = s:selected_node()
 	if empty(node)
 		return
 	end
@@ -74,7 +80,7 @@ endf
 
 " Enter directory or edit file
 func! explorer#actions#enter_or_edit() abort
-	let node = get(b:explorer.map, line('.'), {})
+	let node = s:selected_node()
 	if empty(node)
 		return
 	end
@@ -101,7 +107,7 @@ endf
 
 " Open current file in a preview window.
 func! explorer#actions#preview() abort
-	let node = get(b:explorer.map, line('.'), {})
+	let node = s:selected_node()
 	if empty(node)
 		return
 	end
@@ -155,7 +161,7 @@ func! explorer#actions#create_directory() abort
 endf
 
 func! explorer#actions#rename() abort
-	let node = get(b:explorer.map, line('.'), {})
+	let node = s:selected_node()
 	if empty(node)
 		return
 	end
@@ -201,7 +207,7 @@ endf
 
 " Delete the current file or directory.
 func! explorer#actions#delete() abort
-	let node = get(b:explorer.map, line('.'), {})
+	let node = s:selected_node()
 	if empty(node)
 		return
 	end
@@ -224,7 +230,7 @@ endf
 " Show/hide hidden files.
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
-	let current = get(b:explorer.map, line('.'), {})
+	let current = s:selected_node()
 	call b:explorer.tree.render()
 	if !empty(current)
 		call explorer#actions#goto(current.path)
@@ -236,7 +242,7 @@ func! explorer#actions#bookmarks_set(mark)
 	if !get(g:, 'loaded_bookmarks')
 		return explorer#err("Bookmarks not available")
 	end
-	let node = get(b:explorer.map, line('.'), {})
+	let node = s:selected_node()
 	if !empty(node)
 		call bookmarks#set(a:mark, node.path)
 	end

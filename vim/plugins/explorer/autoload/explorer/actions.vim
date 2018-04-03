@@ -95,6 +95,18 @@ func! explorer#actions#enter_or_edit() abort
 	end
 endf
 
+" Open current file in a preview window.
+func! explorer#actions#preview() abort
+	let entry = get(b:explorer.map, line('.'), {})
+	if empty(entry)
+		return
+	end
+	if isdirectory(entry.path)
+		return explorer#err('Not a file')
+	end
+	keepa exec 'pedit' fnameescape(entry.path)
+endf
+
 " Create a new file in the current root directory.
 " Intermediate directories are created as necessary.
 func! explorer#actions#create_file() abort

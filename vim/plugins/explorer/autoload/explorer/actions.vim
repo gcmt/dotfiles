@@ -64,14 +64,13 @@ func! explorer#actions#set_root() abort
 	if !isdirectory(node.path)
 		return explorer#err('Not a directory')
 	end
-	let root = g:explorer#tree#node.new(node.path)
-	if !root.get_content()
-		return explorer#err('Could not retrieve content for ' . root.path)
+	if empty(node.content) && !node.get_content()
+		return explorer#err('Could not retrieve content for ' . node.path)
 	end
-	let b:explorer.tree = root
-	call b:explorer.tree.render()
+	call node.render()
+	let b:explorer.tree = node
 	" Move the cursor to the first visible file (hidden files might not be visible)
-	for node in root.content
+	for node in node.content
 		if explorer#actions#goto(node.path)
 			break
 		end

@@ -29,18 +29,15 @@ func! explorer#open(path) abort
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
-		let b:explorer = {'current': current, 'alt': alternate, 'map': {}, 'tree': {}}
+		let b:explorer = {'current': current, 'alt': alternate}
 		let @# = buflisted(current) ? current : @#
 	end
 
-	let node = {}
-	let node['path'] = path
-	let node['filename'] = fnamemodify(path, ':t')
-	let node['info'] = ''
-	let node['content'] = []
-	let node['parent'] = {}
-	call explorer#tree#get_content(node)
-	let b:explorer.tree = node
+	let root = g:explorer#tree#node.new(path)
+	if !root.get_content()
+		return explorer#err('Could not retrieve content for ' . root.path)
+	end
+	let b:explorer.tree = root
 
 	call explorer#tree#render()
 

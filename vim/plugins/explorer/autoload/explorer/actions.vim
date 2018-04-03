@@ -23,16 +23,11 @@ endf
 func! explorer#actions#up_root() abort
 	let current = b:explorer.tree.path
 	let parent = fnamemodify(b:explorer.tree.path, ':h')
-	let node = {}
-	let node['path'] = parent
-	let node['filename'] = fnamemodify(parent, ':t')
-	let node['info'] = ''
-	let node['content'] = []
-	let node['parent'] = {}
-	if !explorer#tree#get_content(node)
-		return explorer#err('Could not retrieve content for ' . node.path)
+	let root = g:explorer#tree#node.new(parent)
+	if !root.get_content()
+		return explorer#err('Could not retrieve content for ' . root.path)
 	end
-	let b:explorer.tree = node
+	let b:explorer.tree = root
 	call explorer#tree#render()
 	call explorer#tree#goto(current)
 endf
@@ -46,10 +41,11 @@ func! explorer#actions#set_root() abort
 	if !isdirectory(entry.path)
 		return explorer#err('Not a directory')
 	end
-	if !explorer#tree#get_content(entry.node)
-		return explorer#err('Could not retrieve content for ' . entry.node.path)
+	let root = g:explorer#tree#node.new(entry.path)
+	if !root.get_content()
+		return explorer#err('Could not retrieve content for ' . root.path)
 	end
-	let b:explorer.tree = extend(entry.node, {'parent': {}}, 'force')
+	let b:explorer.tree = root
 	call explorer#tree#render()
 endf
 
@@ -60,7 +56,7 @@ func! explorer#actions#enter_or_edit() abort
 		return
 	end
 	if isdirectory(entry.path)
-		if !explorer#tree#get_content(entry.node)
+		if !entry.node.get_content()
 			return explorer#err('Could not retrieve content for ' . entry.node.path)
 		end
 		call explorer#tree#render()
@@ -80,36 +76,34 @@ func! explorer#actions#enter_or_edit() abort
 	end
 endf
 
-" Create a new file in the current directory.
+" Create a new file in the current root directory.
 " Intermediate directories are created as necessary.
 func! explorer#actions#create_file() abort
-	return 0
 	let file = input("New file: ") | redraw
 	if empty(file)
 		return
 	end
 	let dir = fnamemodify(file, ':h')
-	let path = explorer#path#join(b:explorer.dir, dir)
+	let path = explorer#path#join(b:explorer.tree.path, dir)
 	if !isdirectory(path)
 		call mkdir(path, 'p')
 		echo printf("Created intermediate directory '%s'", dir)
 	end
-	let path = explorer#path#join(b:explorer.dir, file)
+	let path = explorer#path#join(b:explorer.tree.path, file)
 	if filereadable(path)
 		return explorer#err(printf("Cannot create file '%s': File exists", file))
 	end
 	exec "edit" fnameescape(path)
 endf
 
-" Create a new directory in the current one.
+" Create a new directory in the current root dorectory.
 " Intermediate directories are created as necessary.
 func! explorer#actions#create_directory() abort
-	return 0
 	let dir = input("New directory: ") | redraw
 	if empty(dir)
 		return
 	end
-	let path = explorer#path#join(b:explorer.dir, dir)
+	let path = explorer#path#join(b:explorer.tree.path, dir)
 	if isdirectory(path)
 		return explorer#err(printf("Directory '%s' already exists", dir))
 	end
@@ -118,8 +112,11 @@ func! explorer#actions#create_directory() abort
 	end
 	call mkdir(path, 'p')
 	echo printf("Created directory '%s'", dir)
-	call explorer#tree#render(b:explorer.dir)
-	call explorer#tree#goto_file(split(dir, '/')[0])
+	if !b:explorer.tree.get_content()
+		return explorer#err('Could not retrieve content for ' . b:explorer.tree.path)
+	end
+	call explorer#tree#render()
+	call explorer#tree#goto(path)
 endf
 
 func! explorer#actions#rename() abort
@@ -160,7 +157,7 @@ func! explorer#actions#rename() abort
 		end
 		sil! exec 'bwipe' entry.path
 	end
-	if !explorer#tree#get_content(entry.node.parent)
+	if !entry.node.parent.get_content()
 		return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
 	end
 	call explorer#tree#render()
@@ -182,7 +179,7 @@ func! explorer#actions#delete() abort
 		return explorer#err("Operation failed")
 	else
 		sil! exec 'bwipe' entry.path
-		if !explorer#tree#get_content(entry.node.parent)
+		if !entry.node.parent.get_content()
 			return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
 		end
 		call explorer#tree#render()

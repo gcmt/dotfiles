@@ -1,4 +1,71 @@
 
+let g:explorer#tree#node = {}
+
+" explorer#tree#node.new({path:string}) -> {node:dict}
+" Create a new node for the given {path}.
+func explorer#tree#node.new(path)
+	let node = copy(self)
+	let node.path = a:path
+	let node.filename = fnamemodify(a:path, ':t')
+	let node.info = ''
+	let node.content = []
+	let node.parent = {}
+	return node
+endf
+
+" explorer#tree#node.get_content() -> {result:number}
+" Get directory content of the current node.
+" A number is returned to indicate success (1) or failure (0).
+func explorer#tree#node.get_content()
+	let flags = '-lhHFA --group-directories-first --dired'
+	let lines = systemlist(printf("ls %s %s", flags, shellescape(self.path)))
+	if v:shell_error
+		return 0
+	end
+	let offsets = []
+	for line in lines
+		if line =~ '\v^//DIRED//'
+			let offsets = map(split(matchstr(line, '\v^//DIRED//\zs.*')), {-> str2nr(v:val)})
+			break
+		end
+	endfo
+	let n = 1
+	let files = []
+	let start = get(offsets, 0, len(lines[0])) - len(lines[0])
+	for i in range(0, len(offsets)-1, 2)
+		let filename = strpart(lines[n], start-1, offsets[i+1] - offsets[i])
+		let path = explorer#path#join(self.path, filename)
+		let node = g:explorer#tree#node.new(path)
+		let node.meta = strpart(lines[n], start-1 + offsets[i+1] - offsets[i])
+		let node.info = substitute(strpart(lines[n], 0, start-2), '\v^\s+', '', '')
+		let node.info = substitute(node.info, '\v\s\s+', ' ', '')
+		let node.parent = self
+		call add(files, node)
+		let n += 1
+	endfo
+	let self.content = files
+	return 1
+endf
+
+" explorer#tree#node.find({test:funcref}) -> {node:dict}
+" Find the first node that satisfies the given test.
+" For each child {node}, evaluate {test} and when the result is true return that node.
+" {test} must be a Funcref.
+func! explorer#tree#node.find(test)
+	func! s:node_find(node, test)
+		if call(a:test, [a:node])
+			return a:node
+		end
+		for node in a:node.content
+			let node = self.find(node, a:test)
+			if !empty(node)
+				return node
+			end
+		endfo
+		return {}
+	endf
+	return s:node_find(self, a:test)
+endf
 " Render the directory tree.
 func! explorer#tree#render() abort
 
@@ -70,54 +137,6 @@ func! explorer#tree#render() abort
 	call setwinvar(0, "&stl", ' ' . b:explorer.tree.path)
 	setl nomodifiable
 
-endf
-
-" Get directory content of the given node.
-func! explorer#tree#get_content(node)
-	let flags = '-lhHFA --group-directories-first --dired'
-	let lines = systemlist(printf("ls %s %s", flags, shellescape(a:node.path)))
-	if v:shell_error
-		return 0
-	end
-	let offsets = []
-	for line in lines
-		if line =~ '\v^//DIRED//'
-			let offsets = map(split(matchstr(line, '\v^//DIRED//\zs.*')), {-> str2nr(v:val)})
-			break
-		end
-	endfo
-	let n = 1
-	let files = []
-	let start = get(offsets, 0, len(lines[0])) - len(lines[0])
-	for i in range(0, len(offsets)-1, 2)
-		let file = {}
-		let file['info'] = substitute(strpart(lines[n], 0, start-2), '\v^\s+', '', '')
-		let file['info'] = substitute(file['info'], '\v\s\s+', ' ', '')
-		let file['filename'] = strpart(lines[n], start-1, offsets[i+1] - offsets[i])
-		let file['meta'] = strpart(lines[n], start-1 + offsets[i+1] - offsets[i])
-		let file['path'] = explorer#path#join(a:node.path, file.filename)
-		let file['parent'] = a:node
-		let file['content'] = []
-		call add(files, file)
-		let n += 1
-	endfo
-	let a:node.content = files
-	return 1
-endf
-
-" Find the first node that satisfies the given a:test.
-" a:test is expected to be a Funcref.
-func! explorer#tree#find_node(node, test)
-	if call(a:test, [a:node])
-		return a:node
-	end
-	for node in a:node.content
-		let node = explorer#tree#find_node(node, a:test)
-		if !empty(node)
-			return node
-		end
-	endfo
-	return {}
 endf
 
 " Move the cursor to the given file.

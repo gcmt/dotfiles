@@ -3,15 +3,11 @@ let s:bufname = '__explorer__'
 
 aug _explorer
 	au!
-	au BufLeave __explorer__ call <sid>restore_alternate_buffer()
+	au BufLeave __explorer__ call <sid>restore_alternate()
 aug END
 
-func! s:restore_alternate_buffer()
-	if buflisted(b:explorer.alt)
-		let @# = b:explorer.alt
-	elseif buflisted(b:explorer.current)
-		let @# = b:explorer.current
-	end
+func! s:restore_alternate()
+	let @# = buflisted(b:explorer.alt) ? b:explorer.alt : bufnr('$')
 endf
 
 func! explorer#open(path) abort
@@ -30,7 +26,6 @@ func! explorer#open(path) abort
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0
 		let b:explorer = {'current': current, 'alt': alternate}
-		let @# = buflisted(current) ? current : @#
 	end
 
 	let root = g:explorer#tree#node.new(path)

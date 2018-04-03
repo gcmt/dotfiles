@@ -15,7 +15,7 @@ func! explorer#actions#close_dir() abort
 		return
 	end
 	let entry.node.parent.content = []
-	call explorer#tree#render()
+	call b:explorer.tree.render()
 	call explorer#tree#goto(entry.node.parent.path)
 endf
 
@@ -28,7 +28,7 @@ func! explorer#actions#up_root() abort
 		return explorer#err('Could not retrieve content for ' . root.path)
 	end
 	let b:explorer.tree = root
-	call explorer#tree#render()
+	call b:explorer.tree.render()
 	call explorer#tree#goto(current)
 endf
 
@@ -46,7 +46,7 @@ func! explorer#actions#set_root() abort
 		return explorer#err('Could not retrieve content for ' . root.path)
 	end
 	let b:explorer.tree = root
-	call explorer#tree#render()
+	call b:explorer.tree.render()
 	" Move the cursor to the first visible file (hidden files might not be visible)
 	for node in root.content
 		if explorer#tree#goto(node.path)
@@ -65,7 +65,7 @@ func! explorer#actions#enter_or_edit() abort
 		if !entry.node.get_content()
 			return explorer#err('Could not retrieve content for ' . entry.node.path)
 		end
-		call explorer#tree#render()
+		call b:explorer.tree.render()
 		call explorer#tree#goto(entry.path)
 		if !empty(entry.node.content)
 			" Move the cursor to the first visible file (hidden files might not be visible)
@@ -121,7 +121,7 @@ func! explorer#actions#create_directory() abort
 	if !b:explorer.tree.get_content()
 		return explorer#err('Could not retrieve content for ' . b:explorer.tree.path)
 	end
-	call explorer#tree#render()
+	call b:explorer.tree.render()
 	call explorer#tree#goto(path)
 endf
 
@@ -166,7 +166,7 @@ func! explorer#actions#rename() abort
 	if !entry.node.parent.get_content()
 		return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
 	end
-	call explorer#tree#render()
+	call b:explorer.tree.render()
 	call explorer#tree#goto(to)
 endf
 
@@ -188,14 +188,14 @@ func! explorer#actions#delete() abort
 		if !entry.node.parent.get_content()
 			return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
 		end
-		call explorer#tree#render()
+		call b:explorer.tree.render()
 	end
 endf
 
 " Show/hide hidden files.
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
-	call explorer#tree#render()
+	call b:explorer.tree.render()
 endf
 
 " Add bookmark (requires the 'bookmarks' plugin).

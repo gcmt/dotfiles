@@ -66,12 +66,9 @@ func! explorer#tree#node.find(test)
 	return s:find_node(self, a:test)
 endf
 
-" Render the directory tree.
-func! explorer#tree#render() abort
-
-	if &filetype != 'explorer'
-		throw "Explorer: &filetype must be 'explorer'"
-	end
+" explorer#tree#node.render() -> 0
+" Render the directory tree in the current buffer.
+func! explorer#tree#node.render() abort
 
 	syn clear
 	setl modifiable
@@ -121,10 +118,10 @@ func! explorer#tree#render() abort
 
 	endf
 
-	call setline(ln, b:explorer.tree.path)
+	call setline(ln, self.path)
 	call s:highlight('ExplorerTitle', ln)
 
-	let topfiles = copy(b:explorer.tree.content)
+	let topfiles = copy(self.content)
 	if !g:explorer_hidden_files
 		call filter(topfiles, "v:val['filename'] !~ '\\V\\^.'")
 	end
@@ -134,7 +131,7 @@ func! explorer#tree#render() abort
 		call s:_print_tree(topfiles[k], '', k == last_k)
 	endfo
 
-	call setwinvar(0, "&stl", ' ' . b:explorer.tree.path)
+	call setwinvar(0, "&stl", ' ' . self.path)
 	setl nomodifiable
 
 endf

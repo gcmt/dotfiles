@@ -38,8 +38,7 @@ func! explorer#open(path) abort
 		return explorer#err('Could not retrieve content for ' . root.path)
 	end
 	let b:explorer.tree = root
-
-	call explorer#tree#render()
+	call b:explorer.tree.render()
 
 endf
 

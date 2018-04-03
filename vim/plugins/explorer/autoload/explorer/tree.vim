@@ -82,7 +82,12 @@ func! explorer#tree#node.render() abort
 	let ln = 1
 	let b:explorer.map = {}
 
-	func! s:_print_tree(node, padding, is_last_child) closure
+	let filters = []
+	if g:explorer_hidden_files
+		call add(filters, {node -> node.filename !~ '\V\^.'})
+	end
+
+	func! s:_print_tree(node, filters, padding, is_last_child) closure
 
 		let ln += 1
 		let b:explorer.map[ln] = {'path': a:node.path, 'node': a:node}
@@ -106,14 +111,10 @@ func! explorer#tree#node.render() abort
 
 		let padding = a:padding . (a:is_last_child ? '   ' : '│  ')
 
-		let files = copy(a:node.content)
-		if !g:explorer_hidden_files
-			call filter(files, "v:val['filename'] !~ '\\V\\^.'")
-		end
-
-		let last_i = len(files)-1
-		for i in range(len(files))
-			call s:_print_tree(files[i], padding, i == last_i)
+		let nodes = s:filter(a:node.content, a:filters)
+		let last_i = len(nodes)-1
+		for i in range(len(nodes))
+			call s:_print_tree(nodes[i], a:filters, padding, i == last_i)
 		endfo
 
 	endf
@@ -121,19 +122,36 @@ func! explorer#tree#node.render() abort
 	call setline(ln, self.path)
 	call s:highlight('ExplorerTitle', ln)
 
-	let topfiles = copy(self.content)
-	if !g:explorer_hidden_files
-		call filter(topfiles, "v:val['filename'] !~ '\\V\\^.'")
-	end
-
-	let last_k = len(topfiles)-1
-	for k in range(len(topfiles))
-		call s:_print_tree(topfiles[k], '', k == last_k)
+	let topnodes = s:filter(self.content, filters)
+	let last_k = len(topnodes)-1
+	for k in range(len(topnodes))
+		call s:_print_tree(topnodes[k], filters, '', k == last_k)
 	endfo
 
 	call setwinvar(0, "&stl", ' ' . self.path)
 	setl nomodifiable
 
+endf
+
+" s:filter({list:list}, {filters:list}) -> list
+" Return a list of all the {list} items that satisfy all {filters}.
+" {filters} is expected to be a list of Funcrefs.
+" The original {list} is not modified.
+func! s:filter(list, filters)
+	let filtered = []
+	for item in a:list
+		let add = 1
+		for F in a:filters
+			if !call(F, [item])
+				let add = 0
+				break
+			end
+		endfo
+		if add
+			call add(filtered, item)
+		end
+	endfo
+	return filtered
 endf
 
 " s:highlight({group:string}, {line:number}, [, {start:number}, [, {end:number}]]) -> 0

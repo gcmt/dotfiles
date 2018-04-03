@@ -39,7 +39,8 @@ func! explorer#open(path) abort
 	end
 	let b:explorer.tree = root
 	call b:explorer.tree.render()
-	call explorer#actions#goto(fnamemodify(bufname(b:explorer.current), ':p'))
+	let path = fnamemodify(bufname(b:explorer.current), ':p')
+	call explorer#actions#goto(path)
 
 endf
 

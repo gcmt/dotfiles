@@ -48,23 +48,24 @@ endf
 
 " explorer#tree#node.find({test:funcref}) -> {node:dict}
 " Find the first node that satisfies the given test.
-" For each child {node}, evaluate {test} and when the result is true return that node.
-" {test} must be a Funcref.
+" For {node} and each of its descendants, evaluate {test} and when
+" the result is true, return that node.
 func! explorer#tree#node.find(test)
-	func! s:node_find(node, test)
+	func! s:find_node(node, test)
 		if call(a:test, [a:node])
 			return a:node
 		end
 		for node in a:node.content
-			let node = self.find(node, a:test)
+			let node = s:find_node(node, a:test)
 			if !empty(node)
 				return node
 			end
 		endfo
 		return {}
 	endf
-	return s:node_find(self, a:test)
+	return s:find_node(self, a:test)
 endf
+
 " Render the directory tree.
 func! explorer#tree#render() abort
 
@@ -150,8 +151,11 @@ func! explorer#tree#goto(path)
 	return 0
 endf
 
-" Highlight a line with the given highlight group.
-" Start and end column might be given as well.
+" s:highlight({group:string}, {line:number}, [, {start:number}, [, {end:number}]]) -> 0
+" Highlight a {line} with the given highlight {group}.
+" If neither {start} or {end} are given, the whole line is highlighted.
+" If only {start} is given, the line is highlighted starting from the column {start}.
+" If only {end} is given, the line is highlighted from {start} to {end}.
 func! s:highlight(group, line, ...)
 	let start = a:0 > 0 && type(a:1) == v:t_number ? '%>'.a:1.'c.*' : ''
 	let end = a:0 > 1 && type(a:2) == v:t_number ? '%<'.a:2.'c' : ''
@@ -159,8 +163,10 @@ func! s:highlight(group, line, ...)
 	exec printf('syn match %s /\v%s%s%s/', a:group, line, start, end)
 endf
 
-" Prettify the given path.
-" Wherever possible, trim the current working directory.
+" s:prettify_path({path:string}) -> string
+" Prettify the given {path} by trimming the current working directory.
+" If not successful, try to reduce file name to be relative to the
+" home directory (much like using ':~')
 func! s:prettify_path(path)
 	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
 	return substitute(path, '\V\^'.$HOME, '~', '')

@@ -1,4 +1,17 @@
 
+" explorer#actions#goto({path:string}) -> 0
+" Move the cursor to the line with the given {path}.
+func! explorer#actions#goto(path)
+	for [line, entry] in items(b:explorer.map)
+		if a:path == entry.path
+			exec line
+			norm! 0
+			return 1
+		end
+	endfo
+	return 0
+endf
+
 " Show file info (details that are returned by ls -l)
 func! explorer#actions#show_info()
 	let entry = get(b:explorer.map, line('.'), {})
@@ -16,7 +29,7 @@ func! explorer#actions#close_dir() abort
 	end
 	let entry.node.parent.content = []
 	call b:explorer.tree.render()
-	call explorer#tree#goto(entry.node.parent.path)
+	call explorer#actions#goto(entry.node.parent.path)
 endf
 
 " Move root up one directory.
@@ -29,7 +42,7 @@ func! explorer#actions#up_root() abort
 	end
 	let b:explorer.tree = root
 	call b:explorer.tree.render()
-	call explorer#tree#goto(current)
+	call explorer#actions#goto(current)
 endf
 
 " Set the current directory as root.
@@ -49,7 +62,7 @@ func! explorer#actions#set_root() abort
 	call b:explorer.tree.render()
 	" Move the cursor to the first visible file (hidden files might not be visible)
 	for node in root.content
-		if explorer#tree#goto(node.path)
+		if explorer#actions#goto(node.path)
 			break
 		end
 	endfo
@@ -66,11 +79,11 @@ func! explorer#actions#enter_or_edit() abort
 			return explorer#err('Could not retrieve content for ' . entry.node.path)
 		end
 		call b:explorer.tree.render()
-		call explorer#tree#goto(entry.path)
+		call explorer#actions#goto(entry.path)
 		if !empty(entry.node.content)
 			" Move the cursor to the first visible file (hidden files might not be visible)
 			for node in entry.node.content
-				if explorer#tree#goto(node.path)
+				if explorer#actions#goto(node.path)
 					break
 				end
 			endfo
@@ -122,7 +135,7 @@ func! explorer#actions#create_directory() abort
 		return explorer#err('Could not retrieve content for ' . b:explorer.tree.path)
 	end
 	call b:explorer.tree.render()
-	call explorer#tree#goto(path)
+	call explorer#actions#goto(path)
 endf
 
 func! explorer#actions#rename() abort
@@ -167,7 +180,7 @@ func! explorer#actions#rename() abort
 		return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
 	end
 	call b:explorer.tree.render()
-	call explorer#tree#goto(to)
+	call explorer#actions#goto(to)
 endf
 
 " Delete the current file or directory.

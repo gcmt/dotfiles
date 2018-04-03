@@ -136,18 +136,6 @@ func! explorer#tree#node.render() abort
 
 endf
 
-" Move the cursor to the given file.
-func! explorer#tree#goto(path)
-	for [line, entry] in items(b:explorer.map)
-		if a:path == entry.path
-			exec line
-			norm! 0
-			return 1
-		end
-	endfo
-	return 0
-endf
-
 " s:highlight({group:string}, {line:number}, [, {start:number}, [, {end:number}]]) -> 0
 " Highlight a {line} with the given highlight {group}.
 " If neither {start} or {end} are given, the whole line is highlighted.

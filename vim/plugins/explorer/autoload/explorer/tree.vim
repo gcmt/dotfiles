@@ -89,7 +89,7 @@ func! explorer#tree#node.render() abort
 	func! s:_print_tree(node, nr, filters, padding, is_last_child)
 
 		let nr = a:nr + 1
-		let b:explorer.map[nr] = {'path': a:node.path, 'node': a:node}
+		let b:explorer.map[nr] = a:node
 
 		let links = a:padding . (a:is_last_child ? '└─ ' : '├─ ')
 

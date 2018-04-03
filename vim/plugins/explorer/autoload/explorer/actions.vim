@@ -6,8 +6,8 @@ func! explorer#actions#goto(path)
 	if a:path == '/'
 		return 0
 	end
-	for [line, entry] in items(b:explorer.map)
-		if a:path == entry.path
+	for [line, node] in items(b:explorer.map)
+		if a:path == node.path
 			exec line
 			norm! 0
 			return 1
@@ -18,22 +18,22 @@ endf
 
 " Show file info (details that are returned by ls -l)
 func! explorer#actions#show_info()
-	let entry = get(b:explorer.map, line('.'), {})
-	if empty(entry)
+	let node = get(b:explorer.map, line('.'), {})
+	if empty(node)
 		return
 	end
-	echo entry.node.info
+	echo node.info
 endf
 
 " Close the current directory.
 func! explorer#actions#close_dir() abort
-	let entry = get(b:explorer.map, line('.'), {})
-	if empty(entry) || empty(entry.node.parent) || empty(entry.node.parent.parent)
+	let node = get(b:explorer.map, line('.'), {})
+	if empty(node) || empty(node.parent) || empty(node.parent.parent)
 		return
 	end
-	let entry.node.parent.content = []
+	let node.parent.content = []
 	call b:explorer.tree.render()
-	call explorer#actions#goto(entry.node.parent.path)
+	call explorer#actions#goto(node.parent.path)
 endf
 
 " Move root up one directory.
@@ -51,14 +51,14 @@ endf
 
 " Set the current directory as root.
 func! explorer#actions#set_root() abort
-	let entry = get(b:explorer.map, line('.'), {})
-	if empty(entry)
+	let node = get(b:explorer.map, line('.'), {})
+	if empty(node)
 		return
 	end
-	if !isdirectory(entry.path)
+	if !isdirectory(node.path)
 		return explorer#err('Not a directory')
 	end
-	let root = g:explorer#tree#node.new(entry.path)
+	let root = g:explorer#tree#node.new(node.path)
 	if !root.get_content()
 		return explorer#err('Could not retrieve content for ' . root.path)
 	end
@@ -74,19 +74,19 @@ endf
 
 " Enter directory or edit file
 func! explorer#actions#enter_or_edit() abort
-	let entry = get(b:explorer.map, line('.'), {})
-	if empty(entry)
+	let node = get(b:explorer.map, line('.'), {})
+	if empty(node)
 		return
 	end
-	if isdirectory(entry.path)
-		if !entry.node.get_content()
-			return explorer#err('Could not retrieve content for ' . entry.node.path)
+	if isdirectory(node.path)
+		if !node.get_content()
+			return explorer#err('Could not retrieve content for ' . node.path)
 		end
 		call b:explorer.tree.render()
-		call explorer#actions#goto(entry.path)
-		if !empty(entry.node.content)
+		call explorer#actions#goto(node.path)
+		if !empty(node.content)
 			" Move the cursor to the first visible file (hidden files might not be visible)
-			for node in entry.node.content
+			for node in node.content
 				if explorer#actions#goto(node.path)
 					break
 				end
@@ -94,21 +94,21 @@ func! explorer#actions#enter_or_edit() abort
 		end
 	else
 		let current = b:explorer.current
-		exec 'edit' fnameescape(entry.path)
+		exec 'edit' fnameescape(node.path)
 		let @# = buflisted(current) ? current : bufnr('%')
 	end
 endf
 
 " Open current file in a preview window.
 func! explorer#actions#preview() abort
-	let entry = get(b:explorer.map, line('.'), {})
-	if empty(entry)
+	let node = get(b:explorer.map, line('.'), {})
+	if empty(node)
 		return
 	end
-	if isdirectory(entry.path)
+	if isdirectory(node.path)
 		return explorer#err('Not a file')
 	end
-	keepa exec 'pedit' fnameescape(entry.path)
+	keepa exec 'pedit' fnameescape(node.path)
 endf
 
 " Create a new file in the current root directory.
@@ -155,19 +155,19 @@ func! explorer#actions#create_directory() abort
 endf
 
 func! explorer#actions#rename() abort
-	let entry = get(b:explorer.map, line('.'), {})
-	if empty(entry)
+	let node = get(b:explorer.map, line('.'), {})
+	if empty(node)
 		return
 	end
-	if bufnr(entry.path) != -1 && getbufvar(bufnr(entry.path), '&mod')
+	if bufnr(node.path) != -1 && getbufvar(bufnr(node.path), '&mod')
 		return explorer#err('File is open and contain changes')
 	end
-	let name = input(printf("Rename '%s' to: ", fnamemodify(entry.path, ':~'))) | redraw
+	let name = input(printf("Rename '%s' to: ", fnamemodify(node.path, ':~'))) | redraw
 	if empty(name)
 		return
 	end
 	redraw
-	let to = explorer#path#join(entry.node.parent.path, name)
+	let to = explorer#path#join(node.parent.path, name)
  	if isdirectory(to) || filereadable(to)
 		echo printf("The file '%s' already exists and it will be overwritten. Are you sure? [yn] ", fnamemodify(to, ':~'))
 		if nr2char(getchar()) !~ 'y'
@@ -175,25 +175,25 @@ func! explorer#actions#rename() abort
 		end
 		redraw
 	end
-	if rename(entry.path, to) != 0
+	if rename(node.path, to) != 0
 		return explorer#err("Operation failed")
 	end
-	if bufnr(entry.path) != -1
+	if bufnr(node.path) != -1
 		exec 'split' fnameescape(to)
 		close
-		if bufnr(@#) == bufnr(entry.path)
+		if bufnr(@#) == bufnr(node.path)
 			let @# = bufnr(to)
 		end
-		if b:explorer.current == bufnr(entry.path)
+		if b:explorer.current == bufnr(node.path)
 			let b:explorer.current = bufnr(to)
 		end
-		if b:explorer.alt == bufnr(entry.path)
+		if b:explorer.alt == bufnr(node.path)
 			let b:explorer.alt = bufnr(to)
 		end
-		sil! exec 'bwipe' entry.path
+		sil! exec 'bwipe' node.path
 	end
-	if !entry.node.parent.get_content()
-		return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
+	if !node.parent.get_content()
+		return explorer#err('Could not retrieve content for ' . node.parent.path)
 	end
 	call b:explorer.tree.render()
 	call explorer#actions#goto(to)
@@ -201,21 +201,21 @@ endf
 
 " Delete the current file or directory.
 func! explorer#actions#delete() abort
-	let entry = get(b:explorer.map, line('.'), {})
-	if empty(entry)
+	let node = get(b:explorer.map, line('.'), {})
+	if empty(node)
 		return
 	end
-	echo printf("The file '%s' will be deleted. Are you sure? [yn] ", fnamemodify(entry.path, ':~'))
+	echo printf("The file '%s' will be deleted. Are you sure? [yn] ", fnamemodify(node.path, ':~'))
 	if nr2char(getchar()) !~ 'y'
 		return
 	end
 	redraw
-	if delete(entry.path, 'rf') != 0
+	if delete(node.path, 'rf') != 0
 		return explorer#err("Operation failed")
 	else
-		sil! exec 'bwipe' entry.path
-		if !entry.node.parent.get_content()
-			return explorer#err('Could not retrieve content for ' . entry.node.parent.path)
+		sil! exec 'bwipe' node.path
+		if !node.parent.get_content()
+			return explorer#err('Could not retrieve content for ' . node.parent.path)
 		end
 		call b:explorer.tree.render()
 	end
@@ -236,9 +236,9 @@ func! explorer#actions#bookmarks_set(mark)
 	if !get(g:, 'loaded_bookmarks')
 		return explorer#err("Bookmarks not available")
 	end
-	let entry = get(b:explorer.map, line('.'), {})
-	if !empty(entry)
-		call bookmarks#set(a:mark, entry.path)
+	let node = get(b:explorer.map, line('.'), {})
+	if !empty(node)
+		call bookmarks#set(a:mark, node.path)
 	end
 endf
 

@@ -46,12 +46,12 @@ endf
 func! explorer#actions#up_root() abort
 	let current = b:explorer.tree.path
 	let parent = fnamemodify(b:explorer.tree.path, ':h')
-	let root = g:explorer#tree#node.new(parent)
-	if !root.get_content()
-		return explorer#err('Could not retrieve content for ' . root.path)
+	let node = g:explorer#tree#node.new(parent)
+	if !node.get_content()
+		return explorer#err('Could not retrieve content for ' . node.path)
 	end
-	let b:explorer.tree = root
-	call b:explorer.tree.render()
+	call node.render()
+	let b:explorer.tree = node
 	call explorer#actions#goto(current)
 endf
 

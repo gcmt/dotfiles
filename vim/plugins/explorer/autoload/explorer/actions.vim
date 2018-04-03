@@ -47,6 +47,12 @@ func! explorer#actions#set_root() abort
 	end
 	let b:explorer.tree = root
 	call explorer#tree#render()
+	" Move the cursor to the first visible file (hidden files might not be visible)
+	for node in root.content
+		if explorer#tree#goto(node.path)
+			break
+		end
+	endfo
 endf
 
 " Enter directory or edit file
@@ -62,7 +68,7 @@ func! explorer#actions#enter_or_edit() abort
 		call explorer#tree#render()
 		call explorer#tree#goto(entry.path)
 		if !empty(entry.node.content)
-			" Pick the first visible file (hidden files might not be visible)
+			" Move the cursor to the first visible file (hidden files might not be visible)
 			for node in entry.node.content
 				if explorer#tree#goto(node.path)
 					break

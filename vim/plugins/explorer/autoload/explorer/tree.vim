@@ -79,7 +79,6 @@ func! explorer#tree#node.render() abort
 	syn match ExplorerPipe /├/
 	syn match ExplorerPipe /│/
 
-	let ln = 1
 	let b:explorer.map = {}
 
 	let filters = []
@@ -87,45 +86,49 @@ func! explorer#tree#node.render() abort
 		call add(filters, {node -> node.filename !~ '\V\^.'})
 	end
 
-	func! s:_print_tree(node, filters, padding, is_last_child) closure
+	func! s:_print_tree(node, nr, filters, padding, is_last_child)
 
-		let ln += 1
-		let b:explorer.map[ln] = {'path': a:node.path, 'node': a:node}
+		let nr = a:nr + 1
+		let b:explorer.map[nr] = {'path': a:node.path, 'node': a:node}
 
 		let links = a:padding . (a:is_last_child ? '└─ ' : '├─ ')
 
 		let line = links . a:node.filename
 
 		if a:node.meta =~ '\V\^/'
-			call s:highlight('ExplorerDir', ln, len(links), len(links)+len(a:node.filename)+2)
+			call s:highlight('ExplorerDir', nr, len(links), len(links)+len(a:node.filename)+2)
 		elseif a:node.meta =~ '\V\^*'
-			call s:highlight('ExplorerExec', ln, len(links), len(links)+len(a:node.filename)+2)
+			call s:highlight('ExplorerExec', nr, len(links), len(links)+len(a:node.filename)+2)
 		end
 		if a:node.meta =~ '\V->'
-			call s:highlight('ExplorerLink', ln, len(links), len(links)+len(a:node.filename)+2)
-			call s:highlight('ExplorerDim', ln, len(links)+len(a:node.filename))
+			call s:highlight('ExplorerLink', nr, len(links), len(links)+len(a:node.filename)+2)
+			call s:highlight('ExplorerDim', nr, len(links)+len(a:node.filename))
 			let line .= a:node.meta
 		end
 
-		call setline(ln, line)
+		call setline(nr, line)
 
 		let padding = a:padding . (a:is_last_child ? '   ' : '│  ')
 
 		let nodes = s:filter(a:node.content, a:filters)
-		let last_i = len(nodes)-1
+		let last = len(nodes)-1
 		for i in range(len(nodes))
-			call s:_print_tree(nodes[i], a:filters, padding, i == last_i)
+			let nr = s:_print_tree(nodes[i], nr, a:filters, padding, i == last)
 		endfo
+
+		return nr
 
 	endf
 
-	call setline(ln, self.path)
-	call s:highlight('ExplorerTitle', ln)
+	let nr = 1
 
-	let topnodes = s:filter(self.content, filters)
-	let last_k = len(topnodes)-1
-	for k in range(len(topnodes))
-		call s:_print_tree(topnodes[k], filters, '', k == last_k)
+	call setline(nr, self.path)
+	call s:highlight('ExplorerTitle', nr)
+
+	let nodes = s:filter(self.content, filters)
+	let last = len(nodes)-1
+	for k in range(len(nodes))
+		let nr = s:_print_tree(nodes[k], nr, filters, '', k == last)
 	endfo
 
 	call setwinvar(0, "&stl", ' ' . self.path)

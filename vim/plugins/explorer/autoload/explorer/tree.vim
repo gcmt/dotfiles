@@ -1,7 +1,7 @@
 
 let g:explorer#tree#node = {}
 
-" explorer#tree#node.new({path:string}) -> {node:dict}
+" explorer#tree#node.new({path:string}) -> dict
 " Create a new node for the given {path}.
 func explorer#tree#node.new(path)
 	let node = copy(self)
@@ -66,7 +66,7 @@ func explorer#tree#node.get_content(...)
 
 endf
 
-" explorer#tree#node.find({test:funcref}) -> {node:dict}
+" explorer#tree#node.find({test:funcref}) -> dict
 " Find the first node that satisfies the given test.
 " For {node} and each of its descendants, evaluate {test} and when
 " the result is true, return that node.

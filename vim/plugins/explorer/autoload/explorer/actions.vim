@@ -38,6 +38,7 @@ func! explorer#actions#goto_first_child(node)
 	return 0
 endf
 
+" explorer#actions#show_info() -> 0
 " Show file info (details that are returned by ls -l)
 func! explorer#actions#show_info()
 	let node = s:selected_node()
@@ -47,7 +48,9 @@ func! explorer#actions#show_info()
 	echo node.info
 endf
 
-" Close the current directory.
+" explorer#actions#close_dir() -> 0
+" Close the parent of the selected file or directory. Basically
+" deletes all content of the parent node and redraw the directory tree.
 func! explorer#actions#close_dir() abort
 	let node = s:selected_node()
 	if empty(node) || empty(node.parent) || empty(node.parent.parent)
@@ -58,7 +61,8 @@ func! explorer#actions#close_dir() abort
 	call explorer#actions#goto(node.parent.path)
 endf
 
-" Move root up one directory.
+" explorer#actions#up_root() -> 0
+" Set the parent of the current root directory as new root.
 func! explorer#actions#up_root() abort
 	let current = b:explorer.tree.path
 	let parent = fnamemodify(b:explorer.tree.path, ':h')
@@ -69,7 +73,8 @@ func! explorer#actions#up_root() abort
 	call explorer#actions#goto(current)
 endf
 
-" Set the current directory as root.
+" explorer#actions#set_root() -> 0
+" Set the current selected directory as new root.
 func! explorer#actions#set_root() abort
 	let node = s:selected_node()
 	if empty(node)
@@ -87,7 +92,11 @@ func! explorer#actions#set_root() abort
 	call explorer#actions#goto_first_child(node)
 endf
 
-" Enter directory or edit file
+" explorer#actions#enter_or_edit() -> 0
+" Expand the selected directory or edit the selected file.
+" This function is affected by counts.
+" For a count {N}, expand the selected directory {N} levels deep.
+" Eg. When {N} == 2, all directories inside the selected one will be expanded.
 func! explorer#actions#enter_or_edit() abort
 	let node = s:selected_node()
 	if empty(node)
@@ -105,7 +114,8 @@ func! explorer#actions#enter_or_edit() abort
 	end
 endf
 
-" Expand the current directory up to 'g:explorer_expand_depth' levels deep.
+" explorer#actions#auto_expand() -> 0
+" Expand the selected directory 'g:explorer_expand_depth' levels deep.
 func! explorer#actions#auto_expand() abort
 	let node = s:selected_node()
 	if empty(node)
@@ -120,7 +130,8 @@ func! explorer#actions#auto_expand() abort
 	call explorer#actions#goto_first_child(node)
 endf
 
-" Open current file in a preview window.
+" explorer#actions#preview() -> 0
+" Open the selected file in a preview window on the bottom.
 func! explorer#actions#preview() abort
 	let node = s:selected_node()
 	if empty(node)
@@ -202,6 +213,7 @@ endf
 
 " explorer#actions#rename() -> 0
 " Rename the selected file or directory.
+" The root directory cannot be renamed. One must set its parent as root first.
 func! explorer#actions#rename() abort
 	let node = s:selected_node()
 	if empty(node)
@@ -249,6 +261,7 @@ endf
 
 " explorer#actions#delete() -> 0
 " Delete the selected file or directory.
+" The root directory cannot be deleted. One must set its parent as root first.
 func! explorer#actions#delete() abort
 	let node = s:selected_node()
 	if empty(node)
@@ -282,6 +295,7 @@ func! explorer#actions#toggle_filters()
 	end
 endf
 
+" explorer#actions#toggle_hidden_files() -> 0
 " Show/hide hidden files.
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files
@@ -292,7 +306,9 @@ func! explorer#actions#toggle_hidden_files()
 	end
 endf
 
-" Add bookmark (requires the 'bookmarks' plugin).
+" explorer#actions#bookmarks_set({mark:number}) -> 0
+" Add bookmark for the selected file or directory.
+" Requires the 'bookmarks' plugin.
 func! explorer#actions#bookmarks_set(mark)
 	if !get(g:, 'loaded_bookmarks')
 		return explorer#err("Bookmarks not available")
@@ -303,6 +319,7 @@ func! explorer#actions#bookmarks_set(mark)
 	end
 endf
 
+" explorer#actions#help() -> 0
 " Show very basic help.
 func! explorer#actions#help()
 	let mappings = sort(filter(split(execute('nmap'), "\n"), {-> v:val =~ '\vexplorer#'}))

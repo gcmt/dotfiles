@@ -91,6 +91,18 @@ func! explorer#tree#node.find(test)
 	return s:find_node(self, a:test)
 endf
 
+" explorer#tree#node.do({fn:funcref}) -> 0
+" Execute {fn} on the current node and each of its descendants.
+func! explorer#tree#node.do(fn)
+	func! s:_do(node, fn)
+		call call(a:fn, [a:node])
+		for node in a:node.content
+			call s:_do(node, a:fn)
+		endfo
+	endf
+	return s:_do(self, a:fn)
+endf
+
 " explorer#tree#node.render() -> 0
 " Render the directory tree in the current buffer.
 func! explorer#tree#node.render() abort

@@ -113,7 +113,7 @@ func! explorer#actions#preview() abort
 	if isdirectory(node.path)
 		return explorer#err('Not a file')
 	end
-	keepa exec 'pedit' fnameescape(node.path)
+	exec 'botright pedit' fnameescape(node.path)
 endf
 
 " Create a new file in the current root directory.

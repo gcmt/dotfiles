@@ -14,37 +14,56 @@ func explorer#tree#node.new(path)
 	return node
 endf
 
-" explorer#tree#node.get_content() -> {result:number}
-" Get directory content of the current node.
-" A number is returned to indicate success (1) or failure (0).
-func explorer#tree#node.get_content()
-	let flags = '-lhHFA --group-directories-first --dired'
-	let lines = systemlist(printf("ls %s %s", flags, shellescape(self.path)))
-	if v:shell_error
-		return 0
-	end
-	let offsets = []
-	for line in lines
-		if line =~ '\v^//DIRED//'
-			let offsets = map(split(matchstr(line, '\v^//DIRED//\zs.*')), {-> str2nr(v:val)})
-			break
+" explorer#tree#node.get_content([{max_depth:number}]) -> 0
+" Get recursively the directory content of the current node up to
+" {max_depth} levels deep. When not given, {max_depth} defaults to 1.
+func explorer#tree#node.get_content(...)
+
+	func! s:get_node_content(node, lvl, max_depth)
+
+		if a:lvl > a:max_depth
+			return
 		end
-	endfo
-	let n = 1
-	let files = []
-	let start = get(offsets, 0, len(lines[0])) - len(lines[0])
-	for i in range(0, len(offsets)-1, 2)
-		let filename = strpart(lines[n], start-1, offsets[i+1] - offsets[i])
-		let path = explorer#path#join(self.path, filename)
-		let node = g:explorer#tree#node.new(path)
-		let node.decor = strpart(lines[n], start-1 + offsets[i+1] - offsets[i])
-		let node.info = substitute(s:trim(strpart(lines[n], 0, start-2)), '\v\s\s+', ' ', '')
-		let node.parent = self
-		call add(files, node)
-		let n += 1
-	endfo
-	let self.content = files
-	return 1
+
+		let flags = '-lhHFA --group-directories-first --dired'
+		let lines = systemlist(printf("ls %s %s", flags, shellescape(a:node.path)))
+		if v:shell_error
+			return
+		end
+
+		let offsets = []
+		for line in lines
+			if line =~ '\v^//DIRED//'
+				let offsets = map(split(matchstr(line, '\v^//DIRED//\zs.*')), {-> str2nr(v:val)})
+				break
+			end
+		endfo
+
+		let n = 1
+		let a:node.content = []
+		let start = get(offsets, 0, len(lines[0])) - len(lines[0])
+		for i in range(0, len(offsets)-1, 2)
+			let filename = strpart(lines[n], start-1, offsets[i+1] - offsets[i])
+			let path = explorer#path#join(a:node.path, filename)
+			let node = g:explorer#tree#node.new(path)
+			let node.decor = strpart(lines[n], start-1 + offsets[i+1] - offsets[i])
+			let node.info = substitute(s:trim(strpart(lines[n], 0, start-2)), '\v\s\s+', ' ', '')
+			let node.parent = a:node
+			call add(a:node.content, node)
+			let n += 1
+		endfo
+
+		for node in a:node.content
+			if isdirectory(node.path)
+				call s:get_node_content(node, a:lvl+1, a:max_depth)
+			end
+		endfo
+
+	endf
+
+	let max_depth = a:0 > 0 ? a:1 : 1
+	call s:get_node_content(self, 1, max_depth)
+
 endf
 
 " explorer#tree#node.find({test:funcref}) -> {node:dict}

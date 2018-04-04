@@ -47,9 +47,7 @@ func! explorer#open(path) abort
 	if empty(get(b:explorer, 'tree', {}))
 		let path = empty(path) ? getcwd() : path
 		let root = g:explorer#tree#node.new(path)
-		if !root.get_content()
-			return explorer#err('Could not retrieve content for ' . root.path)
-		end
+		call root.get_content()
 		let b:explorer.tree = root
 	end
 

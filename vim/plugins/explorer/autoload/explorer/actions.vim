@@ -63,9 +63,7 @@ func! explorer#actions#up_root() abort
 	let current = b:explorer.tree.path
 	let parent = fnamemodify(b:explorer.tree.path, ':h')
 	let node = g:explorer#tree#node.new(parent)
-	if !node.get_content()
-		return explorer#err('Could not retrieve content for ' . node.path)
-	end
+	call node.get_content()
 	call node.render()
 	let b:explorer.tree = node
 	call explorer#actions#goto(current)
@@ -80,8 +78,8 @@ func! explorer#actions#set_root() abort
 	if !isdirectory(node.path)
 		return explorer#err('Not a directory')
 	end
-	if empty(node.content) && !node.get_content()
-		return explorer#err('Could not retrieve content for ' . node.path)
+	if empty(node.content)
+		call node.get_content()
 	end
 	call node.render()
 	let node.parent = {}
@@ -96,9 +94,7 @@ func! explorer#actions#enter_or_edit() abort
 		return
 	end
 	if isdirectory(node.path)
-		if !node.get_content()
-			return explorer#err('Could not retrieve content for ' . node.path)
-		end
+		call node.get_content(v:count1)
 		call b:explorer.tree.render()
 		call explorer#actions#goto(node.path)
 		call explorer#actions#goto_first_child(node)
@@ -157,9 +153,7 @@ func! explorer#actions#create_directory() abort
 	end
 	call mkdir(path, 'p')
 	echo printf("Created directory '%s'", dir)
-	if !b:explorer.tree.get_content()
-		return explorer#err('Could not retrieve content for ' . b:explorer.tree.path)
-	end
+	call b:explorer.tree.get_content()
 	call b:explorer.tree.render()
 	call explorer#actions#goto(path)
 endf
@@ -202,9 +196,7 @@ func! explorer#actions#rename() abort
 		end
 		sil! exec 'bwipe' node.path
 	end
-	if !node.parent.get_content()
-		return explorer#err('Could not retrieve content for ' . node.parent.path)
-	end
+	call node.parent.get_content()
 	call b:explorer.tree.render()
 	call explorer#actions#goto(to)
 endf
@@ -224,9 +216,7 @@ func! explorer#actions#delete() abort
 		return explorer#err("Operation failed")
 	else
 		sil! exec 'bwipe' node.path
-		if !node.parent.get_content()
-			return explorer#err('Could not retrieve content for ' . node.parent.path)
-		end
+		call node.parent.get_content()
 		call b:explorer.tree.render()
 	end
 endf

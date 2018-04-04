@@ -1,6 +1,7 @@
 
-" explorer#path#join({a:string}, {b:string}) -> string
-" Join two paths into one.
-func! explorer#path#join(a, b)
-	return a:a . (a:a =~ '\v/$' ? '' : '/') . substitute(a:b, '\v(^/+|/+$)', '', 'g')
+" explorer#path#join([{pathN:string}, ...]) -> string
+" Join paths.
+func! explorer#path#join(...)
+	let path = join(a:000, '/')
+	return substitute(path, '\v/+', '/', 'g')
 endf

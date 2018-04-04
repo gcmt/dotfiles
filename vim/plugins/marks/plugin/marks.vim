@@ -23,8 +23,8 @@ command! -nargs=0 Mark call marks#set_auto(1)
 command! -nargs=0 Markg call marks#set_auto(0)
 
 func s:setup_colors()
-	hi default link MarksMark Magenta
-	hi default link MarksFile Blue
+	hi default link MarksMark Blue
+	hi default link MarksFile Magenta
 	hi default link MarksLine Normal
 	hi default link MarksColNr LineNr
 	hi default link MarksLineNr LineNr

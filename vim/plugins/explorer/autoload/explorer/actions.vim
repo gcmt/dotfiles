@@ -175,8 +175,12 @@ func! explorer#actions#create_file() abort
 	if filereadable(path)
 		return explorer#err("File already exists: " . path)
 	end
-	exec 'edit' fnameescape(path)
-	set modified
+	if writefile([], path) != 0
+		return explorer#err("Cannot create file: " . path)
+	end
+	call node.get_content()
+	call b:explorer.tree.render()
+	call explorer#actions#goto(path)
 endf
 
 " explorer#actions#create_directory() -> 0

@@ -132,24 +132,40 @@ func! explorer#actions#preview() abort
 	exec 'botright pedit' fnameescape(node.path)
 endf
 
-" Create a new file in the current root directory.
-" Intermediate directories are created as necessary.
+" explorer#actions#create_file() -> 0
+" Create a new file inside the selected directory. Intermediate directories
+" are created as necessary.
 func! explorer#actions#create_file() abort
-	let file = input("New file: ") | redraw
+	let node = s:selected_node()
+	if empty(node)
+		return
+	end
+	if !isdirectory(node.path)
+		return explorer#err('Not a directory')
+	end
+	let file = input(printf("%s\n└─ ", node.path)) | redraw
 	if empty(file)
 		return
 	end
 	let dir = fnamemodify(file, ':h')
-	let path = explorer#path#join(b:explorer.tree.path, dir)
+	let path = explorer#path#join(node.path, dir)
 	if !isdirectory(path)
-		call mkdir(path, 'p')
-		echo printf("Created intermediate directory '%s'", dir)
+		if !exists("*mkdir")
+			return explorer#err('Cannot create intermediate directories. Functionality not available.')
+		end
+		try
+			call mkdir(path, 'p')
+		catch /E739/
+			return explorer#err("Cannot create directory: " . dir)
+		endtry
+		echo "Created intermediate directory: " . dir
 	end
-	let path = explorer#path#join(b:explorer.tree.path, file)
+	let path = explorer#path#join(node.path, file)
 	if filereadable(path)
-		return explorer#err(printf("Cannot create file '%s': File exists", file))
+		return explorer#err("File already exists: " . path)
 	end
-	exec "edit" fnameescape(path)
+	exec 'edit' fnameescape(path)
+	set modified
 endf
 
 " Create a new directory in the current root dorectory.

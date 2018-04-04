@@ -258,7 +258,8 @@ func! explorer#actions#rename() abort
 		end
 		sil! exec 'bwipe' node.path
 	end
-	call node.parent.get_content()
+	let from = node.path
+	call node.do({n -> n.set_path(substitute(n.path, '\V\^'.from, to, ''))})
 	call b:explorer.tree.render()
 	call explorer#actions#goto(to)
 endf

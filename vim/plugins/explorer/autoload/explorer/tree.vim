@@ -103,7 +103,7 @@ func! explorer#tree#node.render() abort
 
 	let filters = []
 	if g:explorer_filters_active
-		let filters = g:explorer_filters
+		call extend(filters, g:explorer_filters)
 	end
 	if !g:explorer_hidden_files
 		call add(filters, {node -> node.filename !~ '\V\^.'})

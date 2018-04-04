@@ -168,23 +168,34 @@ func! explorer#actions#create_file() abort
 	set modified
 endf
 
-" Create a new directory in the current root dorectory.
-" Intermediate directories are created as necessary.
+" explorer#actions#create_directory() -> 0
+" Create a new directory inside the selected directory. Intermediate directories
+" are created as necessary.
 func! explorer#actions#create_directory() abort
-	let dir = input("New directory: ") | redraw
+	if !exists("*mkdir")
+		return explorer#err('Functionality not available.')
+	end
+	let node = s:selected_node()
+	if empty(node)
+		return
+	end
+	if !isdirectory(node.path)
+		return explorer#err('Not a directory')
+	end
+	let dir = input(printf("%s\n└─ ", node.path)) | redraw
 	if empty(dir)
 		return
 	end
-	let path = explorer#path#join(b:explorer.tree.path, dir)
-	if isdirectory(path)
-		return explorer#err(printf("Directory '%s' already exists", dir))
+	let path = explorer#path#join(node.path, dir)
+	if isdirectory(path) || filereadable(path)
+		return explorer#err("File already exists: " . path)
 	end
-	if filereadable(path)
-		return explorer#err(printf("Cannot create directory '%s': File exists", dir))
-	end
-	call mkdir(path, 'p')
-	echo printf("Created directory '%s'", dir)
-	call b:explorer.tree.get_content()
+	try
+		call mkdir(path, 'p')
+	catch /E739/
+		return explorer#err("Cannot create directory: " . path)
+	endtry
+	call node.get_content()
 	call b:explorer.tree.render()
 	call explorer#actions#goto(path)
 endf

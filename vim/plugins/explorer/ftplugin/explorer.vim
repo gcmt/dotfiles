@@ -13,6 +13,7 @@ nnoremap <silent> <buffer> L :call explorer#actions#set_root()<cr>
 nnoremap <silent> <buffer> H :call explorer#actions#up_root()<cr>
 
 nnoremap <silent> <buffer> a :call explorer#actions#toggle_hidden_files()<cr>
+nnoremap <silent> <buffer> f :call explorer#actions#toggle_filters()<cr>
 
 nnoremap <silent> <buffer> % :call explorer#actions#create_file()<cr>
 nnoremap <silent> <buffer> c :call explorer#actions#create_directory()<cr>

@@ -76,13 +76,16 @@ func! explorer#tree#node.render() abort
 	sil %delete _
 
 	syn match ExplorerPipe /─/
-	syn match ExplorerPipe /└/
 	syn match ExplorerPipe /├/
 	syn match ExplorerPipe /│/
+	syn match ExplorerPipe /└/
 
 	let b:explorer.map = {}
 
 	let filters = []
+	if g:explorer_filters_active
+		let filters = g:explorer_filters
+	end
 	if !g:explorer_hidden_files
 		call add(filters, {node -> node.filename !~ '\V\^.'})
 	end

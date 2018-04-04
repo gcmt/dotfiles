@@ -231,6 +231,17 @@ func! explorer#actions#delete() abort
 	end
 endf
 
+" explorer#actions#toggle_filters() -> 0
+" Toggle filters.
+func! explorer#actions#toggle_filters()
+	let g:explorer_filters_active = 1 - g:explorer_filters_active
+	let node = s:selected_node()
+	call b:explorer.tree.render()
+	if !empty(node)
+		call explorer#actions#goto(node.path)
+	end
+endf
+
 " Show/hide hidden files.
 func! explorer#actions#toggle_hidden_files()
 	let g:explorer_hidden_files = 1 - g:explorer_hidden_files

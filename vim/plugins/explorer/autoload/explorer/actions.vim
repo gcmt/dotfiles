@@ -5,10 +5,11 @@ func! s:selected_node()
 	return get(b:explorer.map, line('.'), {})
 endf
 
-" explorer#actions#goto({path:string}) -> 0
+" explorer#actions#goto({path:string} [, {strict:number}]) -> number
 " Move the cursor to the line with the given {path}.
-" If not found, the parent directory is looked for, and so on..
-func! explorer#actions#goto(path)
+" Unless {strict} is given and it's 1, when {path} is not found in the current
+" map, the process is repeated recursively for all the parent directories.
+func! explorer#actions#goto(path, ...)
 	if a:path == '/'
 		return 0
 	end
@@ -19,7 +20,9 @@ func! explorer#actions#goto(path)
 			return 1
 		end
 	endfo
-	return explorer#actions#goto(fnamemodify(a:path, ':h'))
+	let strict = a:0 > 0 && a:1
+	let parent = fnamemodify(a:path, ':h')
+	return strict ? 0 : explorer#actions#goto(parent)
 endf
 
 " Show file info (details that are returned by ls -l)

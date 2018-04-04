@@ -6,6 +6,7 @@ nnoremap <silent> <buffer> p :call explorer#actions#preview()<cr>
 
 nnoremap <silent> <buffer> l :<c-u>call explorer#actions#enter_or_edit()<cr>
 nnoremap <silent> <buffer> <enter> :call explorer#actions#enter_or_edit()<cr>
+nnoremap <silent> <buffer> x :call explorer#actions#auto_expand()<cr>
 
 nnoremap <silent> <buffer> h :call explorer#actions#close_dir()<cr>
 

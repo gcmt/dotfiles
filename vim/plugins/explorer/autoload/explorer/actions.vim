@@ -105,6 +105,21 @@ func! explorer#actions#enter_or_edit() abort
 	end
 endf
 
+" Expand the current directory up to 'g:explorer_expand_depth' levels deep.
+func! explorer#actions#auto_expand() abort
+	let node = s:selected_node()
+	if empty(node)
+		return
+	end
+	if !isdirectory(node.path)
+		return explorer#err('Not a directory')
+	end
+	call node.get_content(g:explorer_expand_depth)
+	call b:explorer.tree.render()
+	call explorer#actions#goto(node.path)
+	call explorer#actions#goto_first_child(node)
+endf
+
 " Open current file in a preview window.
 func! explorer#actions#preview() abort
 	let node = s:selected_node()

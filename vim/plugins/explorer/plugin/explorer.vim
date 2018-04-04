@@ -16,6 +16,7 @@ let s:options = {
 	\ 'hidden_files': 1,
 	\ 'filters': [],
 	\ 'filters_active': 1,
+	\ 'expand_depth': 3,
 \ }
 
 for [s:option, s:default] in items(s:options)

@@ -13,6 +13,12 @@ func explorer#tree#node.new(path)
 	return node
 endf
 
+" explorer#tree#node.set_path({path:string}) -> 0
+" Set path for the current node.
+func explorer#tree#node.set_path(path)
+	let self.path = a:path
+endf
+
 " explorer#tree#node.filename() -> string
 " Return the file name of the current node.
 func explorer#tree#node.filename()

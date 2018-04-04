@@ -123,6 +123,7 @@ func! explorer#tree#node.render() abort
 
 	let nr = 1
 
+	let b:explorer.map[nr] = self
 	call setline(nr, self.path)
 	call s:highlight('ExplorerTitle', nr)
 

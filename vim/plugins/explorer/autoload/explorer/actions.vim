@@ -229,7 +229,7 @@ func! explorer#actions#rename() abort
 	if bufnr(node.path) != -1 && getbufvar(bufnr(node.path), '&mod')
 		return explorer#err('File is open and contains changes')
 	end
-	let name = input(printf("%s\n└─ %s -> ", node.parent.path, node.filename)) | redraw
+	let name = input(printf("%s\n└─ %s -> ", node.parent.path, node.filename())) | redraw
 	if empty(name)
 		return
 	end

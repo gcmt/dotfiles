@@ -6,12 +6,17 @@ let g:explorer#tree#node = {}
 func explorer#tree#node.new(path)
 	let node = copy(self)
 	let node.path = a:path
-	let node.filename = fnamemodify(a:path, ':t')
 	let node.info = ''
 	let node.decor = ''
 	let node.content = []
 	let node.parent = {}
 	return node
+endf
+
+" explorer#tree#node.filename() -> string
+" Return the file name of the current node.
+func explorer#tree#node.filename()
+	return fnamemodify(self.path, ':t')
 endf
 
 " explorer#tree#node.get_content([{max_depth:number}]) -> 0
@@ -106,7 +111,7 @@ func! explorer#tree#node.render() abort
 		call extend(filters, g:explorer_filters)
 	end
 	if !g:explorer_hidden_files
-		call add(filters, {node -> node.filename !~ '\V\^.'})
+		call add(filters, {node -> node.filename() !~ '\V\^.'})
 	end
 
 	func! s:_print_tree(node, nr, filters, padding, is_last_child)
@@ -114,18 +119,20 @@ func! explorer#tree#node.render() abort
 		let nr = a:nr + 1
 		let b:explorer.map[nr] = a:node
 
+		let filename = a:node.filename()
+
 		let links = a:padding . (a:is_last_child ? '└─ ' : '├─ ')
 
-		let line = links . a:node.filename
+		let line = links . filename
 
 		if a:node.decor =~ '\V\^/'
-			call s:highlight('ExplorerDir', nr, len(links), len(links)+len(a:node.filename)+2)
+			call s:highlight('ExplorerDir', nr, len(links), len(links)+len(filename)+2)
 		elseif a:node.decor =~ '\V\^*'
-			call s:highlight('ExplorerExec', nr, len(links), len(links)+len(a:node.filename)+2)
+			call s:highlight('ExplorerExec', nr, len(links), len(links)+len(filename)+2)
 		end
 		if a:node.decor =~ '\V->'
-			call s:highlight('ExplorerLink', nr, len(links), len(links)+len(a:node.filename)+2)
-			call s:highlight('ExplorerDim', nr, len(links)+len(a:node.filename))
+			call s:highlight('ExplorerLink', nr, len(links), len(links)+len(filename)+2)
+			call s:highlight('ExplorerDim', nr, len(links)+len(filename))
 			let line .= a:node.decor
 		end
 

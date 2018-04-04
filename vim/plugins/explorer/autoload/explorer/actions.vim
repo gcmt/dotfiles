@@ -243,24 +243,28 @@ func! explorer#actions#rename() abort
 	call explorer#actions#goto(to)
 endf
 
-" Delete the current file or directory.
+" explorer#actions#delete() -> 0
+" Delete the selected file or directory.
 func! explorer#actions#delete() abort
 	let node = s:selected_node()
 	if empty(node)
 		return
 	end
-	echo printf("The file '%s' will be deleted. Are you sure? [yn] ", fnamemodify(node.path, ':~'))
+	if empty(node.parent)
+		return explorer#err("Cannot delete root node")
+	end
+	echo printf("Deleting file: %s\nAre you sure? [yn] ", node.path)
 	if nr2char(getchar()) !~ 'y'
 		return
 	end
 	redraw
 	if delete(node.path, 'rf') != 0
-		return explorer#err("Operation failed")
-	else
-		sil! exec 'bwipe' node.path
-		call node.parent.get_content()
-		call b:explorer.tree.render()
+		return explorer#err("Cannot delete file: " . node.path)
 	end
+	sil! exec 'bwipe' node.path
+	call node.parent.get_content()
+	call b:explorer.tree.render()
+	call explorer#actions#goto(node.parent.path)
 endf
 
 " explorer#actions#toggle_filters() -> 0

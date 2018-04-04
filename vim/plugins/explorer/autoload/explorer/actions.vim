@@ -68,6 +68,7 @@ func! explorer#actions#set_root() abort
 		return explorer#err('Could not retrieve content for ' . node.path)
 	end
 	call node.render()
+	let node.parent = {}
 	let b:explorer.tree = node
 	" Move the cursor to the first visible file (hidden files might not be visible)
 	for node in node.content

@@ -8,6 +8,7 @@ func explorer#tree#node.new(path)
 	let node.path = a:path
 	let node.filename = fnamemodify(a:path, ':t')
 	let node.info = ''
+	let node.decor = ''
 	let node.content = []
 	let node.parent = {}
 	return node
@@ -36,7 +37,7 @@ func explorer#tree#node.get_content()
 		let filename = strpart(lines[n], start-1, offsets[i+1] - offsets[i])
 		let path = explorer#path#join(self.path, filename)
 		let node = g:explorer#tree#node.new(path)
-		let node.meta = strpart(lines[n], start-1 + offsets[i+1] - offsets[i])
+		let node.decor = strpart(lines[n], start-1 + offsets[i+1] - offsets[i])
 		let node.info = substitute(s:trim(strpart(lines[n], 0, start-2)), '\v\s\s+', ' ', '')
 		let node.parent = self
 		call add(files, node)
@@ -95,15 +96,15 @@ func! explorer#tree#node.render() abort
 
 		let line = links . a:node.filename
 
-		if a:node.meta =~ '\V\^/'
+		if a:node.decor =~ '\V\^/'
 			call s:highlight('ExplorerDir', nr, len(links), len(links)+len(a:node.filename)+2)
-		elseif a:node.meta =~ '\V\^*'
+		elseif a:node.decor =~ '\V\^*'
 			call s:highlight('ExplorerExec', nr, len(links), len(links)+len(a:node.filename)+2)
 		end
-		if a:node.meta =~ '\V->'
+		if a:node.decor =~ '\V->'
 			call s:highlight('ExplorerLink', nr, len(links), len(links)+len(a:node.filename)+2)
 			call s:highlight('ExplorerDim', nr, len(links)+len(a:node.filename))
-			let line .= a:node.meta
+			let line .= a:node.decor
 		end
 
 		call setline(nr, line)

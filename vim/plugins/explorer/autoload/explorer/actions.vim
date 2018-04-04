@@ -25,6 +25,19 @@ func! explorer#actions#goto(path, ...)
 	return strict ? 0 : explorer#actions#goto(parent)
 endf
 
+" explorer#actions#goto_first_child({node:dict}) -> number
+" Move the cursor to the first visible (the only case explorer#actions#goto
+" will return 1) child node.
+" A number is returned to indicate success (1) or failure (0).
+func! explorer#actions#goto_first_child(node)
+	for node in a:node.content
+		if explorer#actions#goto(node.path, 1)
+			return 1
+		end
+	endfo
+	return 0
+endf
+
 " Show file info (details that are returned by ls -l)
 func! explorer#actions#show_info()
 	let node = s:selected_node()
@@ -73,12 +86,7 @@ func! explorer#actions#set_root() abort
 	call node.render()
 	let node.parent = {}
 	let b:explorer.tree = node
-	" Move the cursor to the first visible file (hidden files might not be visible)
-	for node in node.content
-		if explorer#actions#goto(node.path)
-			break
-		end
-	endfo
+	call explorer#actions#goto_first_child(node)
 endf
 
 " Enter directory or edit file
@@ -93,14 +101,7 @@ func! explorer#actions#enter_or_edit() abort
 		end
 		call b:explorer.tree.render()
 		call explorer#actions#goto(node.path)
-		if !empty(node.content)
-			" Move the cursor to the first visible file (hidden files might not be visible)
-			for node in node.content
-				if explorer#actions#goto(node.path)
-					break
-				end
-			endfo
-		end
+		call explorer#actions#goto_first_child(node)
 	else
 		let current = b:explorer.current
 		exec 'edit' fnameescape(node.path)

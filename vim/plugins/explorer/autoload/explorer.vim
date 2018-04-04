@@ -54,8 +54,16 @@ func! explorer#open(path) abort
 	end
 
 	call b:explorer.tree.render()
+
 	let path = fnamemodify(bufname(b:explorer.current), ':p')
-	call explorer#actions#goto(path)
+	if !explorer#actions#goto(path)
+		" Move the cursor to the first visible file (hidden files might not be visible)
+		for node in b:explorer.tree.content
+			if explorer#actions#goto(node.path)
+				break
+			end
+		endfo
+	end
 
 endf
 

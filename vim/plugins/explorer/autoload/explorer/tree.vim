@@ -30,50 +30,25 @@ endf
 " {max_depth} levels deep. When not given, {max_depth} defaults to 1.
 func explorer#tree#node.get_content(...)
 
-	func! s:get_node_content(node, lvl, max_depth)
-
+	func! s:_get_content(node, lvl, max_depth)
 		if a:lvl > a:max_depth
 			return
 		end
-
-		let flags = '-lhHFA --group-directories-first --dired'
-		let lines = systemlist(printf("ls %s %s", flags, shellescape(a:node.path)))
-		if v:shell_error
-			return
-		end
-
-		let offsets = []
-		for line in lines
-			if line =~ '\v^//DIRED//'
-				let offsets = map(split(matchstr(line, '\v^//DIRED//\zs.*')), {-> str2nr(v:val)})
-				break
-			end
-		endfo
-
-		let n = 1
 		let a:node.content = []
-		let start = get(offsets, 0, len(lines[0])) - len(lines[0])
-		for i in range(0, len(offsets)-1, 2)
-			let filename = strpart(lines[n], start-1, offsets[i+1] - offsets[i])
-			let path = explorer#path#join(a:node.path, filename)
-			let node = g:explorer#tree#node.new(path)
-			let node.decor = strpart(lines[n], start-1 + offsets[i+1] - offsets[i])
-			let node.info = substitute(s:trim(strpart(lines[n], 0, start-2)), '\v\s\s+', ' ', '')
+		for file in s:ls(a:node.path)
+			let node = g:explorer#tree#node.new(file.path)
+			let node.info = file.info
+			let node.decor = file.decor
 			let node.parent = a:node
 			call add(a:node.content, node)
-			let n += 1
-		endfo
-
-		for node in a:node.content
 			if isdirectory(node.path)
-				call s:get_node_content(node, a:lvl+1, a:max_depth)
+				call s:_get_content(node, a:lvl+1, a:max_depth)
 			end
 		endfo
-
 	endf
 
 	let max_depth = a:0 > 0 ? a:1 : 1
-	call s:get_node_content(self, 1, max_depth)
+	call s:_get_content(self, 1, max_depth)
 
 endf
 
@@ -216,6 +191,35 @@ func! s:highlight(group, line, ...)
 	let end = a:0 > 1 && type(a:2) == v:t_number ? '%<'.a:2.'c' : ''
 	let line = '%'.a:line.'l' . (empty(start.end) ? '.*' : '')
 	exec printf('syn match %s /\v%s%s%s/', a:group, line, start, end)
+endf
+
+" s:ls({path:string}) -> list
+" Return the parsed content of `ls --dired {path}`.
+" Return value structure: [{path, info, decor}, ..]
+" Errors are ignored.
+func! s:ls(path)
+
+	let flags = '-lhHFA --group-directories-first --dired'
+	let lines = systemlist(printf("ls %s %s", flags, shellescape(a:path)))
+	if v:shell_error || get(lines, -2) !~ '\v^//DIRED//'
+		return []
+	end
+
+	let k = 1
+	let files = []
+	let offsets = map(split(matchstr(lines[-2], '\v^//DIRED//\zs.*')), {-> str2nr(v:val)})
+	let start = get(offsets, 0, len(lines[0])) - len(lines[0])
+	for i in range(0, len(offsets)-1, 2)
+		let file = {}
+		let filename = strpart(lines[k], start-1, offsets[i+1] - offsets[i])
+		let file.path = explorer#path#join(a:path, filename)
+		let file.decor = strpart(lines[k], start-1 + offsets[i+1] - offsets[i])
+		let file.info = substitute(s:trim(strpart(lines[k], 0, start-2)), '\v\s\s+', ' ', '')
+		call add(files, file)
+		let k += 1
+	endfo
+
+	return files
 endf
 
 " s:prettify_path({path:string}) -> string

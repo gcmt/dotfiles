@@ -2,7 +2,7 @@
 nnoremap <silent> <buffer> q :sil bdelete<cr>
 
 nnoremap <silent> <buffer> i :call explorer#actions#show_info()<cr>
-nnoremap <silent> <buffer> p :call explorer#actions#preview()<cr>
+nnoremap <silent> <buffer> gp :call explorer#actions#preview()<cr>
 
 nnoremap <silent> <buffer> l :<c-u>call explorer#actions#enter_or_edit()<cr>
 nnoremap <silent> <buffer> <enter> :call explorer#actions#enter_or_edit()<cr>

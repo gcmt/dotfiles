@@ -200,29 +200,33 @@ func! explorer#actions#create_directory() abort
 	call explorer#actions#goto(path)
 endf
 
+" explorer#actions#rename() -> 0
+" Rename the selected file or directory.
 func! explorer#actions#rename() abort
 	let node = s:selected_node()
 	if empty(node)
 		return
 	end
-	if bufnr(node.path) != -1 && getbufvar(bufnr(node.path), '&mod')
-		return explorer#err('File is open and contain changes')
+	if empty(node.parent)
+		return explorer#err("Cannot rename root node")
 	end
-	let name = input(printf("Rename '%s' to: ", fnamemodify(node.path, ':~'))) | redraw
+	if bufnr(node.path) != -1 && getbufvar(bufnr(node.path), '&mod')
+		return explorer#err('File is open and contains changes')
+	end
+	let name = input(printf("%s\n└─ %s -> ", node.parent.path, node.filename)) | redraw
 	if empty(name)
 		return
+	end
+	if name =~ '/'
+		return explorer#err("The new file name should not contain '/' characters")
 	end
 	redraw
 	let to = explorer#path#join(node.parent.path, name)
  	if isdirectory(to) || filereadable(to)
-		echo printf("The file '%s' already exists and it will be overwritten. Are you sure? [yn] ", fnamemodify(to, ':~'))
-		if nr2char(getchar()) !~ 'y'
-			return
-		end
-		redraw
+		return explorer#err("File already exists: " . to)
 	end
 	if rename(node.path, to) != 0
-		return explorer#err("Operation failed")
+		return explorer#err("Cannot rename file: ", node.path)
 	end
 	if bufnr(node.path) != -1
 		exec 'split' fnameescape(to)

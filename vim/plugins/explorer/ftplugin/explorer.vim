@@ -1,7 +1,8 @@
 
 nnoremap <silent> <buffer> q :sil bdelete<cr>
 
-nnoremap <silent> <buffer> i :call explorer#actions#show_info()<cr>
+nnoremap <silent> <buffer> p :call explorer#actions#echo('path')<cr>
+nnoremap <silent> <buffer> i :call explorer#actions#echo('info')<cr>
 nnoremap <silent> <buffer> gp :call explorer#actions#preview()<cr>
 
 nnoremap <silent> <buffer> l :<c-u>call explorer#actions#enter_or_edit()<cr>

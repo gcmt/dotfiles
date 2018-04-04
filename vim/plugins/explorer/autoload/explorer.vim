@@ -24,8 +24,11 @@ func! explorer#open(path) abort
 		return
 	end
 
-	if !empty(a:path) && !isdirectory(a:path)
-		return explorer#err(printf("Directory '%s' does not exist", a:path))
+	" Allow arguments such as %:p:h, etc
+	let path = expand(a:path)
+
+	if !empty(path) && !isdirectory(path)
+		return explorer#err(printf("Directory '%s' does not exist", path))
 	end
 
 	let current = bufnr('%')
@@ -37,12 +40,12 @@ func! explorer#open(path) abort
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
 
-	let b:explorer = exists('t:explorer') && empty(a:path) ? t:explorer : {}
+	let b:explorer = exists('t:explorer') && empty(path) ? t:explorer : {}
 	let b:explorer.current = current
 	let b:explorer.alt = alternate
 
 	if empty(get(b:explorer, 'tree', {}))
-		let path = empty(a:path) ? getcwd() : a:path
+		let path = empty(path) ? getcwd() : path
 		let root = g:explorer#tree#node.new(path)
 		if !root.get_content()
 			return explorer#err('Could not retrieve content for ' . root.path)

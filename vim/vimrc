@@ -793,7 +793,7 @@
 " Bookmarks
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gm, :Bookmarks<cr>
+	nnoremap <silent> gm, :call bookmarks#view()<cr>
 	nnoremap <silent> gm' :call bookmarks#jump(getchar())<cr>
 	nnoremap <silent> gmm :call bookmarks#set(getchar(), expand('%:p'))<cr>
 	nnoremap <silent> gmd :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
@@ -840,8 +840,11 @@
 " Explorer
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gd :exec 'Explorer' expand('%:p:h')<cr>
-	nnoremap <silent> gD :exec 'Explorer' getcwd()<cr>
+	let g:explorer_filters = [{node -> node.filename !~ '\v^(.git|node_modules|venv)'}]
+
+	nnoremap <silent> gy :Explorer<cr>
+	nnoremap <silent> g. :Explorer %:p:h<cr>
+	nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
 
 " Ultisnips
 " ----------------------------------------------------------------------------

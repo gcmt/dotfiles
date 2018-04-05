@@ -69,10 +69,9 @@ endf
 func! explorer#actions#up_root() abort
 	let current = b:explorer.tree.path
 	let parent = fnamemodify(b:explorer.tree.path, ':h')
-	let node = explorer#tree#new_node(parent)
-	call node.get_content()
-	call node.render()
-	let b:explorer.tree = node
+	let b:explorer.tree = explorer#tree#new_node(parent)
+	call b:explorer.tree.get_content()
+	call b:explorer.tree.render()
 	call explorer#actions#goto(current)
 endf
 
@@ -89,9 +88,9 @@ func! explorer#actions#set_root() abort
 	if empty(node.content)
 		call node.get_content()
 	end
-	call node.render()
 	let node.parent = {}
 	let b:explorer.tree = node
+	call b:explorer.tree.render()
 	call explorer#actions#goto_first_child(node)
 endf
 

@@ -46,7 +46,7 @@ func! explorer#open(path) abort
 
 	if empty(get(b:explorer, 'tree', {}))
 		let path = empty(path) ? getcwd() : path
-		let root = g:explorer#tree#node.new(path)
+		let root = explorer#tree#new_node(path)
 		call root.get_content()
 		let b:explorer.tree = root
 	end

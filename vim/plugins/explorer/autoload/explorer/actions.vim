@@ -70,7 +70,7 @@ endf
 func! explorer#actions#up_root() abort
 	let current = b:explorer.tree.path
 	let parent = fnamemodify(b:explorer.tree.path, ':h')
-	let node = g:explorer#tree#node.new(parent)
+	let node = explorer#tree#new_node(parent)
 	call node.get_content()
 	call node.render()
 	let b:explorer.tree = node

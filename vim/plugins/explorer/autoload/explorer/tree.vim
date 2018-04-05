@@ -1,10 +1,9 @@
 
-let g:explorer#tree#node = {}
-
-" explorer#tree#node.new({path:string}[, {parent:dict}]) -> dict
-" Create a new node for the given {path}.
-func explorer#tree#node.new(path, ...)
-	let node = copy(self)
+" explorer#tree#new_node({path:string}[, {parent:dict}]) -> dict
+" Create a new node for the given {path}. A {parent} node might
+" be given as well.
+func explorer#tree#new_node(path, ...)
+	let node = copy(s:node)
 	let node.path = a:path
 	let node.type = getftype(a:path)
 	let node.content = []
@@ -12,22 +11,24 @@ func explorer#tree#node.new(path, ...)
 	return node
 endf
 
-" explorer#tree#node.set_path({path:string}) -> 0
+let s:node = {}
+
+" s:node.set_path({path:string}) -> 0
 " Set path for the current node.
-func explorer#tree#node.set_path(path)
+func s:node.set_path(path)
 	let self.path = a:path
 endf
 
-" explorer#tree#node.filename() -> string
+" s:node.filename() -> string
 " Return the file name of the current node.
-func explorer#tree#node.filename()
+func s:node.filename()
 	return fnamemodify(self.path, ':t')
 endf
 
-" explorer#tree#node.get_content([{max_depth:number}]) -> 0
+" s:node.get_content([{max_depth:number}]) -> 0
 " Get recursively the directory content of the current node up to
 " {max_depth} levels deep. When not given, {max_depth} defaults to 1.
-func explorer#tree#node.get_content(...)
+func s:node.get_content(...)
 
 	func! s:_get_content(node, lvl, max_depth)
 		if a:lvl > a:max_depth
@@ -40,7 +41,7 @@ func explorer#tree#node.get_content(...)
 		let a:node.content = []
 		for file in files
 			let path = explorer#path#join(a:node.path, file)
-			let node = g:explorer#tree#node.new(path, a:node)
+			let node = explorer#tree#new_node(path, a:node)
 			call add(a:node.content, node)
 			if isdirectory(node.path)
 				call s:_get_content(node, a:lvl+1, a:max_depth)
@@ -53,11 +54,11 @@ func explorer#tree#node.get_content(...)
 
 endf
 
-" explorer#tree#node.find({test:funcref}) -> dict
+" s:node.find({test:funcref}) -> dict
 " Find the first node that satisfies the given test.
 " For {node} and each of its descendants, evaluate {test} and when
 " the result is true, return that node.
-func! explorer#tree#node.find(test)
+func! s:node.find(test)
 	func! s:find_node(node, test)
 		if call(a:test, [a:node])
 			return a:node
@@ -73,9 +74,9 @@ func! explorer#tree#node.find(test)
 	return s:find_node(self, a:test)
 endf
 
-" explorer#tree#node.do({fn:funcref}) -> 0
+" s:node.do({fn:funcref}) -> 0
 " Execute {fn} on the current node and each of its descendants.
-func! explorer#tree#node.do(fn)
+func! s:node.do(fn)
 	func! s:_do(node, fn)
 		call call(a:fn, [a:node])
 		for node in a:node.content
@@ -85,9 +86,9 @@ func! explorer#tree#node.do(fn)
 	return s:_do(self, a:fn)
 endf
 
-" explorer#tree#node.render() -> 0
+" s:node.render() -> 0
 " Render the directory tree in the current buffer.
-func! explorer#tree#node.render() abort
+func! s:node.render() abort
 
 	syn clear
 	setl modifiable

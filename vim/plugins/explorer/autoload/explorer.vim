@@ -26,6 +26,7 @@ func! explorer#open(path) abort
 
 	" Allow arguments such as %:p:h, etc
 	let path = expand(a:path)
+	let path = substitute(path, '\v/+$', '', '')
 
 	if !empty(path) && !isdirectory(path)
 		return explorer#err(printf("Directory '%s' does not exist", path))

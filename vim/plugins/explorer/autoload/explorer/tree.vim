@@ -1,15 +1,14 @@
 
 let g:explorer#tree#node = {}
 
-" explorer#tree#node.new({path:string}) -> dict
+" explorer#tree#node.new({path:string}[, {parent:dict}]) -> dict
 " Create a new node for the given {path}.
-func explorer#tree#node.new(path)
+func explorer#tree#node.new(path, ...)
 	let node = copy(self)
 	let node.path = a:path
-	let node.info = ''
-	let node.decor = ''
+	let node.type = getftype(a:path)
 	let node.content = []
-	let node.parent = {}
+	let node.parent = a:0 > 0 ? a:1 : {}
 	return node
 endf
 
@@ -34,12 +33,14 @@ func explorer#tree#node.get_content(...)
 		if a:lvl > a:max_depth
 			return
 		end
+		let files = systemlist('ls -1AH ' . shellescape(a:node.path))
+		if v:shell_error
+			return
+		end
 		let a:node.content = []
-		for file in s:ls(a:node.path)
-			let node = g:explorer#tree#node.new(file.path)
-			let node.info = file.info
-			let node.decor = file.decor
-			let node.parent = a:node
+		for file in files
+			let path = explorer#path#join(a:node.path, file)
+			let node = g:explorer#tree#node.new(path, a:node)
 			call add(a:node.content, node)
 			if isdirectory(node.path)
 				call s:_get_content(node, a:lvl+1, a:max_depth)
@@ -118,22 +119,17 @@ func! explorer#tree#node.render() abort
 
 		let line = links . filename
 
-		if a:node.decor =~ '\V\^/'
+		if a:node.type == 'dir'
 			call s:highlight('ExplorerDir', nr, len(links), len(links)+len(filename)+2)
-		elseif a:node.decor =~ '\V\^*'
-			call s:highlight('ExplorerExec', nr, len(links), len(links)+len(filename)+2)
-		end
-		if a:node.decor =~ '\V->'
+		elseif a:node.type == 'link'
 			call s:highlight('ExplorerLink', nr, len(links), len(links)+len(filename)+2)
-			call s:highlight('ExplorerDim', nr, len(links)+len(filename))
-			let line .= a:node.decor
 		end
 
 		call setline(nr, line)
 
 		let padding = a:padding . (a:is_last_child ? '   ' : '│  ')
 
-		let nodes = s:filter(a:node.content, a:filters)
+		let nodes = s:directories_first(s:filter(a:node.content, a:filters))
 		let last = len(nodes)-1
 		for i in range(len(nodes))
 			let nr = s:_print_tree(nodes[i], nr, a:filters, padding, i == last)
@@ -149,7 +145,7 @@ func! explorer#tree#node.render() abort
 	call setline(nr, self.path)
 	call s:highlight('ExplorerTitle', nr)
 
-	let nodes = s:filter(self.content, filters)
+	let nodes = s:directories_first(s:filter(self.content, filters))
 	let last = len(nodes)-1
 	for k in range(len(nodes))
 		let nr = s:_print_tree(nodes[k], nr, filters, '', k == last)
@@ -158,6 +154,14 @@ func! explorer#tree#node.render() abort
 	call setwinvar(0, "&stl", ' ' . self.path)
 	setl nomodifiable
 
+endf
+
+" s:directories_first({list:dict}) -> list
+" Order a list of nodes by putting directories first.
+" Sorting doesn't happen in-place, a new list is returned.
+func! s:directories_first(nodes)
+	let Fn = {a, b -> a.type == b.type ? 0 : a.type != 'dir' ? 1 : -1}
+	return sort(copy(a:nodes), Fn)
 endf
 
 " s:filter({list:list}, {filters:list}) -> list
@@ -193,35 +197,6 @@ func! s:highlight(group, line, ...)
 	exec printf('syn match %s /\v%s%s%s/', a:group, line, start, end)
 endf
 
-" s:ls({path:string}) -> list
-" Return the parsed content of `ls --dired {path}`.
-" Return value structure: [{path, info, decor}, ..]
-" Errors are ignored.
-func! s:ls(path)
-
-	let flags = '-lhHFA --group-directories-first --dired'
-	let lines = systemlist(printf("ls %s %s", flags, shellescape(a:path)))
-	if v:shell_error || get(lines, -2) !~ '\v^//DIRED//'
-		return []
-	end
-
-	let k = 1
-	let files = []
-	let offsets = map(split(matchstr(lines[-2], '\v^//DIRED//\zs.*')), {-> str2nr(v:val)})
-	let start = get(offsets, 0, len(lines[0])) - len(lines[0])
-	for i in range(0, len(offsets)-1, 2)
-		let file = {}
-		let filename = strpart(lines[k], start-1, offsets[i+1] - offsets[i])
-		let file.path = explorer#path#join(a:path, filename)
-		let file.decor = strpart(lines[k], start-1 + offsets[i+1] - offsets[i])
-		let file.info = substitute(s:trim(strpart(lines[k], 0, start-2)), '\v\s\s+', ' ', '')
-		call add(files, file)
-		let k += 1
-	endfo
-
-	return files
-endf
-
 " s:prettify_path({path:string}) -> string
 " Prettify the given {path} by trimming the current working directory.
 " If not successful, try to reduce file name to be relative to the
@@ -229,10 +204,4 @@ endf
 func! s:prettify_path(path)
 	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
 	return substitute(path, '\V\^'.$HOME, '~', '')
-endf
-
-" s:trim({s:string}) -> string
-" Trim leading and trailing whitespaces from a string {s}.
-func! s:trim(s)
-	return substitute(a:s, '\v(^\s+|\s+$)', '', 'g')
 endf

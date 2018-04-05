@@ -30,9 +30,13 @@ endf
 " will return 1) child node.
 " A number is returned to indicate success (1) or failure (0).
 func! explorer#actions#goto_first_child(node)
-	for node in a:node.content
-		if explorer#actions#goto(node.path, 1)
-			return 1
+	for [line, node] in items(b:explorer.map)
+		if node.path == a:node.path
+			let next = get(b:explorer.map, line+1, {})
+			if !empty(next) && next.parent == a:node
+				norm! j0
+				return 1
+			end
 		end
 	endfo
 	return 0

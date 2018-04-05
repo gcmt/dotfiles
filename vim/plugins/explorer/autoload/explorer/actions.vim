@@ -42,14 +42,13 @@ func! explorer#actions#goto_first_child(node)
 	return 0
 endf
 
-" explorer#actions#echo({key:string}) -> 0
-" Echo node data.
-func! explorer#actions#echo(key)
+" explorer#actions#info() -> 0
+" Print node info.
+func! explorer#actions#info()
 	let node = s:selected_node()
-	if empty(node)
-		return
+	if !empty(node)
+		echo system('ls -ldh ' . shellescape(node.path))
 	end
-	echo node[a:key]
 endf
 
 " explorer#actions#close_dir() -> 0

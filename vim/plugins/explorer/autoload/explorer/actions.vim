@@ -132,11 +132,13 @@ func! explorer#actions#enter_or_edit() abort
 	end
 endf
 
+" s:scp_save() -> 0
+" When editing a file with scp, whenever it is saved it is uploaded
+" to its remote location.
 func! s:scp_save() abort
-	let cmd  = 'scp'
-	let cmd .= ' ' . shellescape(b:explorer_scp.flags)
-	let cmd .= ' ' . shellescape(b:explorer_scp.local)
-	let cmd .= ' ' . shellescape(b:explorer_scp.remote)
+	let scp = b:explorer_scp
+	let args = [scp.flags, scp.local, scp.remote]
+	let cmd = 'scp ' . join(map(args, {i, val -> shellescape(val)}))
 	echo '!' . cmd
 	let out = system(cmd)
 	if v:shell_error

@@ -1,11 +1,11 @@
 
-" explorer#tree#new_node({path:string}[, {parent:dict}]) -> dict
-" Create a new node for the given {path}. A {parent} node might
-" be given as well.
-func explorer#tree#new_node(path, ...)
+" explorer#tree#new_node({path:string}, {type:string}[, {parent:dict}]) -> dict
+" Create a new node for the given {path} with type {type}.
+" An optional {parent} node might be given as well.
+func explorer#tree#new_node(path, type, ...)
 	let node = copy(s:node)
 	let node.path = a:path
-	let node.type = getftype(a:path)
+	let node.type = a:type
 	let node.content = []
 	let node.parent = a:0 > 0 ? a:1 : {}
 	return node
@@ -25,6 +25,31 @@ func s:node.filename()
 	return fnamemodify(self.path, ':t')
 endf
 
+" s:node.info() -> string
+" Return node info as returned by 'ls -l'.
+func s:node.info()
+	let cmd = 'ls -ldh ' . shellescape(self.path)
+	if b:explorer.host != 'localhost' && b:explorer.protocol == 'scp'
+		let cmd = 'ssh ' . b:explorer.host . ' ' . cmd
+	end
+	return system(cmd)
+endf
+
+" s:node.ls() -> list
+" Return a list of all files inside the current node.
+" Each file is suffixed with one of (*/=>@|) to distinguish its type
+" (see -F ls flag).
+func s:node.ls()
+	if self.type != 'dir'
+		return []
+	end
+	let cmd = 'ls -1AHF ' . shellescape(self.path)
+	if b:explorer.host != 'localhost' && b:explorer.protocol == 'scp'
+		let cmd = 'ssh ' . b:explorer.host . ' ' . cmd
+	end
+	return systemlist(cmd)
+endf
+
 " s:node.get_content([{max_depth:number}]) -> 0
 " Get recursively the directory content of the current node up to
 " {max_depth} levels deep. When not given, {max_depth} defaults to 1.
@@ -34,16 +59,21 @@ func s:node.get_content(...)
 		if a:lvl > a:max_depth
 			return
 		end
-		let files = systemlist('ls -1AH ' . shellescape(a:node.path))
+		let files = a:node.ls()
 		if v:shell_error
 			return
 		end
 		let a:node.content = []
+		let map = {'/': 'dir', '@': 'link', '*': 'exec', '=': 'file', '>': 'file', '|': 'file'}
+		let pattern = '\V\(' . join(keys(map), '\|') . '\)\$'
 		for file in files
-			let path = explorer#path#join(a:node.path, file)
-			let node = explorer#tree#new_node(path, a:node)
+			let type = get(map, matchstr(file, pattern), '')
+			let filename = empty(type) ? file : file[:-2]
+			let type = empty(type) ? 'file' : type
+			let path = explorer#path#join(a:node.path, filename)
+			let node = explorer#tree#new_node(path, type, a:node)
 			call add(a:node.content, node)
-			if isdirectory(node.path)
+			if node.type == 'dir'
 				call s:_get_content(node, a:lvl+1, a:max_depth)
 			end
 		endfo
@@ -143,7 +173,12 @@ func! s:node.render() abort
 	let nr = 1
 
 	let b:explorer.map[nr] = self
-	call setline(nr, self.path)
+
+	let title = self.path
+	if b:explorer.host != 'localhost'
+		let title = b:explorer.host . ':' . title
+	end
+	call setline(nr, title)
 	call s:highlight('ExplorerTitle', nr)
 
 	let nodes = s:directories_first(s:filter(self.content, filters))
@@ -152,7 +187,7 @@ func! s:node.render() abort
 		let nr = s:_print_tree(nodes[k], nr, filters, '', k == last)
 	endfo
 
-	call setwinvar(0, "&stl", ' ' . self.path)
+	call setwinvar(0, "&stl", ' ' . title)
 	setl nomodifiable
 
 endf

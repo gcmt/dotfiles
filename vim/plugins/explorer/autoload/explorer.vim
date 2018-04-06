@@ -18,22 +18,44 @@ func! s:restore_alternate()
 	endfo
 endf
 
-func! explorer#open(path) abort
+func! explorer#open(arg) abort
 
 	if exists('b:explorer')
 		return
 	end
 
-	" Allow arguments such as %:p:h, etc
-	let path = expand(a:path)
-	let path = substitute(path, '\v/+$', '', '')
+	let arg = a:arg
+	let explorer = {}
 
-	if !empty(path) && !isdirectory(path)
-		return explorer#err(printf("Directory '%s' does not exist", path))
+	if empty(arg)
+		if exists('t:explorer')
+			let explorer = t:explorer
+		else
+			let arg = getcwd()
+		end
 	end
 
-	let current = bufnr('%')
-	let alternate = bufnr('#')
+	if empty(explorer)
+		if arg =~ '\V\^scp://'
+			let arg = substitute(arg, '\V\^scp://', '', '')
+			if empty(arg)
+				return explorer#err('Invalid argument')
+			end
+			let path = matchstr(arg, '\v:\zs.*')
+			let explorer.host = matchstr(arg, '\v^[^:]+')
+			let explorer.protocol = 'scp'
+		else
+			let path = substitute(expand(arg), '\v/+$', '', '')
+			if !empty(path) && !isdirectory(path)
+				return explorer#err(printf("Directory '%s' does not exist", path))
+			end
+			let explorer.host = 'localhost'
+			let explorer.protocol = ''
+		end
+	end
+
+	let explorer.current = bufnr('%')
+	let explorer.alt = bufnr('#')
 
 	sil edit __explorer__
 	setl filetype=explorer buftype=nofile bufhidden=delete nobuflisted
@@ -41,13 +63,10 @@ func! explorer#open(path) abort
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
 
-	let b:explorer = exists('t:explorer') && empty(path) ? t:explorer : {}
-	let b:explorer.current = current
-	let b:explorer.alt = alternate
+	let b:explorer = explorer
 
 	if empty(get(b:explorer, 'tree', {}))
-		let path = empty(path) ? getcwd() : path
-		let b:explorer.tree = explorer#tree#new_node(path)
+		let b:explorer.tree = explorer#tree#new_node(path, 'dir')
 		call b:explorer.tree.get_content()
 	end
 

@@ -46,7 +46,7 @@ func! explorer#open(arg) abort
 			let explorer.host = match[1]
 			let explorer.protocol = 'scp'
 		else
-			let path = substitute(expand(arg), '\v/+$', '', '')
+			let path = substitute(fnamemodify(arg, ':p'), '\v/+$', '', '')
 			if !empty(path) && !isdirectory(path)
 				return explorer#err(printf("Directory '%s' does not exist", path))
 			end

@@ -36,13 +36,14 @@ func! explorer#open(arg) abort
 	end
 
 	if empty(explorer)
+
 		if arg =~ '\V\^scp://'
-			let arg = substitute(arg, '\V\^scp://', '', '')
-			if empty(arg)
+			let match = matchlist(arg, '\v^scp://([^/]+)/?(.*)')
+			if empty(match)
 				return explorer#err('Invalid argument')
 			end
-			let path = matchstr(arg, '\v:\zs.*')
-			let explorer.host = matchstr(arg, '\v^[^:]+')
+			let path = match[2]
+			let explorer.host = match[1]
 			let explorer.protocol = 'scp'
 		else
 			let path = substitute(expand(arg), '\v/+$', '', '')

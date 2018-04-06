@@ -50,15 +50,16 @@ func! explorer#open(arg) abort
 			let explorer.host = 'localhost'
 			let explorer.protocol = ''
 		end
-	end
 
-	if explorer.protocol == 'scp'
-		let out = system('ssh ' . explorer.host . ' ls -ldh ' . shellescape(path))
-		if out !~ '\v^\s*d'
-			return explorer#err("Directory does not exist: " . explorer.host.'/'.path)
+		if explorer.protocol == 'scp'
+			let out = system('ssh ' . explorer.host . ' ls -ldh ' . shellescape(path))
+			if out !~ '\v^\s*d'
+				return explorer#err("Directory does not exist: " . explorer.host.'/'.path)
+			end
+		elseif !isdirectory(path)
+			return explorer#err("Directory does not exist: " . path)
 		end
-	elseif !isdirectory(path)
-		return explorer#err("Directory does not exist: " . path)
+
 	end
 
 	let explorer.current = bufnr('%')

@@ -299,7 +299,6 @@ func! explorer#actions#delete() abort
 		return
 	end
 	redraw
-	echo "path" node.path
 	if delete(node.path, 'rf') != 0
 		return explorer#err("Cannot delete file: " . node.path)
 	end

@@ -67,7 +67,7 @@ func! explorer#open(arg) abort
 
 	if empty(get(b:explorer, 'tree', {}))
 		let b:explorer.tree = explorer#tree#new_node(path, 'dir')
-		call b:explorer.tree.get_content()
+		call b:explorer.tree.explore()
 	end
 
 	call b:explorer.tree.render()

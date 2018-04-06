@@ -50,12 +50,13 @@ func s:node.ls()
 	return systemlist(cmd)
 endf
 
-" s:node.get_content([{max_depth:number}]) -> 0
+" s:node.explore([{max_depth:number}]) -> 0
 " Get recursively the directory content of the current node up to
 " {max_depth} levels deep. When not given, {max_depth} defaults to 1.
-func s:node.get_content(...)
+" This is a destructive operation: all child nodes are wiped out first.
+func s:node.explore(...)
 
-	func! s:_get_content(node, lvl, max_depth)
+	func! s:_explore(node, lvl, max_depth)
 		if a:lvl > a:max_depth
 			return
 		end
@@ -74,13 +75,13 @@ func s:node.get_content(...)
 			let node = explorer#tree#new_node(path, type, a:node)
 			call add(a:node.content, node)
 			if node.type == 'dir'
-				call s:_get_content(node, a:lvl+1, a:max_depth)
+				call s:_explore(node, a:lvl+1, a:max_depth)
 			end
 		endfo
 	endf
 
 	let max_depth = a:0 > 0 ? a:1 : 1
-	call s:_get_content(self, 1, max_depth)
+	call s:_explore(self, 1, max_depth)
 
 endf
 

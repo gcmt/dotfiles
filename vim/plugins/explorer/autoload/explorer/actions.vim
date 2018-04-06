@@ -129,7 +129,6 @@ func! explorer#actions#enter_or_edit() abort
 		let @# = buflisted(current) ? current : bufnr('%')
 		let b:explorer_scp = {'flags': '-q', 'local': tmp, 'remote': remote}
 		au BufWritePost <buffer> call <sid>scp_save()
-		exec 'au BufDelete,BufWipeout,VimLeave <buffer> call delete("'.tmp.'")'
 	end
 endf
 

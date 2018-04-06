@@ -118,7 +118,7 @@ func! explorer#actions#enter_or_edit() abort
 	else
 		let current = b:explorer.current
 		let remote = b:explorer.host.':'.node.path
-		let tmp = tempname() . '-' . tr(remote, '/', '-')
+		let tmp = tempname() . '-' . fnamemodify(node.path, ':t')
 		let cmd = 'scp -q ' . shellescape(remote) . ' ' . shellescape(tmp)
 		echo '!' . cmd
 		let out = system(cmd)

@@ -109,13 +109,39 @@ func! explorer#actions#enter_or_edit() abort
 		call b:explorer.tree.render()
 		call explorer#actions#goto(node.path)
 		call explorer#actions#goto_first_child(node)
-	else
-		if b:explorer.host != 'localhost'
-			return explorer#err('Not implemented')
-		end
+		return
+	end
+	if b:explorer.host == 'localhost'
 		let current = b:explorer.current
 		exec 'edit' fnameescape(node.path)
 		let @# = buflisted(current) ? current : bufnr('%')
+	else
+		let current = b:explorer.current
+		let remote = b:explorer.host.':'.node.path
+		let tmp = tempname() . '-' . tr(remote, '/', '-')
+		let cmd = 'scp -q ' . shellescape(remote) . ' ' . shellescape(tmp)
+		echo '!' . cmd
+		let out = system(cmd)
+		if v:shell_error
+			return explorer#err(out)
+		end
+		exec 'edit' tmp
+		let @# = buflisted(current) ? current : bufnr('%')
+		let b:explorer_scp = {'flags': '-q', 'local': tmp, 'remote': remote}
+		au BufWritePost <buffer> call <sid>scp_save()
+		exec 'au BufDelete,BufWipeout,VimLeave <buffer> call delete("'.tmp.'")'
+	end
+endf
+
+func! s:scp_save() abort
+	let cmd  = 'scp'
+	let cmd .= ' ' . shellescape(b:explorer_scp.flags)
+	let cmd .= ' ' . shellescape(b:explorer_scp.local)
+	let cmd .= ' ' . shellescape(b:explorer_scp.remote)
+	echo '!' . cmd
+	let out = system(cmd)
+	if v:shell_error
+		call explorer#err(out)
 	end
 endf
 

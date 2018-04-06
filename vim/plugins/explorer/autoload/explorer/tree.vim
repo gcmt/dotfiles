@@ -105,6 +105,14 @@ func! s:node.find(test)
 	return s:find_node(self, a:test)
 endf
 
+" s:node.rename({path:string}) -> 0
+" Set current node path to {path} and updates all its descendant nodes.
+func! s:node.rename(path)
+	let old = self.path
+	let Fn = {node -> node.set_path(substitute(node.path, '\V\^'.old, a:path, ''))}
+	return self.do(Fn)
+endf
+
 " s:node.do({fn:funcref}) -> 0
 " Execute {fn} on the current node and each of its descendants.
 func! s:node.do(fn)

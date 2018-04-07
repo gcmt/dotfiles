@@ -116,15 +116,12 @@ func! explorer#actions#enter_or_edit() abort
 		exec 'edit' fnameescape(node.path)
 		let @# = buflisted(current) ? current : bufnr('%')
 	else
-		let current = b:explorer.current
 		let remote = b:explorer.host.':'.node.path
 		let tmp = tempname() . '-' . fnamemodify(node.path, ':t')
-		let cmd = 'scp -q ' . shellescape(remote) . ' ' . shellescape(tmp)
-		echo '!' . cmd
-		let out = system(cmd)
-		if v:shell_error
-			return explorer#err(out)
+		if s:scp('-q', remote, tmp) != 0
+			return
 		end
+		let current = b:explorer.current
 		exec 'edit' tmp
 		let @# = buflisted(current) ? current : bufnr('%')
 		let b:explorer_scp = function('s:scp', ['-q', tmp, remote])

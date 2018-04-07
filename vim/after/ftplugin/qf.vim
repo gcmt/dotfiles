@@ -22,19 +22,19 @@ endf
 
 call s:set_height(get(g:, 'quickfix_height', 25))
 
-nnoremap <silent> <buffer> <c-w>_ :call <sid>set_height(100)<cr>
 nnoremap <buffer> q <c-w>c
 
-nnoremap <silent> <buffer> L <enter>zz:set cul<cr>
-nnoremap <silent> <buffer> S <c-w><enter><c-w>x<c-w>pzz:set cul<cr>
-nnoremap <silent> <buffer> T <c-w><enter><c-w>Tzz:set cul<cr>
-nmap <buffer> O L
+" don't close the quickfix window
+nnoremap <silent> <buffer> L <enter>zz
+nnoremap <silent> <buffer> S <c-w><enter><c-w>x<c-w>pzz
+nnoremap <silent> <buffer> T <c-w><enter><c-w>Tzz
 
-nnoremap <silent> <buffer> <enter> <enter>:exec winnr('#').'wincmd c'<cr>zz:set cul<cr>
-nnoremap <silent> <buffer> s <c-w><enter>:exec winnr('#').'wincmd c'<cr>zz:set cul<cr>
-nnoremap <silent> <buffer> t <c-w><enter>:exec winnr('#').'wincmd c'<cr><c-w>Tzz:set cul<cr>
+nnoremap <silent> <buffer> l <enter>:exec winnr('#').'wincmd c'<cr>zz
+nnoremap <silent> <buffer> s <c-w><enter>:exec winnr('#').'wincmd c'<cr>zz
+nnoremap <silent> <buffer> t <c-w><enter>:exec winnr('#').'wincmd c'<cr><c-w>Tzz
 nmap <buffer> <c-j> <enter>
-nmap <buffer> l <enter>
-nmap <buffer> o <enter>
+
+nnoremap <silent> <buffer> <c-p> :colder<cr>
+nnoremap <silent> <buffer> <c-n> :cnewer<cr>
 
 norm! zz

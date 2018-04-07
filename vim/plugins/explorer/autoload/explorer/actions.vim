@@ -127,23 +127,22 @@ func! explorer#actions#enter_or_edit() abort
 		end
 		exec 'edit' tmp
 		let @# = buflisted(current) ? current : bufnr('%')
-		let b:explorer_scp = {'flags': '-q', 'local': tmp, 'remote': remote}
-		au BufWritePost <buffer> call <sid>scp_save()
+		let b:explorer_scp = function('s:scp', ['-q', tmp, remote])
+		au BufWritePost <buffer> call b:explorer_scp()
 	end
 endf
 
-" s:scp_save() -> 0
-" When editing a file with scp, whenever it is saved it is uploaded
-" to its remote location.
-func! s:scp_save() abort
-	let scp = b:explorer_scp
-	let args = [scp.flags, scp.local, scp.remote]
-	let cmd = 'scp ' . join(map(args, {i, val -> shellescape(val)}))
+" s:scp({flags:string}, {local:string}, {remote:string}) -> number
+" Execute the 'scp' command with the given arguments.
+" The exit code of the command is also returned.
+func! s:scp(flags, local, remote) abort
+	let cmd = 'scp ' . a:flags . ' ' . shellescape(a:local) . ' ' . shellescape(a:remote)
 	echo '!' . cmd
 	let out = system(cmd)
 	if v:shell_error
 		call explorer#err(out)
 	end
+	return v:shell_error
 endf
 
 " explorer#actions#auto_expand() -> 0

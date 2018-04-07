@@ -1,6 +1,6 @@
 " =============================================================================
 " File: ctags.vim
-" Description: Simple wrapper around ctags
+" Description: Automatic ctags after every save
 " Author: github.com/gcmt
 " Licence: MIT
 " =============================================================================
@@ -10,33 +10,25 @@ if !has('job') || !executable('ctags') || exists("g:loaded_ctags") || &cp
 end
 let g:loaded_ctags = 1
 
-command -nargs=* -bang Ctags call <sid>ctags(<q-bang>, <q-args>)
-
-func s:ctags(bang, args)
-	if empty(a:bang)
-		call ctags#sync(a:args)
-	else
-		call ctags#async(a:args)
-	end
-endf
-
-" Automatically generate tags for the current project, but only when
-" there are some tagfiles already
-
-let g:ctags_auto = get(g:, 'ctags_auto', {
+let g:ctags = extend(get(g:, 'ctags', {}), {
+	\ 'options': {-> ['-Rn', '--languages='.&filetype]},
 	\ 'tagfile': {-> isdirectory('.tags') ? printf('.tags/%s/0.project', &ft) : 'tags'},
-\ })
+\ }, 'force')
 
 aug _ctags
-	au VimEnter,BufWritePost * call <sid>auto()
+	au VimEnter,BufWritePost * call s:run()
 aug END
 
-func s:auto()
-	if empty(&filetype)
+func s:run()
+	if empty(&filetype) || !empty(&buftype)
 		return
 	end
-	let tagfile = call(g:ctags_auto.tagfile, [])
-	if filereadable(tagfile)
-		exec 'Ctags!' '--languages='.&filetype '-f' tagfile
+	let dir = getcwd()
+	let tagfile = call(g:ctags.tagfile, [])
+	if !filereadable(ctags#joinpaths(dir, tagfile))
+		return
 	end
+	let options  = call(g:ctags.options, [])
+	let options += get(g:ctags, &filetype.'_options', [])
+	call ctags#run(getcwd(), tagfile, options)
 endf

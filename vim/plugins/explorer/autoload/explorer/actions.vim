@@ -132,11 +132,11 @@ func! explorer#actions#enter_or_edit() abort
 	end
 endf
 
-" s:scp({flags:string}, {local:string}, {remote:string}) -> number
+" s:scp({flags:string}, {source:string}, {dest:string}) -> number
 " Execute the 'scp' command with the given arguments.
 " The exit code of the command is also returned.
-func! s:scp(flags, local, remote) abort
-	let cmd = 'scp ' . a:flags . ' ' . shellescape(a:local) . ' ' . shellescape(a:remote)
+func! s:scp(flags, source, dest) abort
+	let cmd = 'scp ' . a:flags . ' ' . shellescape(a:source) . ' ' . shellescape(a:dest)
 	echo '!' . cmd
 	let out = system(cmd)
 	if v:shell_error

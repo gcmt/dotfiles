@@ -25,6 +25,9 @@ func! search#do(bang, pattern)
 		return s:err("Nothing found")
 	end
 
+	let @/ = ctx.pattern
+	call histadd('/', ctx.pattern)
+
 	exec 'sil keepa botright 1new' s:bufname
 	setl filetype=search buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell

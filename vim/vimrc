@@ -834,7 +834,7 @@
 " Explorer
 " ----------------------------------------------------------------------------
 
-	let g:explorer_filters = [{node -> node.filename !~ '\v^(.git|node_modules|venv)'}]
+	let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
 
 	nnoremap <silent> gy :Explorer<cr>
 	nnoremap <silent> g. :exec 'Explorer' expand('%:p:h')<cr>

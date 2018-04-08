@@ -6,7 +6,7 @@ let s:queue = []
 let s:job = 0
 
 " Anything logged
-let s:log = []
+let s:logs = []
 
 " ctags#run({dir:string}, {tagfile:string}, {options:list}) -> 0
 " Asynchronously generate tags for the directory {dir} and store
@@ -22,8 +22,11 @@ func ctags#run(dir, tagfile, options) abort
 	let context = {
 		\ 'dir': a:dir,
 		\ 'cmd': join(cmd),
+		\ 'tagfile': dest,
 		\ 'start_time': reltime(),
 	\ }
+	call s:log('info', "Generating tags for " . a:dir)
+	call s:log('info', "Command: " . join(cmd))
 	let s:job = job_start(cmd, {
 		\ 'exit_cb': funcref('s:exit_cb', [], context),
 	\ })
@@ -40,14 +43,15 @@ endf
 " {job} and the exit {status}. See :h job-exit_cb.
 " This function is expected to be executed with a context.
 func s:exit_cb(job, status) dict
-	let timestamp = strftime('%T', reltimestr(reltime()))
 	if a:status != 0
-		call s:log(printf("[%s] Error: %s (exit code: %d)", timestamp, self.cmd, a:status))
-		call s:err("Failed to generate tags for: " . self.dir)
+		call s:log('error', "Failed to generate tags for " . self.dir)
+		call s:log('error', "Command: " . self.cmd)
+		call s:log('error', "Exit code: " . a:status)
+		call s:err("Failed to generate tags for " . self.dir)
 	else
 		let elapsed = reltime(self.start_time)
 		let seconds = substitute(reltimestr(elapsed), '\v\s+', '', 'g')
-		call s:log(printf("[%s] Tags successfully generted for %s in %ss", timestamp, self.dir, seconds))
+		call s:log('info', printf("Tags generated for %s in %ss (%s)", self.dir, seconds, self.tagfile))
 	end
 	if !empty(s:queue)
 		call call('ctags#run', remove(s:queue, -1))
@@ -63,15 +67,21 @@ func ctags#joinpaths(...)
 endf
 
 " ctags#log() -> string
-" Return the log.
-func ctags#log()
-	return join(s:log, "\n")
+" Print the logs.
+func ctags#print_log()
+	for entry in s:logs
+		let msg = printf("[%s] %s", entry.timestamp, entry.message)
+		let group = entry.lvl == 'error' ? 'ErrorMsg' : 'Normal'
+		exec "echohl" group "| echo msg | echohl None"
+	endfo
 endf
 
-" s:log({message:string}) -> 0
-" Log the given {message}.
-func s:log(message)
-	call extend(s:log, split(a:message, "\n"))
+" s:log({lvl:string}, {message:string}) -> 0
+" Log a {message} with level {lvl}.
+func s:log(lvl, message)
+	let time = strftime('%T', reltimestr(reltime()))
+	let entry = {'timestamp': time, 'lvl': a:lvl, 'message': a:message}
+	call add(s:logs,  entry)
 endf
 
 " s:err({message:string}) -> 0

@@ -66,7 +66,7 @@ func! explorer#open(arg) abort
 	let explorer.alt = bufnr('#')
 
 	sil edit __explorer__
-	setl filetype=explorer buftype=nofile bufhidden=delete nobuflisted
+	setl filetype=explorer buftype=nofile bufhidden=wipe nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0

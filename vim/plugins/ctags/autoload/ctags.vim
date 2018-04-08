@@ -1,5 +1,5 @@
 
-" A list of argument lists to pass to ctags#run (will hold only one item)
+" A list of argument lists to pass to s:run(..) (will hold only one item)
 let s:queue = []
 
 " The currently running job
@@ -31,8 +31,7 @@ func ctags#run()
 	if !filereadable(s:joinpaths(dir, tagfile))
 		return
 	end
-	let options  = call(g:ctags.options, [])
-	let options += get(g:ctags, &filetype.'_options', [])
+	let options = s:ctags_options()
 	call s:run(getcwd(), tagfile, options)
 endf
 
@@ -95,6 +94,33 @@ func s:exit_cb(job, status) dict
 	if !empty(s:queue)
 		call call('s:run', remove(s:queue, -1))
 	end
+endf
+
+" s:ctags_options() -> list
+" Return all options for the ctags command.
+func s:ctags_options()
+	let options = []
+	let options += s:eval_options(get(g:ctags, 'options', []))
+	let options += s:eval_options(get(g:ctags, &filetype.'_options', []))
+	return options
+endf
+
+" s:eval_options({options:list|funcref|string}) -> list
+" Translate options to list type.
+func s:eval_options(options)
+	if type(a:options) == v:t_func
+		let options = call(a:options, [])
+	else
+		let options = a:options
+	end
+	if type(options) == v:t_list
+		return options
+	elseif type(options) == v:t_string
+		return split(options)
+	else
+		throw "Ctags: Bad options: " . string(options)
+	end
+	return []
 endf
 
 " s:joinpaths([{pathN:string}, ...]) -> string

@@ -16,19 +16,5 @@ let g:ctags = extend(get(g:, 'ctags', {}), {
 \ }, 'force')
 
 aug _ctags
-	au VimEnter,BufWritePost * call s:run()
+	au VimEnter,BufWritePost * call ctags#run()
 aug END
-
-func s:run()
-	if empty(&filetype) || !empty(&buftype)
-		return
-	end
-	let dir = getcwd()
-	let tagfile = call(g:ctags.tagfile, [])
-	if !filereadable(ctags#joinpaths(dir, tagfile))
-		return
-	end
-	let options  = call(g:ctags.options, [])
-	let options += get(g:ctags, &filetype.'_options', [])
-	call ctags#run(getcwd(), tagfile, options)
-endf

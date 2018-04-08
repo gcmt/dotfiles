@@ -8,16 +8,43 @@ let s:job = 0
 " Anything logged
 let s:logs = []
 
-" ctags#run({dir:string}, {tagfile:string}, {options:list}) -> 0
+" ctags#log() -> string
+" Print the logs.
+func ctags#print_log()
+	for entry in s:logs
+		let msg = printf("[%s] %s", entry.timestamp, entry.message)
+		let group = entry.lvl == 'error' ? 'ErrorMsg' : 'Normal'
+		exec "echohl" group "| echo msg | echohl None"
+	endfo
+endf
+
+" ctags#run() -> 0
+" Automatically generate tags for the current working directory
+" if all the conditions are met.
+func ctags#run()
+	if empty(&filetype) || !empty(&buftype)
+		return
+	end
+	let dir = getcwd()
+	let tagfile = call(g:ctags.tagfile, [])
+	if !filereadable(s:joinpaths(dir, tagfile))
+		return
+	end
+	let options  = call(g:ctags.options, [])
+	let options += get(g:ctags, &filetype.'_options', [])
+	call s:run(getcwd(), tagfile, options)
+endf
+
+" s:run({dir:string}, {tagfile:string}, {options:list}) -> 0
 " Asynchronously generate tags for the directory {dir} and store
 " them to {tagfile}, which is expected to be a path relative to {dir}.
 " When a job is already running, the current execution is queued.
-func ctags#run(dir, tagfile, options) abort
+func s:run(dir, tagfile, options) abort
 	if s:ctags_running()
 		let s:queue = [[a:dir, a:tagfile, a:options]]
 		return
 	end
-	let dest = ctags#joinpaths(a:dir, a:tagfile)
+	let dest = s:joinpaths(a:dir, a:tagfile)
 	let cmd = ['ctags'] + a:options + ['-f', dest, a:dir]
 	let context = {
 		\ 'dir': a:dir,
@@ -54,26 +81,16 @@ func s:exit_cb(job, status) dict
 		call s:log('info', printf("Tags generated for %s in %ss (%s)", self.dir, seconds, self.tagfile))
 	end
 	if !empty(s:queue)
-		call call('ctags#run', remove(s:queue, -1))
+		call call('s:run', remove(s:queue, -1))
 	end
 endf
 
-" ctags#joinpaths([{pathN:string}, ...]) -> string
+" s:joinpaths([{pathN:string}, ...]) -> string
 " Join paths. Trailing slashes are trimmed.
-func ctags#joinpaths(...)
+func s:joinpaths(...)
 	let args = filter(copy(a:000), {-> !empty(v:val)})
 	let path = substitute(join(args, '/'), '\v/+', '/', 'g')
 	return substitute(path, '\v/+$', '', '')
-endf
-
-" ctags#log() -> string
-" Print the logs.
-func ctags#print_log()
-	for entry in s:logs
-		let msg = printf("[%s] %s", entry.timestamp, entry.message)
-		let group = entry.lvl == 'error' ? 'ErrorMsg' : 'Normal'
-		exec "echohl" group "| echo msg | echohl None"
-	endfo
 endf
 
 " s:log({lvl:string}, {message:string}) -> 0

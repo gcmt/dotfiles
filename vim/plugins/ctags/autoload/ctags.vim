@@ -22,6 +22,7 @@ endf
 " Automatically generate tags for the current working directory
 " if all the conditions are met.
 func ctags#run()
+	call s:load_options()
 	if empty(&filetype) || !empty(&buftype)
 		return
 	end
@@ -33,6 +34,17 @@ func ctags#run()
 	let options  = call(g:ctags.options, [])
 	let options += get(g:ctags, &filetype.'_options', [])
 	call s:run(getcwd(), tagfile, options)
+endf
+
+" s:load_options() -> 0
+" Load options defined by the user via the g:ctags dictionary and merge them
+" with default options.
+" Doing this on every run allows the user to change options at runtime.
+func s:load_options()
+	let g:ctags = extend(get(g:, 'ctags', {}), {
+		\ 'options': {-> ['-Rn', '--languages='.&filetype]},
+		\ 'tagfile': {-> isdirectory('.tags') ? printf('.tags/%s/0.project', &ft) : 'tags'},
+	\ }, 'force')
 endf
 
 " s:run({dir:string}, {tagfile:string}, {options:list}) -> 0

@@ -30,9 +30,9 @@ func quickfix#remove_entries(type) abort range
 	doau User QuickFixEditPost
 endf
 
-" quickfix#undo({n:number}) -> 0
-" Load the last {n}th snapshot.
-func quickfix#undo(n)
+" quickfix#undo() -> 0
+" Undo the last v:count1 deletions.
+func quickfix#undo()
 	let title = s:getqftitle()
 	let context = s:getqfcontext()
 	let snapshots = get(context, 'snapshots', [])
@@ -40,10 +40,12 @@ func quickfix#undo(n)
 		return
 	end
 	let view = winsaveview()
-	let n = a:n > 0 ? a:n : 1
-	let i = n > len(snapshots) ? 0 : len(snapshots) - n - 1
-	let context.snapshots = snapshots[:i]
-	call setqflist(snapshots[-1], 'r')
+	let snapshot = []
+	let deletions = min([v:count1, len(snapshots)])
+	for i in range(deletions)
+		let snapshot = remove(context.snapshots, -1)
+	endfo
+	call setqflist(snapshot, 'r')
 	call setqflist([], 'a', {'context': context, 'title': title})
 	call winrestview(view)
 	doau User QuickFixEditPost

@@ -42,4 +42,4 @@ nnoremap <silent> <buffer> <c-n> :cnewer<cr>
 vnoremap <silent> <buffer> d :call quickfix#remove_entries(mode())<cr>
 nnoremap <silent> <buffer> d :<c-u>set opfunc=quickfix#remove_entries<cr>g@
 nnoremap <silent> <buffer> dd :<c-u>set opfunc=quickfix#remove_entries<bar>exec 'norm!' v:count1.'g@_'<cr>
-nnoremap <silent> <buffer> u :call quickfix#undo(1)<cr>
+nnoremap <silent> <buffer> u :<c-u>call quickfix#undo()<cr>

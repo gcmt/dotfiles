@@ -19,7 +19,7 @@ func taglist#open(bang, query) abort
 		if bufwinnr(s:bufname) != -1
 			exec bufwinnr(s:bufname) . 'wincmd c'
 		end
-		let path = substitute(tags[0].file, getcwd().'/', '', '')
+		let path = substitute(tags[0].file, '\V\^'getcwd().'/', '', '')
 		exec 'edit' fnameescape(path)
 		exec tags[0].address
 		return

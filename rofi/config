@@ -132,7 +132,7 @@ rofi.columns: 1
 ! Set width of the menu. The value is specified in percentage.
 ! If the value is larger then 100, size is set in pixels.
 ! If the value is negative, it tries to estimates a character width.
-rofi.width: 55
+rofi.width: 50
 
 ! Define the inner margin of the window.
 rofi.padding: 5

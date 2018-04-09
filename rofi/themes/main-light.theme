@@ -1,6 +1,6 @@
 * {
 
-	font: "Noto Sans Regular 14";
+	font: "Noto Sans Regular 10";
 
 	background: rgba(231, 232, 235, 100%);
 	foreground: rgba(82, 86, 94, 100%);
@@ -43,19 +43,19 @@ window {
 
 mainbox {
 	border: 0;
-	padding: 7;
+	padding: 5;
 }
 
 message {
 	border-color: @separator-color;
-	padding: 7;
+	padding: 5;
 }
 
 inputbar {
 	spacing: 0;
 	text-color: @normal-foreground;
 	background-color: @inputbar-background;
-	padding: 8 8;
+	padding: 5 5;
 }
 
 case-indicator {
@@ -82,10 +82,10 @@ listview {
 }
 
 element {
-	font: "Noto Sans Regular 11";
+	font: "Noto Sans Regular 10";
 	border: 0px 0px 1px solid;
 	border-color: @separator-color;
-	padding: 6 8;
+	padding: 5 5;
 }
 
 element.normal.normal {

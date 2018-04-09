@@ -1,10 +1,23 @@
 
 " All currently running jobs
-" {pid: {job-channel, job-errors, tagfile}, ..}
+" {id: {pid, errors, tagfile}, ..}
 let s:jobs = {}
 
 " Anything logged
 let s:logs = []
+
+" s:id_factory() -> funcref
+" Return a function that return a new id every time it is called.
+func! s:id_factory()
+	let id = 0
+	func! s:_id_factory() closure
+		let id += 1
+		return id
+	endf
+	return funcref('s:_id_factory')
+endf
+
+let s:Id = s:id_factory()
 
 " ctags#log() -> string
 " Print the logs.
@@ -51,45 +64,46 @@ endf
 " the current execution is queued.
 func s:run(dir, tagfile, options) abort
 	let dest = s:joinpaths(a:dir, a:tagfile)
-	for pid in keys(s:jobs)
-		if s:jobs[pid].tagfile == dest
+	for id in keys(s:jobs)
+		if s:jobs[id].tagfile == dest
 			" If a job running ctags is already trying to write to {dest},
 			" then queue the current execution
 			call s:log('info', printf("ctags queued for %s (tagfile busy: %s)", a:dir, dest))
-			let s:jobs[pid].after = funcref('s:run', [a:dir, a:tagfile, a:options])
+			let s:jobs[id].after = funcref('s:run', [a:dir, a:tagfile, a:options])
 			return
 		end
 	endfo
+	let id = s:Id()
 	let cmd = ['ctags'] + a:options + ['-f', dest, a:dir]
-	let context = {
+	let exit_cb_ctx = {
+		\ 'id': id,
 		\ 'dir': a:dir,
 		\ 'cmd': join(cmd),
 		\ 'tagfile': dest,
 		\ 'start_time': reltime(),
 	\ }
+	let err_cb_ctx = {
+		\ 'id': id,
+	\ }
 	let job = job_start(cmd, {
-		\ 'exit_cb': funcref('s:exit_cb', [], context),
-		\ 'err_cb': funcref('s:err_cb'),
+		\ 'exit_cb': funcref('s:exit_cb', [], exit_cb_ctx),
+		\ 'err_cb': funcref('s:err_cb', [], err_cb_ctx),
 	\ })
 	let info = job_info(job)
+	let s:jobs[id] = {'pid': info.process, 'tagfile': dest, 'errors': []}
 	call s:log('info', printf("[%s] ctags started: %s", info.process, join(cmd)))
-	let s:jobs[info.process] = {
-		\ 'channel': info.channel,
-		\ 'tagfile': dest,
-		\ 'errors': [],
-	\ }
 endf
 
 " s:exit_cb({job:job}, {status:number}) -> 0
 " Callback for when the ctags job ends. The arguments are the ctags {job} and
 " the exit {status}. See :h job-exit_cb.
-" This function is expected to be executed with a context.
 " If another execution has being queued, it is executed at the end.
+" This function is expected to be executed with a context.
 func s:exit_cb(job, status) dict
 	let pid = job_info(a:job).process
 	if a:status != 0
 		call s:log('error', printf("[%s] ctags failed (%s): %s", pid, a:status, self.cmd))
-		for err in s:jobs[pid].errors
+		for err in s:jobs[self.id].errors
 			call s:log('error', printf("[%s] error: %s", pid, err))
 		endfo
 		call s:err("Failed to generate tags for " . self.dir)
@@ -98,20 +112,16 @@ func s:exit_cb(job, status) dict
 		let seconds = substitute(reltimestr(elapsed), '\v\s+', '', 'g')
 		call s:log('info', printf("[%s] tags generated in %ss: %s", pid, seconds, self.tagfile))
 	end
-	let After = get(s:jobs[pid], 'after', {->0})
-	unlet! s:jobs[pid]
+	let After = get(s:jobs[self.id], 'after', {->0})
+	unlet! s:jobs[self.id]
 	call After()
 endf
 
-" s:err_cb({channel:channel, {message:string}) -> 0
+" s:err_cb({ch:channel, {message:string}) -> 0
 " Callback for when there is something to read on stderr.
-func s:err_cb(channel, message)
-	for pid in keys(s:jobs)
-		if s:jobs[pid].channel == a:channel
-			call add(s:jobs[pid].errors, a:message)
-			return
-		end
-	endfo
+" This function is expected to be executed with a context.
+func s:err_cb(ch, message) dict
+	call add(s:jobs[self.id].errors, a:message)
 endf
 
 " s:ctags_options() -> list

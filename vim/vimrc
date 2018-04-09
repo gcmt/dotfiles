@@ -200,7 +200,7 @@
 	let g:listchars = ',trail:·,precedes:‹,extends:›'
 	let &listchars = 'tab:  ' . listchars
 
-	nnoremap <silent> gti :call <sid>toggle_indent_guides()<cr>
+	nnoremap <silent> goi :call <sid>toggle_indent_guides()<cr>
 	func! s:toggle_indent_guides()
 		let &listchars = (&listchars =~ 'tab:│' ? 'tab:  ' : 'tab:│ ') . g:listchars
 	endf
@@ -307,6 +307,9 @@
 		set tabline=%!_tabline()
 	endf
 
+	" when there is only one tab, open a new one
+	nnoremap <silent> gt :exec tabpagenr('$') == 1 ? 'tab split' : 'norm! gt'<cr>
+
 " WINDOWS
 " ----------------------------------------------------------------------------
 
@@ -410,7 +413,7 @@
 	vmap <expr> ]P '_d"' . v:register . ']P'
 
 	" toggle paste
-	nnoremap gtp :set paste!<bar>set paste?<cr>
+	nnoremap gop :set paste!<bar>set paste?<cr>
 
 	" copy to the end of the line
 	nnoremap Y y$
@@ -675,8 +678,8 @@
 	endf
 
 	" Open url in browser
-	nnoremap <silent> gow :call <sid>open_url(0)<cr>
-	vnoremap <silent> gow :call <sid>open_url(1)<cr>
+	nnoremap <silent> gh :call <sid>open_url(0)<cr>
+	vnoremap <silent> gh :call <sid>open_url(1)<cr>
 	func! s:open_url(visual)
 		if a:visual
 			let url = ''
@@ -735,9 +738,9 @@
 	noremap gj J
 	noremap gk K
 
-	nnoremap <silent> gtw :set wrap!<bar>set wrap?<cr>
-	nnoremap <silent> gtn :set number!<bar>set number?<cr>
-	nnoremap <silent> gtz :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
+	nnoremap <silent> gow :set wrap!<bar>set wrap?<cr>
+	nnoremap <silent> gon :set number!<bar>set number?<cr>
+	nnoremap <silent> goz :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
 
 	inoremap <c-r>!d <c-r>=substitute(system('date -Iseconds'), "\n", "", "")<cr>
 
@@ -750,8 +753,9 @@
 " ----------------------------------------------------------------------------
 
 	let g:aliases = {
-		\ 'find': 'Find', 'grep': 'Grep', 'greb': 'Greb', 'vimrc': 'Vimrc',
-		\ 'cdr': 'CdRoot', 'cdh': 'CdHere', 'ws': 'WriteSudo', 'search': 'Search'
+		\ 'find': 'Find', 'grep': 'Grep', 'greb': 'Greb', 'vim': 'Vim', 'vimb': 'Vimb',
+		\ 'cdr': 'CdRoot', 'cdh': 'CdHere', 'ws': 'WriteSudo', 'vimrc': 'Vimrc',
+		\ 'search': 'Search', 'sea': 'Search', 'tag': 'Tag',
 	\ }
 
 	cnoremap <cr> <c-]><c-\>e<sid>expand_aliases()<cr><cr>

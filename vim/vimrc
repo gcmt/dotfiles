@@ -800,8 +800,10 @@
 " Ctags
 " ----------------------------------------------------------------------------
 
-	let g:ctags_python_options = '--exclude=venv'
-	let g:ctags_javascript_options = '--exclude=node_modules'
+	let g:ctags = {
+		\ 'python_options': '--exclude=venv',
+		\ 'javascript_options': '--exclude=node_modules',
+	\ }
 
 " Spotter
 " ----------------------------------------------------------------------------

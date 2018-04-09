@@ -20,7 +20,7 @@ func qfedit#remove_entries(type) abort range
 	end
 	let view = winsaveview()
 	let qf = getqflist()
-	let title = getqflist({'title': 1}).title
+	let title = s:getqftitle()
 	let context = s:getqfcontext()
 	let context.snapshots = get(context, 'snapshots', []) + [copy(qf)]
 	call remove(qf, start - 1, end - 1)
@@ -55,4 +55,10 @@ endf
 func s:getqfcontext()
 	let ctx = getqflist({'context': 1}).context
 	return type(ctx) == v:t_dict ? ctx : {}
+endf
+
+" s:getqftitle() -> string
+" Get the quickfix title.
+func s:getqftitle()
+	return getqflist({'title': 1}).title
 endf

@@ -48,16 +48,16 @@ func! grep#grep_buffer(grepcmd, bang, args) abort
 		call s:err("Nothing found")
 		cclose
 	else
-		let title = get(getqflist({'title': 1}), 'title', '')
-		call setqflist([], 'a', {'title': substitute(title, '\V\^:', '%:', '')})
+		call setqflist([], 'a', {'context': {'prettify': 1}})
 		copen
 	end
 
 endf
 
 func! grep#prettify() abort
-	if &bt != 'quickfix'
-		throw "Grep: Not inside a quickfix buffer"
+	let context = getqflist({'context': 1}).context
+	if type(context) != v:t_dict || !get(context, 'prettify', 0)
+		return
 	end
 	syn clear
 	setl ma nolist
@@ -71,12 +71,6 @@ func! grep#prettify() abort
 	setl noma nomod
 endf
 
-func! grep#try_prettify()
-	if get(w:, 'quickfix_title', '') =~ '\V\^%'
-		call grep#prettify()
-	end
-endf
-
 func! s:synat(line, col)
 	return synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name')
 endf
@@ -87,6 +81,6 @@ endf
 
 aug _grep
 	au!
-	au BufWinEnter quickfix call grep#try_prettify()
-	au User QfEditPostEdit call grep#try_prettify()
+	au BufWinEnter quickfix call grep#prettify()
+	au User QfEditPostEdit call grep#prettify()
 aug END

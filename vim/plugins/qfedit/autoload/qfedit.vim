@@ -25,8 +25,7 @@ func qfedit#remove_entries(type) abort range
 	let context.snapshots = get(context, 'snapshots', []) + [copy(qf)]
 	call remove(qf, start - 1, end - 1)
 	call setqflist(qf, 'r')
-	call setqflist([], 'a', {'context': context})
-	call setqflist([], 'a', {'title': title})
+	call setqflist([], 'a', {'context': context, 'title': title})
 	call winrestview(view)
 	doau User QfEditPost
 endf
@@ -34,6 +33,7 @@ endf
 " qfedit#undo({n:number}) -> 0
 " Load the last {n}th snapshot.
 func qfedit#undo(n)
+	let title = s:getqftitle()
 	let context = s:getqfcontext()
 	let snapshots = get(context, 'snapshots', [])
 	if empty(snapshots)
@@ -44,7 +44,7 @@ func qfedit#undo(n)
 	let i = n > len(snapshots) ? 0 : len(snapshots) - n - 1
 	let context.snapshots = snapshots[:i]
 	call setqflist(snapshots[-1], 'r')
-	call setqflist([], 'a', {'context': context})
+	call setqflist([], 'a', {'context': context, 'title': title})
 	call winrestview(view)
 	doau User QfEditPost
 endf

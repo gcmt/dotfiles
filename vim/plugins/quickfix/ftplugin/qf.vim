@@ -22,6 +22,8 @@ endf
 
 call s:set_height(get(g:, 'quickfix_height', 25))
 
+norm! zz
+
 nnoremap <buffer> q <c-w>c
 
 " don't close the quickfix window
@@ -37,4 +39,7 @@ nmap <buffer> <c-j> <enter>
 nnoremap <silent> <buffer> <c-p> :colder<cr>
 nnoremap <silent> <buffer> <c-n> :cnewer<cr>
 
-norm! zz
+vnoremap <silent> <buffer> d :call quickfix#remove_entries(mode())<cr>
+nnoremap <silent> <buffer> d :<c-u>set opfunc=quickfix#remove_entries<cr>g@
+nnoremap <silent> <buffer> dd :<c-u>set opfunc=quickfix#remove_entries<bar>exec 'norm!' v:count1.'g@_'<cr>
+nnoremap <silent> <buffer> u :call quickfix#undo(1)<cr>

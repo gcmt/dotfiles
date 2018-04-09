@@ -1,13 +1,13 @@
 " =============================================================================
-" File: qfedit.vim
-" Description: Quickfix editing for a more effective :cdo command
+" File: quickfix.vim
+" Description: Quickfix enhancements
 " Author: github.com/gcmt
 " License: MIT
 " =============================================================================
 
-" qfedit#remove_entries({type:string}) -> 0
+" quickfix#remove_entries({type:string}) -> 0
 " Remove entries from the quickfix list.
-func qfedit#remove_entries(type) abort range
+func quickfix#remove_entries(type) abort range
 	if empty(getqflist())
 		return
 	end
@@ -27,12 +27,12 @@ func qfedit#remove_entries(type) abort range
 	call setqflist(qf, 'r')
 	call setqflist([], 'a', {'context': context, 'title': title})
 	call winrestview(view)
-	doau User QfEditPost
+	doau User QuickFixEditPost
 endf
 
-" qfedit#undo({n:number}) -> 0
+" quickfix#undo({n:number}) -> 0
 " Load the last {n}th snapshot.
-func qfedit#undo(n)
+func quickfix#undo(n)
 	let title = s:getqftitle()
 	let context = s:getqfcontext()
 	let snapshots = get(context, 'snapshots', [])
@@ -46,7 +46,7 @@ func qfedit#undo(n)
 	call setqflist(snapshots[-1], 'r')
 	call setqflist([], 'a', {'context': context, 'title': title})
 	call winrestview(view)
-	doau User QfEditPost
+	doau User QuickFixEditPost
 endf
 
 " s:getqfcontext() -> dict

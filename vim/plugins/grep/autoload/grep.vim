@@ -84,5 +84,5 @@ endf
 aug _grep
 	au!
 	au BufWinEnter quickfix call s:prettify()
-	au User QfEditPost call s:prettify()
+	au User QuickFixEditPost call s:prettify()
 aug END

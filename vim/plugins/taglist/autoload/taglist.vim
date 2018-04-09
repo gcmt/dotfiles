@@ -22,6 +22,7 @@ func taglist#open(bang, query) abort
 		let path = substitute(tags[0].file, '\V\^'getcwd().'/', '', '')
 		exec 'edit' fnameescape(path)
 		exec tags[0].address
+		norm! zz
 		return
 	end
 

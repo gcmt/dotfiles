@@ -32,9 +32,9 @@ endf
 
 func! grep#grep_buffer(grepcmd, bang, args) abort
 
-	let args = a:grepcmd =~ 'vim' ? '/'.a:args.'/' : a:args
-	let scope = expand((&filetype == 'qf' ? '#' : '%').':p')
-	call s:run(a:grepcmd, join([args, scope]))
+	let args  = a:grepcmd =~ 'vim' ? '/'.a:args.'/' : a:args
+	let args .= ' ' . expand((&filetype == 'qf' ? '#' : '%').':p')
+	call s:run(a:grepcmd, args)
 
 	if !empty(a:bang)
 		" remove matches in comments or strings
@@ -54,21 +54,23 @@ func! grep#grep_buffer(grepcmd, bang, args) abort
 
 endf
 
-func! grep#prettify() abort
+func! s:prettify() abort
 	let context = getqflist({'context': 1}).context
 	if type(context) != v:t_dict || !get(context, 'prettify', 0)
 		return
 	end
 	syn clear
-	setl ma nolist
+	setl nolist
+	setl modifiable
 	let qf = getqflist()
 	let width = len(max(map(copy(qf), 'v:val["lnum"]')))
-	for linenr in range(len(qf))
-		let line = printf("%".width."s %s", qf[linenr].lnum, qf[linenr].text)
-		call setline(linenr+1, line)
+	for i in range(len(qf))
+		let line = printf("%".width."s %s", qf[i].lnum, qf[i].text)
+		call setline(i+1, line)
 	endfor
 	call matchadd('LineNr', '\v^\s*\d+')
-	setl noma nomod
+	setl nomodifiable
+	setl nomodified
 endf
 
 func! s:synat(line, col)
@@ -81,6 +83,6 @@ endf
 
 aug _grep
 	au!
-	au BufWinEnter quickfix call grep#prettify()
-	au User QfEditPostEdit call grep#prettify()
+	au BufWinEnter quickfix call s:prettify()
+	au User QfEditPost call s:prettify()
 aug END

@@ -15,7 +15,6 @@ func! s:jump()
 	norm! m'
 	exec ctx.bufnr 'buffer'
 	call cursor(pos)
-	setl cursorline
 	norm! zz
 endf
 

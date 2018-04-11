@@ -54,7 +54,7 @@ func! grep#grep_buffer(grepcmd, bang, args) abort
 
 endf
 
-func! s:prettify() abort
+func! s:prettify(...) abort
 	let context = getqflist({'context': 1}).context
 	if type(context) != v:t_dict || !get(context, 'prettify', 0)
 		return
@@ -64,13 +64,16 @@ func! s:prettify() abort
 	setl modifiable
 	let qf = getqflist()
 	let width = len(max(map(copy(qf), 'v:val["lnum"]')))
+	let b:grep_numbers = a:0 > 0 ? a:1 : get(b:, 'grep_numbers', 1)
 	for i in range(len(qf))
-		let line = printf("%".width."s %s", qf[i].lnum, qf[i].text)
+		let num = printf("%".width."s ", qf[i].lnum)
+		let line = (b:grep_numbers ? num : "") . qf[i].text
 		call setline(i+1, line)
 	endfor
 	call matchadd('LineNr', '\v^\s*\d+')
 	setl nomodifiable
 	setl nomodified
+	nnoremap <silent> <buffer> a :call <sid>prettify(1-b:grep_numbers)<cr>
 endf
 
 func! s:synat(line, col)

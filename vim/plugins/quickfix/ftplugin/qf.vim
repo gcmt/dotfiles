@@ -43,3 +43,6 @@ vnoremap <silent> <buffer> d :call quickfix#remove_entries(mode())<cr>
 nnoremap <silent> <buffer> d :<c-u>set opfunc=quickfix#remove_entries<cr>g@
 nnoremap <silent> <buffer> dd :<c-u>set opfunc=quickfix#remove_entries<bar>exec 'norm!' v:count1.'g@_'<cr>
 nnoremap <silent> <buffer> u :<c-u>call quickfix#undo()<cr>
+
+command! -buffer -bang -nargs=1 Cfilter call quickfix#filter(<q-bang>, <q-args>)
+command! -buffer -bang -nargs=1 Cffilter call quickfix#ffilter(<q-bang>, <q-args>)

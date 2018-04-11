@@ -38,10 +38,10 @@ func! grep#grep_buffer(grepcmd, bang, args) abort
 
 	if !empty(a:bang)
 		" remove matches in comments or strings
-		let title = get(getqflist({'title': 1}), 'title', '')
-		let fn = "s:synat(v:val['lnum'], v:val['col']) !~ '\\v(String|Comment)'"
-		call setqflist(filter(getqflist(), fn), 'r')
-		call setqflist([], 'a', {'title': title})
+		let qf = getqflist({'all': 1})
+		let Fn = {i, entry -> s:synat(entry['lnum'], entry['col']) !~ '\v(String|Comment)'}
+		call filter(qf.items, Fn)
+		call setqflist([], 'r', qf)
 	end
 
 	if len(getqflist()) == 0

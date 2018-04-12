@@ -8,18 +8,16 @@
 " quickfix#remove_entries({type:string}) -> 0
 " Remove entries from the quickfix list.
 func quickfix#remove_entries(type) abort range
-	if empty(getqflist())
-		return
-	end
 	if a:type == 'line'
 		let [start, end] = [line("'["), line("']")]
-	elseif a:type ==# 'V' || a:type == 'n'
-		let [start, end] = [a:firstline, a:lastline]
 	else
+		let [start, end] = [a:firstline, a:lastline]
+	end
+	let qf = getqflist({'all': 1})
+	if empty(qf.items)
 		return
 	end
 	let view = winsaveview()
-	let qf = getqflist({'all': 1})
 	call s:snapshot(qf)
 	call remove(qf.items, start - 1, end - 1)
 	call setqflist([], 'r', qf)
@@ -40,8 +38,7 @@ func quickfix#undo()
 	end
 	let view = winsaveview()
 	let qf.items = []
-	let deletions = min([v:count1, len(snapshots)])
-	for i in range(deletions)
+	for i in range(min([v:count1, len(snapshots)]))
 		let qf.items = remove(snapshots, -1)
 	endfo
 	call setqflist([], 'r', qf)
@@ -68,11 +65,13 @@ endf
 " quickfix entries for which the value returned by the {val} function contains
 " {pattern}. If {inverse} is given and it's 1, those entries are removed instead.
 func! s:qfilter(pattern, val, ...)
-	let inverse = a:0 > 0 ? a:1 : 0
 	let qf = getqflist({'all': 1})
 	call s:snapshot(qf)
-	let Fn = {i, entry -> inverse ? a:val(entry) !~ a:pattern : a:val(entry) =~ a:pattern}
-	call filter(qf.items, Fn)
+	if a:0 > 0 && a:1
+		call filter(qf.items, {i, entry -> a:val(entry) !~ a:pattern})
+	else
+		call filter(qf.items, {i, entry -> a:val(entry) =~ a:pattern})
+	end
 	if qf.size != len(qf.items)
 		call setqflist([], 'r', qf)
 		doau User QuickFixEditPost

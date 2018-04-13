@@ -1,94 +1,160 @@
 
-let s:bufname = '__search__'
+let s:search = {}
 
-func! search#do(bang, pattern)
+" search#do({bufnr:number}, {pattern:string}, {search_bufname:string}, {search_options:dict}, {view_options:dict}) -> 0
+" Search for {pattern} in buffer {bufnr} and display search results in a buffer
+" in order to easily jump to them.
+" To create multiple search buffers use different {search_bufname}s.
+func! search#do(bufnr, pattern, search_bufname, search_options, view_options)
 
-	if bufwinnr(s:bufname) != -1
-		exec bufwinnr(s:bufname) . 'wincmd c'
+	if !bufexists(a:bufnr)
+		return s:err(printf("Buffer %s does not exist", self.bufnr))
+	end
+
+	if bufwinnr(a:search_bufname) != -1
+		exec bufwinnr(a:search_bufname) . 'wincmd c'
 	end
 
 	if empty(a:pattern)
-		if empty(g:search_history)
-			return s:err("No previous searches")
+		if bufexists(a:search_bufname)
+			let s = getbufvar(bufnr(a:search_bufname), 'search').s
+			if !s.do()
+				call s:err("Nothing found")
+				close
+			else
+				exec 'sil keepa botright 1new' a:search_bufname
+				call s.render()
+			end
+		else
+			call s:err("No previous searches")
 		end
-		let ctx = g:search_history[-1]
-	else
-		let exclude_syn = empty(a:bang) ? [] : g:search_exclude_syn
-		let ctx = {'bufnr': bufnr('%'), 'pattern': a:pattern, 'exclude_syn': exclude_syn}
-		if ctx != get(g:search_history, -1, {})
-			call add(g:search_history, ctx)
-		end
+		return
 	end
 
-	let matches = s:search(ctx)
-	if len(matches) == 0
+	let s = s:search.new(a:bufnr, a:pattern, a:search_options, a:view_options)
+	if !s.do()
 		return s:err("Nothing found")
 	end
 
-	let @/ = ctx.pattern
-	call histadd('/', ctx.pattern)
-
-	exec 'sil keepa botright 1new' s:bufname
+	exec 'sil keepa botright 1new' a:search_bufname
 	setl filetype=search buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0 laststatus=2
-	let buf = join(split(fnamemodify(bufname(ctx.bufnr), ':p:~'), '/')[-1:], '/')
-	call setwinvar(0, '&stl', " /" . ctx.pattern . "/ " . buf . "%=search ")
-	let b:search = {'table': {}, 'ctx': ctx}
 
-	call s:render(matches)
+	let b:search = {'s': s}
+	call s.render()
 
 endf
 
-func! s:search(ctx)
+" s:search.new({bufnr:number}, {pattern:string}, {search_options:dict}, {view_options:dict}) -> dict
+" Create a new search object. The actual search is done with 's:search.do()'.
+func! s:search.new(bufnr, pattern, search_options, view_options)
+	let s = copy(s:search)
+	let s.matches = []
+	let s.bufnr = a:bufnr
+	let s.pattern = a:pattern
+	let s.options = extend(a:search_options, g:search_default_options, 'keep')
+	let s.view_options = extend(a:view_options, g:search_default_view_options, 'keep')
+	return s
+endf
 
-	let matches = []
-	let lines = getbufline(a:ctx.bufnr, 1, '$')
+" s:search.set_options({options:dict}) -> 0
+" Update search options.
+func! s:search.set_options(options)
+	let self.options = extend(self.options, a:options, 'force')
+endf
+
+" s:search.set_view_options({options:dict}) -> 0
+" Update search view options.
+func! s:search.set_view_options(options)
+	let self.view_options = extend(self.view_options, a:options, 'force')
+endf
+
+" s:search.do() -> number
+" Search for 'self.pattern' in buffer 'self.bufnr'.
+" Filtering by syntax require the current buffer to be equal to 'self.bufnr'.
+" A number is returned to indicate success (1) or failure (0).
+func! s:search.do()
+	let self.matches = []
+	let lines = getbufline(self.bufnr, 1, '$')
+	let exclude_syn = {}
+	if bufnr('%') == self.bufnr
+		for syntax in self.options.exclude_syn
+			let exclude_syn[syntax] = 1
+		endfo
+	else
+		call s:err(printf("Search: current buffer is %s, filtering by syntax not available in buffer %s", bufnr('%'), self.bufnr))
+	end
 	for i in range(0, len(lines)-1)
-		let match = matchstrpos(lines[i], a:ctx.pattern)
+		let match = matchstrpos(lines[i], self.pattern)
 		if empty(match[0])
 			continue
 		end
-		if !empty(a:ctx.exclude_syn) && index(a:ctx.exclude_syn, s:synat(i+1, match[1]+1)) != -1
+		if !empty(exclude_syn) && has_key(exclude_syn, s:synat(i+1, match[1]+1))
 			continue
 		end
-		call add(matches, [i+1, match[1]+1])
+		call add(self.matches, [i+1, match[1]+1])
 	endfo
-
-	return matches
-
+	if empty(self.matches)
+		return 0
+	end
+	if self.options.set_search_register
+		let @/ = self.pattern
+	end
+	if self.options.add_to_search_history
+		call histadd('/', self.pattern)
+	end
+	return 1
 endf
 
-func! s:render(matches)
+" s:search.render([{view_options:dict}]) -> 0
+" Render search results in the current buffer.
+" If a {view_options} is given, then view options are updated just before
+" rendering search results. This is equivalent to calling
+" 's:search.set_view_options({view_options})' just before 's:search.render()'
+func! s:search.render(...)
+
+	if a:0 > 0 && type(a:1) == v:t_dict
+		call self.set_view_options(a:1)
+	end
 
 	syn clear
-	setl ma nolist
+	setl modifiable nolist
 	sil %delete _
 
 	let b:search.table = {}
-	let width = len(max(map(copy(a:matches), 'v:val[0]')))
-	for i in range(len(a:matches))
-		let m = a:matches[i]
+	let width = len(max(map(copy(self.matches), 'v:val[0]')))
+	for i in range(len(self.matches))
+		let m = self.matches[i]
 		let b:search.table[i+1] = m
-		let line = printf("%".width."s %s", m[0], getbufline(b:search.ctx.bufnr, m[0])[0])
+		let num = printf("%".width."s ", m[0])
+		let line = self.view_options.show_line_numbers ? num : ""
+		let line .= getbufline(self.bufnr, m[0])[0]
 		call setline(i+1, line)
 	endfor
 
-	call s:do_highlight()
-	call s:resize_window()
-	call s:find_closest_match()
-	setl noma
+	syn match LineNr /\v^\s*\d+/
+
+	call self.resize_window()
+	call self.set_statusline()
+
+	if self.view_options.goto_closest_match
+		call self.goto_closest_match()
+	end
+
+	setl nomodifiable
 
 endf
 
-func! s:find_closest_match()
+" s:search.goto_closest_match() -> 0
+" Move the cursor to the match closest to the current cursor position
+" in the searched buffer.
+func! s:search.goto_closest_match()
 	call cursor(1, 1)
-	let winnr = bufwinnr(b:search.ctx.bufnr)
-	if winnr == -1
+	if !s:goto_bufwinnr(self.bufnr)
 		return
 	end
-	exec winnr.'wincmd w'
 	let curline = line('.')
 	wincmd p
 	let mindist = 99999
@@ -103,19 +169,40 @@ func! s:find_closest_match()
 	call cursor(closest, 1)
 endf
 
-func! s:do_highlight()
-	syn match LineNr /\v^\s*\d+/
+" s:search.set_statusline() -> 0
+" Set the statusline with the current search info.
+func! s:search.set_statusline()
+	let buf = join(split(fnamemodify(bufname(self.bufnr), ':p:~'), '/')[-1:], '/')
+	call setwinvar(0, '&stl', " /" . self.pattern . "/ " . buf . "%=search ")
 endf
 
-func! s:resize_window()
-	let max = float2nr(&lines * g:search_max_winsize / 100)
+" s:search.resize_window() -> 0
+" Resize the current window to be at most 'self.view_options.max_win_height'%
+" of the Vim window height.
+func! s:search.resize_window()
+	let max = float2nr(&lines * self.view_options.max_win_height / 100)
 	exec 'resize' min([line('$'), max])
 endf
 
+" s:synat({line:number}, {col:number}) -> string
+" Return the syntax group at the given position.
 func! s:synat(line, col)
 	return synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name')
 endf
 
+" s:goto_bufwinnr({bufnr:number}) -> number
+" Go to the first window that contains the buffer {bufnr}.
+func! s:goto_bufwinnr(bufnr)
+	let winnr = bufwinnr(a:bufnr)
+	if winnr == -1
+		return 0
+	end
+	exec winnr.'wincmd w'
+	return 1
+endf
+
+" s:err({msg:string}) -> 0
+" Display a simple error message.
 func! s:err(msg)
 	echohl WarningMsg | echo a:msg | echohl None
 endf

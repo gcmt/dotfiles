@@ -10,15 +10,25 @@ if exists('g:search_loaded') || &cp
 end
 let g:search_loaded = 1
 
-command! -bang -nargs=* Search call search#do(<q-bang>, <q-args>)
-
-let g:search_history = []
-
-let s:options = {
-	\ 'max_winsize': 50,
-	\ 'exclude_syn': ['Comment', 'String'],
+let g:search_default_options = {
+	\ 'exclude_syn': [],
+	\ 'set_search_register': 1,
+	\ 'add_to_search_history': 1,
 \ }
 
-for [s:option, s:default] in items(s:options)
-	let g:search_{s:option} = get(g:, 'search_'.s:option, s:default)
-endfo
+let g:search_default_view_options = {
+	\ 'show_line_numbers': 1,
+	\ 'max_win_height': 50,
+	\ 'goto_closest_match': 1,
+\ }
+
+command! -bang -nargs=? Search call <sid>search(<q-bang>, <q-args>)
+
+func! s:search(bang, pattern)
+	if empty(a:bang)
+		call search#do(bufnr('%'), a:pattern, '__search__', {}, {})
+	else
+		let search_options = {'exclude_syn': ['Comment', 'String']}
+		call search#do(bufnr('%'), a:pattern, '__search__', search_options, {})
+	end
+endf

@@ -1,6 +1,18 @@
 
 let s:search = {}
 
+let s:default_search_options = {
+	\ 'exclude_syn': [],
+	\ 'set_search_register': 1,
+	\ 'add_to_search_history': 1,
+\ }
+
+let s:default_view_options = {
+	\ 'show_line_numbers': 1,
+	\ 'max_win_height': 50,
+	\ 'goto_closest_match': 1,
+\ }
+
 " search#do({bufnr:number}, {pattern:string}, {search_bufname:string}, {search_options:dict}, {view_options:dict}) -> 0
 " Search for {pattern} in buffer {bufnr} and display search results in a buffer
 " in order to easily jump to them.
@@ -54,8 +66,8 @@ func! s:search.new(bufnr, pattern, search_options, view_options)
 	let s.matches = []
 	let s.bufnr = a:bufnr
 	let s.pattern = a:pattern
-	let s.options = extend(a:search_options, g:search_default_options, 'keep')
-	let s.view_options = extend(a:view_options, g:search_default_view_options, 'keep')
+	let s.options = extend(a:search_options, s:default_search_options, 'keep')
+	let s.view_options = extend(a:view_options, s:default_view_options, 'keep')
 	return s
 endf
 

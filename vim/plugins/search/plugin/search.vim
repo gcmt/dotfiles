@@ -10,18 +10,6 @@ if exists('g:search_loaded') || &cp
 end
 let g:search_loaded = 1
 
-let g:search_default_options = {
-	\ 'exclude_syn': [],
-	\ 'set_search_register': 1,
-	\ 'add_to_search_history': 1,
-\ }
-
-let g:search_default_view_options = {
-	\ 'show_line_numbers': 1,
-	\ 'max_win_height': 50,
-	\ 'goto_closest_match': 1,
-\ }
-
 command! -bang -nargs=? Search call <sid>search(<q-bang>, <q-args>)
 
 func! s:search(bang, pattern)

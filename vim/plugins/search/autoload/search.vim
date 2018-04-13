@@ -80,9 +80,7 @@ func! s:search.do()
 	let lines = getbufline(self.bufnr, 1, '$')
 	let exclude_syn = {}
 	if bufnr('%') == self.bufnr
-		for syntax in self.options.exclude_syn
-			let exclude_syn[syntax] = 1
-		endfo
+		let exclude_syn = s:list2dict(self.options.exclude_syn)
 	else
 		call s:err(printf("Search: current buffer is %s, filtering by syntax not available in buffer %s", bufnr('%'), self.bufnr))
 	end
@@ -188,6 +186,22 @@ endf
 " Return the syntax group at the given position.
 func! s:synat(line, col)
 	return synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name')
+endf
+
+" s:list2dict({list:list}[, {fn:funcref}]) -> dict
+" Construct a dictionary from a list.
+" If a function {fn} is given, then to every dictionary key 'item' will
+" be associated the value returned from fn(item). If {fn} is not given, the
+" value 1 is used instead.
+func! s:list2dict(list, ...)
+	let dict = {}
+	let Fn = a:0 > 0 && type(a:1) == t:v_func ? a:1 : {-> 1}
+	for item in a:list
+		if !has_key(dict, item)
+			let dict[item] = Fn(item)
+		end
+	endfo
+	return dict
 endf
 
 " s:goto_bufwinnr({bufnr:number}) -> number

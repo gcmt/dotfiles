@@ -108,9 +108,9 @@ endf
 
 " s:search.render([{view_options:dict}]) -> 0
 " Render search results in the current buffer.
-" If a {view_options} is given, then view options are updated just before
-" rendering search results. This is equivalent to calling
-" 's:search.set_view_options({view_options})' just before 's:search.render()'
+" If an argument {view_options} is given, then view options are updated with
+" those values before rendering search results. This is the equivalent of
+" calling 's:search.set_view_options(..)' just before 's:search.render()'.
 func! s:search.render(...)
 
 	if a:0 > 0 && type(a:1) == v:t_dict

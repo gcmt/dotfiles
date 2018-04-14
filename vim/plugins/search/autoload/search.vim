@@ -32,7 +32,6 @@ func! search#do(bufnr, pattern, search_bufname, search_options, view_options)
 			let s = getbufvar(bufnr(a:search_bufname), 'search').s
 			if !s.do()
 				call s:err("Nothing found")
-				close
 			else
 				exec 'sil keepa botright 1new' a:search_bufname
 				call s.render()

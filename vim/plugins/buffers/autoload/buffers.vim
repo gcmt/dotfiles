@@ -38,38 +38,51 @@ endf
 
 func! buffers#render()
 
-	if &filetype != 'buffers'
-		throw "Buffers: not allowed here"
-	end
-
 	syntax clear
 	setl modifiable
 	let pos_save = getpos('.')
 	sil %delete _
 
-	let text = []
+	let buffers = s:buffers()
+
+	let tails = {}
+	for bufnr in buffers
+		let tail = fnamemodify(bufname(bufnr), ':t')
+		let tails[tail] = get(tails, tail) + 1
+	endfo
+
+	let i = 1
 	let b:buffers.table = {}
-	for [i, nr] in map(s:buffers(), '[v:key+1, v:val]')
+	for bufnr in buffers
 
-		let b:buffers.table[i] = nr
+		let b:buffers.table[i] = bufnr
 
-		let name = bufname(nr)
+		let name = bufname(bufnr)
 		let path = empty(name) ? '' : s:prettify_path(fnamemodify(name, ':p'))
-		let tail = empty(name) ? 'unnamed ('.nr.')' : fnamemodify(path, ':t')
 
 		let line = ''
+
+		if empty(name)
+			let tail = 'unnamed ('.bufnr.')'
+		else
+			let tail =  fnamemodify(path, ':t')
+			if get(tails, tail) > 1
+				let tail = join(split(path, '/')[-2:], '/')
+			end
+		end
+
 		let line .= tail
-		let line .= getbufvar(nr, '&mod') ? ' *' : ''
+		let line .= getbufvar(bufnr, '&mod') ? ' *' : ''
 		if !empty(path) && path != tail
 			exec 'syn match BuffersDim /\%'.i.'l\%'.(len(line)+1).'c.*/'
 			let line .= ' ' . path
 		end
 
-		call add(text, line)
+		call setline(i, line)
+		let i += 1
 
 	endfor
 
-	call setline(1, text)
 	call s:resize_window()
 	call setpos('.', pos_save)
 	setl nomodifiable

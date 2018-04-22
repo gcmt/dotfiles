@@ -52,16 +52,24 @@ func s:render(files) abort
 	setl modifiable
 	sil %delete _
 
+	let tails = {}
+	for path in a:files
+		let tail = fnamemodify(path, ':t')
+		let tails[tail] = get(tails, tail) + 1
+	endfo
 
-	let text = []
+	let i = 1
 	let b:finder.table = {}
-	for [i, path] in map(copy(a:files), '[v:key+1, v:val]')
+	for path in a:files
 
 		let line = ''
 		let b:finder.table[i] = path
 		let path = s:prettify_path(path)
 
 		let tail = fnamemodify(path, ':t')
+		if get(tails, tail) > 1
+			let tail = join(split(path, '/')[-2:], '/')
+		end
 		let line .= tail
 
 		if path != tail
@@ -69,11 +77,11 @@ func s:render(files) abort
 			let line .= ' ' . path
 		end
 
-		call add(text, line)
+		call setline(i, line)
+		let i += 1
 
 	endfor
 
-	call setline(1, text)
 	call s:resize_window()
 	setl nomodifiable
 

@@ -493,11 +493,10 @@
 	" toggle highlighting of the last search pattern
 	nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
 
-	" Search for current word or selected text without moving the cursor.
+	" Toggle search for current word or selected text without moving the cursor
 	nnoremap <silent> S :call <sid>search(0)<cr>
 	vnoremap <silent> S :<c-u>call <sid>search(1)<cr>
 
-	" Toggle search for current word or selected text without moving the cursor
 	fun! s:search(visual)
 		if a:visual && line("'<") != line("'>")
 			return
@@ -687,6 +686,7 @@
 	" Open url in browser
 	nnoremap <silent> gh :call <sid>open_url(0)<cr>
 	vnoremap <silent> gh :call <sid>open_url(1)<cr>
+
 	func! s:open_url(visual)
 		if a:visual
 			let url = ''
@@ -708,6 +708,7 @@
 
 	" Clear undo history (:h clear-undo)
 	command! -nargs=0 ClearUndo call <sid>clear_undo()
+
 	func! s:clear_undo()
 		let modified_save = &modified
 		let undolevels_save = &undolevels
@@ -721,6 +722,7 @@
 
 	" Edit filetype plugin
 	command! -nargs=? -complete=filetype FtEdit call <sid>ft_edit(<q-args>)
+
 	func! s:ft_edit(ft)
 		let ft = empty(a:ft) ? &ft : a:ft
 		call finder#find($HOME . '/.dotfiles', 'ftplugin.*'.ft.'\.vim$')

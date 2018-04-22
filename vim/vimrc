@@ -751,8 +751,6 @@
 	nnoremap <silent> gon :set number!<bar>set number?<cr>
 	nnoremap <silent> goz :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
 
-	inoremap <c-r>!d <c-r>=substitute(system('date -Iseconds'), "\n", "", "")<cr>
-
 	iabbrev teh the
 	iabbrev wiht with
 	iabbrev lenght length

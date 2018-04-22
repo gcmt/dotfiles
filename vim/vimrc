@@ -378,8 +378,15 @@
 	cnoremap <c-l> <right><bs>
 
 	" create empty lines without leaving normal mode
-	nnoremap <c-e> m`O<esc>"_cc<esc>``
-	nnoremap <c-d> m`o<esc>"_cc<esc>``
+	nnoremap <silent> <c-e> :call <sid>add_empty_line(0)<cr>
+	nnoremap <silent> <c-d> :call <sid>add_empty_line(1)<cr>
+
+	func! s:add_empty_line(below)
+		let [line, col] = getcurpos()[1:2]
+		exec 'norm!' (a:below ? "o\<c-u>\<esc>k" : "O\<c-u>\<esc>j")
+		let line = a:below ? line : line+1
+		call cursor(line, col)
+	endf
 
 	" toggle case or capitalization of the previous word
 	inoremap <c-u> <nop>

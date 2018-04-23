@@ -382,11 +382,10 @@
 	nnoremap <silent> <c-d> :<c-u>call <sid>add_empty_line(1)<cr>
 
 	func! s:add_empty_line(below)
-		for _ in range(1, v:count1)
-			let [line, col] = getcurpos()[1:2]
-			call append(a:below ? line : line-1, '')
-			call cursor(a:below ? line : line+1, col)
-		endfo
+		let [line, col] = getcurpos()[1:2]
+		let lines = map(range(1, v:count1), {-> ' '})
+		call append(a:below ? line : line-1, lines)
+		call cursor(a:below ? line : line+len(lines), col)
 	endf
 
 	" toggle case or capitalization of the previous word

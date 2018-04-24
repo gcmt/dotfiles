@@ -8,11 +8,8 @@
 " quickfix#remove_entries({type:string}) -> 0
 " Remove entries from the quickfix list.
 func quickfix#remove_entries(type) abort range
-	if a:type == 'line'
-		let [start, end] = [line("'["), line("']")]
-	else
-		let [start, end] = [a:firstline, a:lastline]
-	end
+	let start = a:type == 'line' ? line("'[") : a:firstline
+	let end = a:type == 'line' ? line("']") : a:lastline
 	let qf = getqflist({'all': 1})
 	if empty(qf.items)
 		return
@@ -67,11 +64,8 @@ endf
 func! s:qfilter(pattern, val, ...)
 	let qf = getqflist({'all': 1})
 	call s:snapshot(qf)
-	if a:0 > 0 && a:1
-		call filter(qf.items, {i, entry -> a:val(entry) !~ a:pattern})
-	else
-		call filter(qf.items, {i, entry -> a:val(entry) =~ a:pattern})
-	end
+	let Match = a:0 > 0 && a:1 ? {v, p -> v !~ p} : {v, p -> v =~ p}
+	call filter(qf.items, {i, entry -> Match(a:val(entry), a:pattern)})
 	if qf.size != len(qf.items)
 		call setqflist([], 'r', qf)
 		doau User QuickFixEditPost

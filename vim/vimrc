@@ -377,14 +377,18 @@
 	inoremap <c-l> <right><bs>
 	cnoremap <c-l> <right><bs>
 
+	inoremap <c-g><c-d> <c-r>=_down_after('}')<cr>
+	func! _down_after(pattern)
+		return search(a:pattern, 'Wce') ? "\<esc>o" : ''
+	endf
+
 	" create empty lines without leaving normal mode
 	nnoremap <silent> <c-e> :<c-u>call append(line('.')-1, map(range(v:count1), "''"))<cr>
 	nnoremap <silent> <c-d> :<c-u>call append(line('.'), map(range(v:count1), "''"))<cr>
 
 	" toggle case or capitalization of the previous word
-	inoremap <c-u> <nop>
-	inoremap <c-u>c <esc>m`b~``a
-	inoremap <c-u>u <esc>m`bg~iw``a
+	inoremap <c-t>c <esc>m`b~``a
+	inoremap <c-t>u <esc>m`bg~iw``a
 
 	" buffer text object
 	vnoremap a% GoggV
@@ -780,6 +784,7 @@
 " ----------------------------------------------------------------------------
 
 	nnoremap <silent> gl :Buffers<cr>
+	nnoremap <silent> gL :Buffers!<cr>
 
 " Marks
 " ----------------------------------------------------------------------------

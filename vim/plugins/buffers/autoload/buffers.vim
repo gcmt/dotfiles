@@ -21,8 +21,7 @@ func! buffers#view(all) abort
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
-	let b:buffers_laststatus_save = &laststatus
-	au BufLeave <buffer> let &laststatus = b:buffers_laststatus_save
+	exec 'au BufHidden <buffer> let &laststatus = ' &laststatus
 	setl laststatus=0
 	echo
 

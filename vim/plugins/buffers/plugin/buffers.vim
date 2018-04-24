@@ -10,7 +10,7 @@ if exists('g:buffers_loaded') || &cp
 end
 let g:buffers_loaded = 1
 
-command! -nargs=0 Buffers call buffers#open()
+command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
 let s:options = {
 	\ 'max_winsize': 50,
@@ -22,6 +22,8 @@ endfo
 
 func s:setup_colors()
 	hi default link BuffersDim Comment
+	hi default link BuffersListed Normal
+	hi default link BuffersUnlisted FgDim
 endf
 
 call s:setup_colors()

@@ -1,20 +1,23 @@
 
 let s:bufname = '__buffers__'
 
-func! buffers#open() abort
+" buffers#view({all:number}) -> 0
+" View the buffers list in a window at the bottom. If {all} is given and it's
+" true, then also 'normal' unlisted buffers are displayed.
+func! buffers#view(all) abort
 
 	if bufwinnr(s:bufname) != -1
 		return
 	end
 
-	if len(s:buffers()) == 1
+	if len(s:buffers(a:all)) == 1
 		return s:err("No more buffers")
 	end
 
 	let current = bufnr('%')
 	exec 'sil keepj keepa botright 1new' s:bufname
-	let b:buffers = {'table': {}, 'current': current}
-	setl filetype=buffers buftype=nofile bufhidden=delete nobuflisted
+	let b:buffers = {'table': {}, 'current': current, 'all': a:all}
+	setl filetype=buffers buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
@@ -36,14 +39,16 @@ func! buffers#open() abort
 
 endf
 
+" s:buffers#render() -> 0
+" Render the buffers list in the current buffer.
 func! buffers#render()
 
 	syntax clear
 	setl modifiable
-	let pos_save = getpos('.')
+	let pos = getcurpos()[1:2]
 	sil %delete _
 
-	let buffers = s:buffers()
+	let buffers = s:buffers(b:buffers.all)
 
 	let tails = {}
 	for bufnr in buffers
@@ -73,39 +78,70 @@ func! buffers#render()
 
 		let line .= tail
 		let line .= getbufvar(bufnr, '&mod') ? ' *' : ''
+		let group = buflisted(bufnr) ? 'BuffersListed' : 'BuffersUnlisted'
+		call s:highlight(group, i, 0, len(line)+2)
+
 		if !empty(path) && path != tail
-			exec 'syn match BuffersDim /\%'.i.'l\%'.(len(line)+1).'c.*/'
+			call s:highlight('BuffersDim', i, len(line)+1)
 			let line .= ' ' . path
 		end
 
 		call setline(i, line)
 		let i += 1
 
-	endfor
+	endfo
 
 	call s:resize_window()
-	call setpos('.', pos_save)
+	call cursor(pos)
 	setl nomodifiable
 
 endf
 
-func! s:buffers()
-	return filter(range(1, bufnr('$')), 'buflisted(v:val)')
+" s:buffers([{all:number}]) -> list
+" Return a list of 'normal' buffers (for which the 'buftype' option is empty).
+" If {all} is given and it's true, unlisted buffers are also returned.
+func! s:buffers(...)
+	if a:0 > 0 && a:1
+		let Fn = {i, nr -> bufexists(nr) && empty(getbufvar(nr, '&buftype'))}
+	else
+		let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&buftype'))}
+	end
+	return filter(range(1, bufnr('$')), Fn)
 endf
 
+" s:prettify_path({path:string}) -> string
+" Prettify the given {path} by trimming the current working directory.
+" If not successful, try to reduce file name to be relative to the home directory.
 func! s:prettify_path(path)
 	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
 	let path = substitute(path, '\V\^'.$HOME, '~', '')
 	return path
 endf
 
-" Resize the current window according to g:taglist_max_winsize.
-" That value is expected to be expressed in percentage.
+" s:resize_window() -> 0
+" Resize the current window according to the value g:buffers_max_winsize,
+" which is expected to be expressed as a percentage of the Vim window
 func s:resize_window() abort
 	let max = float2nr(&lines * g:buffers_max_winsize / 100)
 	exec 'resize' min([line('$'), max])
 endf
 
+" s:highlight({group:string}, {line:number}, [, {start:number}, [, {end:number}]]) -> 0
+" Highlight a {line} with the given highlight {group}.
+" If neither {start} or {end} are given, the whole line is highlighted.
+" If both {start} and {end} are given, the line is highlighted from columns
+" {start} to {end}.
+" If only {start} is given, the line is highlighted starting from the column
+" {start}.
+func! s:highlight(group, line, ...)
+	let start = a:0 > 0 && type(a:1) == v:t_number ? '%>'.a:1.'c.*' : ''
+	let end = a:0 > 1 && type(a:2) == v:t_number ? '%<'.a:2.'c' : ''
+	let line = '%'.a:line.'l' . (empty(start.end) ? '.*' : '')
+	exec printf('syn match %s /\v%s%s%s/', a:group, line, start, end)
+endf
+
+" s:err({msg:string}) -> 0
+" Display a simple error message.
 func! s:err(msg)
 	echohl WarningMsg | echo a:msg | echohl None
 endf

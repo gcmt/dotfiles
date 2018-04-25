@@ -12,21 +12,21 @@ if &background == 'light'
 	let s:fg           =  ['#575a60', 0]
 	let s:fg_dim       =  ['#70737a', 0]
 	let s:fg_very_dim  =  ['#92959b', 0]
-	let s:fg_vvery_dim =  ['#cccccc', 0]
-	let s:red          =  ['#b5616b', 1]
-	let s:green        =  ['#69936d', 2]
+	let s:fg_vvery_dim =  ['#c3c3c3', 0]
+	let s:red          =  ['#cc5f6d', 1]
+	let s:green        =  ['#5b845f', 2]
 	let s:yellow       =  ['#e2c97c', 3]
-	let s:blue         =  ['#516c91', 4]
-	let s:magenta      =  ['#b575a6', 5]
-	let s:cyan         =  ['#7bafac', 6]
-	let s:orange       =  ['#e0783c', 15]
+	let s:blue         =  ['#5b79a3', 4]
+	let s:magenta      =  ['#ba7cab', 5]
+	let s:cyan         =  ['#689e9b', 6]
+	let s:orange       =  ['#d6895c', 15]
 else
 	let s:bg           =  ['#1e222b', 0]
 	let s:bg_accent    =  ['#252933', 0]
 	let s:fg           =  ['#8e9299', 15]
 	let s:fg_dim       =  ['#636770', 7]
 	let s:fg_very_dim  =  ['#444751', 7]
-	let s:fg_vvery_dim =  ['#3a3e4a', 7]
+	let s:fg_vvery_dim =  ['#353944', 7]
 	let s:red          =  ['#945F65', 1]
 	let s:green        =  ['#768A78', 2]
 	let s:yellow       =  ['#A39465', 3]
@@ -110,7 +110,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('FgVeryDimBold', s:fg_vvery_dim, '', 'bold', '')
 	cal s:h('FgVeryDimBoldReverse', s:fg_vvery_dim, '', 'reverse', '')
 
-	cal s:h('StatusLineNC', s:bg_accent, s:fg_very_dim, 'inverse', '')
+	cal s:h('StatusLineNC', s:bg_accent, s:fg_vvery_dim, 'inverse', '')
 	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
 	cal s:h('rStatusLineDim', s:fg_vvery_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')

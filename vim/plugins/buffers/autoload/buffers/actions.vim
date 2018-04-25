@@ -8,14 +8,9 @@ func! buffers#actions#edit(mode) abort
 		return
 	end
 	wincmd c
-	if empty(bufname(bufnr))
-		let map = {'current': '', 'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
-		exec map[a:mode]
-		exec 'b' bufnr
-	else
-		let map = {'current': 'edit', 'tab': 'tabedit', 'split': 'split', 'vsplit': 'vsplit'}
-		exec map[a:mode] fnameescape(bufname(bufnr))
-	end
+	let map = {'current': '', 'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
+	exec map[a:mode]
+	sil exec 'b' bufnr
 endf
 
 " buffers#actions#delete({cmd:string}) -> 0

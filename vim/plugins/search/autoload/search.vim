@@ -51,7 +51,7 @@ func! search#do(bufnr, pattern, search_bufname, search_options, view_options)
 	setl filetype=search buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
-	setl cursorline nocursorcolumn colorcolumn=0 laststatus=2
+	setl cursorline nocursorcolumn colorcolumn=0
 
 	let b:search = {'s': s}
 	call s.render()
@@ -181,8 +181,8 @@ endf
 " s:search.set_statusline() -> 0
 " Set the statusline with the current search info.
 func! s:search.set_statusline()
-	let buf = join(split(fnamemodify(bufname(self.bufnr), ':p:~'), '/')[-1:], '/')
-	call setwinvar(0, '&stl', " /" . self.pattern . "/ " . buf . "%=search ")
+	let bufname = join(split(fnamemodify(bufname(self.bufnr), ':p:~'), '/')[-1:], '/')
+	call setwinvar(0, '&stl', ' search /' . self.pattern . '/ ' . bufname)
 endf
 
 " s:search.resize_window() -> 0

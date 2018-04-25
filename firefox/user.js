@@ -16,3 +16,6 @@ user_pref("browser.tabs.warnOnClose", false);
 
 user_pref("browser.urlbar.doubleClickSelectsAll", false);
 user_pref("browser.urlbar.oneOffSearches", false);
+
+user_pref("findbar.highlightAll", true);
+user_pref("findbar.modalHighlight", true);

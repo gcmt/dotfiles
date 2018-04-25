@@ -52,10 +52,6 @@ if [[ "$@" =~ '-termite' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/termite" "$XDG_CONFIG_HOME/termite"
 fi
 
-if [[ "$@" =~ '-alacritty' || "$@" =~ '-all' ]]; then
-	link "$DOTDIR/alacritty" "$XDG_CONFIG_HOME/alacritty"
-fi
-
 if [[ "$@" =~ '-st' || "$@" =~ '-all' ]]; then
 	mkdir -p "$XDG_DATA_HOME/st"
 	link "$DOTDIR/st/config.h" "$XDG_CONFIG_HOME/st/config.h"

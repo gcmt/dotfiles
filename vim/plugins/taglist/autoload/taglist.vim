@@ -94,10 +94,10 @@ func taglist#render(...) abort
 	setl modifiable
 	sil %delete _
 
-	syn match TaglistLink /└/
-	syn match TaglistLink /─/
-	syn match TaglistLink /├/
-	syn match TaglistLink /│/
+	syn match TaglistPipe /└/
+	syn match TaglistPipe /─/
+	syn match TaglistPipe /├/
+	syn match TaglistPipe /│/
 
 	let i = 1
 	let b:taglist.table = {}

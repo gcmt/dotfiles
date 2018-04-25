@@ -29,7 +29,7 @@ func s:setup_colors()
 	hi default link TaglistLineNr LineNr
 	hi default link TaglistTagname Normal
 	hi default link TaglistMeta Special
-	hi default link TaglistLink Special
+	hi default link TaglistPipe Comment
 endf
 
 call s:setup_colors()

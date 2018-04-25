@@ -80,9 +80,9 @@ func! marks#render(marks)
 	let pos_save = getpos('.')
 	sil %delete _
 
-	syn match MarksLink /─/
-	syn match MarksLink /└/
-	syn match MarksLink /├/
+	syn match MarksPipe /─/
+	syn match MarksPipe /└/
+	syn match MarksPipe /├/
 
 	let i = 1
 	let b:marks.table = {}

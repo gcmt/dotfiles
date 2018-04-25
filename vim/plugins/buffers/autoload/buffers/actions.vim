@@ -1,21 +1,20 @@
 
-" buffers#actions#edit({cmd:string}) -> 0
-" Edit the buffer under cursor with the given command {cmd}.
-func! buffers#actions#edit(cmd) abort
-	let win = winnr()
+" buffers#actions#edit({mode:string}) -> 0
+" Edit the buffer under cursor with the given {mode}. {mode} is expected to be
+" one of (current|tab|split|vsplit)
+func! buffers#actions#edit(mode) abort
 	let bufnr = get(b:buffers.table, line('.'), -1)
 	if bufnr == -1
 		return
 	end
-	wincmd p
-	exec win.'wincmd c'
-	if bufnr == bufnr('%')
-		return
-	end
+	wincmd c
 	if empty(bufname(bufnr))
+		let map = {'current': '', 'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
+		exec map[a:mode]
 		exec 'b' bufnr
 	else
-		exec a:cmd fnameescape(bufname(bufnr))
+		let map = {'current': 'edit', 'tab': 'tabedit', 'split': 'split', 'vsplit': 'vsplit'}
+		exec map[a:mode] fnameescape(bufname(bufnr))
 	end
 endf
 

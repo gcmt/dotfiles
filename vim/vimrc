@@ -118,7 +118,8 @@
 	let g:html_no_rendering = 1
 	let g:vim_json_warnings = 0
 
-	colorscheme dark
+	set background=dark
+	colorscheme main
 
 	if has('termguicolors')
 		let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"

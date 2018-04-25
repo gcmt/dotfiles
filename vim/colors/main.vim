@@ -1,33 +1,42 @@
-" =============================================================================
-" File: dark.vim
-" Description: A dark colorscheme
-" Author: github.com/gcmt
-" Licence: MIT
-" =============================================================================
 
 hi clear
 if exists('syntax_on')
 	syntax reset
 end
 
-let g:colors_name = 'dark'
-set background=dark
+let g:colors_name = 'main'
 
-let  s:bg           =  ['#1e222b', 0]
-let  s:bg_lighter   =  ['#252933', 0]
-let  s:fg           =  ['#8e9299', 15]
-let  s:fg_dim       =  ['#636770', 7]
-let  s:fg_very_dim  =  ['#444751', 7]
-let  s:fg_vvery_dim =  ['#3a3e4a', 7]
-let  s:red          =  ['#945F65', 1]
-let  s:green        =  ['#768A78', 2]
-let  s:yellow       =  ['#A39465', 3]
-let  s:blue         =  ['#657B99', 4]
-let  s:magenta      =  ['#917086', 5]
-let  s:cyan         =  ['#739492', 6]
-let  s:orange       =  ['#998068', 15]
+if &background == 'light'
+	let s:bg           =  ['#ffffff', 255]
+	let s:bg_accent    =  ['#e8e8e8', 0]
+	let s:fg           =  ['#575a60', 0]
+	let s:fg_dim       =  ['#70737a', 0]
+	let s:fg_very_dim  =  ['#92959b', 0]
+	let s:fg_vvery_dim =  ['#cccccc', 0]
+	let s:red          =  ['#b5616b', 1]
+	let s:green        =  ['#69936d', 2]
+	let s:yellow       =  ['#e2c97c', 3]
+	let s:blue         =  ['#516c91', 4]
+	let s:magenta      =  ['#b575a6', 5]
+	let s:cyan         =  ['#7bafac', 6]
+	let s:orange       =  ['#e0783c', 15]
+else
+	let s:bg           =  ['#1e222b', 0]
+	let s:bg_accent    =  ['#252933', 0]
+	let s:fg           =  ['#8e9299', 15]
+	let s:fg_dim       =  ['#636770', 7]
+	let s:fg_very_dim  =  ['#444751', 7]
+	let s:fg_vvery_dim =  ['#3a3e4a', 7]
+	let s:red          =  ['#945F65', 1]
+	let s:green        =  ['#768A78', 2]
+	let s:yellow       =  ['#A39465', 3]
+	let s:blue         =  ['#657B99', 4]
+	let s:magenta      =  ['#917086', 5]
+	let s:cyan         =  ['#739492', 6]
+	let s:orange       =  ['#998068', 15]
+end
 
-fun! s:h(group, fg, bg, attr, sp)
+func! s:h(group, fg, bg, attr, sp)
 	if !empty(a:fg)
 		exec 'hi' a:group 'guifg='.a:fg[0] 'ctermfg='.a:fg[1]
 	end
@@ -101,34 +110,34 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('FgVeryDimBold', s:fg_vvery_dim, '', 'bold', '')
 	cal s:h('FgVeryDimBoldReverse', s:fg_vvery_dim, '', 'reverse', '')
 
-	cal s:h('StatusLineNC', s:bg_lighter, s:fg_very_dim, 'inverse', '')
-	cal s:h('StatusLine', s:fg_dim, s:bg_lighter, 'none', '')
-	cal s:h('rStatusLineDim', s:fg_vvery_dim, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineBold', s:fg_dim, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineMod', s:red, s:bg_lighter, 'none', '')
+	cal s:h('StatusLineNC', s:bg_accent, s:fg_very_dim, 'inverse', '')
+	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
+	cal s:h('rStatusLineDim', s:fg_vvery_dim, s:bg_accent, 'none', '')
+	cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineMod', s:red, s:bg_accent, 'none', '')
 
-	cal s:h('StatusLineBlue', s:blue, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineBlueBold', s:blue, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineCyan', s:cyan, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineCyanBold', s:cyan, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineGreen', s:green, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineGreenBold', s:green, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineRed', s:red, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineRedBold', s:red, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineMagenta', s:magenta, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineMagentaBold', s:magenta, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineOrange', s:orange, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineOrangeBold', s:orange, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineYellow', s:yellow, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineYellowBold', s:yellow, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineFgDim', s:fg_dim, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineFgDimBold', s:fg_dim, s:bg_lighter, 'bold', '')
-	cal s:h('StatusLineFgVeryDim', s:fg_vvery_dim, s:bg_lighter, 'none', '')
-	cal s:h('StatusLineFgVeryDimBold', s:fg_vvery_dim, s:bg_lighter, 'bold', '')
+	cal s:h('StatusLineBlue', s:blue, s:bg_accent, 'none', '')
+	cal s:h('StatusLineBlueBold', s:blue, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineCyan', s:cyan, s:bg_accent, 'none', '')
+	cal s:h('StatusLineCyanBold', s:cyan, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineGreen', s:green, s:bg_accent, 'none', '')
+	cal s:h('StatusLineGreenBold', s:green, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineRed', s:red, s:bg_accent, 'none', '')
+	cal s:h('StatusLineRedBold', s:red, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineMagenta', s:magenta, s:bg_accent, 'none', '')
+	cal s:h('StatusLineMagentaBold', s:magenta, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineOrange', s:orange, s:bg_accent, 'none', '')
+	cal s:h('StatusLineOrangeBold', s:orange, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineYellow', s:yellow, s:bg_accent, 'none', '')
+	cal s:h('StatusLineYellowBold', s:yellow, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineFgDim', s:fg_dim, s:bg_accent, 'none', '')
+	cal s:h('StatusLineFgDimBold', s:fg_dim, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineFgVeryDim', s:fg_vvery_dim, s:bg_accent, 'none', '')
+	cal s:h('StatusLineFgVeryDimBold', s:fg_vvery_dim, s:bg_accent, 'bold', '')
 
 	cal s:h('Cursor', '', s:magenta, '', '')
-	cal s:h('NonText', s:bg_lighter, '', 'none', '')
-	cal s:h('SpecialKey', s:bg_lighter, '', 'none', '')
+	cal s:h('NonText', s:bg_accent, '', 'none', '')
+	cal s:h('SpecialKey', s:bg_accent, '', 'none', '')
 	cal s:h('Conceal', s:fg_dim, s:bg, '', '')
 	cal s:h('Search', s:bg, s:yellow, '', '')
 	cal s:h('IncSearch', s:red, s:bg, '', '')
@@ -141,9 +150,9 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
 	cal s:h('Linenr', s:fg_vvery_dim, '', '', '')
 	cal s:h('CursorLineNr', s:red, '', 'none', '')
-	cal s:h('CursorLine', '', s:bg_lighter, 'none', '')
-	cal s:h('CursorColumn', '', s:bg_lighter, '', '')
-	cal s:h('ColorColumn', '', s:bg_lighter, '', '')
+	cal s:h('CursorLine', '', s:bg_accent, 'none', '')
+	cal s:h('CursorColumn', '', s:bg_accent, '', '')
+	cal s:h('ColorColumn', '', s:bg_accent, '', '')
 	cal s:h('SignColumn', '', s:bg, '', '')
 	cal s:h('FoldColumn', s:bg, s:bg, '', '')
 
@@ -158,14 +167,14 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('DiffChange', s:bg, s:yellow, 'none', '')
 	cal s:h('DiffText', s:bg, s:red, 'none', '')
 
-	cal s:h('PMenu', s:fg_dim, s:bg_lighter, 'none', '')
-	cal s:h('PMenuSel', s:bg_lighter, s:fg_dim, '', '')
-	cal s:h('PMenuSBar', s:bg_lighter, s:bg_lighter, 'none', '')
-	cal s:h('PMenuThumb', s:fg_dim, s:bg_lighter, 'none', '')
+	cal s:h('PMenu', s:fg_dim, s:bg_accent, 'none', '')
+	cal s:h('PMenuSel', s:bg_accent, s:fg_dim, '', '')
+	cal s:h('PMenuSBar', s:bg_accent, s:bg_accent, 'none', '')
+	cal s:h('PMenuThumb', s:fg_dim, s:bg_accent, 'none', '')
 
-	cal s:h('TabLine', s:fg_vvery_dim, s:bg_lighter, 'none', '')
+	cal s:h('TabLine', s:fg_vvery_dim, s:bg_accent, 'none', '')
 	cal s:h('TabLineSel', s:fg_dim, s:bg, 'none', '')
-	cal s:h('TabLineFill', s:fg_dim, s:bg_lighter, 'none', '')
+	cal s:h('TabLineFill', s:fg_dim, s:bg_accent, 'none', '')
 
 	cal s:h('SpellBad', '', '', 'underline', s:red)
 	cal s:h('SpellCap', '', '', 'underline', s:orange)
@@ -184,7 +193,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Conditional', s:magenta, '', '', '')
 	cal s:h('Label', s:magenta, '', '', '')
 	cal s:h('Repeat', s:orange, '', '', '')
-	cal s:h('Comment', s:fg_vvery_dim, '', '', '')
+	cal s:h('Comment', s:fg_very_dim, '', '', '')
 	cal s:h('Operator', s:cyan, '', 'none', '')
 	cal s:h('Keyword', s:fg, '', '', '')
 	cal s:h('Exception', s:red, '', '', '')
@@ -208,16 +217,16 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('qfLineNr', s:fg_dim, '', '', '')
 	cal s:h('QuickFixLine', s:bg, s:fg_dim, '', '')
 
-	cal s:h('Yank', '', s:bg_lighter, '', '')
-	cal s:h('Spotter', '', s:bg_lighter, '', '')
+	cal s:h('Yank', '', s:bg_accent, '', '')
+	cal s:h('Spotter', '', s:bg_accent, '', '')
 
-	cal s:h('netrwTreeBar', s:bg_lighter, '', '', '')
+	cal s:h('netrwTreeBar', s:bg_accent, '', '', '')
 
 	cal s:h('NERDTreeCWD', s:fg_dim, '', '', '')
 	cal s:h('NERDTreeOpenable', s:fg_vvery_dim, '', '', '')
 	cal s:h('NERDTreeClosable', s:fg_vvery_dim, '', '', '')
 	cal s:h('NERDTreeDirSlash', s:bg, s:bg, '', '')
-	cal s:h('NERDTreePart', s:bg_lighter, '', '', '')
+	cal s:h('NERDTreePart', s:bg_accent, '', '', '')
 	cal s:h('NERDTreePartFile', s:bg, s:bg, '', '')
 	cal s:h('NERDTreeFile', s:fg, '', '', '')
 	cal s:h('NERDTreeExecFile', s:fg, '', '', '')

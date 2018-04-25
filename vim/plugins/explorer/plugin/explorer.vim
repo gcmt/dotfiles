@@ -25,7 +25,7 @@ endfo
 
 func s:setup_colors()
 	hi default link ExplorerTitle Magenta
-	hi default link ExplorerPipe Special
+	hi default link ExplorerPipe Comment
 	hi default link ExplorerDir Blue
 	hi default link ExplorerLink Cyan
 	hi default link ExplorerExec Green

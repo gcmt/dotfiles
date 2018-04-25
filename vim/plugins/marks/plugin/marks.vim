@@ -28,7 +28,7 @@ func s:setup_colors()
 	hi default link MarksLine Normal
 	hi default link MarksColNr LineNr
 	hi default link MarksLineNr LineNr
-	hi default link MarksLink Special
+	hi default link MarksPipe Comment
 endf
 
 call s:setup_colors()

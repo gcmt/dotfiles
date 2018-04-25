@@ -220,20 +220,6 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Yank', '', s:bg_accent, '', '')
 	cal s:h('Spotter', '', s:bg_accent, '', '')
 
-	cal s:h('netrwTreeBar', s:bg_accent, '', '', '')
-
-	cal s:h('NERDTreeCWD', s:fg_dim, '', '', '')
-	cal s:h('NERDTreeOpenable', s:fg_vvery_dim, '', '', '')
-	cal s:h('NERDTreeClosable', s:fg_vvery_dim, '', '', '')
-	cal s:h('NERDTreeDirSlash', s:bg, s:bg, '', '')
-	cal s:h('NERDTreePart', s:bg_accent, '', '', '')
-	cal s:h('NERDTreePartFile', s:bg, s:bg, '', '')
-	cal s:h('NERDTreeFile', s:fg, '', '', '')
-	cal s:h('NERDTreeExecFile', s:fg, '', '', '')
-	cal s:h('NERDTreeLink', s:fg, '', '', '')
-	cal s:h('NERDTreeLinkTarget', s:fg_vvery_dim, '', '', '')
-	cal s:h('NERDTreeRO', s:fg, '', '', '')
-
 	cal s:h('GitGutterAdd', s:green, '', '', '')
 	cal s:h('GitGutterChange', s:orange, '', '', '')
 	cal s:h('GitGutterDelete', s:red, '', '', '')

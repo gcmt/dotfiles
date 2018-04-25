@@ -62,7 +62,7 @@ func bookmarks#view() abort
 
 	exec 'sil keepj keepa botright 1new' s:bufname
 	let b:bookmarks = {'table': {}}
-	setl filetype=bookmarks buftype=nofile bufhidden=delete nobuflisted
+	setl filetype=bookmarks buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0 laststatus=2

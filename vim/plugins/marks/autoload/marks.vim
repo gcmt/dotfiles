@@ -56,7 +56,7 @@ func! marks#view() abort
 	let current = fnamemodify(bufname('%'), ':p')
 	exec 'sil keepa botright 1new' s:bufname
 	let b:marks = {'table': {}, 'buffer': current}
-	setl filetype=marks buftype=nofile bufhidden=delete nobuflisted
+	setl filetype=marks buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0 laststatus=2

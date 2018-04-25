@@ -32,7 +32,7 @@ func taglist#open(bang, query) abort
 	else
 		exec 'sil keepa botright 1new' s:bufname
 		let b:taglist = {'table': {}, 'tagfiles': tagfiles, 'query': a:query, 'tags': []}
-		setl filetype=taglist buftype=nofile bufhidden=delete nobuflisted
+		setl filetype=taglist buftype=nofile bufhidden=hide nobuflisted
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
 		setl cursorline nocursorcolumn colorcolumn=0

@@ -18,7 +18,7 @@ func! plugs#show() abort
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
 	setl cursorline nocursorcolumn colorcolumn=0
-	call setwinvar(winnr(), '&stl', ' ' . fnamemodify(g:plugs_path, ':~') . '%=plugs ')
+	call setwinvar(winnr(), '&stl', ' plugs ' . fnamemodify(g:plugs_path, ':~'))
 
 	call plugs#render()
 	call cursor(1, 1)

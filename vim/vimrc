@@ -118,7 +118,7 @@
 	let g:html_no_rendering = 1
 	let g:vim_json_warnings = 0
 
-	let &bg = exists('$BG') ? $BG : 'dark'
+	let &bg = !empty($BG) ? $BG : 'dark'
 	colorscheme main
 
 	if has('termguicolors')

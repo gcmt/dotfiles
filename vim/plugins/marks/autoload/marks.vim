@@ -59,7 +59,7 @@ func! marks#view() abort
 	setl filetype=marks buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0
-	setl cursorline nocursorcolumn colorcolumn=0 laststatus=2
+	setl cursorline nocursorcolumn colorcolumn=0
 	call setwinvar(0, '&stl', ' marks')
 
 	call marks#render(marks)

@@ -12,7 +12,7 @@ if &background == 'light'
 	let s:fg           =  ['#575a60', 0]
 	let s:fg_dim       =  ['#70737a', 0]
 	let s:fg_very_dim  =  ['#92959b', 0]
-	let s:fg_vvery_dim =  ['#c3c3c3', 0]
+	let s:fg_super_dim =  ['#c3c3c3', 0]
 	let s:red          =  ['#cc5f6d', 1]
 	let s:green        =  ['#5b845f', 2]
 	let s:yellow       =  ['#e2c97c', 3]
@@ -26,7 +26,7 @@ else
 	let s:fg           =  ['#8e9299', 15]
 	let s:fg_dim       =  ['#636770', 7]
 	let s:fg_very_dim  =  ['#444751', 7]
-	let s:fg_vvery_dim =  ['#353944', 7]
+	let s:fg_super_dim =  ['#353944', 7]
 	let s:red          =  ['#945F65', 1]
 	let s:green        =  ['#768A78', 2]
 	let s:yellow       =  ['#A39465', 3]
@@ -105,14 +105,14 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('FgDimBold', s:fg_dim, '', 'bold', '')
 	cal s:h('FgDimBoldReverse', s:fg_dim, '', 'reverse', '')
 
-	cal s:h('FgVeryDim', s:fg_vvery_dim, '', 'none', '')
-	cal s:h('FgVeryDimReverse', s:fg_vvery_dim, '', 'reverse', '')
-	cal s:h('FgVeryDimBold', s:fg_vvery_dim, '', 'bold', '')
-	cal s:h('FgVeryDimBoldReverse', s:fg_vvery_dim, '', 'reverse', '')
+	cal s:h('FgVeryDim', s:fg_super_dim, '', 'none', '')
+	cal s:h('FgVeryDimReverse', s:fg_super_dim, '', 'reverse', '')
+	cal s:h('FgVeryDimBold', s:fg_super_dim, '', 'bold', '')
+	cal s:h('FgVeryDimBoldReverse', s:fg_super_dim, '', 'reverse', '')
 
-	cal s:h('StatusLineNC', s:bg_accent, s:fg_vvery_dim, 'inverse', '')
+	cal s:h('StatusLineNC', s:bg_accent, s:fg_super_dim, 'inverse', '')
 	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
-	cal s:h('rStatusLineDim', s:fg_vvery_dim, s:bg_accent, 'none', '')
+	cal s:h('rStatusLineDim', s:fg_super_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')
 	cal s:h('StatusLineMod', s:red, s:bg_accent, 'none', '')
 
@@ -132,8 +132,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('StatusLineYellowBold', s:yellow, s:bg_accent, 'bold', '')
 	cal s:h('StatusLineFgDim', s:fg_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineFgDimBold', s:fg_dim, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineFgVeryDim', s:fg_vvery_dim, s:bg_accent, 'none', '')
-	cal s:h('StatusLineFgVeryDimBold', s:fg_vvery_dim, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineFgVeryDim', s:fg_very_dim, s:bg_accent, 'none', '')
+	cal s:h('StatusLineFgVeryDimBold', s:fg_very_dim, s:bg_accent, 'bold', '')
 
 	cal s:h('Cursor', '', s:magenta, '', '')
 	cal s:h('NonText', s:bg_accent, '', 'none', '')
@@ -141,14 +141,14 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Conceal', s:fg_dim, s:bg, '', '')
 	cal s:h('Search', s:bg, s:yellow, '', '')
 	cal s:h('IncSearch', s:red, s:bg, '', '')
-	cal s:h('VertSplit', s:bg, s:fg_vvery_dim, '', '')
-	cal s:h('Visual', s:fg, s:fg_vvery_dim, '', '')
+	cal s:h('VertSplit', s:bg, s:fg_super_dim, '', '')
+	cal s:h('Visual', s:fg, s:fg_super_dim, '', '')
 	cal s:h('MatchParen', s:bg, s:fg, '', '')
 	cal s:h('Directory', s:blue, '', '', '')
-	cal s:h('Folded', s:fg_vvery_dim, s:bg, '', '')
+	cal s:h('Folded', s:fg_super_dim, s:bg, '', '')
 	cal s:h('WildMenu', s:bg, s:blue, '', '')
 
-	cal s:h('Linenr', s:fg_vvery_dim, '', '', '')
+	cal s:h('Linenr', s:fg_super_dim, '', '', '')
 	cal s:h('CursorLineNr', s:red, '', 'none', '')
 	cal s:h('CursorLine', '', s:bg_accent, 'none', '')
 	cal s:h('CursorColumn', '', s:bg_accent, '', '')
@@ -172,7 +172,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('PMenuSBar', s:bg_accent, s:bg_accent, 'none', '')
 	cal s:h('PMenuThumb', s:fg_dim, s:bg_accent, 'none', '')
 
-	cal s:h('TabLine', s:fg_vvery_dim, s:bg_accent, 'none', '')
+	cal s:h('TabLine', s:fg_super_dim, s:bg_accent, 'none', '')
 	cal s:h('TabLineSel', s:fg_dim, s:bg, 'none', '')
 	cal s:h('TabLineFill', s:fg_dim, s:bg_accent, 'none', '')
 
@@ -207,7 +207,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Structure', s:cyan, '', '', '')
 	cal s:h('Typedef', s:cyan, '', '', '')
 	cal s:h('Special', s:fg_dim, '', '', '')
-	cal s:h('Underlined', s:fg_vvery_dim, '', 'underline', '')
+	cal s:h('Underlined', s:fg_super_dim, '', 'underline', '')
 	cal s:h('Title', s:blue, '', 'none', '')
 	cal s:h('Error', '', s:red, '', '')
 	cal s:h('Todo', s:red, s:bg, '', '')
@@ -233,7 +233,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('elixirBlockDefinition', s:blue, '', '', '')
 	cal s:h('elixirStringDelimiter', s:green, '', '', '')
 	cal s:h('elixirVariable', s:magenta, '', '', '')
-	cal s:h('elixirDocString', s:fg_vvery_dim, '', '', '')
+	cal s:h('elixirDocString', s:fg_super_dim, '', '', '')
 	cal s:h('elixirInclude', s:blue, '', '', '')
 
 	cal s:h('pythonDecorator', s:magenta, '', '', '')
@@ -245,22 +245,22 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('htmlTagName', s:blue, '', '', '')
 	cal s:h('htmlSpecialTagName', s:blue, '', '', '')
 	cal s:h('htmlArg', s:magenta, '', '', '')
-	cal s:h('htmlScriptTag', s:fg_vvery_dim, '', '', '')
-	cal s:h('htmlTag', s:fg_vvery_dim, '', '', '')
-	cal s:h('htmlEndTag', s:fg_vvery_dim, '', '', '')
-	cal s:h('htmlSpecialChar', s:fg_vvery_dim, '', '', '')
+	cal s:h('htmlScriptTag', s:fg_super_dim, '', '', '')
+	cal s:h('htmlTag', s:fg_super_dim, '', '', '')
+	cal s:h('htmlEndTag', s:fg_super_dim, '', '', '')
+	cal s:h('htmlSpecialChar', s:fg_super_dim, '', '', '')
 	cal s:h('htmlString', s:green, '', '', '')
 
 	cal s:h('xmlTagName', s:magenta, '', '', '')
-	cal s:h('xmlTag', s:fg_vvery_dim, '', '', '')
+	cal s:h('xmlTag', s:fg_super_dim, '', '', '')
 	cal s:h('xmlEndTag', s:magenta, '', '', '')
 	cal s:h('xmlAttrib', s:blue, '', '', '')
 	cal s:h('xmlString', s:fg_dim, '', '', '')
 
-	cal s:h('jinjaVarBlock', s:fg_vvery_dim, '', '', '')
-	cal s:h('jinjaBlock', s:fg_vvery_dim, '', '', '')
+	cal s:h('jinjaVarBlock', s:fg_super_dim, '', '', '')
+	cal s:h('jinjaBlock', s:fg_super_dim, '', '', '')
 	cal s:h('jinjaBlockName', s:red, '', '', '')
-	cal s:h('jinjaTagBlock', s:fg_vvery_dim, '', '', '')
+	cal s:h('jinjaTagBlock', s:fg_super_dim, '', '', '')
 
 	cal s:h('djangoVarBlock', s:fg_dim, '', '', '')
 	cal s:h('djangoBlock', s:fg_dim, '', '', '')

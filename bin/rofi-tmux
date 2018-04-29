@@ -1,7 +1,7 @@
 #!/bin/bash
 
 session_list=$(tmux ls -F '#{session_name}' 2>/dev/null)
-session=$(echo "$session_list" | rofi -dmenu -no-auto-select -p 'tmux ' -kb-custom-1 'Control+f' -kb-custom-2 'Control+Return')
+session=$(echo "$session_list" | rofi -dmenu -no-auto-select -p 'tmux ' -kb-custom-1 'Control+z' )
 rofi_exit=$?
 
 if [[ $rofi_exit == 1 || -z "$session" ]]; then
@@ -9,7 +9,7 @@ if [[ $rofi_exit == 1 || -z "$session" ]]; then
 fi
 
 case $rofi_exit in
-	10|11)
+	10)
 		exec st -n st-floating -e t "$session" ;;
 	*)
 		exec st -e t "$session" ;;

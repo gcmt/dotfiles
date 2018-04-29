@@ -28,10 +28,7 @@ for_window [class="Ssh-askpass"] floating enable
 for_window [class="KeepassXC"] layout stacking
 for_window [class="Firefox" title="Library"] layout stacking
 
-for_window [class="st-256color" instance="st-floating"] floating enable, resize set 80ppt 70ppt, move position center
-for_window [class="st-256color" title="i3/config"] floating enable, resize set 80ppt 70ppt, move position center
-for_window [class="st-256color" instance="notes"] floating enable, resize set 80ppt 70ppt, move position center
-for_window [class="st-256color" instance="logbook"] floating enable, resize set 80ppt 70ppt, move position center
+for_window [class="Floating"] floating enable, resize set 80ppt 70ppt, move position center
 
 for_window [class=".*"] title_format " %title"
 
@@ -41,7 +38,7 @@ for_window [class=".*"] title_format " %title"
 # Shortcuts
 bindsym $mod+Control+m [class="Rhythmbox"] focus
 bindsym $mod+Control+w [class="Firefox"] focus
-bindsym $mod+Control+t [class="st-256color" title="Tmux"] focus
+bindsym $mod+Control+t [class="XTerm" title="Tmux"] focus
 
 # Open Fastmail
 bindsym $mod+m exec --no-startup-id firefox -new-tab 'https://www.fastmail.com/mail/'
@@ -50,12 +47,12 @@ bindsym $mod+m exec --no-startup-id firefox -new-tab 'https://www.fastmail.com/m
 bindsym $mod+Shift+q kill
 
 # Open last active tmux session
-bindsym $mod+u exec --no-startup-id st -e t
-bindsym $mod+Shift+u exec --no-startup-id st -n st-floating -e t
+bindsym $mod+u exec --no-startup-id xterm -e t
+bindsym $mod+Shift+u exec --no-startup-id xterm -class Floating -e t
 
 # Open the scratch tmux session
-bindsym $mod+plus exec --no-startup-id st -e t scratch
-bindsym $mod+Shift+plus exec --no-startup-id st -n st-floating -e t scratch
+bindsym $mod+plus exec --no-startup-id xterm -e t scratch
+bindsym $mod+Shift+plus exec --no-startup-id xterm -class Floating -e t scratch
 
 # Pick tmux session
 bindsym $mod+Control+u exec rofi-tmux
@@ -170,8 +167,8 @@ bindsym $mod+Shift+minus move scratchpad
 # Edit shortcut
 mode "edit" {
 
-	bindsym l exec --no-startup-id st -n logbook -e vim Docs/logbook/$(date '+%Y-%m-%d').txt +'cd %:p:h'; mode "default"
-	bindsym n exec --no-startup-id st -n notes -e vim Docs/notes/wall.md +'cd %:p:h'; mode "default"
+	bindsym l exec --no-startup-id xterm -class Floating -e vim Docs/logbook/$(date '+%Y-%m-%d').txt +'cd %:p:h'; mode "default"
+	bindsym n exec --no-startup-id xterm -class Floating -e vim Docs/notes/wall.md +'cd %:p:h'; mode "default"
 
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
@@ -183,7 +180,7 @@ bindsym $mod+e mode "edit"
 # i3 commands
 mode "i3" {
 
-	bindsym c exec --no-startup-id st -n st-floating -e vim .config/i3/config; mode "default"
+	bindsym c exec --no-startup-id xterm -class Floating -e "vim .config/i3/config"; mode "default"
 	bindsym $alt+Control+BackSpace exit
 	bindsym Shift+r restart
 	bindsym r reload
@@ -202,7 +199,7 @@ bindsym XF86Eject mode "i3"
 bindsym XF86AudioPlay exec --no-startup-id cmus-remote --pause
 bindsym XF86AudioNext exec --no-startup-id cmus-remote --next
 bindsym XF86AudioPrev exec --no-startup-id cmus-remote --prev
-bindsym $mod+XF86AudioPlay exec --no-startup-id st -n st-floating -e cmus-tmux
+bindsym $mod+XF86AudioPlay exec --no-startup-id xterm -class Floating -e cmus-tmux
 bindsym $mod+XF86AudioNext exec --no-startup-id cmus-remote --repeat
 bindsym $mod+XF86AudioPrev exec --no-startup-id cmus-remote --seek 0
 

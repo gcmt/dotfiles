@@ -21,6 +21,8 @@ mkdir -p "$XDG_CONFIG_HOME"
 if [[ "$@" =~ '-x' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/x/xinitrc" "$HOME/.xinitrc"
 	link "$DOTDIR/x/Xmodmap" "$HOME/.Xmodmap"
+	link "$DOTDIR/x/Xresources" "$HOME/.Xresources"
+	link "$DOTDIR/x/Xresources.d" "$HOME/.Xresources.d"
 fi
 
 if [[ "$@" =~ '-fontconfig' || "$@" =~ '-all' ]]; then

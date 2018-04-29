@@ -1,6 +1,8 @@
 
 export QT_QPA_PLATFORMTHEME=qt5ct
 
+xrdb -load ~/.Xresources
+
 setxkbmap -layout it
 
 xmodmap ~/.Xmodmap

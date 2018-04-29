@@ -8,18 +8,18 @@ let g:colors_name = 'main'
 
 if &background == 'light'
 	let s:bg           =  ['#ffffff', 255]
-	let s:bg_accent    =  ['#e8e8e8', 0]
+	let s:bg_accent    =  ['#e9e9e9', 0]
 	let s:fg           =  ['#575a60', 0]
-	let s:fg_dim       =  ['#70737a', 0]
-	let s:fg_very_dim  =  ['#92959b', 0]
+	let s:fg_dim       =  ['#797d84', 0]
+	let s:fg_very_dim  =  ['#979aa0', 0]
 	let s:fg_super_dim =  ['#c7c7c7', 0]
-	let s:red          =  ['#cc5f6d', 1]
-	let s:green        =  ['#659169', 2]
+	let s:red          =  ['#ce616f', 1]
+	let s:green        =  ['#629167', 2]
 	let s:yellow       =  ['#e2c97c', 3]
-	let s:blue         =  ['#5f7ea8', 4]
-	let s:magenta      =  ['#b275a3', 5]
-	let s:cyan         =  ['#5d9995', 6]
-	let s:orange       =  ['#d6895c', 15]
+	let s:blue         =  ['#5e7da8', 4]
+	let s:magenta      =  ['#b274a3', 5]
+	let s:cyan         =  ['#60a39d', 6]
+	let s:orange       =  ['#d88d61', 15]
 else
 	let s:bg           =  ['#1e222b', 0]
 	let s:bg_accent    =  ['#252933', 0]
@@ -110,7 +110,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('FgVeryDimBold', s:fg_super_dim, '', 'bold', '')
 	cal s:h('FgVeryDimBoldReverse', s:fg_super_dim, '', 'reverse', '')
 
-	cal s:h('StatusLineNC', s:bg_accent, s:fg_super_dim, 'inverse', '')
+	cal s:h('StatusLineNC', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
 	cal s:h('rStatusLineDim', s:fg_super_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')
@@ -140,8 +140,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('SpecialKey', s:bg_accent, '', 'none', '')
 	cal s:h('Conceal', s:fg_dim, s:bg, '', '')
 	cal s:h('Search', s:bg, s:yellow, '', '')
-	cal s:h('IncSearch', s:red, s:bg, '', '')
-	cal s:h('VertSplit', s:bg, s:fg_super_dim, '', '')
+	cal s:h('IncSearch', s:bg, s:red, 'none', '')
+	cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')
 	cal s:h('Visual', s:fg, s:fg_super_dim, '', '')
 	cal s:h('MatchParen', s:bg, s:fg, '', '')
 	cal s:h('Directory', s:blue, '', '', '')
@@ -238,6 +238,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
 	cal s:h('pythonDecorator', s:magenta, '', '', '')
 	cal s:h('pythonDottedName', s:magenta, '', '', '')
+	cal s:h('pythonInclude', s:blue, '', '', '')
 
 	cal s:h('goDeclaration', s:blue, '', '', '')
 	cal s:h('goDeclType', s:blue, '', '', '')

@@ -34,6 +34,8 @@ if ! tmux has -t "$target" 2>/dev/null; then
 	tmux new -ds "$target"
 fi
 
+init-colors
+
 if [[ -z "$TMUX" ]]; then
 	exec tmux attach -t "$target"
 else

@@ -115,10 +115,24 @@
 " UI
 " ----------------------------------------------------------------------------
 
+	func! s:get_term_bg()
+		let bg = matchstr(system('xrdb -query all | grep colorscheme | grep -o "\S\+$"'), '\v\w+')
+		return empty(bg) ? 'dark' : bg
+	endf
+
+	func! s:toggle_bg()
+		let &bg = &bg == 'dark' ? 'light' : 'dark'
+		if executable('colorscheme')
+			exec 'sil!' '!colorscheme' &bg '&'
+		end
+	endf
+
+	nnoremap <silent> gob :call <sid>toggle_bg()<cr>
+
 	let g:html_no_rendering = 1
 	let g:vim_json_warnings = 0
 
-	let &bg = !empty($BG) ? $BG : 'dark'
+	let &bg = s:get_term_bg()
 	colorscheme main
 
 	if has('termguicolors')

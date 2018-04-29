@@ -4,7 +4,6 @@
 
 export BORG_REMOTE_PATH=borg1
 export VIRTUAL_ENV_DISABLE_PROMPT=1
-export LS_COLORS='fi=97'
 
 export LESSKEY="$XDG_CONFIG_HOME/less/keys"
 export LESSHISTFILE="$XDG_DATA_HOME/less/history"
@@ -71,6 +70,103 @@ zstyle ':completion:*:warnings' format '-- no match for: %d'
 
 # allow ctrl-s and ctrl-q bindings to be used
 stty -ixon
+
+# HOOKS
+# ----------------------------------------------------------------------------
+
+autoload -U add-zsh-hook
+
+set-title() {
+	print -n "\e]2;$PWD - Terminal\a"
+}
+add-zsh-hook precmd set-title
+
+forget-commands() {
+	local cmd="${${(z)1}[1]}"
+	# forget mistyped commands
+	if [[ ! -e "$cmd" ]] && ! type "$cmd" >/dev/null 2>&1; then
+		return 1
+	fi
+	if [[ "$1" =~ '^(fg|rm|mv|cp|l|la|zs|ze|mcd|mkdir)\>' ]]; then
+		return 1
+	fi
+	if [[ "$1" =~ '^(ll|lla|va|ranger|vim|python|py|ipy|pudb)\s+$' ]]; then
+		return 1
+	fi
+}
+add-zsh-hook zshaddhistory forget-commands
+
+# COLORS
+# ----------------------------------------------------------------------------
+
+_colorscheme() {
+	xrdb -query all | grep colorscheme | grep -o '\w\+$'
+}
+
+set-colors() {
+	if [[ "$(_colorscheme)" == "dark" ]]; then
+		export LS_COLORS='fi=97'
+		export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=237'
+	else
+		export LS_COLORS='fi=90'
+		export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=249'
+	fi
+}
+add-zsh-hook precmd set-colors
+
+init-colors
+
+# VI MODE
+# ----------------------------------------------------------------------------
+
+# use different colors for each mode
+zle-keymap-select() {
+	case $KEYMAP in
+		viins|main) zle_highlight=(default:fg=magenta) ;;
+		vicmd) zle_highlight=(default:fg=22) ;;
+	esac
+}
+
+zle_highlight=(default:fg=magenta)
+zle -N zle-keymap-select
+
+# PROMPT
+# ----------------------------------------------------------------------------
+
+autoload -U colors
+colors
+
+setopt prompt_subst
+
+_prompt_git() {
+	local branch
+	branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+	if (( $? != 0 )); then
+		return
+	fi
+	echo -n " git:$branch"
+}
+
+_prompt_venv() {
+	test -n "$VIRTUAL_ENV" && echo -n "(venv) "
+}
+
+_prompt_user() {
+	echo -n "%F{18}$(whoami)@$(hostname)%f"
+}
+
+_prompt_cwd() {
+	if (( DIRTRIM == 1 )); then
+		echo -n "%F{18}%(4~|../%2~|%~)%f"
+	else
+		echo -n "%F{18}%~%f"
+	fi
+}
+
+DIRTRIM=1
+
+PROMPT='%F{red}%(?..%? )%f%(1j.%jj .)$(_prompt_user) $(_prompt_cwd) $(_prompt_venv)%F{18}$%f '
+RPROMPT='$(_prompt_git)'
 
 # FUNCTIONS
 # ----------------------------------------------------------------------------
@@ -180,83 +276,6 @@ alias open='xdg-open'
 alias rg="rg --color=never -S"
 alias http="http --style=algol"
 
-# VI MODE
-# ----------------------------------------------------------------------------
-
-# use different colors for each mode
-zle-keymap-select() {
-	case $KEYMAP in
-		viins|main) zle_highlight=(default:fg=magenta) ;;
-		vicmd) zle_highlight=(default:fg=white) ;;
-	esac
-}
-
-zle_highlight=(default:fg=magenta)
-zle -N zle-keymap-select
-
-# HOOKS
-# ----------------------------------------------------------------------------
-
-autoload -U add-zsh-hook
-
-set-title() {
-	print -n "\e]2;$PWD - Terminal\a"
-}
-add-zsh-hook precmd set-title
-
-forget-commands() {
-	local cmd="${${(z)1}[1]}"
-	# forget mistyped commands
-	if [[ ! -e "$cmd" ]] && ! type "$cmd" >/dev/null 2>&1; then
-		return 1
-	fi
-	if [[ "$1" =~ '^(fg|rm|mv|cp|l|la|zs|ze|mcd|mkdir)\>' ]]; then
-		return 1
-	fi
-	if [[ "$1" =~ '^(ll|lla|va|ranger|vim|python|py|ipy|pudb)\s+$' ]]; then
-		return 1
-	fi
-}
-add-zsh-hook zshaddhistory forget-commands
-
-# PROMPT
-# ----------------------------------------------------------------------------
-
-autoload -U colors
-colors
-
-setopt prompt_subst
-
-_prompt_git() {
-	local branch
-	branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-	if (( $? != 0 )); then
-		return
-	fi
-	echo -n " git:$branch"
-}
-
-_prompt_venv() {
-	test -n "$VIRTUAL_ENV" && echo -n "(venv) "
-}
-
-_prompt_user() {
-	echo -n "%F{15}$(whoami)@$(hostname)%f"
-}
-
-_prompt_cwd() {
-	if (( DIRTRIM == 1 )); then
-		echo -n "%F{15}%(4~|../%2~|%~)%f"
-	else
-		echo -n "%F{15}%~%f"
-	fi
-}
-
-DIRTRIM=1
-
-PROMPT='%F{red}%(?..%? )%f%(1j.%jj .)$(_prompt_user) $(_prompt_cwd) $(_prompt_venv)%F{15}$%f '
-RPROMPT='$(_prompt_git)'
-
 # BINDINGS
 # ----------------------------------------------------------------------------
 
@@ -319,16 +338,16 @@ cd-back() {
 	zle reset-prompt
 }
 zle -N cd-back
-bindkey '^b' cd-back
+bindkey '^o' cd-back
 
 cd-parent() {
 	pushd ..
 	zle reset-prompt
 }
 zle -N cd-parent
-bindkey '^u' cd-parent
+bindkey '^b' cd-parent
 
-# EXTERNAL
+# PLUGINS
 # ----------------------------------------------------------------------------
 
 if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
@@ -339,9 +358,12 @@ if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
 fi
 
 if [[ -e "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && "$TERM" != "linux" ]]; then
+
 	source "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
-	export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=237'
+
+	bindkey '^y' autosuggest-accept
 	bindkey '^d' autosuggest-execute
+
 fi
 
 # LOCAL RC

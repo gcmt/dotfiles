@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [[ "$1" != 'dark' && "$1" != 'light' ]]; then
+	echo >&2 "Usage: colorscheme (dark|light)"
+	exit 1
+fi
+
+xrdb -load -D$(echo $1 | tr /a-z/ /A-Z/) ~/.Xresources
+
+init-colors

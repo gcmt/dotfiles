@@ -1,0 +1,22 @@
+#!/bin/bash
+# Read colors from xresources and set them via control sequences.
+
+res="$(xrdb -query all | grep xterm)"
+
+seq=
+seq="$seq\e]10;$(echo "$res" | grep foreground | grep -o '\S\+$')\a"
+seq="$seq\e]11;$(echo "$res" | grep background | grep -o '\S\+$')\a"
+seq="$seq\e]12;$(echo "$res" | grep cursorColor | grep -o '\S\+$')\a"
+
+colors="$(echo "$res" | grep "color[0-9]\+")"
+while read -r line ; do
+	num=$(echo $line | grep -Po '(?<=color)\d+')
+	val=$(echo $line | grep -o '\S\+$')
+	seq="$seq\e]4;$num;$val\a"
+done <<< "$colors"
+
+if [ -n "$TMUX" ]; then
+	printf "\ePtmux;\e${seq//\\e/\\e\\e}\e\\"
+else
+	printf "$seq"
+fi

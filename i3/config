@@ -92,6 +92,8 @@ bindsym $mod+b split vertical
 # Vertical layout, split horizontally
 bindsym $mod+r split horizontal
 
+# Reset workspace layout
+bindsym $mod+Shift+r [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 # Change window layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
 bindsym $mod+t layout tabbed

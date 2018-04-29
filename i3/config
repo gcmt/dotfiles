@@ -183,7 +183,7 @@ bindsym $mod+e mode "edit"
 # i3 commands
 mode "i3" {
 
-	bindsym c exec --no-startup-id xterm -class Floating -e "vim .config/i3/config"; mode "default"
+	bindsym c exec --no-startup-id xterm -class Floating -e vim .config/i3/config; mode "default"
 	bindsym $alt+Control+BackSpace exit
 	bindsym Shift+r restart
 	bindsym r reload

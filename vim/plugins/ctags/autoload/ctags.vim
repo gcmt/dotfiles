@@ -6,19 +6,6 @@ let s:jobs = {}
 " Anything logged
 let s:logs = []
 
-" s:id_factory() -> funcref
-" Return a function that return a new id every time it is called.
-func! s:id_factory()
-	let id = 0
-	func! s:_id_factory() closure
-		let id += 1
-		return id
-	endf
-	return funcref('s:_id_factory')
-endf
-
-let s:Id = s:id_factory()
-
 " ctags#log() -> string
 " Print the logs.
 func ctags#print_log()
@@ -68,12 +55,12 @@ func s:run(dir, tagfile, options) abort
 		if s:jobs[id].tagfile == dest
 			" If a job running ctags is already trying to write to {dest},
 			" then queue the current execution
-			call s:log('info', printf("ctags queued for %s (tagfile busy: %s)", a:dir, dest))
+			call s:log('info', printf("ctags queued for %s (already writing to %s)", a:dir, dest))
 			let s:jobs[id].after = funcref('s:run', [a:dir, a:tagfile, a:options])
 			return
 		end
 	endfo
-	let id = s:Id()
+	let id = s:id()
 	let cmd = ['ctags'] + a:options + ['-f', dest, a:dir]
 	let exit_cb_ctx = {
 		\ 'id': id,
@@ -165,6 +152,12 @@ func s:log(lvl, message)
 	let time = strftime('%T', reltimestr(reltime()))
 	let entry = {'timestamp': time, 'lvl': a:lvl, 'message': a:message}
 	call add(s:logs,  entry)
+endf
+
+" s:id() -> string
+" Return a new unique id.
+func s:id()
+	return system('uuidgen')
 endf
 
 " s:err({message:string}) -> 0

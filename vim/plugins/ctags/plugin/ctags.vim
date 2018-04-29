@@ -5,7 +5,10 @@
 " Licence: MIT
 " =============================================================================
 
-if !has('job') || !executable('ctags') || exists("g:loaded_ctags") || &cp
+if !has('job') || exists("g:loaded_ctags") || &cp
+	finish
+end
+if !executable('ctags') || !executable('uuidgen')
 	finish
 end
 let g:loaded_ctags = 1

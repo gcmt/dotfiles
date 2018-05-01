@@ -7,4 +7,5 @@ fi
 
 xrdb -load -D$(echo $1 | tr /a-z/ /A-Z/) ~/.Xresources
 
+clear
 init-colors

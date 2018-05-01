@@ -208,9 +208,9 @@ vimf() {
 	if [[ -s "$flist" ]]; then
 		vim "$flist" \
 			-c "argd %" \
-			-c "setl bt=nofile nomodifiable" \
-			-c "nn <silent> <buffer> gf ^vg_gf" -c "nmap <buffer> l gf" \
-			-c "nn <silent> <buffer> gF :set bh=wipe<bar>norm gf<cr>" -c "nmap <buffer> L gF"
+			-c "setl nowrite nomodifiable" \
+			-c "nn <silent> <buffer> gf :set bl<bar>norm! ^vg_gf<cr>" -c "nmap <buffer> l gf" \
+			-c "nn <silent> <buffer> gF :set nobl<bar>norm! ^vg_gf<cr>" -c "nmap <buffer> L gF"
 	else
 		echo -n "$0: nothing found"
 	fi

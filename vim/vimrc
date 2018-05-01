@@ -682,6 +682,9 @@
 		" Show cursorline only for a short amount of time
 		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|explorer|buffers|finder|bookmarks|marks|taglist|plugs|search)$' | set nocul | end
 
+		" Filetype fixes
+		au BufNewFile,BufRead */Xresources.d/* set ft=xdefaults
+
 		au BufReadPost * if &key != '' | setl noudf noswf nowb nobk nostmp secure hi=0 vi= | end
 		au BufNewFile,BufReadPre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl secure nostmp nowb nobk noswf hi=0 vi=
 		au BufWritePre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl noudf

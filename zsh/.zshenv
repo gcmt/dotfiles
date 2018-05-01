@@ -13,6 +13,5 @@ export MANPAGER="/bin/bash -c \
   < /dev/tty <(col -b)\""
 
 export EDITOR=vim
-export TERMINAL=st
 export BROWSER=firefox
 export LANG=en_US.UTF-8

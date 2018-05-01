@@ -10,7 +10,7 @@ fi
 
 case $rofi_exit in
 	10)
-		exec st -n st-floating -e t "$session" ;;
+		exec urxvt -n urxvt-floating -e t "$session" ;;
 	*)
-		exec st -e t "$session" ;;
+		exec urxvt -e t "$session" ;;
 esac

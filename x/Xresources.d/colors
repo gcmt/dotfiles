@@ -1,0 +1,36 @@
+
+#ifdef LIGHT
+	#include "colors-light"
+#else
+	#include "colors-dark"
+#endif
+
+*color0: _black
+*color1: _red
+*color2: _green
+*color3: _yellow
+*color4: _blue
+*color5: _magenta
+*color6: _cyan
+*color7: _white
+
+*color8:  _black_bright
+*color9:  _red_bright
+*color10: _green_bright
+*color11: _yellow_bright
+*color12: _blue_bright
+*color13: _magenta_bright
+*color14: _cyan_bright
+*color15: _white_bright
+
+*color16: _orange
+*color17: _orange_bright
+
+*color18: _fg_color
+*color19: _bg_color
+*color20: _cursor_color
+
+*color21: _bg_accent
+*color22: _fg_dim
+*color23: _fg_very_dim
+*color24: _fg_super_dim

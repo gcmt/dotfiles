@@ -1,69 +1,37 @@
 
-#ifdef LIGHT
-	#include "colors-light"
-#else
-	#include "colors-dark"
-#endif
+XTerm*termName: xterm-256color
+XTerm*loginShell: false
+XTerm*saveLines: 8192
+XTerm*charClass: 33:48,35:48,37:48,43:48,45-47:48,64:48,95:48,126:48
+XTerm*eightBitInput: false
+XTerm*dynamicColors: true
+XTerm*scrollBar: false
+XTerm*altSendsEscape: true
+XTerm*vt100.backarrowKey: false
+XTerm*ttyModes: erase ^?
 
-xterm*termName: xterm-256color
-xterm*loginShell: false
-xterm*saveLines: 8192
-xterm*charClass: 33:48,35:48,37:48,43:48,45-47:48,64:48,95:48,126:48
-xterm*eightBitInput: false
-xterm*dynamicColors: true
-xterm*scrollBar: false
-xterm*altSendsEscape: true
-xterm*vt100.backarrowKey: false
-xterm*ttyModes: erase ^?
+XTerm*VT100.internalBorder: 4
+XTerm*borderWidth: 0
+XTerm*borderColor: _bg_color
 
-xterm*VT100*internalBorder: 4
-xterm*borderWidth: 0
-xterm*borderColor: _blue
+XTerm*utf8: true
+XTerm*utf8Title: true
 
-xterm*utf8: true
-xterm*utf8Title: true
+XTerm*faceName: xft:Noto Mono Patched:size=10:antialias=true
+XTerm*allowBoldFonts: false
+XTerm*allowFontOps: true
 
-xterm*faceName: xft:Noto Mono Patched:size=10:antialias=true:hinting=true
-xterm*allowBoldFonts: false
-xterm*allowFontOps: true
-
-xterm*VT100*translations: #override \
+XTerm*VT100.translations: #override \
+Ctrl <Key> minus: smaller-vt-font() \n\
+Ctrl <Key> plus: larger-vt-font() \n\
 Ctrl Shift <Key> A: dabbrev-expand() \n\
 Ctrl Shift <Key> C: copy-selection(CLIPBOARD) \n\
 Ctrl Shift <Key> V: insert-selection(CLIPBOARD) \n\
-Ctrl <Key> minus: smaller-vt-font() \n\
-Ctrl <Key> plus: larger-vt-font() \n\
+Ctrl Shift <Key> J: exec-selectable("XTerm-move down", word) \n\
+Ctrl Shift <Key> K: exec-selectable("XTerm-move up", word) \n\
+Ctrl Shift <Key> O: exec-formatted("firefox '%t'", PRIMARY) \n\
 
-xterm*foreground: _fg_dim
-xterm*background: _bg_color
-xterm*cursorColor: _cursor_color
-
-xterm*color0: _black
-xterm*color1: _red
-xterm*color2: _green
-xterm*color3: _yellow
-xterm*color4: _blue
-xterm*color5: _magenta
-xterm*color6: _cyan
-xterm*color7: _white
-
-xterm*color8:  _black_bright
-xterm*color9:  _red_bright
-xterm*color10: _green_bright
-xterm*color11: _yellow_bright
-xterm*color12: _blue_bright
-xterm*color13: _magenta_bright
-xterm*color14: _cyan_bright
-xterm*color15: _white_bright
-
-xterm*color16: _orange
-xterm*color17: _orange_bright
-
-xterm*color18: _fg_color
-xterm*color19: _bg_color
-xterm*color20: _cursor_color
-
-xterm*color21: _bg_accent
-xterm*color22: _fg_dim
-xterm*color23: _fg_very_dim
-xterm*color24: _fg_super_dim
+XTerm*foreground: _fg_dim
+XTerm*background: _bg_color
+XTerm*cursorColor: _cursor_color
+XTerm*highlightColor: _fg_super_dim

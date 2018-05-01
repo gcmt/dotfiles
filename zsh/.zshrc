@@ -224,21 +224,13 @@ compdef mcd=mkdir
 
 # git shortcut
 g() {
-	if [ $# -eq 0 ]; then
-		git status
-	else
-		git "$@"
-	fi
+	[ $# -eq 0 ] && git status || git "$@"
 }
 compdef g=git
 
 # vagrant shortcut
 va() {
-	if [ $# -eq 0 ]; then
-		vagrant status
-	else
-		vagrant "$@"
-	fi
+	[ $# -eq 0 ] && vagrant status || vagrant "$@"
 }
 
 # ALIASES

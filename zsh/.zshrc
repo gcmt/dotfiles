@@ -77,7 +77,7 @@ stty -ixon
 autoload -U add-zsh-hook
 
 set-title() {
-	print -n "\e]2;$PWD - Terminal\a"
+	[ -z "$TMUX" ] && print -n "\e]2;$PWD - Terminal\a"
 }
 add-zsh-hook precmd set-title
 

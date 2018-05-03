@@ -13,9 +13,11 @@ func s:tmux(cmd, ...)
 endf
 
 " tmux#exec({cmd:string}[, {list:number}]) -> 0
-" Execute a tmux command.
-func tmux#exec(cmd)
-	return s:tmux(a:cmd)
+" Execute the tmux command {cmd}.
+" If {list} is given and it's true, the command output is returned as a list of
+" lines.
+func tmux#exec(cmd, ...)
+	return s:tmux(a:cmd, a:0 > 0 ? a:1 : 0)
 endf
 
 " tmux#run_buffer([{options:dict}]) -> 0

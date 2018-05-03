@@ -3,20 +3,26 @@ func s:err(msg)
 	echohl ErrorMsg | echo a:msg | echohl None
 endf
 
+" s:tmux({cmd:string}[, {list:number}]) -> string
+" Execute the tmux command {cmd}.
+" If {list} is given and it's true, the command output is returned as a list of
+" lines.
 func s:tmux(cmd, ...)
 	let fn = a:0 > 0 && a:1 ? 'systemlist' : 'system'
 	return call(fn, ['tmux ' . a:cmd])
 endf
 
-func tmux#run(cmd)
+" tmux#exec({cmd:string}[, {list:number}]) -> 0
+" Execute a tmux command.
+func tmux#exec(cmd)
 	return s:tmux(a:cmd)
 endf
 
-" tmux#run_in_pane([{options:dict}]) -> 0
+" tmux#run_buffer([{options:dict}]) -> 0
 " Run the current buffer in a pane titled {options.pane}. If it does not exist, it
 " is created first.
-" When {options} is not given, the buffer-local variable b:tmux is looked for.
-func tmux#run_in_pane(...)
+" When {options} is not given, the variable b:tmux is looked for.
+func tmux#run_buffer(...)
 	let defaults = {'prg': '', 'args': [], 'pane': 'vim-tmux', 'focus': 0}
 	let opts = extend(defaults, a:0 > 0 ? a:1 : get(b:, 'tmux', {}), 'force')
 	let file = shellescape(expand('%:p'))
@@ -26,7 +32,6 @@ func tmux#run_in_pane(...)
 		call s:tmux('resizep -Z')
 	end
 	if s:tmux('display -p "#{window_panes}"') == 1
-		" automatically setup a new pane
 		call s:tmux('splitw -v -p 25 -c "#{pane_current_path}"')
 		call s:tmux(printf('selectp -T "%s"', opts.pane))
 		call s:tmux('selectp -t :.! ')

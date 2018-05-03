@@ -17,7 +17,7 @@ endf
 " is created first.
 " When {options} is not given, the buffer-local variable b:tmux is looked for.
 func tmux#run_in_pane(...)
-	let defaults = {'prg': '', 'args': [], 'pane': 'vim-tmux'}
+	let defaults = {'prg': '', 'args': [], 'pane': 'vim-tmux', 'focus': 0}
 	let opts = extend(defaults, a:0 > 0 ? a:1 : get(b:, 'tmux', {}), 'force')
 	let file = shellescape(expand('%:p'))
 	let args = map(copy(opts.args), {i, val -> shellescape(val)})
@@ -35,6 +35,9 @@ func tmux#run_in_pane(...)
 	for [id, title] in map(panes, {i, line -> split(line, ':')})
 		if title == opts.pane
 			call s:tmux(printf('send -t %s %s', id, cmd))
+			if opts.focus
+				call s:tmux('selectp -t ' . id)
+			end
 			return
 		end
 	endfo

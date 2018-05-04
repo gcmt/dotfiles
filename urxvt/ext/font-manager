@@ -90,7 +90,8 @@ sub show_font_info {
 sub show_msg {
 	my ($term, $text) = @_;
 	my $width = $term->strwidth($text);
-	$term->{overlay} = $term->overlay(-1, 0, $width, 1, urxvt::OVERLAY_RSTYLE, 0);
+	my $rstyle = urxvt::SET_COLOR(urxvt::OVERLAY_RSTYLE, 1, 0);
+	$term->{overlay} = $term->overlay(-1, 0, $width, 1, $rstyle, 0);
 	$term->{overlay}->set(0, 0, "$text");
 	$term->{timer} = urxvt::timer->new->start(urxvt::NOW + 3)->cb(
 		sub {

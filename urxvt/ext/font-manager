@@ -89,14 +89,14 @@ sub show_font_info {
 
 sub show_msg {
 	my ($term, $text) = @_;
-	$term->{'overlay'} = {
-		overlay => $term->overlay_simple(-1, 0, $text),
-		timer => urxvt::timer->new->start(urxvt::NOW + 3)->cb(
-			sub {
-				delete $term->{'overlay'};
-			}
-		),
-	};
+	my $width = $term->strwidth($text);
+	$term->{overlay} = $term->overlay(-1, 0, $width, 1, urxvt::OVERLAY_RSTYLE, 0);
+	$term->{overlay}->set(0, 0, "$text");
+	$term->{timer} = urxvt::timer->new->start(urxvt::NOW + 3)->cb(
+		sub {
+			delete $term->{'overlay'};
+		}
+	);
 }
 
 # vim: ft=perl

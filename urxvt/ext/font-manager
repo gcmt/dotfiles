@@ -1,0 +1,102 @@
+#!/usr/bin/env perl
+
+use warnings;
+
+sub on_action {
+	my ($term, $cmd) = @_;
+
+	if ($cmd eq "show") {
+		show_msg($term, $term->resource('font'));
+	}
+	elsif ($cmd eq "reset") {
+		reset_font_size($term);
+	}
+	elsif ($cmd eq "smaller") {
+		change_font_size($term, -1);
+	}
+	elsif ($cmd eq "larger") {
+		change_font_size($term, +1);
+	}
+	elsif ($cmd eq "next" || $cmd eq "prev") {
+		next_font($term, $cmd);
+	}
+
+	return ()
+}
+
+sub next_font {
+	my ($term, $direction) = @_;
+	my $step = $direction eq 'next' ? 1 : -1;
+	my $current_font = $term->resource('font');
+	my $current_font_name = $current_font =~ m/xft:([^:]+)/ && $1;
+	my $current_font_size = $current_font =~ m/size=(\d+)/ && $1;
+	my @fonts = get_font_list($term);
+	for my $i (0 .. $#fonts) {
+		my $font_name = $fonts[$i] =~ m/xft:([^:]+)/ && $1;
+		if ($font_name eq $current_font_name) {
+			my $new_font = $fonts[($i+$step) % @fonts];
+			$new_font =~ s/size=(\d+)/'size='.$current_font_size/e;
+			set_font($term, $new_font);
+			last;
+		}
+	}
+}
+
+sub reset_font_size {
+	my ($term) = @_;
+	my $current_font = $term->resource('font');
+	my $current_font_name = $current_font =~ m/xft:([^:]+)/ && $1;
+	for my $font (get_font_list($term)) {
+		my $font_name = $font =~ m/xft:([^:]+)/ && $1;
+		if ($font_name eq $current_font_name) {
+			my $default_size = $font =~ m/size=(\d+)/ && $1;
+			$current_font =~ s/size=(\d+)/'size='.$default_size/e;
+			set_font($term, $current_font);
+			last;
+		}
+	}
+}
+
+sub change_font_size {
+	my ($term, $delta) = @_;
+	my $font = $term->resource('font');
+	$font =~ s/size=(\d+)/'size=' . ($1+$delta >= 5 ? $1+$delta : $1)/e;
+	set_font($term, $font);
+}
+
+sub set_font {
+	my ($term, $font) = @_;
+	show_font_info($term, $font);
+	$term->resource('font', $font);
+	$term->cmd_parse("\e]710;" . $font . "\007");
+}
+
+sub get_font_list {
+	my ($term) = @_;
+	my @fonts = ($term->x_resource('font'));
+	for (my $i = 1; defined(my $res = $term->x_resource("%.font.$i")); $i++) {
+		push(@fonts, $res);
+	}
+	return @fonts;
+}
+
+sub show_font_info {
+	my ($term, $font) = @_;
+	my $font_name = $font =~ m/xft:([^:]+)/ && $1;
+	my $font_size = $font =~ m/size=(\d+)/ && $1;
+	show_msg($term, "$font_name $font_size");
+}
+
+sub show_msg {
+	my ($term, $text) = @_;
+	$term->{'overlay'} = {
+		overlay => $term->overlay_simple(-1, 0, $text),
+		timer => urxvt::timer->new->start(urxvt::NOW + 3)->cb(
+			sub {
+				delete $term->{'overlay'};
+			}
+		),
+	};
+}
+
+# vim: ft=perl

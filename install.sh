@@ -54,10 +54,8 @@ if [[ "$@" =~ '-termite' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/termite" "$XDG_CONFIG_HOME/termite"
 fi
 
-if [[ "$@" =~ '-st' || "$@" =~ '-all' ]]; then
-	mkdir -p "$XDG_DATA_HOME/st"
-	link "$DOTDIR/st/config.h" "$XDG_CONFIG_HOME/st/config.h"
-	link "$DOTDIR/st/PKGBUILD" "$XDG_CONFIG_HOME/st/PKGBUILD"
+if [[ "$@" =~ '-urxvt' || "$@" =~ '-all' ]]; then
+	link "$DOTDIR/urxvt" "$HOME/.urxvt"
 fi
 
 if [[ "$@" =~ '-vim' || "$@" =~ '-all' ]]; then

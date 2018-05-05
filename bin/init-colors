@@ -1,8 +1,8 @@
 #!/bin/bash
 # Read colors from xresources and set them via control sequences.
 
-id=$(xdotool getwindowfocus)
-class=$(xprop -id $id | grep WM_CLASS)
+id=$(xdotool getwindowfocus 2>/dev/null)
+class=$(xprop -id "$id" 2>/dev/null | grep WM_CLASS)
 term=$(echo "$class" | grep -Po '(?<=")\w+(?=")' | tail -n1)
 
 res="$(xrdb -query all)"

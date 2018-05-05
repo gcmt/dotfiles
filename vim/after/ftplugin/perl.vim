@@ -1,4 +1,5 @@
 
+setl cms=#\ %s
 
 if exists('$TMUX')
 	let b:tmux = {'prg': 'perl'}

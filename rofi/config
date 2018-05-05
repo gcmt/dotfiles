@@ -123,9 +123,6 @@ rofi.lines: 8
 ! Keep a fixed number of visible lines (See the lines option.)
 rofi.fixed-num-lines: true
 
-! Line padding (??)
-rofi.line-padding: 1
-
 ! Number of columns to show before scrolling
 rofi.columns: 1
 

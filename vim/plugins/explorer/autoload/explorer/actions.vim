@@ -104,42 +104,16 @@ func! explorer#actions#enter_or_edit() abort
 	if empty(node)
 		return
 	end
-	if node.type == 'dir'
+	if isdirectory(node.path)
 		call node.explore(v:count1)
 		call b:explorer.tree.render()
 		call explorer#actions#goto(node.path)
 		call explorer#actions#goto_first_child(node)
 		return
 	end
-	if b:explorer.host == 'localhost'
-		let current = b:explorer.current
-		exec 'edit' fnameescape(node.path)
-		let @# = buflisted(current) ? current : bufnr('%')
-	else
-		let remote = b:explorer.host.':'.node.path
-		let tmp = tempname() . '-' . fnamemodify(node.path, ':t')
-		if s:scp('-q', remote, tmp) != 0
-			return
-		end
-		let current = b:explorer.current
-		exec 'edit' tmp
-		let @# = buflisted(current) ? current : bufnr('%')
-		let b:explorer_scp = function('s:scp', ['-q', tmp, remote])
-		au BufWritePost <buffer> call b:explorer_scp()
-	end
-endf
-
-" s:scp({flags:string}, {source:string}, {dest:string}) -> number
-" Execute the 'scp' command with the given arguments.
-" The exit code of the command is also returned.
-func! s:scp(flags, source, dest) abort
-	let cmd = 'scp ' . a:flags . ' ' . shellescape(a:source) . ' ' . shellescape(a:dest)
-	echo '!' . cmd
-	let out = system(cmd)
-	if v:shell_error
-		call explorer#err(out)
-	end
-	return v:shell_error
+	let current = b:explorer.current
+	exec 'edit' fnameescape(node.path)
+	let @# = buflisted(current) ? current : bufnr('%')
 endf
 
 " explorer#actions#auto_expand() -> 0
@@ -161,9 +135,6 @@ endf
 " explorer#actions#preview() -> 0
 " Open the selected file in a preview window on the bottom.
 func! explorer#actions#preview() abort
-	if b:explorer.host != 'localhost'
-		return explorer#err('Not implemented')
-	end
 	let node = s:selected_node()
 	if empty(node)
 		return
@@ -178,9 +149,6 @@ endf
 " Create a new file inside the selected directory. Intermediate directories
 " are created as necessary.
 func! explorer#actions#create_file() abort
-	if b:explorer.host != 'localhost'
-		return explorer#err('Not implemented')
-	end
 	let node = s:selected_node()
 	if empty(node)
 		return
@@ -221,9 +189,6 @@ endf
 " Create a new directory inside the selected directory. Intermediate directories
 " are created as necessary.
 func! explorer#actions#create_directory() abort
-	if b:explorer.host != 'localhost'
-		return explorer#err('Not implemented')
-	end
 	if !exists("*mkdir")
 		return explorer#err('Functionality not available.')
 	end
@@ -256,9 +221,6 @@ endf
 " Rename the selected file or directory.
 " The root directory cannot be renamed. One must set its parent as root first.
 func! explorer#actions#rename() abort
-	if b:explorer.host != 'localhost'
-		return explorer#err('Not implemented')
-	end
 	let node = s:selected_node()
 	if empty(node)
 		return
@@ -307,9 +269,6 @@ endf
 " Delete the selected file or directory.
 " The root directory cannot be deleted. One must set its parent as root first.
 func! explorer#actions#delete() abort
-	if b:explorer.host != 'localhost'
-		return explorer#err('Not implemented')
-	end
 	let node = s:selected_node()
 	if empty(node)
 		return
@@ -357,9 +316,6 @@ endf
 " Add bookmark for the selected file or directory.
 " Requires the 'bookmarks' plugin.
 func! explorer#actions#bookmarks_set(mark)
-	if b:explorer.host != 'localhost'
-		return explorer#err('Not implemented')
-	end
 	if !get(g:, 'loaded_bookmarks')
 		return explorer#err("Bookmarks not available")
 	end

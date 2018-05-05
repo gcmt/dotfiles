@@ -36,30 +36,10 @@ func! explorer#open(arg) abort
 	end
 
 	if empty(explorer)
-
-		if arg =~ '\V\^scp://'
-			let match = matchlist(arg, '\v^scp://([^/]+)/?(.*)')
-			if empty(match)
-				return explorer#err('Invalid argument')
-			end
-			let path = match[2]
-			let explorer.host = match[1]
-			let explorer.protocol = 'scp'
-		else
-			let path = substitute(fnamemodify(arg, ':p'), '\v/+$', '', '')
-			let explorer.host = 'localhost'
-			let explorer.protocol = ''
-		end
-
-		if explorer.protocol == 'scp'
-			let out = system('ssh ' . explorer.host . ' ls -ldh ' . shellescape(path))
-			if out !~ '\v^\s*d'
-				return explorer#err("Directory does not exist: " . explorer.host.'/'.path)
-			end
-		elseif !isdirectory(path)
+		let path = substitute(fnamemodify(arg, ':p'), '\v/+$', '', '')
+		if !isdirectory(path)
 			return explorer#err("Directory does not exist: " . path)
 		end
-
 	end
 
 	let explorer.current = bufnr('%')

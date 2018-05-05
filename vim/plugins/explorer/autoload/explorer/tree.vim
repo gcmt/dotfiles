@@ -29,24 +29,16 @@ endf
 " Return node info as returned by 'ls -l'.
 func s:node.info()
 	let cmd = 'ls -ldh ' . shellescape(self.path)
-	if b:explorer.host != 'localhost' && b:explorer.protocol == 'scp'
-		let cmd = 'ssh ' . b:explorer.host . ' ' . cmd
-	end
 	return system(cmd)
 endf
 
 " s:node.ls() -> list
 " Return a list of all files inside the current node.
-" Each file is suffixed with one of (*/=>@|) to distinguish its type
-" (see -F ls flag).
 func s:node.ls()
-	if self.type != 'dir'
+	if !isdirectory(self.path)
 		return []
 	end
-	let cmd = 'ls -1AHF ' . shellescape(self.path)
-	if b:explorer.host != 'localhost' && b:explorer.protocol == 'scp'
-		let cmd = 'ssh ' . b:explorer.host . ' ' . cmd
-	end
+	let cmd = 'ls -1AH ' . shellescape(self.path)
 	return systemlist(cmd)
 endf
 
@@ -61,18 +53,16 @@ func s:node.explore(...)
 			return
 		end
 		let files = a:node.ls()
+		echo files
 		if v:shell_error
 			return
 		end
 		let a:node.content = []
 		let map = {'/': 'dir', '@': 'link', '*': 'exec', '=': 'file', '>': 'file', '|': 'file'}
 		let pattern = '\V\(' . join(keys(map), '\|') . '\)\$'
-		for file in files
-			let type = get(map, matchstr(file, pattern), '')
-			let filename = empty(type) ? file : file[:-2]
-			let type = empty(type) ? 'file' : type
-			let path = explorer#path#join(a:node.path, filename)
-			let node = explorer#tree#new_node(path, type, a:node)
+		for fname in files
+			let path = explorer#path#join(a:node.path, fname)
+			let node = explorer#tree#new_node(path, getftype(path), a:node)
 			call add(a:node.content, node)
 			if node.type == 'dir'
 				call s:_explore(node, a:lvl+1, a:max_depth)
@@ -184,9 +174,6 @@ func! s:node.render() abort
 	let b:explorer.map[nr] = self
 
 	let title = self.path
-	if b:explorer.host != 'localhost'
-		let title = b:explorer.host . ':' . title
-	end
 	call setline(nr, title)
 	call s:highlight('ExplorerTitle', nr)
 

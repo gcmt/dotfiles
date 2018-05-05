@@ -1,0 +1,25 @@
+#!/bin/bash
+
+rofi_width() {
+	local cols=$(tmux display -p '#{client_width}')
+	(($cols < 70))  && echo 90 && return
+	(($cols < 85))  && echo 80 && return
+	(($cols < 100)) && echo 70 && return
+	(($cols < 120)) && echo 60 && return
+	echo 50
+}
+
+curwin=$(tmux display -p '#{window_id}')
+winids=$(tmux list-windows -F '#{window_id}')
+curidx=$(echo "$winids" | grep -n "$curwin" | grep -o "^[0-9]\+")
+
+theme="$HOME/.dotfiles/tmux/rofi-theme"
+options=
+options="$options -monitor -2 -format d -dmenu -p '' -no-fixed-num-lines -selected-row $((curidx-1)) -theme '$theme' -width $(rofi_width)"
+options="$options -kb-row-up 'k' -kb-row-down 'j' -kb-accept-entry 'l'"
+
+idx=$(tmux list-windows -F '#I #W' | eval "rofi $options")
+if [[ -n "$idx" ]]; then
+	winid=$(echo "$winids" | head -$idx | tail -1)
+	tmux select-window -t "$winid"
+fi

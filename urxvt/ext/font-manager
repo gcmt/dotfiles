@@ -66,7 +66,7 @@ sub change_font_size {
 
 sub set_font {
 	my ($term, $font) = @_;
-	show_font_info($term, $font);
+	display_font($term, $font);
 	$term->resource('font', $font);
 	$term->cmd_parse("\e]710;$font\a");
 }
@@ -80,16 +80,11 @@ sub get_font_list {
 	return @fonts;
 }
 
-sub show_font_info {
+sub display_font {
 	my ($term, $font) = @_;
 	my $font_name = $font =~ m/xft:([^:]+)/ && $1;
 	my $font_size = $font =~ m/size=(\d+)/ && $1;
-	show_msg($term, "$font_name $font_size");
-}
-
-sub show_msg {
-	my ($term, $text) = @_;
-	$term->cmd_parse("\e]777;message;3;0;$text\a");
+	$term->cmd_parse("\e]777;message;2;0;$font_name $font_size\a");
 }
 
 # vim: ft=perl

@@ -14,7 +14,7 @@ winids=$(tmux list-windows -F '#{window_id}')
 curidx=$(echo "$winids" | grep -n "$curwin" | grep -o "^[0-9]\+")
 
 theme="$HOME/.dotfiles/tmux/rofi-theme"
-options="-dmenu -monitor -2 -format d -no-fixed-num-lines -selected-row $((curidx-1)) -theme '$theme' -width $(rofi_width)"
+options="-dmenu -monitor -2 -format d -selected-row $((curidx-1)) -theme '$theme' -width $(rofi_width)"
 options="$options -kb-row-up k -kb-row-down j -kb-accept-entry l -kb-cancel 'Escape,q'"
 
 idx=$(tmux list-windows -F '#I #W' | eval "rofi $options")

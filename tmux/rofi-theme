@@ -42,7 +42,7 @@
 }
 
 #listview {
-	fixed-height: 0;
+	fixed-height: false;
 	scrollbar: false;
 	spacing: 0;
 }

@@ -53,7 +53,6 @@ func s:node.explore(...)
 			return
 		end
 		let files = a:node.ls()
-		echo files
 		if v:shell_error
 			return
 		end

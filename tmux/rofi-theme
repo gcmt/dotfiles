@@ -34,34 +34,17 @@
 #window {
 	location: center;
 	anchor: center;
-	border: 0;
-	padding: 0;
 }
 
 #mainbox {
 	children: [listview];
-	border: 0;
-	padding: 0;
-	border-radius: 0;
 	background-color: @background;
-}
-
-#message {
-	border: 0px ;
-	border-color: @separator-color;
-	padding: 1px ;
-}
-
-#textbox {
-	text-color: @foreground;
 }
 
 #listview {
 	fixed-height: 0;
-	border: 0;
-	spacing: 0;
 	scrollbar: false;
-	padding: 0;
+	spacing: 0;
 }
 
 #element {

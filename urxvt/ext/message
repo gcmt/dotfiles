@@ -1,0 +1,30 @@
+#!/usr/bin/env perl
+
+# Usage: printf "\033]777;message;<timeout>;<padding>;<text>\007"
+
+sub on_osc_seq_perl {
+	my ($self, $osc, $resp) = @_;
+	return unless $osc =~ s/^message;//;
+
+	my ($timeout, $padding, $text) = split(/;/, $osc);
+	display_msg($self, $text, $timeout, $padding);
+
+	return 1;
+}
+
+sub display_msg {
+	my ($self, $text, $timeout, $padding) = @_;
+	return unless $timeout > 0 && $padding > -1;
+	my ($width, $height) = ($self->strwidth($text), 1);
+	if ($padding) {
+		($width, $height, $text) = ($width+4, 3, "  $text  ");
+	}
+	my $rstyle = urxvt::SET_COLOR(urxvt::OVERLAY_RSTYLE, 1, 0);
+	$self->{overlay} = $self->overlay(-1, 0, $width, $height, $rstyle, 0);
+	$self->{overlay}->set(0, $padding ? 1 : 0, "$text");
+	$self->{timer} = urxvt::timer ->new ->start(urxvt::NOW + $timeout)
+	->cb(sub {
+			delete $self->{overlay};
+		}
+	);
+}

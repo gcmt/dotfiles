@@ -1,5 +1,5 @@
 
-URxvt.perl-ext-common: default,matcher,font-manager
+URxvt.perl-ext-common: default,matcher,font-manager,message
 
 URxvt.internalBorder: 4
 URxvt.scrollBar: false

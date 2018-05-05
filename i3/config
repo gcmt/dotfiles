@@ -170,8 +170,8 @@ bindsym $mod+Shift+minus move scratchpad
 # Edit shortcut
 mode "edit" {
 
-	bindsym l exec --no-startup-id urxvt -name urxvt-floating -e bash -ic "vim Docs/logbook/$(date '+%Y-%m-%d').txt +'cd %:p:h'"; mode "default"
-	bindsym n exec --no-startup-id urxvt -name urxvt-floating -e bash -ic "vim Docs/notes/wall.md +'cd %:p:h'"; mode "default"
+	bindsym l exec --no-startup-id urxvt -name urxvt-floating -e vim Docs/logbook/$(date '+%Y-%m-%d').txt +'cd %:p:h'; mode "default"
+	bindsym n exec --no-startup-id urxvt -name urxvt-floating -e vim Docs/notes/wall.md +'cd %:p:h'; mode "default"
 
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
@@ -183,7 +183,7 @@ bindsym $mod+e mode "edit"
 # i3 commands
 mode "i3" {
 
-	bindsym c exec --no-startup-id urxvt -name urxvt-floating -e bash -ic "vim .config/i3/config"; mode "default"
+	bindsym c exec --no-startup-id urxvt -name urxvt-floating -e vim .config/i3/config; mode "default"
 	bindsym $alt+Control+BackSpace exit
 	bindsym Shift+r restart
 	bindsym r reload

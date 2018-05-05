@@ -114,8 +114,6 @@ set-colors() {
 }
 add-zsh-hook precmd set-colors
 
-init-colors
-
 # VI MODE
 # ----------------------------------------------------------------------------
 

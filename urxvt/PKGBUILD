@@ -1,0 +1,81 @@
+_pkgname=rxvt-unicode
+pkgname=rxvt-unicode-patched
+pkgver=9.22
+pkgrel=1
+pkgdesc="Unicode enabled rxvt-clone terminal emulator (urxvt)"
+arch=('x86_64')
+url="http://software.schmorp.de/pkg/rxvt-unicode.html"
+license=('GPL')
+provides=(rxvt-unicode)
+conflicts=(rxvt-unicode)
+makedepends=('libxft' 'perl' 'startup-notification' 'libnsl')
+depends=('rxvt-unicode-terminfo' 'libxft' 'perl' 'startup-notification' 'libnsl')
+_patches=(
+	"256-colors.diff"
+	"font-width.diff"
+)
+source=(
+	http://dist.schmorp.de/rxvt-unicode/$_pkgname-$pkgver.tar.bz2
+	urxvt.desktop
+	"${_patches[@]}"
+)
+sha256sums=('e94628e9bcfa0adb1115d83649f898d6edb4baced44f5d5b769c2eeb8b95addd'
+            '195ef9c2babc7e9bcaffaceb9951406c01b7c27a19e43b4dfbd8441ad89f00d0'
+            '2ec6d769b7d71861e5efbc6fb9cbf1e48374dea376bca82d2e7dc9867cb8d4a3'
+            '66480b448271f28fde29861bb16c513c20d138a2dd19c68835141d9eb7a2dd22')
+
+prepare() {
+
+	cd "$_pkgname-$pkgver"
+
+	for patch in "${_patches[@]}"; do
+		echo "Applying patch $patch..."
+		patch -p1 -i "$srcdir/$patch"
+	done
+
+}
+
+build() {
+
+	cd "$_pkgname-$pkgver"
+
+	./configure  \
+		--prefix=/usr \
+		--enable-256-color \
+		--enable-combining \
+		--enable-fading \
+		--enable-font-styles \
+		--enable-keepscrolling \
+		--enable-lastlog \
+		--enable-mousewheel \
+		--enable-next-scroll \
+		--enable-perl \
+		--enable-pointer-blank \
+		--enable-rxvt-scroll \
+		--enable-selectionscrolling \
+		--enable-slipwheeling \
+		--disable-smart-resize \
+		--enable-startup-notification \
+		--enable-unicode3 \
+		--enable-utmp \
+		--enable-wtmp \
+		--enable-xft \
+		--enable-xim \
+		--enable-xterm-scroll \
+		--disable-pixbuf \
+		--disable-frills
+
+	make
+}
+
+package() {
+
+	cd ${_pkgname}-${pkgver}
+
+	install -Dm644 "$srcdir/urxvt.desktop" "$pkgdir/usr/share/applications/urxvt.desktop"
+
+	export TERMINFO="$srcdir/terminfo"
+	install -d "${TERMINFO}"
+	make DESTDIR="${pkgdir}" install
+
+}

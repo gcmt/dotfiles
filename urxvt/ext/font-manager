@@ -68,7 +68,7 @@ sub set_font {
 	my ($term, $font) = @_;
 	show_font_info($term, $font);
 	$term->resource('font', $font);
-	$term->cmd_parse("\e]710;" . $font . "\007");
+	$term->cmd_parse("\e]710;$font\a");
 }
 
 sub get_font_list {
@@ -89,7 +89,7 @@ sub show_font_info {
 
 sub show_msg {
 	my ($term, $text) = @_;
-	$term->cmd_parse("\033]777;message;3;0;$text\007");
+	$term->cmd_parse("\e]777;message;3;0;$text\a");
 }
 
 # vim: ft=perl

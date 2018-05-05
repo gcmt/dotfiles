@@ -54,7 +54,6 @@ build() {
 		--enable-rxvt-scroll \
 		--enable-selectionscrolling \
 		--enable-slipwheeling \
-		--disable-smart-resize \
 		--enable-startup-notification \
 		--enable-unicode3 \
 		--enable-utmp \
@@ -62,8 +61,11 @@ build() {
 		--enable-xft \
 		--enable-xim \
 		--enable-xterm-scroll \
+		--disable-frills \
+		--disable-transparency \
+		--disable-smart-resize \
 		--disable-pixbuf \
-		--disable-frills
+		--disable-iso14755 \
 
 	make
 }

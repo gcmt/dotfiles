@@ -209,7 +209,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Special', s:fg_dim, '', '', '')
 	cal s:h('Underlined', s:fg_super_dim, '', 'underline', '')
 	cal s:h('Title', s:blue, '', 'none', '')
-	cal s:h('Error', '', s:red, '', '')
+	cal s:h('Error', s:bg, s:red, '', '')
 	cal s:h('Todo', s:red, s:bg, '', '')
 	cal s:h('Noise', s:fg_dim, '', '', '')
 

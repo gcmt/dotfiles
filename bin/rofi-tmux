@@ -1,7 +1,13 @@
 #!/bin/bash
 
-session_list=$(tmux ls -F '#{session_name}' 2>/dev/null)
-session=$(echo "$session_list" | rofi -dmenu -no-auto-select -p 'tmux ' -kb-custom-1 'Control+z' )
+style="-width 35"
+style="$style -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
+style="$style -theme-str 'case-indicator { enabled: false; }'"
+
+options="-dmenu -no-auto-select -p 'tmux ' -kb-custom-1 'Control+BackSpace'"
+
+sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus")
+session=$(echo "$sessions" | eval "rofi $options $style")
 rofi_exit=$?
 
 if [[ $rofi_exit == 1 || -z "$session" ]]; then
@@ -9,8 +15,23 @@ if [[ $rofi_exit == 1 || -z "$session" ]]; then
 fi
 
 case $rofi_exit in
+
 	10)
-		exec urxvt -n urxvt-floating -e t "$session" ;;
+
+		options="-dmenu -p 'Kill session \"$session\" ? '"
+		choice=$(printf "yes\nno" | eval "rofi $options $style")
+		if [[ $choice == yes ]]; then
+			tmux kill-session -t "=$session"
+		fi
+		exec "$0"
+		;;
+
 	*)
-		exec urxvt -e t "$session" ;;
+
+		# if the session is already opened, switch to it
+		if i3-msg "[title=\"^$session\"] focus" | grep -q false; then
+			exec urxvt -e t "$session"
+		fi
+		;;
+
 esac

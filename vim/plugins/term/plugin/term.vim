@@ -24,12 +24,17 @@ func! s:setup()
 	let &t_SI = s:escape("\<Esc>[6 q")
 	let &t_SR = s:escape("\<Esc>[4 q")
 
-	" When starting vim, enable focus reporting
-	let &t_ti = &t_EI . "\<Esc>[?1004h" . &t_ti
-	" When exiting vim, disable focus reporting
-	let &t_te = "\<Esc>[?1004l" . &t_te
+	" Setup focus reporting escape sequences. The first is intepreted by the
+	" urxvt focus extension. We use both regardless of the current terminal
+	" because in Tmux the $TERM varaible is always the same.
+	let focus_on = s:escape("\<Esc>]777;focus;on\007") . "\<Esc>[?1004h"
+	let focus_off = s:escape("\<Esc>]777;focus;off\007") . "\<Esc>[?1004l"
 
-	" The terminal sends ^[[I when focusing, ^[[O when defocusing
+	" Enable/disable focus reporting when Vim starts/exits.
+	let &t_ti = &t_EI . focus_on . &t_ti
+	let &t_te = focus_off . &t_te
+
+	" The terminal sends ^[[I when it gains focus, ^[[O when it loses focus
 	exec "set <f24>=\<Esc>[O"
 	exec "set <f25>=\<Esc>[I"
 

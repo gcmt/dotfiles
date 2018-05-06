@@ -1,0 +1,36 @@
+
+use strict;
+use warnings;
+
+my $debug = 0;
+my $csi_focus_in = "\033[I";
+my $csi_focus_out = "\033[O";
+
+sub on_start {
+	my ($self) = @_;
+	$self->{focus_reporting} = 0;
+}
+
+sub on_osc_seq_perl {
+	my ($self, $osc, $resp) = @_;
+	return unless $osc =~ s/^focus;//;
+	$self->{focus_reporting} = 1 if $osc eq 'on';
+	$self->{focus_reporting} = 0 if $osc eq 'off';
+	$self->cmd_parse("\e]777;message;2;0;focus: $self->{focus_reporting}\a") if $debug;
+}
+
+sub on_focus_in {
+	my ($self) = @_;
+	return unless $self->{focus_reporting};
+	$self->tt_write($csi_focus_in);
+	$self->cmd_parse("\e]777;message;2;0;FocusIn\a") if $debug;
+}
+
+sub on_focus_out {
+	my ($self) = @_;
+	return unless $self->{focus_reporting};
+	$self->tt_write($csi_focus_out);
+	$self->cmd_parse("\e]777;message;2;0;FocusOut\a") if $debug;
+}
+
+# vim: ft=perl

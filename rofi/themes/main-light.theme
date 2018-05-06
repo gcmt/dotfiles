@@ -1,10 +1,11 @@
+
 * {
 
 	font: "Noto Sans Regular 10";
 
 	background: rgba(231, 232, 235, 100%);
 	foreground: rgba(82, 86, 94, 100%);
-	scrollbar: rgba(215, 219, 224, 100%);
+	scrollbar: rgba(82, 86, 94, 100%);
 
 	shadow: rgba(0, 0, 0, 0%);
 	inputbar-background: @background;
@@ -35,57 +36,74 @@
 
 }
 
+/* Containers
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 window {
 	location: center;
 	anchor: center;
-	border: 0;
 }
 
+
 mainbox {
-	border: 0;
-	padding: 5;
 }
+
+/* Message
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 message {
 	border-color: @separator-color;
 	padding: 5;
 }
 
-inputbar {
-	spacing: 0;
-	text-color: @normal-foreground;
-	background-color: @inputbar-background;
-	padding: 5 5;
-}
-
-case-indicator {
-	spacing: 0;
-	text-color: @normal-foreground;
-}
-
-prompt {
-	spacing: 0;
-	text-color: @normal-foreground;
-}
-
 textbox {
 	text-color: @foreground;
 }
 
+/* Input bar
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+inputbar {
+	text-color: @normal-foreground;
+	background-color: @inputbar-background;
+	padding: 10 10;
+}
+
+prompt {
+	text-color: @normal-foreground;
+}
+
+entry {
+	text-color: @normal-foreground;
+}
+
+case-indicator {
+	text-color: @normal-foreground;
+}
+
+/* Scrollbar
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+scrollbar {
+	width: 4;
+	handle-color: @scrollbar;
+	handle-width: 2;
+}
+
+/* Listview
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 listview {
-	fixed-height: 0;
-	border: 0px ;
-	border-color: @separator-color;
-	spacing: 0px ;
+	spacing: 0;
+	fixed-height: true;
 	scrollbar: true;
-	padding: 2px 0px 0px ;
+	border-color: @separator-color;
 }
 
 element {
-	font: "Noto Sans Regular 10";
-	border: 0px 0px 1px solid;
+	border: 0 0 1px solid;
 	border-color: @separator-color;
-	padding: 5 5;
+	padding: 5 10;
 }
 
 element.normal.normal {
@@ -131,32 +149,4 @@ element.alternate.urgent {
 element.alternate.active {
 	background-color: @alternate-active-background;
 	text-color: @alternate-active-foreground;
-}
-
-scrollbar {
-	width: 4px ;
-	border: 0;
-	handle-color: @scrollbar;
-	handle-width: 2px ;
-	padding: 0;
-}
-
-sidebar {
-	border: 0px ;
-	border-color: @separator-color;
-}
-
-button {
-	spacing: 0;
-	text-color: @normal-foreground;
-}
-
-button.selected {
-	background-color: @selected-normal-background;
-	text-color: @selected-normal-foreground;
-}
-
-entry {
-	spacing: 0;
-	text-color: @normal-foreground;
 }

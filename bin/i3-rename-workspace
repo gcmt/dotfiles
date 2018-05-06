@@ -6,8 +6,15 @@ current_workspace_name() {
 		| cut -d "\"" -f 2
 }
 
-cur_name=$(current_workspace_name)
-new_name=$(zenity --entry --title "Rename Workspace" --text "Enter new name:" --entry-text "$cur_name" --width 300)
-if [[ -n "$new_name" ]]; then
-	i3-msg "rename workspace to \"$new_name\""
+style="-width 25"
+style="$style -theme-str 'listview { enabled: false; }'"
+style="$style -theme-str 'case-indicator { enabled: false; }'"
+
+options="-dmenu -p 'New name: ' -filter '$(current_workspace_name)' "
+
+name=$(echo "" | eval "rofi $options $style")
+if [[ -z "$name" ]]; then
+	exit 1
 fi
+
+i3-msg "rename workspace to \"$name\""

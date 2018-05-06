@@ -67,9 +67,9 @@ bindsym $mod+Tab exec --no-startup-id i3-new-workspace
 bindsym $mod+y exec --no-startup-id ydl-mp3
 
 # Rofi bindings
-bindsym $mod+space exec rofi -show drun
-bindsym $alt+space exec rofi -show window
-bindsym Control+space exec rofi -show run
+bindsym $mod+space exec "rofi -show drun -theme-str 'prompt { enabled: false; }'"
+bindsym $alt+space exec "rofi -show window -theme-str 'prompt { enabled: false; }'"
+bindsym Control+space exec "rofi -show run -theme-str 'prompt { enabled: false; }'"
 
 # Toggle Polybar visibility
 bindsym $mod+Return exec --no-startup-id polybar-toggle

@@ -5,7 +5,7 @@ default="scratch"
 
 # Find the last used session that is not $default or cmus
 last_used_session() {
-	local sessions="$(tmux ls -F '#{session_activity}:#{session_name}' 2>/dev/null)"
+	local sessions="$(tmux ls -F '#{session_activity}:#S' 2>/dev/null)"
 	if [[ -z "$sessions" ]]; then
 		return 1
 	fi
@@ -22,7 +22,6 @@ last_used_session() {
 			last_delta=$delta
 		fi
 	done <<< "$sessions"
-	echo "$session"
 }
 
 if [[ -z "$target" ]]; then
@@ -30,12 +29,12 @@ if [[ -z "$target" ]]; then
 	target="${target:-$default}"
 fi
 
-if ! tmux has -t "$target" 2>/dev/null; then
+if ! tmux has -t "=$target" 2>/dev/null; then
 	tmux new -ds "$target"
 fi
 
 if [[ -z "$TMUX" ]]; then
-	exec tmux attach -t "$target"
+	exec tmux attach -t "=$target"
 else
-	tmux switchc -t "$target"
+	tmux switchc -t "=$target"
 fi

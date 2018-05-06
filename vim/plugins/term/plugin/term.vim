@@ -5,7 +5,7 @@
 " License: MIT
 " ============================================================================
 
-if exists('g:term_loaded') || empty("$TERM") || &cp
+if exists('g:term_loaded') || empty($TERM) || &cp
 	finish
 end
 let g:term_loaded = 1
@@ -48,7 +48,7 @@ func! s:setup()
 endf
 
 func! s:escape(str)
-	if !empty("$TMUX")
+	if !empty($TMUX)
 		let str = substitute(a:str, "\<Esc>", "\<Esc>\<Esc>", 'g')
 		return "\<Esc>Ptmux;" . str . "\<Esc>\\"
 	end

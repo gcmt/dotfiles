@@ -66,7 +66,7 @@ rofi.terminal: urxvt
 ! THEMING
 ! ----------------------------------------------------------------------------
 
-rofi.theme: ~/.config/rofi/themes/main-light.theme
+rofi.theme: ~/.config/rofi/themes/main-light
 
 ! Whether to load and show icons
 rofi.show-icons: false

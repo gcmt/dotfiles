@@ -1,5 +1,6 @@
 
-rofi_options="-monitor -2 -dmenu -no-custom -i -hide-scrollbar -theme $XDG_CONFIG_HOME/rofi/themes/term-dark.theme"
+theme="$XDG_CONFIG_HOME/rofi/themes/terminal-dark"
+rofi_options="-monitor -2 -dmenu -no-custom -i -hide-scrollbar -theme $theme"
 
 rofi_width() {
 	(($COLUMNS < 70)) && echo 90 && return

@@ -2,77 +2,38 @@
 " File: term.vim
 " Description: Improved terminal experience
 " Mantainer: github.com/gcmt
-" Description: Mostly adapted from http://github.com/sjl/vitality.vim
 " License: MIT
 " ============================================================================
 
-if exists('g:term_loaded') || &cp
+if exists('g:term_loaded') || empty("$TERM") || &cp
 	finish
 end
 let g:term_loaded = 1
 
-fun! s:tmuxify(str)
-	let str = substitute(a:str, "\<Esc>", "\<Esc>\<Esc>", 'g')
-	return "\<Esc>Ptmux;" . str . "\<Esc>\\"
-endf
+func! s:setup()
 
-fun! s:setup(tmux)
+	" Use different cursor styles for different modes:
+	" - 0 blinking block
+	" - 1 blinking block
+	" - 2 steady block
+	" - 3 blinking underline
+	" - 4 steady underline
+	" - 5 blinking bar
+	" - 6 steady bar
+	let &t_EI = s:escape("\<Esc>[2 q")
+	let &t_SI = s:escape("\<Esc>[6 q")
+	let &t_SR = s:escape("\<Esc>[4 q")
 
-	let enable_focus_reporting = "\<Esc>[?1004h"
-	let disable_focus_reporting = "\<Esc>[?1004l"
+	" When starting vim, enable focus reporting
+	let &t_ti = &t_EI . "\<Esc>[?1004h" . &t_ti
+	" When exiting vim, disable focus reporting
+	let &t_te = "\<Esc>[?1004l" . &t_te
 
-	" Not to be wrapped in tmux-specific escape sequences
-	let save_screen = "\<Esc>[?1049h"
-	let restore_screen = "\<Esc>[?1049l"
-
-	let cursor_normal = ""
-	let cursor_insert = ""
-	let cursor_replace = ""
-
-	if exists('$ITERM_PROFILE')
-		" 0 -> block
-		" 1 -> bar
-		" 2 -> underline
-		let cursor_normal = "\<Esc>]50;CursorShape=0\x7"
-		let cursor_insert = "\<Esc>]50;CursorShape=1\x7"
-		let cursor_replace = "\<Esc>]50;CursorShape=2\x7"
-	else
-		" 0 -> blinking block
-		" 1 -> blinking block
-		" 2 -> steady block
-		" 3 -> blinking underline
-		" 4 -> steady underline
-		" 5 -> blinking bar
-		" 6 -> steady bar
-		let cursor_normal = "\<Esc>[2 q"
-		let cursor_insert = "\<Esc>[6 q"
-		let cursor_replace = "\<Esc>[4 q"
-	end
-
-	if a:tmux
-		let enable_focus_reporting = s:tmuxify(enable_focus_reporting) . enable_focus_reporting
-		let disable_focus_reporting = disable_focus_reporting
-		let cursor_normal = s:tmuxify(cursor_normal)
-		let cursor_insert = s:tmuxify(cursor_insert)
-		let cursor_replace = s:tmuxify(cursor_replace)
-	endif
-
-	" When starting Vim, enable focus reporting and save the screen.
-	let &t_ti = cursor_normal . enable_focus_reporting . save_screen . &t_ti
-	" When exiting Vim, disable focus reporting and save the screen.
-	let &t_te = disable_focus_reporting . restore_screen
-
-	" Use different cursor styles for different modes
-	let &t_SI = cursor_insert . &t_SI
-	let &t_EI = cursor_normal . &t_EI
-	let &t_SR = cursor_replace . &t_SR
-
-	" Map unused keycodes to the sequences iTerm2 is going to send
-	" on focus lost/gained.
+	" The terminal sends ^[[I when focusing, ^[[O when defocusing
 	exec "set <f24>=\<Esc>[O"
 	exec "set <f25>=\<Esc>[I"
 
-	" Handle the focus gained/lost signals in each mode separately.
+	" Handle the focus gained/lost signals in each mode separately
 	nnoremap <silent> <f24> :sil doau FocusLost %<cr>
 	nnoremap <silent> <f25> :sil doau FocusGained %<cr>
 	onoremap <silent> <f24> <esc>:sil doau FocusLost %<cr>
@@ -86,7 +47,15 @@ fun! s:setup(tmux)
 
 endf
 
-fun! s:doau_cmdline(event)
+func! s:escape(str)
+	if !empty("$TMUX")
+		let str = substitute(a:str, "\<Esc>", "\<Esc>\<Esc>", 'g')
+		return "\<Esc>Ptmux;" . str . "\<Esc>\\"
+	end
+	return a:str
+endf
+
+func! s:doau_cmdline(event)
 	let cmd = getcmdline()
 	let pos = getcmdpos()
 	exec 'sil doau' a:event '%'
@@ -94,6 +63,4 @@ fun! s:doau_cmdline(event)
 	return cmd
 endf
 
-if exists('$TERM')
-	call s:setup(exists('$TMUX'))
-end
+call s:setup()

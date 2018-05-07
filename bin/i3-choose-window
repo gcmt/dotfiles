@@ -38,7 +38,7 @@ def get_windows(tree, scratchpad=True):
 
 
 # Execute rofi and return the user choice.
-def rofi(windows, inputbar=False):
+def rofi(windows, inputbar=True):
 
     lines = min(len(windows), 12)
     try:

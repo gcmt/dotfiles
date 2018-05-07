@@ -41,7 +41,11 @@ def get_windows(tree, scratchpad=True):
 def rofi(windows, inputbar=False):
 
     lines = min(len(windows), 12)
-    selected = [w.focused for w in windows].index(1)
+    try:
+        selected = [w.focused for w in windows].index(1)
+    except ValueError:
+        selected = 0
+
     options  = ['-dmenu', '-i', '-format', 'i']
     options += ['-markup-rows', '-lines', str(lines), '-selected-row', str(selected)]
 

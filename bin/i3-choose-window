@@ -71,9 +71,12 @@ def rofi(windows, inputbar=False):
 # Parse command line arguments.
 def parse_args():
     parser = argparse.ArgumentParser(description="Improved i3 window switcher")
-    group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument('-inputbar', action='store_true', default=True, help="display the input bar")
-    group.add_argument('-no-inputbar', action='store_false', dest='inputbar', help="hide the input bar")
+    group1 = parser.add_mutually_exclusive_group(required=False)
+    group1.add_argument('-inputbar', action='store_true', default=True, help="display the input bar")
+    group1.add_argument('-no-inputbar', action='store_false', dest='inputbar', help="hide the input bar")
+    group2 = parser.add_mutually_exclusive_group(required=False)
+    group2.add_argument('-scratchpad', action='store_true', default=True, help="include scratchpad windows")
+    group2.add_argument('-no-scratchpad', action='store_false', dest='scratchpad', help="exclude scratchpad windows")
     return parser.parse_args()
 
 
@@ -82,7 +85,7 @@ def main():
     args = parse_args()
     i3 = i3ipc.Connection()
 
-    windows = get_windows(i3.get_tree())
+    windows = get_windows(i3.get_tree(), args.scratchpad)
     if not windows:
         sys.exit(0)
 

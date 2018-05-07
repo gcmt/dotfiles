@@ -6,7 +6,6 @@ import i3ipc
 import argparse
 from subprocess import Popen, PIPE
 
-
 # Turn windows into formatted lines to be passed to Rofi.
 # Pango markup is supported if the '-markup-rows' Rofi option is used:
 # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
@@ -56,15 +55,18 @@ def rofi(windows, inputbar=True):
         style += ['-theme-str', 'listview { scrollbar: false; }']
 
     if not inputbar:
+        style += ['-theme-str', 'mainbox { children: [listview]; }']
         options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,j']
         options += ['-kb-accept-entry', 'l,Control+d', '-kb-cancel', 'Escape,q']
-        style += ['-theme-str', 'mainbox { children: [listview]; }']
+        options += ['-kb-custom-1', 'm', '-kb-custom-2', 'underscore', '-kb-custom-3', 'o']
+    else:
+        options += ['-kb-custom-1', 'Control+m', '-kb-custom-2', 'Super+underscore', '-kb-custom-3', 'Control+o']
 
     lines = format_windows(windows)
     proc = Popen(['rofi'] + options + style, stdin=PIPE, stdout=PIPE)
     out = proc.communicate("\n".join(lines).encode())[0].decode()
 
-    return out.strip()
+    return out.strip(), proc.returncode
 
 
 # Parse command line arguments.
@@ -83,18 +85,42 @@ def main():
 
     args = parse_args()
     i3 = i3ipc.Connection()
+    tree = i3.get_tree()
 
-    windows = get_windows(i3.get_tree(), args.scratchpad)
+    windows = get_windows(tree, args.scratchpad)
     if not windows:
         sys.exit(0)
 
-    choice = rofi(windows, args.inputbar)
-    if not choice:
+    # 'choice' will be empty when pressing -kb-cancel but it will be -1 when
+    # pressing -kb-accept-entry with nothing selected
+    choice, exitcode = rofi(windows, args.inputbar)
+    if not choice or choice == '-1':
         sys.exit(0)
 
     id = windows[int(choice)].id
-    i3.command(f'[con_id="{id}"] focus')
 
+    # -kb-accept-entry
+    if exitcode == 0:
+        # focus the selected window
+        i3.command(f'[con_id="{id}"] focus; floating disable')
+        sys.exit(0)
+
+    # -kb-custom-1
+    if exitcode == 10:
+        # move the selected window to the current workspace
+        num = tree.find_focused().workspace().num
+        i3.command(f'[con_id="{id}"] move to workspace number {num}; floating disable')
+        sys.exit(0)
+
+    # -kb-custom-2
+    if exitcode == 11:
+        # move the selected window to the scratchpad
+        i3.command(f'[con_id="{id}"] move scratchpad')
+        os.execv(sys.argv[0], sys.argv)
+
+    # -kb-custom-3
+    if exitcode == 11:
+        os.execvp('rofi', ['rofi', '-show', 'drun'])
 
 if __name__ == '__main__':
     main()

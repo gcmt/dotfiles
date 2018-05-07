@@ -66,7 +66,7 @@ textbox {
 inputbar {
 	text-color: @normal-foreground;
 	background-color: @inputbar-background;
-	padding: 10 10;
+	padding: 12 12;
 }
 
 prompt {
@@ -104,7 +104,7 @@ listview {
 element {
 	border: 0 0 1px solid;
 	border-color: @separator-color;
-	padding: 5 10;
+	padding: 6 12;
 }
 
 element.normal.normal {

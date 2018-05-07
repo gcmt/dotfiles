@@ -51,7 +51,7 @@ mainbox {
 inputbar {
 	text-color: @normal-foreground;
 	background-color: @inputbar-background;
-	padding: 10 10 5 10;
+	padding: 12 12;
 }
 
 prompt {
@@ -71,7 +71,7 @@ case-indicator {
 
 message {
 	border-color: @separator-color;
-	padding: 5;
+	padding: 6;
 }
 
 textbox {
@@ -99,7 +99,7 @@ scrollbar {
 #element {
 	border: 0px 0px 0px solid;
 	border-color: @separator-color;
-	padding: 5 10;
+	padding: 6 12;
 }
 
 #element.normal.normal {

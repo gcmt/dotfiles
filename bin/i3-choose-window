@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import i3ipc
+import argparse
+from subprocess import Popen, PIPE
+
+
+# Turn windows into formatted lines to be passed to Rofi.
+# Pango markup is supported if the '-markup-rows' Rofi option is used:
+# https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
+def format_windows(windows):
+    lines = []
+    dimcolor = '#797d84'
+    for win in windows:
+        wsname = win.workspace().name
+        ws = '$' if wsname == '__i3_scratch' else wsname
+        row = f"<span foreground='{dimcolor}'>{ws}</span>   "
+        if wsname == '__i3_scratch':
+            row += f"<span foreground='{dimcolor}'>{win.name}</span>"
+        else:
+            row += f"<b>{win.name}</b>" if win.focused else win.name
+        lines.append(row)
+    return lines
+
+
+# Get windows of all workspaces. If the 'scratchpad' argument is given and it's
+# True, windows in the scratchpad workspace are also returned.
+def get_windows(tree, scratchpad=True):
+    windows = []
+    for ws in tree.workspaces():
+        windows += ws.leaves()
+    windows.sort(key=lambda w: w.workspace().num)
+    if scratchpad:
+        windows += tree.scratchpad().leaves()
+    return windows
+
+
+# Execute rofi and return the user choice.
+def rofi(windows, inputbar=False):
+
+    lines = min(len(windows), 12)
+    selected = [w.focused for w in windows].index(1)
+    options  = ['-dmenu', '-i', '-format', 'i']
+    options += ['-markup-rows', '-lines', str(lines), '-selected-row', str(selected)]
+
+    confdir = os.environ['XDG_CONFIG_HOME']
+    style  = ['-theme', os.path.join(confdir, 'rofi/themes/main-light')]
+    style += ['-theme-str', 'prompt { enabled: false; }']
+
+    if len(windows) <= lines:
+        style += ['-theme-str', 'listview { scrollbar: false; }']
+
+    if not inputbar:
+        options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,j']
+        options += ['-kb-accept-entry', 'l,Control+d', '-kb-cancel', 'Escape,q']
+        style += ['-theme-str', 'mainbox { children: [listview]; }']
+
+    lines = format_windows(windows)
+    proc = Popen(['rofi'] + options + style, stdin=PIPE, stdout=PIPE)
+    out = proc.communicate("\n".join(lines).encode())[0].decode()
+
+    return out.strip()
+
+
+# Parse command line arguments.
+def parse_args():
+    parser = argparse.ArgumentParser(description="Improved i3 window switcher")
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument('-inputbar', action='store_true', default=True, help="display the input bar")
+    group.add_argument('-no-inputbar', action='store_false', dest='inputbar', help="hide the input bar")
+    return parser.parse_args()
+
+
+def main():
+
+    i3 = i3ipc.Connection()
+
+    args = parse_args()
+    windows = get_windows(i3.get_tree())
+
+    choice = rofi(windows, args.inputbar)
+    if not choice:
+        sys.exit(0)
+
+    id = windows[int(choice)].id
+    i3.command(f'[con_id="{id}"] focus')
+
+
+if __name__ == '__main__':
+    main()

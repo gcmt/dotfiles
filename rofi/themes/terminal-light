@@ -3,18 +3,18 @@
 
 	font: "Noto Mono Patched 10";
 
-	background: rgba(37, 41, 51, 100%);
-	foreground: rgba(142, 146, 153, 100%);
+	background: rgba(231, 232, 235, 100%);
+	foreground: rgba(82, 86, 94, 100%);
 
-	separator-color: rgba(30, 34, 43, 100%);
-	background-color: rgba(0, 0, 0, 0%);
+	separator-color: rgba(216, 217, 219, 100%);
+	background-color: @background;
 	scrollbar-color: @foreground;
 	inputbar-background: @background;
 
 	normal-foreground: @foreground;
 	normal-background: @background;
 	selected-normal-foreground: @foreground;
-	selected-normal-background: rgba(43, 47, 58, 100%);
+	selected-normal-background: rgba(216, 217, 219, 100%);
 	alternate-normal-foreground: @foreground;
 	alternate-normal-background: @background;
 
@@ -28,7 +28,7 @@
 	urgent-foreground: rgba(181, 85, 95, 100%);
 	urgent-background: @background;
 	selected-urgent-foreground: rgba(181, 85, 95, 100%);
-	selected-urgent-background: @selected-normal-background;
+	selected-urgent-background: @background;
 	alternate-urgent-foreground: @urgent-foreground;
 	alternate-urgent-background: @background;
 

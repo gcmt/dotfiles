@@ -5,6 +5,7 @@ URxvt.internalBorder: 4
 URxvt.scrollBar: false
 URxvt.saveLines: 8192
 URxvt.iso14755: false
+URxvt*pointerBlank: true
 
 URxvt.keysym.Shift-Control-V: eval:paste_clipboard
 URxvt.keysym.Shift-Control-C: eval:selection_to_clipboard
@@ -29,7 +30,11 @@ URxvt.keysym.Control-parenleft: font-manager:prev
 URxvt.keysym.Control-parenright: font-manager:next
 
 URxvt.font-manager.font.1: xft:Noto Sans Mono:size=9
-URxvt.font-manager.font.2: xft:Liberation Mono:size=10
+URxvt.font-manager.font.2: xft:SF Mono:size=10
+URxvt.font-manager.font.3: xft:Liberation Mono:size=10
+URxvt.font-manager.font.4: xft:DejaVu Sans Mono:size=10
+URxvt.font-manager.font.5: xft:Inconsolata:size=11
+URxvt.font-manager.font.6: xft:Source Code Variable:size=10
 
 URxvt.foreground: _fg_dim
 URxvt.background: _bg_color

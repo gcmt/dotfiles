@@ -11,7 +11,11 @@ style="$style -theme-str 'listview { enabled: false; }'"
 style="$style -theme-str 'case-indicator { enabled: false; }'"
 style="$style -theme-str 'prompt { enabled: true; }'"
 
-options="-dmenu -p 'New name: ' -filter '$(current_workspace_name)' "
+# add a trailing space if the worksapce name is just a number
+current=$(current_workspace_name)
+[[ "$current" =~ ^[0-9]+$ ]] && current="$current "
+
+options="-dmenu -p 'New name: ' -filter '$current' "
 
 name=$(echo "" | eval "rofi $options $style" | sed 's/\(\s\+$\|^\s\+\)//g')
 if [[ -z "$name" ]]; then

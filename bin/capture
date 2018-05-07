@@ -1,4 +1,34 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-file="$HOME/Downloads/Screenshot_$(date '+%Y-%m-%d-%T').png"
-import "$@" "$file"
+import re
+import os
+import sys
+import time
+from datetime import datetime
+from subprocess import Popen
+
+DEFAULT_DELAY = 4
+
+def notify(title, msg):
+    Popen(['notify-send', title, msg])
+
+now = datetime.utcnow()
+fname = f"Screenshot_{now.strftime('%Y-%m-%d-%T')}.png"
+dest = os.path.join(os.environ['HOME'], 'Downloads', fname)
+
+wait = '-wait' in sys.argv
+if wait:
+    i = sys.argv.index('-wait')
+    if i+1 < len(sys.argv) and re.match('\d+', sys.argv[i+1]):
+        seconds = int(sys.argv[i+1])
+        sys.argv.pop(i+1)
+    else:
+        seconds = DEFAULT_DELAY
+    sys.argv.pop(i)
+    time.sleep(seconds)
+
+sys.argv.pop(0)
+Popen(['import'] + sys.argv + [dest])
+
+if wait and '-window' in sys.argv:
+    notify('Screenshot taken', dest)

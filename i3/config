@@ -209,8 +209,8 @@ bindsym $mod+XF86AudioPrev exec --no-startup-id cmus-remote --seek 0
 # Screenshots (XF86LaunchA = F3)
 bindsym XF86LaunchA exec --no-startup-id capture -window root
 bindsym $mod+XF86LaunchA exec --no-startup-id capture
-bindsym $alt+XF86LaunchA exec --no-startup-id capture-delayed -window root
-bindsym $alt+$mod+XF86LaunchA exec --no-startup-id capture-delayed
+bindsym $alt+XF86LaunchA exec --no-startup-id capture -wait -window root
+bindsym $alt+$mod+XF86LaunchA exec --no-startup-id capture -wait
 
 # Volume controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id volume up

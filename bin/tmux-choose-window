@@ -7,7 +7,8 @@ lines=$(tmux list-windows -F '#I #W#F (#{window_panes} panes) "#{pane_title}"')
 width=$(echo "$lines" | wc -L)
 [[ (($width < 50)) ]] && width=50
 
-theme="$XDG_CONFIG_HOME/rofi/themes/terminal-dark"
+colorscheme=$(xrdb -query all | grep colorscheme | grep -o "\S\+$")
+theme="$XDG_CONFIG_HOME/rofi/themes/terminal-${colorscheme:-light}"
 options="-dmenu -monitor -2 -format d -selected-row $((curidx-1)) -width '-$((width+5))'"
 options="$options -theme '$theme' -theme-str '#mainbox { children: [listview]; }'"
 options="$options -kb-row-up k -kb-row-down j -kb-accept-entry l -kb-cancel 'Escape,q'"

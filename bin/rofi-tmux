@@ -4,7 +4,7 @@ style="-width 35"
 style="$style -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
 style="$style -theme-str 'case-indicator { enabled: false; }'"
 
-options="-dmenu -no-auto-select -p 'tmux ' -kb-custom-1 'Control+BackSpace'"
+options="-dmenu -kb-custom-1 'Control+BackSpace'"
 
 sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus")
 session=$(echo "$sessions" | eval "rofi $options $style")
@@ -19,6 +19,7 @@ case $rofi_exit in
 	10)
 
 		options="-dmenu -p 'Kill session \"$session\" ? '"
+		style="$style -theme-str 'prompt { enabled: true; }'"
 		choice=$(printf "yes\nno" | eval "rofi $options $style")
 		if [[ $choice == yes ]]; then
 			tmux kill-session -t "=$session"

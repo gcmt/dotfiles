@@ -119,7 +119,7 @@ def main():
         os.execv(sys.argv[0], sys.argv)
 
     # -kb-custom-3
-    if exitcode == 11:
+    if exitcode == 12:
         os.execvp('rofi', ['rofi', '-show', 'drun'])
 
 if __name__ == '__main__':

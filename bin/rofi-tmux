@@ -30,7 +30,7 @@ case $rofi_exit in
 	*)
 
 		# if the session is already opened, switch to it
-		if i3-msg "[title=\"^$session\b\" title=\"Tmux\"] focus" | grep -q false; then
+		if i3-msg "[title=\"^$session - Tmux\"] focus" | grep -q false; then
 			exec urxvt -e t "$session"
 		fi
 		;;

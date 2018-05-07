@@ -79,10 +79,12 @@ def parse_args():
 
 def main():
 
+    args = parse_args()
     i3 = i3ipc.Connection()
 
-    args = parse_args()
     windows = get_windows(i3.get_tree())
+    if not windows:
+        sys.exit(0)
 
     choice = rofi(windows, args.inputbar)
     if not choice:

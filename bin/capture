@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import re
 import os
 import sys
 import time
@@ -19,10 +18,10 @@ dest = os.path.join(os.environ['HOME'], 'Downloads', fname)
 wait = '-wait' in sys.argv
 if wait:
     i = sys.argv.index('-wait')
-    if i+1 < len(sys.argv) and re.match('\d+', sys.argv[i+1]):
+    try:
         seconds = int(sys.argv[i+1])
         sys.argv.pop(i+1)
-    else:
+    except (ValueError, IndexError):
         seconds = DEFAULT_DELAY
     sys.argv.pop(i)
     time.sleep(seconds)

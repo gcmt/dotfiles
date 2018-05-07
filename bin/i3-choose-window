@@ -51,7 +51,6 @@ def rofi(windows, inputbar=True):
 
     confdir = os.environ['XDG_CONFIG_HOME']
     style  = ['-theme', os.path.join(confdir, 'rofi/themes/main-light')]
-    style += ['-theme-str', 'prompt { enabled: false; }']
 
     if len(windows) <= lines:
         style += ['-theme-str', 'listview { scrollbar: false; }']

@@ -70,6 +70,7 @@ inputbar {
 }
 
 prompt {
+	enabled: false;
 	text-color: @normal-foreground;
 }
 

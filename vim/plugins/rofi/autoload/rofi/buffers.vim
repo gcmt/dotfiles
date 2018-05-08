@@ -1,16 +1,14 @@
 
-" rofi#buffers#show([{inputbar:number}]) -> 0
+" rofi#buffers#show() -> 0
 " Open rofi with a list of all open buffers.
-" Unless {inputbar} is given and it's true, the input bar won't be displayed.
-func! rofi#buffers#show(...) abort
+func! rofi#buffers#show() abort
 
 	let buffers = s:buffers()
 	if empty(buffers)
 		return
 	end
 
-	let inputbar = a:0 > 0 ? a:1 : 0
-	let choice = s:rofi(buffers, inputbar)
+	let choice = s:rofi(buffers)
 	let exitcode = v:shell_error
 
 	" 'choice' will be empty when pressing  -kb-cancel but it will be -1 when
@@ -34,7 +32,7 @@ func! rofi#buffers#show(...) abort
 			let map = {13: 'bdelete', 14: 'bwipe'}
 			exec get(map, exitcode, '') bufnr
 			redraw!
-			call rofi#buffers#show(inputbar)
+			call rofi#buffers#show()
 		catch /E.*/
 			call rofi#err(matchstr(v:exception, '\vE\d+:.*'))
 		endtry
@@ -49,8 +47,8 @@ func! rofi#buffers#show(...) abort
 
 endf
 
-" s:rofi({buffers:list}, {inputbar:number}) -> string
-func! s:rofi(buffers, inputbar)
+" s:rofi({buffers:list}) -> string
+func! s:rofi(buffers)
 
 	let lines = min([len(a:buffers), g:rofi_max_lines])
 	let selected = max([index(a:buffers, bufnr('%')), 0])
@@ -64,7 +62,7 @@ func! s:rofi(buffers, inputbar)
 		let style .= " -theme-str 'listview { scrollbar: false; }'"
 	end
 
-	if !a:inputbar
+	if !g:rofi_buffers_inputbar
 		let style .= " -theme-str 'mainbox { children: [listview]; }'"
 		let options .= " -kb-row-up 'Up,Control+k,k' -kb-row-down 'Down,Control+j,j'"
 		let options .= " -kb-accept-entry 'l,Control+d' -kb-cancel 'Escape,q'"

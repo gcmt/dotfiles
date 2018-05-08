@@ -807,7 +807,7 @@
 " Rofi
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gp :RofiBuffers!<cr>
+	nnoremap <silent> gp :RofiBuffers<cr>
 	nnoremap <silent> gP :RofiEdit<cr>
 
 " Marks

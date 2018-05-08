@@ -38,7 +38,7 @@ def main():
     tree = i3.get_tree()
 
     workspaces = tree.workspaces()
-    if not workspaces:
+    if len(workspaces) <= 1:
         sys.exit(0)
 
     selected = 0

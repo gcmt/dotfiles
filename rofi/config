@@ -63,96 +63,14 @@ rofi.click-to-exit: false
 ! Terminal to use
 rofi.terminal: urxvt
 
-! THEMING
-! ----------------------------------------------------------------------------
-
-rofi.theme: ~/.config/rofi/themes/main-light
+! Path to the new theme file format
+rofi.theme: main-light
 
 ! Whether to load and show icons
 rofi.show-icons: false
 
-! All colors are either hex #rrggbb, #aarrggbb or argb:aarrggbbvalues or X11 color names.
-
-! Window colors: bg border sep
-rofi.color-window: #252933,#1e222b,#1e222b
-
-! Normal row: bg fg bg-alt hl-bg hl-fg
-rofi.color-normal: #00000000,#8e9299,#00000000,#3a3e4a,#8e9299
-
-! Urgent row: bg fg bg-alt hl-bg hl-fg
-rofi.color-urgent: #00000000,#945F65,#00000000,#3a3e4a,#945F65
-
-! Active row: bg fg bg-alt hl-bg hl-fg
-rofi.color-active: #00000000,#657B99,#00000000,#3a3e4a,#657B99
-
-! Set border width in pixels.
-rofi.bw: 0
-
-! The height of a field in lines.
-rofi.eh: 1
-
-! Set the spacing between the rows. Default 3, min 3, max 50
-rofi.line-margin: 2
-
-! Set separator style. Possible options are "none", "solid" or "dash".
-rofi.separator-style: none
-
-! Hide the scrollbar.
-rofi.hide-scrollbar: false
-
-! Set the scrollbar width.
-rofi.scrollbar-width: 2
-
-! Enable fake transparency.
-! This only works with transparent background color in the theme.
-rofi.fake-transparency: false
-
-! Select what to use as background for fake transparency.
-! This can be 'background', 'screenshot' or a path to an image file (currently only supports png).
-rofi.fake-background: screenshot
-
 ! Indicate how it match by underlining it.
 rofi.show-match: false
-
-! LAYOUT
-! ----------------------------------------------------------------------------
-
-! Maximum number of lines to show before scrolling.
-rofi.lines: 8
-
-! Keep a fixed number of visible lines (See the lines option.)
-rofi.fixed-num-lines: true
-
-! Number of columns to show before scrolling
-rofi.columns: 1
-
-! Set width of the menu. The value is specified in percentage.
-! If the value is larger then 100, size is set in pixels.
-! If the value is negative, it tries to estimates a character width.
-rofi.width: 50
-
-! Define the inner margin of the window.
-rofi.padding: 5
-
-! Specify where the window should be located.
-! The numbers map to the following locations on screen:
-!  1 2 3
-!  8 0 4
-!  7 6 5
-rofi.location: 0
-
-! Y-offset relative to location.
-rofi.yoffset: 0
-
-! X-offset relative to location.
-rofi.xoffset: 0
-
-! Use the full screen height and width.
-rofi.fullscreen: false
-
-! Open in sidebar-mode.
-! In this mode a list of all enabled modes is shown at the bottom. (See -modi option)
-rofi.sidebar-mode: false
 
 ! SSH SETTINGS
 ! ----------------------------------------------------------------------------

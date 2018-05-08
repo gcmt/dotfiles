@@ -45,11 +45,11 @@ def rofi(windows, inputbar=True):
     except ValueError:
         selected = 0
 
+    style = ['-theme', 'main-light']
+    style = ['-theme-str', 'listview { fixed-height: false; }']
+
     options  = ['-dmenu', '-i', '-format', 'i']
     options += ['-markup-rows', '-lines', str(lines), '-selected-row', str(selected)]
-
-    confdir = os.environ['XDG_CONFIG_HOME']
-    style  = ['-theme', os.path.join(confdir, 'rofi/themes/main-light')]
 
     if len(windows) <= lines:
         style += ['-theme-str', 'listview { scrollbar: false; }']

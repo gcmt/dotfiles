@@ -3,17 +3,23 @@
 curwin=$(tmux display -p '#{window_id}')
 winids=$(tmux list-windows -F '#{window_id}')
 curidx=$(echo "$winids" | grep -n "$curwin" | grep -o "^[0-9]\+")
-lines=$(tmux list-windows -F '#I #W#F (#{window_panes} panes) "#{pane_title}"')
-width=$(echo "$lines" | wc -L)
+windows=$(tmux list-windows -F '#I #W#F (#{window_panes} panes) "#{pane_title}"')
+width=$(echo "$windows" | wc -L)
 [[ (($width < 50)) ]] && width=50
 
-colorscheme=$(xrdb -query all | grep colorscheme | grep -o "\S\+$")
-theme="$XDG_CONFIG_HOME/rofi/themes/terminal-${colorscheme:-light}"
 options="-dmenu -monitor -2 -format d -selected-row $((curidx-1)) -width '-$((width+5))'"
-options="$options -theme '$theme' -theme-str '#mainbox { children: [listview]; }'"
 options="$options -kb-row-up k -kb-row-down j -kb-accept-entry l -kb-cancel 'Escape,q'"
 
-idx=$(echo "$lines" | eval "rofi $options")
+colorscheme=$(xrdb -query all | grep colorscheme | grep -o "\S\+$")
+theme="term-${colorscheme:-light}"
+style="-theme '$theme' -theme-str '#mainbox { children: [listview]; }'"
+
+lines=$(echo "$windows" | wc -l)
+if (( $lines <= 8 )); then
+	style="$style -theme-str 'listview { scrollbar: false; }'"
+fi
+
+idx=$(echo "$windows" | eval "rofi $options $style")
 if [[ -n "$idx" ]]; then
 	winid=$(echo "$winids" | head -$idx | tail -1)
 	tmux select-window -t "$winid"

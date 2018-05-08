@@ -95,8 +95,9 @@ scrollbar {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 listview {
-	spacing: 0;
+	lines: 8;
 	fixed-height: true;
+	spacing: 0;
 	scrollbar: true;
 	border-color: @separator-color;
 }

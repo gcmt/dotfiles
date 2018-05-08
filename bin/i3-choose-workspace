@@ -1,0 +1,60 @@
+#!/usr/bin/env python
+
+import os
+import sys
+import i3ipc
+from subprocess import Popen, PIPE
+
+
+def rofi(workspaces, selected=0):
+
+    lines = [w.name for w in workspaces]
+
+    # Since the listview does not adapt to its content when elements are stacked
+    # horizontally, try to estimate the correct window width.
+    cw = 8  # 8px is the estimated character width for mono fonts size 10.
+    hpadding, vpadding = 40, 20
+    width = sum([(hpadding*2 + len(w.name)*cw) for w in workspaces]) + 1
+
+    style  = ['-theme', 'main-light', '-width', str(width)]
+    style += ['-theme-str', 'window { children: [ listview ]; }']
+    style += ['-theme-str', 'listview { layout: horizontal; }']
+    style += ['-theme-str', f'element {{ font: "Noto Mono 10"; padding: {vpadding} {hpadding}; }}']
+
+    options  = ['-dmenu', '-format', 'i', '-no-custom']
+    options += ['-markup-rows', '-selected-row', str(selected)]
+    options += ['-kb-row-up', 'h', '-kb-row-down', 'l']
+    options += ['-kb-accept-entry', 'j,Down,Return', '-kb-cancel', 'Escape,q']
+
+    proc = Popen(['rofi'] + options + style, stdin=PIPE, stdout=PIPE)
+    out = proc.communicate("\n".join(lines).encode())[0].decode()
+
+    return out.strip(), proc.returncode
+
+
+def main():
+
+    i3 = i3ipc.Connection()
+    tree = i3.get_tree()
+
+    workspaces = tree.workspaces()
+    if not workspaces:
+        sys.exit(0)
+
+    selected = 0
+    current = tree.find_focused().workspace()
+    for i, w in enumerate(workspaces):
+        if w.name == current.name:
+            selected = i
+            break
+
+    choice, _ = rofi(workspaces, selected)
+    if not choice:
+        sys.exit(0)
+
+    target = workspaces[int(choice)].num
+    i3.command(f'workspace number {target}')
+
+
+if __name__ == '__main__':
+    main()

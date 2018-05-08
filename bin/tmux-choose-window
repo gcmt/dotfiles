@@ -3,18 +3,60 @@
 curwin=$(tmux display -p '#{window_id}')
 winids=$(tmux list-windows -F '#{window_id}')
 curidx=$(echo "$winids" | grep -n "$curwin" | grep -o "^[0-9]\+")
-windows=$(tmux list-windows -F '#I #W#F (#{window_panes} panes) "#{pane_title}"')
-width=$(echo "$windows" | wc -L)
-[[ (($width < 50)) ]] && width=50
+lines=$(echo "$winds" | wc -l)
 
-options="-dmenu -monitor -2 -format d -selected-row $((curidx-1)) -width '-$((width+5))'"
-options="$options -kb-row-up k -kb-row-down j -kb-accept-entry l -kb-cancel 'Escape,q'"
-
+options="-dmenu -monitor -2 -format d -no-custom -selected-row $((curidx-1))"
 colorscheme=$(xrdb -query all | grep colorscheme | grep -o "\S\+$")
-theme="term-${colorscheme:-light}"
-style="-theme '$theme' -theme-str '#mainbox { children: [listview]; }'"
+style="-theme term-${colorscheme:-light}"
 
-lines=$(echo "$windows" | wc -l)
+case "$1" in
+
+	-h)
+
+		windows=$(tmux lsw -F '###I #W#F')
+
+		hpadding=40 vpadding=20
+
+		# Since the listview does not adapt to its content when elements are stacked
+		# horizontally, try to estimate the correct window width.
+		# 8px is the estimated character width for mono fonts size 10.
+		cw=8 width=1
+		while read -r win; do
+			width=$(expr $width + $hpadding '*' 2 + ${#win} '*' 8)
+		done <<< "$windows"
+
+		options="$options -width '$width'"
+		options="$options -kb-row-up h -kb-row-down l"
+		options="$options -kb-accept-entry 'j,Down,Return' -kb-cancel 'Escape,q'"
+
+		style="$style -theme-str 'window { children: [ listview ]; }'"
+		style="$style -theme-str 'listview { layout: horizontal; }'"
+		style="$style -theme-str 'element { font: \"Noto Mono 10\"; padding: $vpadding $hpadding; }'"
+
+		;;
+
+	-v)
+
+		windows=$(tmux lsw -F '###I #W#F (#{window_panes} panes) "#{pane_title}"')
+
+		width=$(echo "$windows" | wc -L)
+		[[ (($width < 50)) ]] && width=50
+
+		options="$options -width '-$((width+5))'"
+		options="$options -kb-row-up k -kb-row-down j"
+		options="$options -kb-accept-entry 'l,Return' -kb-cancel 'Escape,q'"
+
+		style="$style  -theme-str '#mainbox { children: [listview]; }'"
+
+		;;
+
+	*)
+
+		echo 2>&1 "usage: tmux-choose-window [-h|-v]"
+		exit 1
+
+esac
+
 if (( $lines <= 8 )); then
 	style="$style -theme-str 'listview { scrollbar: false; }'"
 fi

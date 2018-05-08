@@ -804,6 +804,12 @@
 	nnoremap <silent> gl :Buffers<cr>
 	nnoremap <silent> gL :Buffers!<cr>
 
+" Rofi
+" ----------------------------------------------------------------------------
+
+	nnoremap <silent> gp :RofiBuffers!<cr>
+	nnoremap <silent> gP :RofiEdit<cr>
+
 " Marks
 " ----------------------------------------------------------------------------
 

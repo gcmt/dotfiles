@@ -28,9 +28,6 @@ rofi.scroll-method: 0
 ! - fuzzy: Do a fuzzy match.
 rofi.matching: normal
 
-! Disable history in run/ssh
-rofi.disable-history: false
-
 ! Tokenize the input.
 rofi.tokenize: true
 
@@ -94,6 +91,15 @@ rofi.parse-known-hosts: true
 ! RUN SETTINGS
 ! ----------------------------------------------------------------------------
 
+! When using drun, match only with the specified Desktop entry fields. The fields are:
+! - name: the application's name
+! - generic: the application's generic name
+! - exec: the application's executable
+! - categories: the application's categories
+! - comment: the application comment
+! - all: all of the above
+rofi.drun-match-fields: name
+
 ! Set the name to use for run mode. This is used as prompt and in combi-browser.
 rofi.display-run:
 
@@ -110,36 +116,8 @@ rofi.run-shell-command: urxvt -e {cmd}
 ! Uses 'run-command'.
 rofi.run-list-command:
 
-! The modi to combine in combi mode. For syntax to see -modi.
-rofi.modi: window,run,drun
-
-! COMBI SETTINGS
-! ----------------------------------------------------------------------------
-
-! Set the name to use for combi mode. This is used as prompt and in combi-browser.
-rofi.display-combi: combi
-
-! The modi to combine in combi mode. For syntax to see -modi.
-rofi.combi-modi: window,run,drun
-
-! WINDOW MODE
-! ----------------------------------------------------------------------------
-
-! Set the name to use for window mode. This is used as prompt and in combi-browser.
-rofi.display-window:
-
-! Set the name to use for windowcd mode. This is used as prompt and in combi-browser.
-rofi.display-windowcd:
-
-! Format what is being displayed for windows: {field[:len]}
-! - field: w: Desktop name, t: Title of window, n: Name, r: Role, c: Class.
-! - len: maximum field length (0 for auto-size).
-! If length negative and window width is negative, field length is width - len.
-! If length is positive, the entry will be truncated or padded to fill that length.
-rofi.window-format: [ {w} ]  {t}
-
-! Set command to execute on selected window for custom action.
-rofi.window-command: xkill -id {window}
+! Disable history in run/ssh
+rofi.disable-history: false
 
 ! KEY BINDINGS
 ! ----------------------------------------------------------------------------
@@ -148,10 +126,10 @@ rofi.window-command: xkill -id {window}
 ! ----------------------------------------------------------------------------
 
 ! Paste primary selection
-rofi.kb-primary-paste: Control+V
+rofi.kb-primary-paste:
 
 ! Paste clipboard
-rofi.kb-secondary-paste: Control+v
+rofi.kb-secondary-paste: Control+V
 
 ! Clear input line
 rofi.kb-clear-line: Control+u

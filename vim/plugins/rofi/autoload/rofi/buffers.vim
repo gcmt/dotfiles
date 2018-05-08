@@ -1,11 +1,13 @@
 
-" rofi#buffers#show() -> 0
-" Open rofi with a list of all open buffers.
-func! rofi#buffers#show() abort
+" rofi#buffers#show([{all:number}]) -> 0
+" View all open buffers with Rofi. If {all} is given and it's true, then
+" 'normal' unlisted buffers are also displayed.
+func! rofi#buffers#show(...) abort
 
-	let buffers = s:buffers()
+	let all = a:0 > 0 && a:1
+	let buffers = s:buffers(all)
 	if empty(buffers)
-		return
+		return rofi#err("No more buffers")
 	end
 
 	let choice = s:rofi(buffers)
@@ -25,23 +27,28 @@ func! rofi#buffers#show() abort
 	" -kb-custom-3 -> 12 (open in a new tab)
 	" -kb-custom-4 -> 13 (delete buffer)
 	" -kb-custom-5 -> 14 (wipe buffer)
+	" -kb-custom-6 -> 15 (toggle unlisted buffers)
 
-	if exitcode == 13 || exitcode == 14
+	if exitcode == 15
+
+		call rofi#buffers#show(1 - all)
+
+	elseif exitcode == 13 || exitcode == 14
 
 		try
 			let map = {13: 'bdelete', 14: 'bwipe'}
 			exec get(map, exitcode, '') bufnr
 			redraw!
-			call rofi#buffers#show()
+			call rofi#buffers#show(all)
 		catch /E.*/
 			call rofi#err(matchstr(v:exception, '\vE\d+:.*'))
 		endtry
 
 	else
 
-		let map = {10: 'split', 11: 'vsplit', 12: 'tab split'}
-		exec get(map, exitcode, '')
-		sil exec 'buffer' bufnr
+		let cmdmap = {10: 'split', 11: 'vsplit', 12: 'tab split'}
+		exec get(cmdmap, exitcode, '')
+		sil exec 'edit' fnameescape(bufname(bufnr))
 
 	end
 
@@ -68,9 +75,11 @@ func! s:rofi(buffers)
 		let options .= " -kb-accept-entry 'l,Control+d' -kb-cancel 'Escape,q'"
 		let options .= " -kb-custom-1 's' -kb-custom-2 'v' -kb-custom-3 't'"
 		let options .= " -kb-custom-4 'd' -kb-custom-5 'w'"
+		let options .= " -kb-custom-6 'a'"
 	else
 		let options .= " -kb-custom-1 'Alt+s' -kb-custom-2 'Alt+v' -kb-custom-3 'Alt+t'"
 		let options .= " -kb-custom-4 'Alt+d' -kb-custom-5 'Alt+w'"
+		let options .= " -kb-custom-6 'Control+a'"
 	end
 
 	let input = join(s:format_buffers(a:buffers), "\n")
@@ -79,11 +88,16 @@ func! s:rofi(buffers)
 
 endf
 
-" s:buffers() -> list
-" Return a list of all 'normal' buffers (for which the 'buftype' option is
-" empty).
-func! s:buffers()
-	return filter(range(1, bufnr('$')), 'buflisted(v:val)')
+" s:buffers([{all:number}]) -> list
+" Return a list of 'normal' buffers (for which the 'buftype' option is empty).
+" If {all} is given and it's true, unlisted buffers are also returned.
+func! s:buffers(...)
+	if a:0 > 0 && a:1
+		let Fn = {i, nr -> bufexists(nr) && empty(getbufvar(nr, '&buftype'))}
+	else
+		let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&buftype'))}
+	end
+	return filter(range(1, bufnr('$')), Fn)
 endf
 
 " s:format_buffers({buffers:list}) -> list
@@ -121,6 +135,8 @@ func! s:format_buffers(buffers)
 
 		if getbufvar(bufnr, '&mod')
 			let line .= printf("<span foreground='%s'>%s</span>", colors.mod, tail)
+		elseif !buflisted(bufnr)
+			let line .= printf("<span foreground='%s'>%s</span>", colors.dim, tail)
 		else
 			let line .= tail
 		end

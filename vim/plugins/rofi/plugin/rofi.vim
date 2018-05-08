@@ -23,4 +23,4 @@ for [s:option, s:default] in items(s:options)
 endfo
 
 command -nargs=? RofiEdit call rofi#files#edit(<q-args>)
-command -nargs=0 RofiBuffers call rofi#buffers#show()
+command -nargs=0 -bang RofiBuffers call rofi#buffers#show(<q-bang> == '!')

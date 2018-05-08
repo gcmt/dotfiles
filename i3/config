@@ -67,12 +67,12 @@ bindsym $mod+Tab exec --no-startup-id i3-new-workspace
 bindsym $mod+y exec --no-startup-id ydl-mp3
 
 # Rofi bindings
-bindsym $mod+w exec i3-choose-window -no-inputbar
-bindsym $mod+space exec rofi -show drun
-bindsym $alt+space exec rofi -show -run
+bindsym $mod+w exec --no-startup-id i3-choose-window -no-inputbar
+bindsym $mod+space exec --no-startup-id rofi -show drun
+bindsym $alt+space exec --no-startup-id rofi -show run
 
 # Choose workspace with rofi
-bindsym $mod+g exec i3-choose-workspace
+bindsym $mod+g exec --no-startup-id i3-choose-workspace
 
 # Toggle Polybar visibility
 bindsym $mod+Return exec --no-startup-id polybar-toggle

@@ -34,7 +34,7 @@ func! rofi#buffers#show(...) abort
 			let map = {13: 'bdelete', 14: 'bwipe'}
 			exec get(map, exitcode, '') bufnr
 			redraw!
-			call rofi#buffers#show(a:inputbar)
+			call rofi#buffers#show(inputbar)
 		catch /E.*/
 			call rofi#err(matchstr(v:exception, '\vE\d+:.*'))
 		endtry

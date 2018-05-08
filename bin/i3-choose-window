@@ -58,9 +58,11 @@ def rofi(windows, inputbar=True):
         style += ['-theme-str', 'mainbox { children: [listview]; }']
         options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,j']
         options += ['-kb-accept-entry', 'l,Control+d', '-kb-cancel', 'Escape,q']
-        options += ['-kb-custom-1', 'm', '-kb-custom-2', 'underscore', '-kb-custom-3', 'o']
+        options += ['-kb-custom-1', 'm', '-kb-custom-2', 'underscore']
+        options += ['-kb-custom-3', 'o', '-kb-custom-4', 'Q']
     else:
-        options += ['-kb-custom-1', 'Control+m', '-kb-custom-2', 'Super+underscore', '-kb-custom-3', 'Control+o']
+        options += ['-kb-custom-1', 'Control+m', '-kb-custom-2', 'Super+underscore']
+        options += ['-kb-custom-3', 'Control+o', '-kb-custom-4', 'Super+Q']
 
     lines = format_windows(windows)
     proc = Popen(['rofi'] + options + style, stdin=PIPE, stdout=PIPE)
@@ -97,30 +99,37 @@ def main():
     if not choice or choice == '-1':
         sys.exit(0)
 
-    id = windows[int(choice)].id
+    win = windows[int(choice)]
 
     # -kb-accept-entry
     if exitcode == 0:
         # focus the selected window
-        i3.command(f'[con_id="{id}"] focus; floating disable')
+        i3.command(f'[con_id="{win.id}"] focus; floating disable')
         sys.exit(0)
 
     # -kb-custom-1
     if exitcode == 10:
         # move the selected window to the current workspace
         num = tree.find_focused().workspace().num
-        i3.command(f'[con_id="{id}"] move to workspace number {num}; floating disable')
+        i3.command(f'[con_id="{win.id}"] move to workspace number {num}; floating disable')
         sys.exit(0)
 
     # -kb-custom-2
     if exitcode == 11:
         # move the selected window to the scratchpad
-        i3.command(f'[con_id="{id}"] move scratchpad')
+        i3.command(f'[con_id="{win.id}"] move scratchpad')
         os.execv(sys.argv[0], sys.argv)
 
     # -kb-custom-3
     if exitcode == 12:
+        # switch to drun
         os.execvp('rofi', ['rofi', '-show', 'drun'])
+
+    # -kb-custom-4
+    if exitcode == 13:
+        # kill selected window
+        Popen(['xkill', '-id', f"{win.window}"])
+        os.execv(sys.argv[0], sys.argv)
 
 if __name__ == '__main__':
     main()

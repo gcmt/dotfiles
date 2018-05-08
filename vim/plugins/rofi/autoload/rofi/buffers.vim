@@ -6,7 +6,7 @@ func! rofi#buffers#show(...) abort
 
 	let all = a:0 > 0 && a:1
 	let buffers = s:buffers(all)
-	if empty(buffers)
+	if len(buffers) <= 1
 		return rofi#err("No more buffers")
 	end
 

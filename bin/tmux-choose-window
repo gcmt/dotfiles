@@ -1,68 +1,146 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-curwin=$(tmux display -p '#{window_id}')
-winids=$(tmux list-windows -F '#{window_id}')
-curidx=$(echo "$winids" | grep -n "$curwin" | grep -o "^[0-9]\+")
-lines=$(echo "$winds" | wc -l)
+import re
+import os
+import sys
+from subprocess import run, PIPE
+from collections import namedtuple
 
-options="-dmenu -monitor -2 -format d -no-custom -selected-row $((curidx-1))"
-colorscheme=$(xrdb -query all | grep colorscheme | grep -o "\S\+$")
-style="-theme term-${colorscheme:-light}"
 
-case "$1" in
+Window = namedtuple('Window',
+    ['id', 'num', 'name', 'flags', 'pane_title', 'is_current']
+)
 
-	-h)
 
-		windows=$(tmux lsw -F '###I #W#F')
+# Return the active window id
+def get_current_window_id():
+    cmd = ['tmux', 'display', '-p', '#{window_id}']
+    return run(cmd, stdout=PIPE, encoding='utf8').stdout.strip()
 
-		hpadding=40 vpadding=20
 
-		# Since the listview does not adapt to its content when elements are stacked
-		# horizontally, try to estimate the correct window width.
-		# 8px is the estimated character width for mono fonts size 10.
-		cw=8 width=1
-		while read -r win; do
-			width=$(expr $width + $hpadding '*' 2 + ${#win} '*' 8)
-		done <<< "$windows"
+# Return all windows of the current session.
+def get_windows():
+    current = get_current_window_id()
+    cmd = ['tmux', 'list-windows', '-F', '#{window_id};;#I;;#W;;#F;;#{pane_title}']
+    proc = run(cmd, stdout=PIPE, encoding='utf8')
+    windows = []
+    for line in proc.stdout.strip().split("\n"):
+        tokens = line.split(';;')
+        is_current = True if tokens[0] == current else False
+        win = Window(*tokens, is_current)
+        windows.append(win)
+    return windows
 
-		options="$options -width '$width'"
-		options="$options -kb-row-up 'h' -kb-row-down 'l,Alt+Tab'"
-		options="$options -kb-accept-entry 'j,k,Up,Down,Return' -kb-cancel 'Escape,q'"
 
-		style="$style -theme-str 'window { children: [ listview ]; }'"
-		style="$style -theme-str 'listview { layout: horizontal; }'"
-		style="$style -theme-str 'element { font: \"Noto Mono 10\"; padding: $vpadding $hpadding; }'"
+# Return the x resource with the given name.
+def get_xresource(name):
+    name = re.escape(name)
+    patt = re.compile(rf"\b{name}:\s+(\S+)$")
+    cmd = ['xrdb', '-query', 'all']
+    proc = run(cmd, stdout=PIPE, encoding='utf8')
+    for line in proc.stdout.split("\n"):
+        match = patt.search(line)
+        if match:
+            return match.group(1)
 
-		;;
 
-	-v)
+# Return the x color resource with the given name.
+# rgb:/rr/gg/bb -> #rrggbb
+def get_xcolor(name):
+    value = get_xresource(name)
+    if value is not None:
+        return value.replace('rgb:', '#').replace('/', '')
 
-		windows=$(tmux lsw -F '###I #W#F (#{window_panes} panes) "#{pane_title}"')
 
-		width=$(echo "$windows" | wc -L)
-		[[ (($width < 50)) ]] && width=50
+# Launch rofi.
+def rofi(windows):
 
-		options="$options -width '-$((width+5))'"
-		options="$options -kb-row-up k -kb-row-down j"
-		options="$options -kb-accept-entry 'l,Return' -kb-cancel 'Escape,q'"
+    dim = get_xcolor('color22')
+    verydim = get_xcolor('color23')
 
-		style="$style  -theme-str '#mainbox { children: [listview]; }'"
+    input = []
+    for win in windows:
+        line = f'<span foreground="{dim}">#{win.num}</span> '
+        line += f'<span>{win.name}</span> '
+        line += f'<span foreground="{dim}">{win.flags}</span> '
+        line += f'<span foreground="{verydim}">{win.pane_title}</span> '
+        input.append(line)
 
-		;;
+    lines = 8
+    selected = 0
 
-	*)
+    for i, win in enumerate(windows):
+        if win.is_current:
+            selected = i
 
-		echo 2>&1 "usage: tmux-choose-window [-h|-v]"
-		exit 1
+    options = ['-dmenu', '-format', 'i', '-no-custom', '-markup-rows']
+    options += ['-selected-row', str(selected), '-lines', str(lines)]
+    options += ['-kb-row-up', 'k', '-kb-row-down', 'j,Alt+Tab']
+    options += ['-kb-accept-entry', 'l,Return', '-kb-cancel', 'Escape,q']
+    options += ['-kb-custom-1', 'comma', '-kb-custom-2', 'Q']
 
-esac
+    colorscheme = get_xresource('colorscheme.name') or 'light'
+    style  = ['-theme', 'term-' + colorscheme]
+    style += ['-theme-str', 'mainbox { children: [ listview ]; }']
 
-if (( $lines <= 8 )); then
-	style="$style -theme-str 'listview { scrollbar: false; }'"
-fi
+    if len(windows) <= lines:
+        style += ['-theme-str', 'listview { scrollbar: false; }']
 
-idx=$(echo "$windows" | eval "rofi $options $style")
-if [[ -n "$idx" ]]; then
-	winid=$(echo "$winids" | head -$idx | tail -1)
-	tmux select-window -t "$winid"
-fi
+    input = "\n".join(input)
+    cmd = ['rofi'] + options + style
+    proc = run(cmd, input=input, stdout=PIPE, encoding='utf8')
+    return proc.stdout.strip(), proc.returncode
+
+
+# Launch rofi for renaming the selected window.
+def rofi_rename(window):
+
+    options = ['-dmenu', '-p', 'Rename window: ', '-filter', window.name]
+
+    colorscheme = get_xresource('colorscheme.name') or 'light'
+    style  = ['-theme', 'term-' + colorscheme]
+    style += ['-theme-str', 'listview { enabled: false; }']
+    style += ['-theme-str', 'case-indicator { enabled: false; }']
+    style += ['-theme-str', 'prompt { enabled: true; }']
+
+    cmd = ['rofi'] + options + style
+    proc = run(cmd, stdout=PIPE, encoding='utf8')
+    return proc.stdout.strip()
+
+
+def main():
+
+    windows = get_windows()
+    if not windows:
+        sys.exit(0)
+
+    choice, exitcode = rofi(windows)
+    if not choice:
+        sys.exit(0)
+
+    target = windows[int(choice)]
+
+    # -kb-accept-entry
+    if exitcode == 0:
+        # switch to the selected window
+        run(['tmux', 'select-window', '-t', target.id])
+
+    # -kb-custom-1
+    if exitcode == 10:
+        # rename the selected window
+        choice = rofi_rename(target)
+        if choice:
+            run(['tmux', 'rename-window', '-t', target.id, choice])
+        os.execv(sys.argv[0], sys.argv)
+
+    # -kb-custom-2
+    if exitcode == 11:
+        # kill the selected window
+        run(['tmux', 'kill-window', '-t', target.id])
+        os.execv(sys.argv[0], sys.argv)
+
+    sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()

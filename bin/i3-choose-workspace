@@ -6,15 +6,31 @@ import i3ipc
 from subprocess import Popen, PIPE
 
 
-def rofi(workspaces, selected=0):
+CW_NORM = 8  # character width in px for mono fonts size 10
+CW_BOLD = 9  # character width in px for bold mono fonts size 10
 
-    lines = [w.name for w in workspaces]
 
-    # Since the listview does not adapt to its content when elements are stacked
-    # horizontally, try to estimate the correct window width.
-    cw = 8  # 8px is the estimated character width for mono fonts size 10.
-    hpadding, vpadding = 40, 20
-    width = sum([(hpadding*2 + len(w.name)*cw) for w in workspaces]) + 1
+# Try to estimate the correct width of a string in pixels.
+# Since the listview does not adapt to its content when elements are stacked
+# horizontally, we need to manually estimate the correct window width.
+def pixels(s, bold=False):
+    px = CW_BOLD if bold else CW_NORM
+    return len(s) * px
+
+
+def rofi(workspaces, current):
+
+    width = 1
+    lines = []
+    selected = 0
+    hpadding = 40
+    vpadding = 20
+
+    for i, w in enumerate(workspaces):
+        width += hpadding * 2 + pixels(w.name, w.num == current.num)
+        selected = i if w.num == current.num else selected
+        line = f"<b>{w.name}</b>" if w.num == current.num else w.name
+        lines.append(line)
 
     style  = ['-theme', 'main-light', '-width', str(width)]
     style += ['-theme-str', 'window { children: [ listview ]; }']
@@ -41,14 +57,8 @@ def main():
     if len(workspaces) <= 1:
         sys.exit(0)
 
-    selected = 0
     current = tree.find_focused().workspace()
-    for i, w in enumerate(workspaces):
-        if w.name == current.name:
-            selected = i
-            break
-
-    choice, _ = rofi(workspaces, selected)
+    choice, _ = rofi(workspaces, current)
     if not choice:
         sys.exit(0)
 

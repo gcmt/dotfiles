@@ -52,19 +52,20 @@ def get_xcolor(name):
         return value.replace('rgb:', '#').replace('/', '')
 
 
-# Launch rofi.
-def rofi(windows):
-
+# Format windows into lines to be passed into rofi.
+def format_windows(windows):
     dim = get_xcolor('color22')
     verydim = get_xcolor('color23')
-
-    input = []
     for win in windows:
         line = f'<span foreground="{dim}">#{win.num}</span> '
-        line += f'<span>{win.name}</span> '
+        line += f'<span>{win.name}</span>'
         line += f'<span foreground="{dim}">{win.flags}</span> '
         line += f'<span foreground="{verydim}">{win.pane_title}</span> '
-        input.append(line)
+        yield line
+
+
+# Launch rofi.
+def rofi(windows):
 
     lines = 8
     selected = 0
@@ -86,7 +87,7 @@ def rofi(windows):
     if len(windows) <= lines:
         style += ['-theme-str', 'listview { scrollbar: false; }']
 
-    input = "\n".join(input)
+    input = "\n".join(format_windows(windows))
     cmd = ['rofi'] + options + style
     proc = run(cmd, input=input, stdout=PIPE, encoding='utf8')
     return proc.stdout.strip(), proc.returncode

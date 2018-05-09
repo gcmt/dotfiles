@@ -206,7 +206,7 @@ vimf() {
 	if [[ -s "$flist" ]]; then
 		vim "$flist" \
 			-c "argd %" \
-			-c "setl nowrite nomodifiable" \
+			-c "setl nomodifiable" \
 			-c "nn <silent> <buffer> gf :set bl<bar>norm! ^vg_gf<cr>" -c "nmap <buffer> l gf" \
 			-c "nn <silent> <buffer> gF :set nobl<bar>norm! ^vg_gf<cr>" -c "nmap <buffer> L gF"
 	else

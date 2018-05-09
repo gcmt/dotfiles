@@ -39,8 +39,8 @@ def rofi(workspaces, current):
 
     options  = ['-dmenu', '-format', 'i', '-no-custom']
     options += ['-markup-rows', '-selected-row', str(selected)]
-    options += ['-kb-row-up', 'h', '-kb-row-down', 'l']
-    options += ['-kb-accept-entry', 'j,Down,Return', '-kb-cancel', 'Escape,q']
+    options += ['-kb-row-up', 'h', '-kb-row-down', 'l,m,Super+m']
+    options += ['-kb-accept-entry', 'j,k,Down,Up,Return', '-kb-cancel', 'Escape,q']
 
     proc = Popen(['rofi'] + options + style, stdin=PIPE, stdout=PIPE)
     out = proc.communicate("\n".join(lines).encode())[0].decode()

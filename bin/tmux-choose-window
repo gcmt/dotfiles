@@ -26,8 +26,8 @@ case "$1" in
 		done <<< "$windows"
 
 		options="$options -width '$width'"
-		options="$options -kb-row-up h -kb-row-down l"
-		options="$options -kb-accept-entry 'j,Down,Return' -kb-cancel 'Escape,q'"
+		options="$options -kb-row-up 'h' -kb-row-down 'l,Alt+Tab'"
+		options="$options -kb-accept-entry 'j,k,Up,Down,Return' -kb-cancel 'Escape,q'"
 
 		style="$style -theme-str 'window { children: [ listview ]; }'"
 		style="$style -theme-str 'listview { layout: horizontal; }'"

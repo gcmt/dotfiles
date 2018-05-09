@@ -27,10 +27,10 @@ def rofi(workspaces, current):
     vpadding = 20
 
     for i, w in enumerate(workspaces):
-        width += hpadding * 2 + pixels(w.name, w.num == current.num)
-        selected = i if w.num == current.num else selected
-        line = f"<b>{w.name}</b>" if w.num == current.num else w.name
-        lines.append(line)
+        if w.num == current.num:
+            selected = i
+        width += hpadding * 2 + pixels(w.name)
+        lines.append(w.name)
 
     style  = ['-theme', 'main-light', '-width', str(width)]
     style += ['-theme-str', 'window { children: [ listview ]; }']

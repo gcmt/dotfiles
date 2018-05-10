@@ -102,20 +102,20 @@ def main():
     # -kb-accept-entry
     if exitcode == 0:
         # focus the selected window
-        i3.command(f'[con_id="{win.id}"] focus; floating disable')
+        win.command('focus; floating disable')
         sys.exit(0)
 
     # -kb-custom-1
     if exitcode == 10:
         # move the selected window to the current workspace
         num = tree.find_focused().workspace().num
-        i3.command(f'[con_id="{win.id}"] move to workspace number {num}; floating disable')
+        win.command('move to workspace number {num}; floating disable')
         sys.exit(0)
 
     # -kb-custom-2
     if exitcode == 11:
         # move the selected window to the scratchpad
-        i3.command(f'[con_id="{win.id}"] move scratchpad')
+        win.command('move scratchpad')
         os.execv(sys.argv[0], sys.argv)
 
     # -kb-custom-3

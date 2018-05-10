@@ -347,9 +347,9 @@ bindkey '^b' cd-parent
 
 if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
 	source "$ZDATADIR/ext/rofi.zsh"
-	bindkey '^v' rofi-find
-	bindkey '^e' rofi-cd
-	# bindkey '^r' rofi-history
+	bindkey '^e' rofi-find
+	bindkey '^t' rofi-cd
+	bindkey '^r' rofi-history
 fi
 
 if [[ -e "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && "$TERM" != "linux" ]]; then

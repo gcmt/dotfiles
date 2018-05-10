@@ -46,10 +46,6 @@ if [[ "$@" =~ '-polybar' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/polybar" "$XDG_CONFIG_HOME/polybar"
 fi
 
-if [[ "$@" =~ '-rofi' || "$@" =~ '-all' ]]; then
-	link "$DOTDIR/rofi" "$XDG_CONFIG_HOME/rofi"
-fi
-
 if [[ "$@" =~ '-termite' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/termite" "$XDG_CONFIG_HOME/termite"
 fi
@@ -69,7 +65,7 @@ if [[ "$@" =~ '-zsh' || "$@" =~ '-all' ]]; then
 	mkdir -p "$XDG_DATA_HOME/zsh/ext"
 	link "$DOTDIR/zsh" "$XDG_CONFIG_HOME/zsh"
 	link "$DOTDIR/zsh/.zshenv" "$HOME/.zshenv"
-	link "$DOTDIR/zsh/rofi.zsh" "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
+	link "$DOTDIR/zsh/ext/rofi.zsh" "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
 fi
 
 if [[ "$@" =~ '-bash' || "$@" =~ '-all' ]]; then

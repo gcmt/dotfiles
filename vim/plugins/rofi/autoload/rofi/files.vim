@@ -16,11 +16,6 @@ func! rofi#files#edit(...) abort
 		return
 	end
 
-	" -kb-accept-entry -> 0 (open in the current window)
-	" -kb-custom-1 -> 10 (split window horizontally)
-	" -kb-custom-2 -> 11 (split window verically)
-	" -kb-custom-3 -> 12 (open in a new tab)
-
 	let map = {0: 'edit', 10: 'split', 11: 'vsplit', 12: 'tabedit'}
 	if !empty(path) && has_key(map, exitcode)
 		exec get(map, exitcode) fnameescape(path)

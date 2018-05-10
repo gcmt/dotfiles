@@ -21,20 +21,16 @@ func! rofi#buffers#show(...) abort
 
 	let bufnr = buffers[choice]
 
-	" -kb-accept-entry -> 0 (open in the current window)
-	" -kb-custom-1 -> 10 (split window horizontally)
-	" -kb-custom-2 -> 11 (split window verically)
-	" -kb-custom-3 -> 12 (open in a new tab)
-	" -kb-custom-4 -> 13 (delete buffer)
-	" -kb-custom-5 -> 14 (wipe buffer)
-	" -kb-custom-6 -> 15 (toggle unlisted buffers)
-
+	" -kb-custom-6
 	if exitcode == 15
 
+		" toggle unlisted buffers
 		call rofi#buffers#show(1 - all)
 
+	" -kb-custom-(4|5)
 	elseif exitcode == 13 || exitcode == 14
 
+		" delete or wipe selected buffer
 		try
 			let map = {13: 'bdelete', 14: 'bwipe'}
 			exec get(map, exitcode, '') bufnr
@@ -44,8 +40,10 @@ func! rofi#buffers#show(...) abort
 			call rofi#err(matchstr(v:exception, '\vE\d+:.*'))
 		endtry
 
+	" -kb-accept-entry, -kb-custom-(1|2|3)
 	else
 
+		" open the selected buffer in the current window, in a split or in a tab
 		let cmdmap = {10: 'split', 11: 'vsplit', 12: 'tab split'}
 		exec get(cmdmap, exitcode, '')
 		sil exec 'edit' fnameescape(bufname(bufnr))

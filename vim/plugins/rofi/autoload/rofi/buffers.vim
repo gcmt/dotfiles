@@ -101,11 +101,9 @@ endf
 " Return a list of 'normal' buffers (for which the 'buftype' option is empty).
 " If {all} is given and it's true, unlisted buffers are also returned.
 func! s:buffers(...)
-	if a:0 > 0 && a:1
-		let Fn = {i, nr -> bufexists(nr) && empty(getbufvar(nr, '&buftype'))}
-	else
-		let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&buftype'))}
-	end
+	let all = a:0 > 0 ? a:1 : 0
+	let EmptyBuftype = {b -> empty(getbufvar(b, '&buftype'))}
+	let Fn = {_, b -> (all && bufexists(b) || buflisted(b)) && EmptyBuftype(b)}
 	return filter(range(1, bufnr('$')), Fn)
 endf
 

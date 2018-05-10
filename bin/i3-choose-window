@@ -4,13 +4,12 @@ import os
 import sys
 import i3ipc
 import argparse
-from subprocess import Popen, PIPE
+from subprocess import run, PIPE
 
 # Turn windows into formatted lines to be passed to Rofi.
 # Pango markup is supported if the '-markup-rows' Rofi option is used:
 # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
 def format_windows(windows):
-    lines = []
     dimcolor = '#797d84'
     for win in windows:
         wsname = win.workspace().name
@@ -20,8 +19,7 @@ def format_windows(windows):
             row += f"<span foreground='{dimcolor}'>{win.name}</span>"
         else:
             row += f"<b>{win.name}</b>" if win.focused else win.name
-        lines.append(row)
-    return lines
+        yield row
 
 
 # Get windows of all workspaces. If the 'scratchpad' argument is given and it's
@@ -64,11 +62,11 @@ def rofi(windows, inputbar=True):
         options += ['-kb-custom-1', 'Control+m', '-kb-custom-2', 'Super+underscore']
         options += ['-kb-custom-3', 'Control+o', '-kb-custom-4', 'Super+Q']
 
-    lines = format_windows(windows)
-    proc = Popen(['rofi'] + options + style, stdin=PIPE, stdout=PIPE)
-    out = proc.communicate("\n".join(lines).encode())[0].decode()
+    input = "\n".join(format_windows(windows))
+    cmd = ['rofi'] + options + style
+    proc = run(cmd, input=input, stdout=PIPE, encoding='utf8')
 
-    return out.strip(), proc.returncode
+    return proc.stdout.strip(), proc.returncode
 
 
 # Parse command line arguments.
@@ -128,7 +126,7 @@ def main():
     # -kb-custom-4
     if exitcode == 13:
         # kill selected window
-        Popen(['xkill', '-id', f"{win.window}"])
+        run(['xkill', '-id', f"{win.window}"])
         os.execv(sys.argv[0], sys.argv)
 
 if __name__ == '__main__':

@@ -4,12 +4,12 @@ import os
 import sys
 import time
 from datetime import datetime
-from subprocess import Popen
+from subprocess import run
 
 DEFAULT_DELAY = 4
 
 def notify(title, msg):
-    Popen(['notify-send', title, msg])
+    run(['notify-send', title, msg])
 
 now = datetime.utcnow()
 fname = f"Screenshot_{now.strftime('%Y-%m-%d-%T')}.png"
@@ -27,7 +27,7 @@ if wait:
     time.sleep(seconds)
 
 sys.argv.pop(0)
-Popen(['import'] + sys.argv + [dest])
+run(['import'] + sys.argv + [dest])
 
 if wait and '-window' in sys.argv:
     notify('Screenshot taken', dest)

@@ -3,7 +3,7 @@
 import os
 import sys
 import i3ipc
-from subprocess import Popen, PIPE
+from subprocess import run, PIPE
 
 
 CW_NORM = 8  # character width in px for mono fonts size 10
@@ -42,10 +42,11 @@ def rofi(workspaces, current):
     options += ['-kb-row-up', 'h', '-kb-row-down', 'l,m,Super+m']
     options += ['-kb-accept-entry', 'j,k,Down,Up,Return', '-kb-cancel', 'Escape,q']
 
-    proc = Popen(['rofi'] + options + style, stdin=PIPE, stdout=PIPE)
-    out = proc.communicate("\n".join(lines).encode())[0].decode()
+    input = "\n".join(lines)
+    cmd = ['rofi'] + options + style
+    proc = run(cmd, input=input, stdout=PIPE, encoding='utf8')
 
-    return out.strip(), proc.returncode
+    return proc.stdout.strip(), proc.returncode
 
 
 def main():

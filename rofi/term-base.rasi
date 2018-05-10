@@ -41,7 +41,7 @@ case-indicator {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 message {
-	padding: 6;
+	padding: 6 12;
 }
 
 textbox {

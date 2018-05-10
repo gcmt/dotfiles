@@ -30,7 +30,7 @@ endf
 func! s:rofi(files, ...)
 
 	let lines = min([len(a:files), g:rofi_max_lines])
-	let options = "-dmenu -monitor '-2' -p 'edit ' -no-custom -i"
+	let options = "-dmenu -monitor '-2' -p 'edit ' -no-custom -i -matching regex"
 	let options .= printf(" -width %s -lines %s", rofi#width(), lines)
 
 	if a:0 > 0 && type(a:1) == v:t_string

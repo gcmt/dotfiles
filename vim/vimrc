@@ -677,7 +677,7 @@
 
 		" Keep the help window to the bottom when there are multiple splits
 		au BufWinEnter * if &ft == 'help' | wincmd J | end
-		au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q :bdelete<cr> | end
+		au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q <c-w>c | end
 
 		" Show cursorline only for a short amount of time
 		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|explorer|buffers|finder|bookmarks|marks|taglist|plugs|search)$' | set nocul | end

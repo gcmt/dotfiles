@@ -11,6 +11,21 @@ func rofi#width() abort
 	return width
 endf
 
+" rofi#get_color({group:string}) -> string
+" Return the color value for the given highlight group.
+func rofi#get_color(group) abort
+	let group = a:group
+	while 1
+		let hi = execute('hi ' . group)
+		let linked = matchstr(hi, '\vlinks to \zs\w+')
+		if !empty(linked)
+			let group = linked
+		else
+			return matchstr(hi, '\v#[0-9a-fA-F]+')
+		end
+	endw
+endf
+
 " rofi#err({msg:string}) -> 0
 " Display a simple error message.
 func rofi#err(msg)

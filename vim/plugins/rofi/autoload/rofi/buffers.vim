@@ -111,11 +111,8 @@ endf
 " Format the given list of buffer numbers for Rofi.
 func! s:format_buffers(buffers)
 
-	let patt = '\v#[0-9a-fA-F]+'
-	let colors = {
-		\ 'dim': matchstr(execute('hi ' . g:rofi_color_dim), patt),
-		\ 'mod': matchstr(execute('hi ' . g:rofi_color_mod), patt),
-	\ }
+	let color_dim = rofi#get_color(g:rofi_color_dim)
+	let color_mod = rofi#get_color(g:rofi_color_mod)
 
 	let tails = {}
 	for bufnr in a:buffers
@@ -141,15 +138,15 @@ func! s:format_buffers(buffers)
 		end
 
 		if getbufvar(bufnr, '&mod')
-			let line .= printf("<span foreground='%s'>%s</span>", colors.mod, tail)
+			let line .= printf("<span foreground='%s'>%s</span>", color_mod, tail)
 		elseif !buflisted(bufnr)
-			let line .= printf("<span foreground='%s'>%s</span>", colors.dim, tail)
+			let line .= printf("<span foreground='%s'>%s</span>", color_dim, tail)
 		else
 			let line .= tail
 		end
 
 		if path != tail
-			let line .= ' ' . printf("<span foreground='%s'>%s</span>", colors.dim, path)
+			let line .= ' ' . printf("<span foreground='%s'>%s</span>", color_dim, path)
 		end
 
 		call add(lines, line)

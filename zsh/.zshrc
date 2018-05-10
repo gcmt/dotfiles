@@ -196,6 +196,11 @@ activate() {
 	echo "virtual environment activated: $venv"
 }
 
+# open files that contain the given pattern
+vimg() {
+	vim -q <(rg --vimgrep "$@") +copen
+}
+
 # search and open files with vim
 vimf() {
 	local flist=$(mktemp -d)/filelist

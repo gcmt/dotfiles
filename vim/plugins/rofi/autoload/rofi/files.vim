@@ -6,20 +6,23 @@ func! rofi#files#edit(...) abort
 
 	let files = system('rg --files')
 	if empty(files)
-		return
+		return 0
 	end
 
 	let filter = a:0 > 0 && type(a:1) == v:t_string ? a:1 : ''
 	let path = s:rofi(files, filter)
 	let exitcode = v:shell_error
 	if empty(path)
-		return
+		return 0
 	end
 
 	let map = {0: 'edit', 10: 'split', 11: 'vsplit', 12: 'tabedit'}
 	if !empty(path) && has_key(map, exitcode)
 		exec get(map, exitcode) fnameescape(path)
+		return 1
 	end
+
+	return 0
 
 endf
 

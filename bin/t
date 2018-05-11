@@ -22,6 +22,7 @@ last_used_session() {
 			last_delta=$delta
 		fi
 	done <<< "$sessions"
+	echo "$session"
 }
 
 if [[ -z "$target" ]]; then

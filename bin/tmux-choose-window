@@ -80,6 +80,7 @@ def rofi(windows):
     options += ['-kb-row-up', 'k', '-kb-row-down', 'j,Alt+Tab']
     options += ['-kb-accept-entry', 'l,Return', '-kb-cancel', 'Escape,q']
     options += ['-kb-custom-1', 'comma', '-kb-custom-2', 'Q']
+    options += ['-kb-custom-3', 'w']
 
     colorscheme = get_xresource('colorscheme.name') or 'light'
     style  = ['-theme', 'term-' + colorscheme]
@@ -140,6 +141,11 @@ def main():
         # kill the selected window
         run(['tmux', 'kill-window', '-t', target.id])
         os.execv(sys.argv[0], sys.argv)
+
+    # -kb-custom-3
+    if exitcode == 12:
+        # create new unnamed window
+        run(['tmux', 'new-window', '-c', '#{pane_current_path}'])
 
     sys.exit(0)
 

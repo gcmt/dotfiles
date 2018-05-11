@@ -1,0 +1,20 @@
+#!/bin/bash
+
+neww=0
+while getopts "n" OPT; do
+	case $OPT in
+		n) neww=1 ;;
+	esac
+done
+shift $((OPTIND -1))
+
+if (( $neww == 1 )); then
+	exec urxvt -e t "$1"
+else
+	# If the tmux session is already opened, switch to it
+	session=$(t -d "$1")
+	cmd="[title=\"^$session - Tmux\"] focus"
+	if i3-msg "$cmd" 2>/dev/null | grep -q false; then
+		exec urxvt -e t "$session"
+	fi
+fi

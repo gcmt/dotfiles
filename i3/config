@@ -46,13 +46,9 @@ bindsym $mod+m exec --no-startup-id firefox -new-tab 'https://www.fastmail.com/m
 # Kill window
 bindsym $mod+Shift+q kill
 
-# Open last active tmux session
-bindsym $mod+u exec --no-startup-id urxvt -e t
-bindsym $mod+Shift+u exec --no-startup-id urxvt -name urxvt-floating -e t
-
-# Open the scratch tmux session
-bindsym $mod+plus exec --no-startup-id urxvt -e t scratch
-bindsym $mod+Shift+plus exec --no-startup-id urxvt -name urxvt-floating -e t scratch
+# Open tmux
+bindsym $mod+plus exec --no-startup-id i3-t
+bindsym $mod+Shift+plus exec --no-startup-id i3-t scratch
 
 # Pick tmux session
 bindsym $mod+Control+u exec rofi-tmux

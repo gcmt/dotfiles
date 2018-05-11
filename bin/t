@@ -1,10 +1,18 @@
 #!/bin/bash
 
+dry=0
+while getopts "d" OPT; do
+	case $OPT in
+		d) dry=1 ;;
+	esac
+done
+shift $((OPTIND -1))
+
 target=$1
 default="scratch"
 
-# Find the last used session that is not $default or cmus
-last_used_session() {
+# Find the last active session that is not $default or cmus
+last_active_session() {
 	local sessions="$(tmux ls -F '#{session_activity}:#S' 2>/dev/null)"
 	if [[ -z "$sessions" ]]; then
 		return 1
@@ -26,8 +34,13 @@ last_used_session() {
 }
 
 if [[ -z "$target" ]]; then
-	target="$(last_used_session)"
+	target="$(last_active_session)"
 	target="${target:-$default}"
+fi
+
+if (( $dry == 1 )); then
+	echo "$target"
+	exit 0
 fi
 
 if ! tmux has -t "=$target" 2>/dev/null; then

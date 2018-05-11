@@ -41,34 +41,31 @@ bindsym $mod+Control+w [class="Firefox"] focus
 bindsym $mod+Control+t [class="URxvt"] focus
 
 # Open Fastmail
-bindsym $mod+m exec --no-startup-id firefox -new-tab 'https://www.fastmail.com/mail/'
+bindsym $mod+ograve exec --no-startup-id firefox -new-tab 'https://www.fastmail.com/mail/'
 
 # Kill window
 bindsym $mod+Shift+q kill
 
 # Open tmux
-bindsym $mod+plus exec --no-startup-id i3-t
-bindsym $mod+Shift+plus exec --no-startup-id i3-t scratch
+bindsym $mod+u exec --no-startup-id i3-t
+bindsym $mod+plus exec --no-startup-id i3-t scratch
 
 # Pick tmux session
-bindsym $mod+Control+u exec rofi-tmux
+bindsym $mod+Control+plus exec rofi-tmux
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace
 
 # Create new workspace
-bindsym $mod+Tab exec --no-startup-id i3-new-workspace
-
-# Youtube-dl (download selected url)
-bindsym $mod+y exec --no-startup-id ydl-mp3
+bindsym $mod+w exec --no-startup-id i3-new-workspace
 
 # Rofi bindings
-bindsym $mod+w exec --no-startup-id i3-choose-window -no-inputbar
+bindsym $mod+Tab exec --no-startup-id i3-choose-window -no-inputbar
 bindsym $mod+space exec --no-startup-id rofi -show drun
 bindsym $alt+space exec --no-startup-id rofi -show run
 
 # Choose workspace with rofi
-bindsym $mod+g exec --no-startup-id i3-choose-workspace
+bindsym $mod+i exec --no-startup-id i3-choose-workspace
 
 # Toggle Polybar visibility
 bindsym $mod+Return exec --no-startup-id polybar-toggle
@@ -145,7 +142,7 @@ bindsym $mod+Shift+9 move container to workspace number 9; workspace number 9
 bindsym $mod+Shift+0 move container to workspace number 10; workspace number 10
 
 # Move window to new workspace and back
-bindsym $mod+Shift+Tab exec --no-startup-id i3-move-container-to-new-workspace
+bindsym $mod+Shift+w exec --no-startup-id i3-move-container-to-new-workspace
 bindsym $mod+Shift+a move container to workspace back_and_forth; workspace back_and_forth
 
 # Move to last focused workspace

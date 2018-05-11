@@ -109,7 +109,7 @@ def main():
     if exitcode == 10:
         # move the selected window to the current workspace
         num = tree.find_focused().workspace().num
-        win.command('move to workspace number {num}; floating disable')
+        win.command(f'move to workspace number {num}; floating disable')
         sys.exit(0)
 
     # -kb-custom-2

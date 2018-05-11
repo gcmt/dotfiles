@@ -3,6 +3,7 @@
 import re
 import os
 import sys
+from html import escape
 from subprocess import run, PIPE
 from collections import namedtuple
 
@@ -57,10 +58,10 @@ def format_windows(windows):
     dim = get_xcolor('color22')
     verydim = get_xcolor('color23')
     for win in windows:
-        line = f'<span foreground="{dim}">#{win.num}</span> '
-        line += f'<span>{win.name}</span>'
-        line += f'<span foreground="{dim}">{win.flags}</span> '
-        line += f'<span foreground="{verydim}">{win.pane_title}</span> '
+        line = f'<span foreground="{dim}">#{escape(win.num)}</span> '
+        line += f'<span>{escape(win.name)}</span>'
+        line += f'<span foreground="{dim}">{escape(win.flags)}</span> '
+        line += f'<span foreground="{verydim}">{escape(win.pane_title)}</span> '
         yield line
 
 

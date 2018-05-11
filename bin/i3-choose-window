@@ -4,6 +4,7 @@ import os
 import sys
 import i3ipc
 import argparse
+from html import escape
 from subprocess import run, PIPE
 
 # Turn windows into formatted lines to be passed to Rofi.
@@ -11,14 +12,14 @@ from subprocess import run, PIPE
 # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
 def format_windows(windows):
     dimcolor = '#797d84'
-    for win in windows:
-        wsname = win.workspace().name
+    for w in windows:
+        wsname = w.workspace().name
         ws = '$' if wsname == '__i3_scratch' else wsname
-        row = f"<span foreground='{dimcolor}'>{ws}</span>   "
+        row = f"<span foreground='{dimcolor}'>{escape(ws)}</span>   "
         if wsname == '__i3_scratch':
-            row += f"<span foreground='{dimcolor}'>{win.name}</span>"
+            row += f"<span foreground='{dimcolor}'>{escape(w.name)}</span>"
         else:
-            row += f"<b>{win.name}</b>" if win.focused else win.name
+            row += f"<b>{escape(w.name)}</b>" if w.focused else escape(w.name)
         yield row
 
 

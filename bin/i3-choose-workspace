@@ -3,6 +3,7 @@
 import os
 import sys
 import i3ipc
+from html import escape
 from subprocess import run, PIPE
 
 
@@ -30,7 +31,7 @@ def rofi(workspaces, current):
         if w.num == current.num:
             selected = i
         width += hpadding * 2 + pixels(w.name)
-        lines.append(w.name)
+        lines.append(escape(w.name))
 
     style  = ['-theme', 'main-light', '-width', str(width)]
     style += ['-theme-str', 'window { children: [ listview ]; }']

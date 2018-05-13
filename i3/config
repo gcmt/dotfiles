@@ -55,6 +55,7 @@ bindsym $mod+Control+plus exec rofi-tmux
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace
+bindsym $mod+Shift+comma exec --no-startup-id i3-rename-workspace -r
 
 # Create new workspace
 bindsym $mod+w exec --no-startup-id i3-new-workspace

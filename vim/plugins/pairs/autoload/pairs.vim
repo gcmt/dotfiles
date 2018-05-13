@@ -13,7 +13,7 @@ func! s:after()
 endf
 
 func! pairs#insert_paren(par)
-	if s:after() =~ '\v^\w'
+	if s:after() =~ "\\v^(\\w|\"|')"
 		return a:par
 	end
 	return a:par . get(s:closing, a:par, '') . "\<c-g>U\<left>"

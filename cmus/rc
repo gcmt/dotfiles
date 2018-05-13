@@ -66,6 +66,8 @@ set wrap_search=true
 
 colorscheme dark
 
+bind -f common K win-up 3
+bind -f common J win-down 3
 bind -f common Q quit
 bind -f common q shell tmux detach -s cmus
 bind -f common B shell tmux neww 'vim /usr/share/cmus/rc'

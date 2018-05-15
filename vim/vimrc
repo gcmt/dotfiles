@@ -2,24 +2,34 @@
 " INIT
 " ----------------------------------------------------------------------------
 
-	if empty($XDG_CONFIG_HOME)
-		let $XDG_CONFIG_HOME = $HOME.'/.config'
-	end
-	if empty($XDG_DATA_HOME)
-		let $XDG_DATA_HOME = $HOME.'/.local/share'
-	end
-	if empty($XDG_CACHE_HOME)
-		let $XDG_CACHE_HOME = $HOME.'/.cache'
+	if !exists('$VIMHOME')
+		if !exists('$XDG_CONFIG_HOME')
+			let $XDG_CONFIG_HOME = $HOME.'/.config'
+		end
+		let $VIMHOME = $XDG_CONFIG_HOME.'/vim'
 	end
 
-	let $VIMHOME = empty($VIMHOME) ? $XDG_CONFIG_HOME.'/vim' : $VIMHOME
-	let $VIMCACHE = empty($VIMCACHE) ? $XDG_CACHE_HOME.'/vim' : $VIMCACHE
-	let $VIMDATA = empty($VIMDATA) ? $XDG_DATA_HOME.'/vim' : $VIMDATA
-	let $PLUGPATH = join([$VIMDATA.'/plugins', $VIMHOME.'/plugins'], ':')
+	if !exists('$VIMCACHE')
+		if !exists("$XDG_DATA_HOME")
+			let $XDG_DATA_HOME = $HOME.'/.local/share'
+		end
+		let $VIMCACHE = $XDG_CACHE_HOME.'/vim'
+	end
+
+	if !exists('$VIMDATA')
+		if !exists("$XDG_CACHE_HOME")
+			let $XDG_CACHE_HOME = $HOME.'/.cache'
+		end
+		let $VIMDATA = $XDG_DATA_HOME.'/vim'
+	end
+
+	if !exists('$VIMPLUGS')
+		let $VIMPLUGS = join([$VIMDATA.'/plugins', $VIMHOME.'/plugins'], ':')
+	end
 
 	func! s:find_plugins()
 		let plugins = []
-		for path in split($PLUGPATH, ':')
+		for path in split($VIMPLUGS, ':')
 			call extend(plugins, filter(glob(path.'/[^_]*', 1, 1), 'isdirectory(v:val)'))
 		endfor
 		return plugins
@@ -38,25 +48,31 @@
 		let &rtp = join(rtp, ',')
 	endf
 
-	aug _rtp
-		au!
-		au User UpdateRtp call <sid>set_rtp()
-	aug END
-
-	call s:set_rtp()
-
 	func! s:helptags()
 		for docdir in globpath(join(s:find_plugins(), ','), 'doc', 1, 1)
 			exec 'helptags' docdir
 		endfor
 	endf
 
-	comm! Helptags call <sid>helptags()
+	if !empty($VIMHOME)
+
+		aug _rtp
+			au!
+			au User UpdateRtp call <sid>set_rtp()
+		aug END
+
+		call s:set_rtp()
+
+		comm! Helptags call <sid>helptags()
+
+	end
 
 " PLUGINS
 " ----------------------------------------------------------------------------
 
-	let g:plugs_path = $VIMDATA.'/plugins'
+	if !empty($VIMDATA)
+		let g:plugs_path = $VIMDATA.'/plugins'
+	end
 
 	let g:plugs_list = [
 		\ 'https://github.com/w0rp/ale',
@@ -64,8 +80,6 @@
 		\ 'https://github.com/airblade/vim-gitgutter',
 		\ 'https://github.com/SirVer/ultisnips',
 		\ 'https://github.com/ap/vim-css-color',
-		\ 'https://github.com/prabirshrestha/vim-lsp',
-		\ 'https://github.com/prabirshrestha/async.vim',
 		\ 'https://github.com/posva/vim-vue',
 		\ 'https://github.com/pangloss/vim-javascript',
 		\ 'https://github.com/JulesWang/css.vim',
@@ -81,16 +95,20 @@
 	syntax on
 	filetype plugin indent on
 
-	set history=100
-	set viminfo=!,'100,f0,n$VIMCACHE/viminfo
-	set undofile
-	set undodir=$VIMCACHE/undofiles
+	if empty($VIMCACHE)
+		set viminfo=
+		set noundofile
+	else
+		set viminfo=!,'100,f0
+		set viminfofile=$VIMCACHE/viminfo
+		set undofile
+		set undodir=$VIMCACHE/undofiles
+	end
 
 	set directory=
 	set noswapfile
 
-	set nobackup
-
+	set history=100
 	set backspace=indent,eol,start
 	set encoding=utf8
 	set spelllang=it,en

@@ -164,12 +164,12 @@
 	" end
 
 	if exists('$TMUX')
-		set cmdheight=2
+		set cmdheight=1
 	end
 
 	set guioptions=c
 
-	let &guifont = 'Noto Mono 10'
+	let &guifont = 'Noto Mono Patched 10'
 	set linespace=1
 
 	set title
@@ -640,9 +640,8 @@
 	endf
 
 	func! s:cd_into_bufdir(bang)
-		let path = expand('%:p:h')
 		let cd = empty(a:bang) ? 'cd' : 'lcd'
-		exec cd fnameescape(path)
+		exec cd fnameescape(expand('%:p:h'))
 		pwd
 	endf
 
@@ -704,6 +703,7 @@
 
 		" Filetype fixes
 		au BufNewFile,BufRead */Xresources.d/* set ft=xdefaults
+		au BufNewFile,BufRead *.rasi set ft=css
 
 		au BufReadPost * if &key != '' | setl noudf noswf nowb nobk nostmp secure hi=0 vi= | end
 		au BufNewFile,BufReadPre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl secure nostmp nowb nobk noswf hi=0 vi=
@@ -880,13 +880,14 @@
 " Ale
 " ----------------------------------------------------------------------------
 
-	highlight link ALEError None
-	highlight link ALEErrorSign Exception
-	highlight link ALEWarningSign Repeat
+	highlight link AleError None
+	highlight link AleWarning None
+	highlight link AleErrorSign Exception
+	highlight link AleWarningSign Repeat
 
 	let g:ale_sign_error = 'x'
 	let g:ale_sign_warning = '!'
-	let ale_lint_on_text_changed = 'never'
+	let g:ale_lint_on_text_changed = 'never'
 	let g:ale_open_list = 0
 
 " Explorer
@@ -910,20 +911,6 @@
 " ----------------------------------------------------------------------------
 
 	let g:gitgutter_enabled = 0
-
-" LSP
-" ----------------------------------------------------------------------------
-
-	let g:lsp_async_completion = 1
-
-	if executable('pyls')
-		" pip install python-language-server
-		au User lsp_setup call lsp#register_server({
-			\ 'name': 'pyls',
-			\ 'cmd': {server_info->['pyls']},
-			\ 'whitelist': ['python'],
-		\ })
-	end
 
 " Disable unused plugins
 " ----------------------------------------------------------------------------

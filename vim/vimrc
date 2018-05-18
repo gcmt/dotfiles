@@ -414,11 +414,6 @@
 	inoremap <c-l> <right><bs>
 	cnoremap <c-l> <right><bs>
 
-	inoremap <c-g><c-d> <c-r>=_down_after('}')<cr>
-	func! _down_after(pattern)
-		return search(a:pattern, 'Wce') ? "\<esc>o" : ''
-	endf
-
 	" create empty lines without leaving normal mode
 	nnoremap <silent> <c-e> :<c-u>call append(line('.')-1, map(range(v:count1), "''"))<cr>
 	nnoremap <silent> <c-d> :<c-u>call append(line('.'), map(range(v:count1), "''"))<cr>
@@ -487,6 +482,9 @@
 
 	noremap <c-k> {
 	noremap <c-j> }
+
+	noremap <bs> <c-b>
+	noremap <cr> <c-f>
 
 	noremap <silent> gw :<c-u>call <sid>next_word(0)<cr>
 	noremap <silent> gb :<c-u>call <sid>next_word(1)<cr>
@@ -781,6 +779,8 @@
 
 	inoremap <c-c> <c-]><esc>
 
+	vnoremap C c
+
 	noremap gj J
 	noremap gk K
 
@@ -823,14 +823,15 @@
 " Buffers
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gl :Buffers<cr>
-	nnoremap <silent> gL :Buffers!<cr>
+	" nnoremap <silent> gl :Buffers<cr>
+	" nnoremap <silent> gL :Buffers!<cr>
 
 " Rofi
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gp :RofiBuffers<cr>
-	nnoremap <silent> gP :RofiEdit<cr>
+	nnoremap <silent> gl :RofiBuffers<cr>
+	nnoremap <silent> gL :RofiBuffers!<cr>
+	nnoremap <silent> gp :RofiEdit<cr>
 
 " Marks
 " ----------------------------------------------------------------------------

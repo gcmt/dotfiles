@@ -2,24 +2,28 @@
 " INIT
 " ----------------------------------------------------------------------------
 
+	if !exists('$XDG_CONFIG_HOME')
+		let $XDG_CONFIG_HOME = $HOME.'/.config'
+	end
+
+	if !exists('$XDG_DATA_HOME')
+		let $XDG_DATA_HOME = $HOME.'/.local/share'
+	end
+
+	if !exists('$XDG_CACHE_HOME')
+		let $XDG_CACHE_HOME = $HOME.'/.cache'
+	end
+
 	if !exists('$VIMHOME')
-		if !exists('$XDG_CONFIG_HOME')
-			let $XDG_CONFIG_HOME = $HOME.'/.config'
-		end
-		let $VIMHOME = $XDG_CONFIG_HOME.'/vim'
+		let s:rcdir = fnamemodify(expand('<sfile>'), ':h')
+		let $VIMHOME = isdirectory(s:rcdir.'/.vim') ? s:rcdir.'/.vim' : s:rcdir
 	end
 
 	if !exists('$VIMCACHE')
-		if !exists("$XDG_DATA_HOME")
-			let $XDG_DATA_HOME = $HOME.'/.local/share'
-		end
 		let $VIMCACHE = $XDG_CACHE_HOME.'/vim'
 	end
 
 	if !exists('$VIMDATA')
-		if !exists("$XDG_CACHE_HOME")
-			let $XDG_CACHE_HOME = $HOME.'/.cache'
-		end
 		let $VIMDATA = $XDG_DATA_HOME.'/vim'
 	end
 

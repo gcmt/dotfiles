@@ -1,19 +1,18 @@
-#!/bin/sh
-
-workspaces=$(i3-msg -t get_workspaces)
+#!/bin/bash
 
 workspace_exists() {
-	echo "$workspaces" | jq -e ".[] | select(.num==$1)" >/dev/null
+	echo "$1" | jq -e ".[] | select(.num==$2)" >/dev/null
 }
 
 main() {
 	local num=1
+	local workspaces=$(i3-msg -t get_workspaces)
 	while (( num < 10 )); do
-		if ! workspace_exists $num; then
+		if ! workspace_exists "$workspaces" "$num"; then
 			i3-msg "workspace number $num" >/dev/null
 			break
 		fi
-		num=$(expr $num + 1)
+		(( num += 1 ))
 	done
 }
 

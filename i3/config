@@ -46,12 +46,16 @@ bindsym $mod+ograve exec --no-startup-id firefox -new-tab 'https://www.fastmail.
 # Kill window
 bindsym $mod+Shift+q kill
 
+# Mark/unmark window
+bindsym $mod+m exec --no-startup-id i3-mark
+bindsym $mod+Shift+m [con_id="__focused__"] unmark
+
 # Open tmux
-bindsym $mod+u exec --no-startup-id i3-t
-bindsym $mod+plus exec --no-startup-id i3-t scratch
+bindsym $mod+u exec i3-t
+bindsym $mod+plus exec i3-t scratch
 
 # Pick tmux session
-bindsym $mod+Control+plus exec rofi-tmux
+bindsym $mod+Control+u exec rofi-tmux
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace
@@ -66,7 +70,7 @@ bindsym $mod+space exec --no-startup-id rofi -show drun
 bindsym $alt+space exec --no-startup-id rofi -show run
 
 # Choose workspace with rofi
-bindsym $mod+i exec --no-startup-id i3-choose-workspace
+bindsym $mod+g exec --no-startup-id i3-choose-workspace
 
 # Toggle Polybar visibility
 bindsym $mod+Return exec --no-startup-id polybar-toggle
@@ -90,7 +94,7 @@ bindsym $mod+b split vertical
 bindsym $mod+r split horizontal
 
 # Reset workspace layout
-bindsym $mod+Shift+r [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
+bindsym $mod+Shift+equal [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 
 # Change window layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
@@ -190,7 +194,7 @@ mode "i3" {
 	bindsym Control+c mode "default"
 }
 
-bindsym XF86Eject mode "i3"
+bindsym $mod+Shift+question mode "i3"
 
 # Controls
 # ----------------------------------------------------------------------------

@@ -130,7 +130,6 @@
 	set showmatch
 	set incsearch
 	set nohlsearch
-	set gdefault
 
 	let mapleader = "\<space>"
 

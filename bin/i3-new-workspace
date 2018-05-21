@@ -6,7 +6,7 @@ workspace_exists() {
 
 main() {
 	local num=1
-	local workspaces=$(i3-msg -t get_workspaces)
+	local workspaces="$(i3-msg -t get_workspaces)"
 	while (( num < 10 )); do
 		if ! workspace_exists "$workspaces" "$num"; then
 			i3-msg "workspace number $num" >/dev/null

@@ -36,9 +36,8 @@ for_window [class=".*"] title_format " %title"
 # ----------------------------------------------------------------------------
 
 # Shortcuts
-bindsym $mod+Control+m [class="Rhythmbox"] focus
-bindsym $mod+Control+w [class="Firefox"] focus
-bindsym $mod+Control+t [class="URxvt"] focus
+bindsym $mod+i exec --no-startup-id i3-focus -c Firefox
+bindsym $mod+apostrophe exec --no-startup-id "i3-focus -m _m,_mark,_marked"
 
 # Open Fastmail
 bindsym $mod+ograve exec --no-startup-id firefox -new-tab 'https://www.fastmail.com/mail/'

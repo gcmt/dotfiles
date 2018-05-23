@@ -1,0 +1,38 @@
+#!/usr/bin/env python
+
+import re
+import argparse
+import i3ipc
+
+
+def main():
+
+    parser = argparse.ArgumentParser(description="i3 focus helper")
+    parser.add_argument('-t', help="The window name (title)")
+    parser.add_argument('-c', help="The window class")
+    parser.add_argument('-n', help="The window instance")
+    parser.add_argument('-m', help="The window marks")
+    args = parser.parse_args()
+
+    i3 = i3ipc.Connection()
+    windows = i3.get_tree().leaves()
+
+    wanted_marks = set(args.m.split(',')) if args.m else set()
+
+    for w in windows:
+        marks = set(w.marks)
+        if not wanted_marks and marks:
+            continue
+        if wanted_marks and not wanted_marks & marks:
+            continue
+        if args.t and not re.search(args.t, w.name):
+            continue
+        if args.c and not re.match(args.c, w.window_class):
+            continue
+        if args.n and not re.match(args.n, w.window_instance):
+            continue
+        w.command('focus')
+
+
+if __name__ == '__main__':
+    main()

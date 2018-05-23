@@ -82,7 +82,7 @@ func! explorer#actions#set_root() abort
 	if empty(node)
 		return
 	end
-	if node.type != 'dir'
+	if !isdirectory(node.path)
 		return explorer#err('Not a directory')
 	end
 	if empty(node.content)

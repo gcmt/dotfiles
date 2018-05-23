@@ -57,8 +57,6 @@ func s:node.explore(...)
 			return
 		end
 		let a:node.content = []
-		let map = {'/': 'dir', '@': 'link', '*': 'exec', '=': 'file', '>': 'file', '|': 'file'}
-		let pattern = '\V\(' . join(keys(map), '\|') . '\)\$'
 		for fname in files
 			let path = explorer#path#join(a:node.path, fname)
 			let node = explorer#tree#new_node(path, getftype(path), a:node)

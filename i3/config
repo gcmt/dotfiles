@@ -4,6 +4,8 @@ set $alt Mod1
 set $cmd Mod4
 set $mod Mod4
 
+set $resize_float resize set 80ppt 70ppt
+
 # Options
 # ----------------------------------------------------------------------------
 
@@ -28,7 +30,7 @@ for_window [class="Ssh-askpass"] floating enable
 for_window [class="KeepassXC"] layout stacking
 for_window [class="Firefox" title="Library"] layout stacking
 
-for_window [instance="urxvt-floating"] floating enable, resize set 80ppt 70ppt, move position center
+for_window [instance="urxvt-floating"] floating enable, $resize_float, move position center
 
 for_window [class=".*"] title_format " %title"
 
@@ -156,13 +158,14 @@ bindsym $mod+p workspace prev
 
 # Toggle tiling / floating
 bindsym $mod+f floating toggle
-bindsym $mod+shift+f floating enable; resize set 80ppt 70ppt; move position center
+bindsym $mod+shift+f floating enable; $resize_float; move position center
 
 # Change focus between tiling / floating windows
 bindsym $mod+z focus mode_toggle
 
 # Scratchpad bindings
-bindsym $mod+minus scratchpad show
+bindsym $mod+minus scratchpad show; floating disable
+bindsym $mod+$alt+minus scratchpad show; $resize_float; move position center
 bindsym $mod+Shift+minus move scratchpad
 
 # Edit shortcut

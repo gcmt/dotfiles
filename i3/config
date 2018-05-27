@@ -165,7 +165,7 @@ bindsym $mod+z focus mode_toggle
 
 # Scratchpad bindings
 bindsym $mod+minus scratchpad show; floating disable
-bindsym $mod+$alt+minus scratchpad show; $resize_float; move position center
+bindsym $mod+Control+minus scratchpad show; $resize_float; move position center
 bindsym $mod+Shift+minus move scratchpad
 
 # Edit shortcut

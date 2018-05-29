@@ -1,0 +1,36 @@
+#!/bin/bash
+
+inputbar=0
+while getopts "i" OPT; do
+	case $OPT in
+		i) inputbar=1 ;;
+	esac
+done
+shift $((OPTIND -1))
+
+options="-dmenu -format i"
+
+style="-theme 'main-light' -width 35"
+style="$style -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
+style="$style -theme-str 'case-indicator { enabled: false; }'"
+
+if (( inputbar == 0 )); then
+    style="$style -theme-str 'mainbox { children: [listview]; }'"
+    options="$options -kb-row-up 'Up,Control+k,k' -kb-row-down 'Down,Control+j,Super+Tab,j'"
+    options="$options -kb-accept-entry 'l,Return,Control+d' -kb-cancel 'Escape,q'"
+fi
+
+entries="notes\\nlogbook\\ntodo"
+
+files=(
+    "$HOME/Docs/notes/wall.md"
+    "$HOME/Docs/logbook/$(date '+%Y-%m-%d').txt"
+    "$HOME/Docs/todo.md"
+)
+
+idx=$(echo -e "$entries" | eval "rofi $options $style")
+if [[ -z "$idx" ]]; then
+	exit 1
+fi
+
+exec urxvt -name urxvt-floating -e vim "${files[$idx]}" +'cd %:p:h'

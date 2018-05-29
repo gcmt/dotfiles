@@ -37,6 +37,9 @@ for_window [class=".*"] title_format " %title"
 # Bindings
 # ----------------------------------------------------------------------------
 
+# Edit files
+bindsym $mod+e exec --no-startup-id rofi-edit
+
 # Shortcuts
 bindsym $mod+i exec --no-startup-id i3-focus -c Firefox
 bindsym $mod+apostrophe exec --no-startup-id "i3-focus -m _m,_mark,_marked"
@@ -167,19 +170,6 @@ bindsym $mod+z focus mode_toggle
 bindsym $mod+minus scratchpad show; floating disable
 bindsym $mod+Control+minus scratchpad show; $resize_float; move position center
 bindsym $mod+Shift+minus move scratchpad
-
-# Edit shortcut
-mode "edit" {
-
-	bindsym l exec --no-startup-id urxvt -name urxvt-floating -e vim Docs/logbook/$(date '+%Y-%m-%d').txt +'cd %:p:h'; mode "default"
-	bindsym n exec --no-startup-id urxvt -name urxvt-floating -e vim Docs/notes/wall.md +'cd %:p:h'; mode "default"
-
-	bindsym Return mode "default"
-	bindsym Escape mode "default"
-	bindsym Control+c mode "default"
-}
-
-bindsym $mod+e mode "edit"
 
 # i3 commands
 mode "i3" {

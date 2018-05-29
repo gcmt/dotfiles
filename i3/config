@@ -4,7 +4,9 @@ set $alt Mod1
 set $cmd Mod4
 set $mod Mod4
 
-set $resize_float resize set 80ppt 70ppt
+set $float_l resize set 90ppt 80ppt
+set $float_m resize set 80ppt 70ppt
+set $float_s resize set 70ppt 60ppt
 
 # Options
 # ----------------------------------------------------------------------------
@@ -30,7 +32,7 @@ for_window [class="Ssh-askpass"] floating enable
 for_window [class="KeepassXC"] layout stacking
 for_window [class="Firefox" title="Library"] layout stacking
 
-for_window [instance="urxvt-floating"] floating enable, $resize_float, move position center
+for_window [instance="urxvt-floating"] floating enable, $float_m, move position center
 
 for_window [class=".*"] title_format " %title"
 
@@ -159,17 +161,33 @@ bindsym $mod+a workspace back_and_forth
 bindsym $mod+n workspace next
 bindsym $mod+p workspace prev
 
-# Toggle tiling / floating
-bindsym $mod+f floating toggle
-bindsym $mod+shift+f floating enable; $resize_float; move position center
-
 # Change focus between tiling / floating windows
 bindsym $mod+z focus mode_toggle
 
 # Scratchpad bindings
 bindsym $mod+minus scratchpad show; floating disable
-bindsym $mod+Control+minus scratchpad show; $resize_float; move position center
+bindsym $mod+Control+minus scratchpad show; $float_m; move position center
 bindsym $mod+Shift+minus move scratchpad
+
+# Toggle tiling / floating
+bindsym $mod+f floating toggle
+
+mode "float" {
+
+	bindsym l floating enable; $float_l; move position center
+	bindsym m floating enable; $float_m; move position center
+	bindsym s floating enable; $float_s; move position center
+
+	bindsym plus floating enable; resize grow right 5px; resize grow down 4px; move position center
+	bindsym minus floating enable; resize shrink right 5px; resize shrink down 4px; move position center
+
+	bindsym q mode "default"
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+	bindsym Control+c mode "default"
+}
+
+bindsym $mod+Shift+f mode "float"
 
 # i3 commands
 mode "i3" {

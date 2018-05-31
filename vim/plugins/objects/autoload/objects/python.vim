@@ -1,13 +1,13 @@
 
-func! objects#python#function(inner, outermost)
-	call s:select('def', a:inner, a:outermost, v:count1)
+func! objects#python#function(inner)
+	call s:select('def', a:inner, v:count1)
 endf
 
-func! objects#python#class(inner, outermost)
-	call s:select('class', a:inner, a:outermost, v:count1)
+func! objects#python#class(inner)
+	call s:select('class', a:inner, v:count1)
 endf
 
-func! s:select(kw, inner, outermost, count)
+func! s:select(kw, inner, count)
 
 	if a:count <= 0
 		return
@@ -65,12 +65,11 @@ func! s:select(kw, inner, outermost, count)
 					break
 				end
 			endfo
-			if !a:outermost
-				break
-			end
 		end
 		let indent -= &shiftwidth
+		echom "indent" indent
 		let start = indent >= 0 ? searchpos('\v^\s{'.indent.'}\w', 'Wb')[0] : 0
+		echom "start" start
 	endw
 
 	if start == 0
@@ -130,7 +129,7 @@ func! s:select(kw, inner, outermost, count)
 	end
 
 	if end != line('$')
-		call s:select(a:kw, a:inner, a:outermost, a:count-1)
+		call s:select(a:kw, a:inner, a:count-1)
 	end
 
 endf

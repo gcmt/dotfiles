@@ -156,12 +156,6 @@
 	let &bg = s:get_term_bg()
 	colorscheme main
 
-	" if has('termguicolors')
-		" let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
-		" let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
-		" set termguicolors
-	" end
-
 	if exists('$TMUX')
 		set cmdheight=1
 	end
@@ -191,10 +185,6 @@
 
 	set virtualedit=block,onemore
 	set mouse=a
-
-	if $TERM == 'st-256color'
-		set ttymouse=sgr
-	end
 
 	set noexpandtab
 	set tabstop=3

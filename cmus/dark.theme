@@ -1,53 +1,60 @@
 
-set color_cmdline_attr=default
+# Command line.
 set color_cmdline_bg=default
 set color_cmdline_fg=default
+set color_cmdline_attr=default
 
-set color_cur_sel_attr=default
-
+# Error messages displayed on the command line.
 set color_error=1
+
+# Informational messages displayed on the command line.
 set color_info=3
+
+# Separator line between windows.
 set color_separator=22
 
-set color_win_attr=default
-set color_win_bg=default
-
-# color of the track being executed
-set color_win_cur=1
-
-# cursorline
-set color_win_sel_attr=default
-set color_win_sel_bg=21
-set color_win_sel_fg=18
-
-# cursorline on current track
-set color_win_cur_sel_attr=default
-set color_win_cur_sel_bg=21
-set color_win_cur_sel_fg=1
-
-# top bar
-set color_win_title_attr=default
-set color_win_title_bg=24
-set color_win_title_fg=18
-
-# currently playing song bar (bottom)
-set color_titleline_attr=default
-set color_titleline_bg=21
-set color_titleline_fg=1
-
-# bottom statusline
-set color_statusline_attr=default
+# Status line at the bottom
 set color_statusline_bg=24
 set color_statusline_fg=18
+set color_statusline_attr=default
 
-set color_win_dir=4
+# Sticky line at the bottom displaying the currently playing track.
+set color_titleline_bg=21
+set color_titleline_fg=1
+set color_titleline_attr=default
 
+# Window bg/fg colors.
+set color_win_bg=default
 set color_win_fg=default
+set color_win_attr=default
 
-set color_win_inactive_cur_sel_attr=default
+# Currently playing track.
+set color_win_cur=1
+
+# Selected row which is also the currently playing track in active window.
+set color_win_cur_sel_bg=21
+set color_win_cur_sel_fg=1
+set color_win_cur_sel_attr=default
+
+# Selected row which is also the currently playing track in inactive window.
 set color_win_inactive_cur_sel_bg=21
 set color_win_inactive_cur_sel_fg=22
+set color_win_inactive_cur_sel_attr=default
 
-set color_win_inactive_sel_attr=default
+# Selected row in the inactive window.
 set color_win_inactive_sel_bg=21
 set color_win_inactive_sel_fg=22
+set color_win_inactive_sel_attr=default
+
+# Selected row in active window.
+set color_win_sel_bg=21
+set color_win_sel_fg=18
+set color_win_sel_attr=default
+
+# Window titles.
+set color_win_title_bg=24
+set color_win_title_fg=18
+set color_win_title_attr=default
+
+# Color of directories in browser.
+set color_win_dir=4

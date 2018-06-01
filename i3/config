@@ -209,12 +209,10 @@ bindsym $mod+$alt+space mode "i3"
 # ----------------------------------------------------------------------------
 
 # Cmus
-bindsym XF86AudioPlay exec --no-startup-id cmus-remote --pause
-bindsym XF86AudioNext exec --no-startup-id cmus-remote --next
-bindsym XF86AudioPrev exec --no-startup-id cmus-remote --prev
-bindsym $mod+XF86AudioPlay exec --no-startup-id urxvt -name urxvt-floating -e cmus-tmux
-bindsym $mod+XF86AudioNext exec --no-startup-id cmus-remote --repeat
-bindsym $mod+XF86AudioPrev exec --no-startup-id cmus-remote --seek 0
+bindsym XF86AudioPlay exec --no-startup-id mpc toggle
+bindsym XF86AudioNext exec --no-startup-id mpc next
+bindsym XF86AudioPrev exec --no-startup-id mpc prev
+bindsym $mod+XF86AudioPlay exec --no-startup-id urxvt -name urxvt-floating -e ncmpcpp
 
 # Screenshots (XF86LaunchA = F3)
 bindsym XF86LaunchA exec --no-startup-id capture -window root

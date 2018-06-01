@@ -208,7 +208,7 @@ bindsym $mod+$alt+space mode "i3"
 # Controls
 # ----------------------------------------------------------------------------
 
-# Cmus
+# Music player
 bindsym XF86AudioPlay exec --no-startup-id mpc toggle
 bindsym XF86AudioNext exec --no-startup-id mpc next
 bindsym XF86AudioPrev exec --no-startup-id mpc prev

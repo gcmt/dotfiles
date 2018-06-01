@@ -98,6 +98,18 @@ if [[ "$@" =~ '-dunst' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/dunst" "$XDG_CONFIG_HOME/dunst"
 fi
 
+if [[ "$@" =~ '-mpd' || "$@" =~ '-all' ]]; then
+	mkdir -p "$XDG_DATA_HOME/mpd"
+	mkdir -p "$XDG_DATA_HOME/mpd/playlists"
+	link "$DOTDIR/mpd" "$XDG_CONFIG_HOME/mpd"
+fi
+
+if [[ "$@" =~ '-ncmpcpp' || "$@" =~ '-all' ]]; then
+	mkdir -p "$XDG_CONFIG_HOME/ncmpcpp"
+	link "$DOTDIR/ncmpcpp/config" "$XDG_CONFIG_HOME/ncmpcpp/config"
+	link "$DOTDIR/ncmpcpp/bindings" "$XDG_CONFIG_HOME/ncmpcpp/bindings"
+fi
+
 if [[ "$@" =~ '-zathura' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/zathura" "$XDG_CONFIG_HOME/zathura"
 fi

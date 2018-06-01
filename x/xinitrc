@@ -15,6 +15,8 @@ compton -b
 
 nitrogen --restore &
 
+[ ! -s ~/.run/mpd/pid ] && mpd
+
 tmux new -ds scratch 2>/dev/null
 
 exec i3

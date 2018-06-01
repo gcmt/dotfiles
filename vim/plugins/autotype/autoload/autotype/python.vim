@@ -4,7 +4,7 @@ func! autotype#python#newline()
 		return "\<esc>o"
 	end
 	let line = getline('.')
-	let keywords = ['def', 'class', 'if', 'else', 'for', 'try', 'except']
+	let keywords = ['def', 'class', 'if', 'elif', 'else', 'for', 'while', 'try', 'except', 'with']
 	if line =~ '\v^\s*('.join(keywords, '|').')>' && line !~ '\v:$'
 		call setline(line('.'), substitute(line, '\v\s*$', ':', ''))
 	end

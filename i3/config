@@ -85,7 +85,8 @@ bindsym $mod+Return exec --no-startup-id polybar-toggle
 bindsym $mod+Shift+Return fullscreen toggle
 
 # Cycle through containers
-bindsym $mod+o exec --no-startup-id i3-next-window
+bindsym $mod+o exec --no-startup-id i3-next-window -next
+bindsym $mod+Shift+o exec --no-startup-id i3-next-window -prev
 
 # Change focus
 bindsym $mod+h focus left

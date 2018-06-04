@@ -15,7 +15,7 @@ compton -b
 
 nitrogen --restore &
 
-[ ! -s ~/.run/mpd/pid ] && mpd
+[ ! -s ~/.local/share/mpd/pid ] && mpd
 
 tmux new -ds scratch 2>/dev/null
 

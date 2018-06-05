@@ -28,7 +28,7 @@ visualizer_color = blue, cyan, green, yellow, magenta, red
 song_list_format = {%a - %t}|{$(19)%f}$R{%l}
 song_status_format = {$(23)%a, %t}|{%f}
 song_library_format = {%n - }{%t}|{$(19)%f}
-song_columns_list_format = (30)[]{a:Artist} (35)[]{t|f:Title} (25)[]{bE:Album} (5f)[]{yE:Year} (7f)[]{lr:Length}
+song_columns_list_format = (30)[]{a:Artist} (42)[]{t|f:Title} (20)[]{bE:Album} (5f)[]{yE:Year} (7f)[]{lr:Length}
 
 alternative_header_first_line_format = $(25)$aqqu  $/a$9$(19){%t}|{%f}$9  $(25)$atqq$/a$9
 alternative_header_second_line_format = $(19){%a}{ — %b{ (%y)}}$9
@@ -39,7 +39,7 @@ current_item_suffix = $(end)
 current_item_inactive_column_prefix = $(23_22)
 current_item_inactive_column_suffix = $(end)
 
-now_playing_prefix = $(19_22)
+now_playing_prefix = $(6_22)
 now_playing_suffix = $(end)
 
 browser_playlist_prefix = "$2playlist$9 "

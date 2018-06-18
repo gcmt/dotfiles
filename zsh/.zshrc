@@ -117,6 +117,8 @@ add-zsh-hook precmd set-colors
 # VI MODE
 # ----------------------------------------------------------------------------
 
+bindkey -v
+
 # use different colors for each mode
 zle-keymap-select() {
 	case $KEYMAP in
@@ -274,8 +276,6 @@ alias http="http --style=algol"
 # BINDINGS
 # ----------------------------------------------------------------------------
 
-bindkey -v
-
 autoload -U up-line-or-beginning-search
 autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
@@ -292,11 +292,13 @@ bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
 bindkey '^k' edit-command-line
 
+bindkey '^e' end-of-line
+bindkey '^a' beginning-of-line
+
 bindkey -M vicmd '^k' edit-command-line
 bindkey -M vicmd 'H' vi-beginning-of-line
 bindkey -M vicmd 'L' vi-end-of-line
 bindkey -M vicmd 'Y' vi-yank-eol
-bindkey '^e' end-of-line
 
 toggle-sudo() {
 	local pos=$CURSOR
@@ -328,28 +330,14 @@ trim-prompt-cwd() {
 zle -N trim-prompt-cwd
 bindkey '^t' trim-prompt-cwd
 
-cd-back() {
-	popd
-	zle reset-prompt
-}
-zle -N cd-back
-bindkey '^o' cd-back
-
-cd-parent() {
-	pushd ..
-	zle reset-prompt
-}
-zle -N cd-parent
-bindkey '^b' cd-parent
-
 # PLUGINS
 # ----------------------------------------------------------------------------
 
 if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
 	source "$ZDATADIR/ext/rofi.zsh"
-	bindkey '^e' rofi-find
-	bindkey '^t' rofi-cd
-	bindkey '^r' rofi-history
+	bindkey '^[e' rofi-find
+	bindkey '^[d' rofi-cd
+	bindkey '^[r' rofi-history
 fi
 
 if [[ -e "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && "$TERM" != "linux" ]]; then

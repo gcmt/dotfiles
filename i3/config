@@ -18,7 +18,7 @@ workspace_auto_back_and_forth no
 default_border normal 0
 default_floating_border normal 0
 default_orientation auto
-workspace_layout default
+workspace_layout stacking
 
 gaps inner 5
 gaps outer 1
@@ -30,6 +30,7 @@ for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable
 for_window [class="Ssh-askpass"] floating enable
 for_window [class="KeepassXC"] layout stacking
+for_window [class="git-cola"] layout stacking
 for_window [class="Firefox" title="Library"] layout stacking
 
 for_window [instance="urxvt-floating"] floating enable, $float_m, move position center

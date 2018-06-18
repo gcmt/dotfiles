@@ -35,6 +35,19 @@ def get_windows(tree, scratchpad=True):
     return windows
 
 
+# Fix various window properties.
+def fix_windows(windows):
+    for win in windows:
+        if win.window_class == 'Firefox' and win.name == 'Library':
+            win.name += ' - Mozilla Firefox'
+        elif win.window_class == 'Nemo':
+            win.name += ' - Nemo'
+        elif win.window_class == 'git-cola':
+            win.name += ' - Git Cola'
+        yield win
+
+
+
 # Execute rofi and return the user choice.
 def rofi(windows, inputbar=True):
 
@@ -44,8 +57,8 @@ def rofi(windows, inputbar=True):
     except ValueError:
         selected = 0
 
-    style = ['-theme', 'main-light']
-    style = ['-theme-str', 'listview { fixed-height: false; }']
+    style  = ['-theme', 'main-light']
+    style += ['-theme-str', 'listview { fixed-height: false; }']
 
     options  = ['-dmenu', '-i', '-format', 'i']
     options += ['-markup-rows', '-lines', str(lines), '-selected-row', str(selected)]
@@ -55,8 +68,8 @@ def rofi(windows, inputbar=True):
 
     if not inputbar:
         style += ['-theme-str', 'mainbox { children: [listview]; }']
-        options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,j']
-        options += ['-kb-accept-entry', 'l,Control+d', '-kb-cancel', 'Escape,q']
+        options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,Super+Tab,j']
+        options += ['-kb-accept-entry', 'l,Return,Control+d', '-kb-cancel', 'Escape,q']
         options += ['-kb-custom-1', 'm', '-kb-custom-2', 'underscore']
         options += ['-kb-custom-3', 'o', '-kb-custom-4', 'Q']
     else:
@@ -91,6 +104,8 @@ def main():
     windows = get_windows(tree, args.scratchpad)
     if not windows:
         sys.exit(0)
+
+    windows = list(fix_windows(windows))
 
     # 'choice' will be empty when pressing -kb-cancel but it will be -1 when
     # pressing -kb-accept-entry with nothing selected
@@ -129,6 +144,7 @@ def main():
         # kill selected window
         run(['xkill', '-id', f"{win.window}"])
         os.execv(sys.argv[0], sys.argv)
+
 
 if __name__ == '__main__':
     main()

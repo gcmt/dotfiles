@@ -244,6 +244,11 @@ va() {
 alias ze='vim $ZDOTDIR/.zshrc'
 alias zs='source $ZDOTDIR/.zshrc'
 
+alias dark='colorscheme dark'
+alias light='colorscheme light'
+
+alias vi=vim
+
 alias cb='cd -'
 alias ..=' ..'
 alias ...=' ../..'

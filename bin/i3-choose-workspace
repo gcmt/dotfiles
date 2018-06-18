@@ -40,7 +40,7 @@ def rofi(workspaces, current):
 
     options  = ['-dmenu', '-format', 'i', '-no-custom']
     options += ['-markup-rows', '-selected-row', str(selected)]
-    options += ['-kb-row-up', 'h', '-kb-row-down', 'l,m,Super+m']
+    options += ['-kb-row-up', 'h', '-kb-row-down', 'l,m,Super+i']
     options += ['-kb-accept-entry', 'j,k,Down,Up,Return', '-kb-cancel', 'Escape,q']
 
     input = "\n".join(lines)

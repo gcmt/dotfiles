@@ -87,10 +87,10 @@ forget-commands() {
 	if [[ ! -e "$cmd" ]] && ! type "$cmd" >/dev/null 2>&1; then
 		return 1
 	fi
-	if [[ "$1" =~ '^(fg|rm|mv|cp|l|la|zs|ze|mcd|mkdir)\>' ]]; then
+	if [[ "$1" =~ '^(fg|rm|mv|cp|l|la|zs|ze|youtube-dl)\>' ]]; then
 		return 1
 	fi
-	if [[ "$1" =~ '^(ll|lla|va|ranger|vim|python|py|ipy|pudb)\s+$' ]]; then
+	if [[ "$1" =~ '^(cd|ll|lla|va|vim|python|py|ipy|pudb)\s+$' ]]; then
 		return 1
 	fi
 }

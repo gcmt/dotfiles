@@ -1,19 +1,19 @@
 #!/bin/bash
 
-verbosity=0
+utc=0
 
 toggle() {
-	verbosity=$((1 - $verbosity))
+	utc=$((1 - $utc))
 }
 
 trap "toggle" SIGUSR1
 
 while true; do
 
-	if (( $verbosity == 1 )); then
-		date +'%a %d %H:%M:%S'
-	else
-		date +'%a %d %H:%M'
+	if (( $utc == 1 )); then
+		echo "$(date --utc '+%a %d %H:%M') UTC"
+	 else
+		date '+%a %d %H:%M'
 	fi
 
 	sleep 1 &

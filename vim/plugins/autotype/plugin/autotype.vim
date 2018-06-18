@@ -50,7 +50,7 @@ aug _autotype
 	au BufEnter *.vue inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#vue#newline()<cr>
 	au BufEnter *.vue inoremap <silent> <buffer> ! <c-]><c-g>u<c-r>=autotype#vue#bang()<cr>
 
-	au BufEnter *.py inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#python#newline()<cr>
+	au FileType python inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#python#newline()<cr>
 
 	au BufEnter *.ex,*.exs inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#elixir#space()<cr>
 	au BufEnter *.ex,*.exs inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#elixir#newline()<cr>

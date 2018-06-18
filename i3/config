@@ -35,6 +35,8 @@ for_window [class="Firefox" title="Library"] layout stacking
 for_window [instance="urxvt-floating"] floating enable, $float_m, move position center
 
 for_window [class=".*"] title_format " %title"
+for_window [class="git-cola"] title_format " %title - Git Cola"
+for_window [class="Firefox" instance="Places"] title_format " %title - Mozilla Firefox"
 
 # Bindings
 # ----------------------------------------------------------------------------

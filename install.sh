@@ -123,3 +123,10 @@ if [[ "$@" =~ '-cmus' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/cmus/rc" "$XDG_CONFIG_HOME/cmus/rc"
 	link "$DOTDIR/cmus/dark.theme" "$XDG_CONFIG_HOME/cmus/dark.theme"
 fi
+
+if [[ "$@" =~ '-mpv' || "$@" =~ '-all' ]]; then
+	mkdir -p "$XDG_CONFIG_HOME/mpv"
+	link "$DOTDIR/mpv/mpv.conf" "$XDG_CONFIG_HOME/mpv/mpv.conf"
+	link "$DOTDIR/mpv/input.conf" "$XDG_CONFIG_HOME/mpv/input.conf"
+	link "$DOTDIR/mpv/lua-settings" "$XDG_CONFIG_HOME/mpv/lua-settings"
+fi

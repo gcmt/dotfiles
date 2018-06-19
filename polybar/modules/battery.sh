@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if ! hash acpi 2>/dev/null; then
+	exit 1
+fi
+
 last_notification="/tmp/polybar-battery"
 
 if [[ ! -f "$last_notification" ]]; then

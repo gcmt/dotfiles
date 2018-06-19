@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Cmus
+GenericName=Console Music Player
+Exec=cmus-tmux
+Terminal=true
+StartupNotify=true
+Icon=audio-x-generic

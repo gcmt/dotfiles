@@ -7,14 +7,13 @@
 
 	shadow: rgba(0, 0, 0, 0%);
 	inputbar-background: @background;
-	border-color: rgba(216, 217, 219, 100%);
-	separator-color: rgba(216, 217, 219, 100%);
+	separator-color: rgba(212, 217, 221, 100%);
 	background-color: @background;
 
 	normal-foreground: @foreground;
 	normal-background: @background;
 	selected-normal-foreground: @foreground;
-	selected-normal-background: rgba(216, 217, 219, 100%);
+	selected-normal-background: rgba(212, 217, 221, 100%);
 	alternate-normal-foreground: @foreground;
 	alternate-normal-background: @background;
 

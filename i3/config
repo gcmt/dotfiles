@@ -217,17 +217,28 @@ bindsym XF86AudioPlay exec --no-startup-id mpc toggle
 bindsym XF86AudioNext exec --no-startup-id mpc next
 bindsym XF86AudioPrev exec --no-startup-id mpc prev
 bindsym $mod+XF86AudioPlay exec --no-startup-id urxvt -name urxvt-floating -e ncmpcpp
+bindsym $mod+F5 exec --no-startup-id urxvt -name urxvt-floating -e ncmpcpp
+bindsym $mod+F6 exec --no-startup-id mpc toggle
+bindsym $mod+F7 exec --no-startup-id mpc prev
+bindsym $mod+F8 exec --no-startup-id mpc next
 
 # Screenshots (XF86LaunchA = F3)
 bindsym XF86LaunchA exec --no-startup-id capture -window root
 bindsym $mod+XF86LaunchA exec --no-startup-id capture
 bindsym $alt+XF86LaunchA exec --no-startup-id capture -wait -window root
 bindsym $alt+$mod+XF86LaunchA exec --no-startup-id capture -wait
+bindsym $mod+F1 exec --no-startup-id capture -window root
+bindsym $mod+F2 exec --no-startup-id capture
+bindsym $mod+F3 exec --no-startup-id capture -wait -window root
+bindsym $mod+F4 exec --no-startup-id capture -wait
 
 # Volume controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id volume up
 bindsym XF86AudioLowerVolume exec --no-startup-id volume down
 bindsym XF86AudioMute exec --no-startup-id volume toggle
+bindsym $mod+F12 exec --no-startup-id volume up
+bindsym $mod+F11 exec --no-startup-id volume down
+bindsym $mod+F10 exec --no-startup-id volume toggle
 
 # Screen brightness controls
 bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 5

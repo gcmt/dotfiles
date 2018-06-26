@@ -196,10 +196,11 @@ bindsym $mod+Shift+f mode "float"
 # i3 commands
 mode "i3" {
 
-	bindsym c exec --no-startup-id urxvt -name urxvt-floating -e vim .config/i3/config; mode "default"
-	bindsym r reload
 	bindsym Shift+r restart
 	bindsym Shift+x exit
+	bindsym Shift+s exec --no-startup-id systemctl suspend; mode "default"
+	bindsym c exec --no-startup-id urxvt -name urxvt-floating -e vim .config/i3/config; mode "default"
+	bindsym r reload
 
 	bindsym q mode "default"
 	bindsym Return mode "default"

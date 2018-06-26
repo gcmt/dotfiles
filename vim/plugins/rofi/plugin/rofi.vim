@@ -11,8 +11,8 @@ let g:rofi_loaded = 1
 
 let s:options = {
 	\ 'width_rules': [['<100', 60], ['<90', 70], ['<80', 80], ['<70', 90]],
-	\ 'default_width': 50,
-	\ 'max_lines': 12,
+	\ 'default_width': 40,
+	\ 'max_lines': 16,
 	\ 'buffers_inputbar': 0,
 	\ 'color_dim': 'Comment',
 	\ 'color_mod': 'Red',

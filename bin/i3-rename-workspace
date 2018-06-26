@@ -23,7 +23,8 @@ fi
 if [[ "$reset" -eq 1 ]]; then
 	name=$(echo "$current" | grep -o "^[0-9]\+")
 else
-	style="-width 25"
+	style="-theme 'main-light'"
+	style="$style -theme-str 'window { width: 25%; }'"
 	style="$style -theme-str 'listview { enabled: false; }'"
 	style="$style -theme-str 'case-indicator { enabled: false; }'"
 	style="$style -theme-str 'prompt { enabled: true; }'"

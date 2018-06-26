@@ -1,6 +1,7 @@
 #!/bin/bash
 
-style="-theme 'main-light' -width 35"
+style="-theme 'main-light'"
+style="$style -theme-str 'window { width: 25%; }'"
 style="$style -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
 style="$style -theme-str 'case-indicator { enabled: false; }'"
 

@@ -29,9 +29,7 @@ endf
 " s:rofi({files:list}[, {filter:string}]) -> string
 func! s:rofi(files, ...)
 
-	let lines = min([len(a:files), g:rofi_max_lines])
 	let options = "-dmenu -monitor '-2' -p 'edit ' -no-custom -i -matching regex"
-	let options .= printf(" -width %s -lines %s", rofi#width(), lines)
 
 	if a:0 > 0 && type(a:1) == v:t_string
 		let options .= printf(" -filter '%s'", a:1)
@@ -40,6 +38,10 @@ func! s:rofi(files, ...)
 	let theme = "term-" . &bg
 	let style = printf("-theme '%s'", theme)
 	let style .= " -theme-str 'listview { fixed-height: true; }'"
+	let style .= printf(" -theme-str 'window { width: %s%%; }'", rofi#width())
+
+	let lines = min([len(a:files), g:rofi_max_lines])
+	let style .= printf(" -theme-str 'listview { lines: %s; }'", lines)
 
 	if len(a:files) <= lines
 		let style .= " -theme-str 'listview { scrollbar: false; }'"

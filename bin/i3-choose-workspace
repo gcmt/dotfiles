@@ -33,8 +33,9 @@ def rofi(workspaces, current):
         width += hpadding * 2 + pixels(w.name)
         lines.append(escape(w.name))
 
-    style  = ['-theme', 'main-light', '-width', str(width)]
-    style += ['-theme-str', 'window { children: [ listview ]; }']
+    style  = ['-theme', 'main-light']
+    style += ['-theme-str', f'window {{ width: {width}px; }}']
+    style += ['-theme-str', 'mainbox { children: [ listview ]; }']
     style += ['-theme-str', 'listview { layout: horizontal; }']
     style += ['-theme-str', f'element {{ font: "Noto Mono 10"; padding: {vpadding} {hpadding}; }}']
 
@@ -56,9 +57,6 @@ def main():
     tree = i3.get_tree()
 
     workspaces = tree.workspaces()
-    if len(workspaces) <= 1:
-        sys.exit(0)
-
     current = tree.find_focused().workspace()
     choice, _ = rofi(workspaces, current)
     if not choice:

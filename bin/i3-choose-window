@@ -51,17 +51,18 @@ def fix_windows(windows):
 # Execute rofi and return the user choice.
 def rofi(windows, inputbar=True):
 
-    lines = min(len(windows), 12)
     try:
         selected = [w.focused for w in windows].index(1)
     except ValueError:
         selected = 0
 
-    style  = ['-theme', 'main-light']
-    style += ['-theme-str', 'listview { fixed-height: false; }']
-
     options  = ['-dmenu', '-i', '-format', 'i']
-    options += ['-markup-rows', '-lines', str(lines), '-selected-row', str(selected)]
+    options += ['-markup-rows', '-selected-row', str(selected)]
+
+    lines = min(len(windows), 12)
+
+    style  = ['-theme', 'main-light']
+    style += ['-theme-str', f'listview {{ fixed-height: false; lines: {lines}; }}']
 
     if len(windows) <= lines:
         style += ['-theme-str', 'listview { scrollbar: false; }']

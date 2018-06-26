@@ -68,15 +68,16 @@ def format_windows(windows):
 # Launch rofi.
 def rofi(windows):
 
-    lines = 8
+    lines = 9
     selected = 0
 
     for i, win in enumerate(windows):
         if win.is_current:
             selected = i
 
-    options = ['-dmenu', '-format', 'i', '-no-custom', '-markup-rows']
-    options += ['-selected-row', str(selected), '-lines', str(lines)]
+    options = ['-dmenu', '-monitor', '-2', '-format', 'i', '-no-custom']
+    options += ['-markup-rows', '-selected-row', str(selected)]
+
     options += ['-kb-row-up', 'k', '-kb-row-down', 'j,Alt+Tab']
     options += ['-kb-accept-entry', 'l,Return', '-kb-cancel', 'Escape,q']
     options += ['-kb-custom-1', 'comma', '-kb-custom-2', 'Q']
@@ -84,7 +85,8 @@ def rofi(windows):
 
     colorscheme = get_xresource('colorscheme.name') or 'light'
     style  = ['-theme', 'term-' + colorscheme]
-    style += ['-theme-str', 'mainbox { children: [ listview ]; }']
+    style += ['-theme-str', f'window {{ children: [ listview ]; width: 35%; }}']
+    style += ['-theme-str', f'listview {{ lines: {lines}; }}']
 
     if len(windows) <= lines:
         style += ['-theme-str', 'listview { scrollbar: false; }']
@@ -102,6 +104,7 @@ def rofi_rename(window):
 
     colorscheme = get_xresource('colorscheme.name') or 'light'
     style  = ['-theme', 'term-' + colorscheme]
+    style += ['-theme-str', 'window { width: 25%; }']
     style += ['-theme-str', 'listview { enabled: false; }']
     style += ['-theme-str', 'case-indicator { enabled: false; }']
     style += ['-theme-str', 'prompt { enabled: true; }']

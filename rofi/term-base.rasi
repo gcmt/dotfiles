@@ -9,6 +9,7 @@
 window {
 	location: center;
 	anchor: center;
+	width: 40%;
 }
 
 

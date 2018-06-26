@@ -1,6 +1,6 @@
 #!/bin/bash
 
-style="-width 25"
+style="-theme-str 'window { width: 25%; }'"
 style="$style -theme-str 'listview { enabled: false; }'"
 style="$style -theme-str 'case-indicator { enabled: false; }'"
 style="$style -theme-str 'prompt { enabled: true; }'"

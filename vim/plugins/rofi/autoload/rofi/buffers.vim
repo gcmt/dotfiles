@@ -66,13 +66,16 @@ endf
 " s:rofi({buffers:list}) -> string
 func! s:rofi(buffers)
 
-	let lines = min([len(a:buffers), g:rofi_max_lines])
 	let selected = max([index(a:buffers, bufnr('%')), 0])
 	let options  = "-dmenu -monitor '-2' -p 'buffer ' -i -format i"
-	let options .= printf(" -markup-rows -lines %s -selected-row %s", lines, selected)
+	let options .= printf(" -markup-rows -selected-row %s", selected)
 
 	let theme = "term-" . &bg
-	let style = printf("-width %s -theme '%s'", rofi#width(), theme)
+	let style = printf("-theme '%s'", theme)
+	let style .= printf(" -theme-str 'window { width: %s%%; }'", rofi#width())
+
+	let lines = min([len(a:buffers), g:rofi_max_lines])
+	let style .= printf(" -theme-str 'listview { lines: %s; }'", lines)
 
 	if len(a:buffers) <= lines
 		let style .= " -theme-str 'listview { scrollbar: false; }'"
@@ -146,7 +149,7 @@ func! s:format_buffers(buffers)
 		end
 
 		if path != tail
-			let line .= ' ' . printf("<span foreground='%s'>%s</span>", color_dim, path)
+			let line .= '  ' . printf("<span foreground='%s'>%s</span>", color_dim, path)
 		end
 
 		call add(lines, line)

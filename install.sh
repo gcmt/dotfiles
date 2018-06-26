@@ -114,10 +114,6 @@ if [[ "$@" =~ '-zathura' || "$@" =~ '-all' ]]; then
 	link "$DOTDIR/zathura" "$XDG_CONFIG_HOME/zathura"
 fi
 
-if [[ "$@" =~ '-mailcheck' || "$@" =~ '-all' ]]; then
-	link "$DOTDIR/mailcheck" "$XDG_DATA_HOME/mailcheck"
-fi
-
 if [[ "$@" =~ '-cmus' || "$@" =~ '-all' ]]; then
 	mkdir -p "$XDG_CONFIG_HOME/cmus"
 	link "$DOTDIR/cmus/rc" "$XDG_CONFIG_HOME/cmus/rc"

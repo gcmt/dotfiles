@@ -1,5 +1,13 @@
 #!/bin/bash
 
+follow=0
+while getopts "f" OPT; do
+	case $OPT in
+		f) follow=1 ;;
+	esac
+done
+shift $((OPTIND -1))
+
 workspaces=$(i3-msg -t get_workspaces)
 
 workspace_exists() {
@@ -11,7 +19,9 @@ main() {
 	while (( num < 10 )); do
 		if ! workspace_exists $num; then
 			i3-msg "move container to workspace number $num" >/dev/null
-			i3-msg "workspace number $num" >/dev/null
+			if (( $follow == 1 )); then
+				i3-msg "workspace number $num" >/dev/null
+			fi
 			break
 		fi
 		num=$(expr $num + 1)

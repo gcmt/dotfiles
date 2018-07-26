@@ -54,6 +54,7 @@ bindsym $mod+ograve exec --no-startup-id firefox -new-tab 'https://www.fastmail.
 
 # Kill window
 bindsym $mod+Shift+q kill
+bindsym --release button3 kill
 
 # Mark/unmark window
 bindsym $mod+m exec --no-startup-id i3-mark

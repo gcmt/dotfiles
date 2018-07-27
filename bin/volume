@@ -1,5 +1,13 @@
 #!/bin/bash
 
+quiet=0
+while getopts "q" OPT; do
+	case $OPT in
+		q) quiet=1 ;;
+	esac
+done
+shift $((OPTIND -1))
+
 id=4224
 timeout=1000
 summary="Volume"
@@ -13,7 +21,7 @@ is_mute() {
 }
 
 notify_volume() {
-	polybar_visible && return 1
+	polybar_visible || (( quiet == 1 )) && return
 	if (( $1 == 0 )); then
 		text="Volume off"
 	else
@@ -25,7 +33,7 @@ notify_volume() {
 }
 
 notify_mute() {
-	polybar_visible && return 1
+	polybar_visible || (( quiet == 1 )) && return
 	dunstify -t $timeout -r $id "$summary" "Muted"
 }
 
@@ -40,6 +48,10 @@ case "$1" in
 		;;
 	toggle)
 		volume=$(amixer -D pulse sset Master toggle | grep -Pom1 '[0-9]+(?=%)')
+		is_mute && notify_mute || notify_volume $volume
+		;;
+	mute)
+		volume=$(amixer -D pulse sset Master mute | grep -Pom1 '[0-9]+(?=%)')
 		is_mute && notify_mute || notify_volume $volume
 		;;
 esac

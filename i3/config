@@ -205,8 +205,8 @@ mode "i3" {
 	bindsym Shift+x exit
 
 	bindsym Shift+l exec --no-startup-id volume -q mute && $locker, mode "default"
-	bindsym Shift+s exec --no-startup-id $locker && systemctl suspend, mode "default"
-	bindsym Shift+h exec --no-startup-id $locker && systemctl hibernate, mode "default"
+	bindsym Shift+s exec --no-startup-id $locker && sleep 1 && systemctl suspend, mode "default"
+	bindsym Shift+h exec --no-startup-id $locker && sleep 1 && systemctl hibernate, mode "default"
 
 	bindsym c exec --no-startup-id urxvt -name urxvt-floating -e vim .config/i3/config; mode "default"
 

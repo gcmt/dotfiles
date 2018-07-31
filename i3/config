@@ -203,7 +203,7 @@ mode "i3" {
 	bindsym Shift+x exit
 
 	bindsym Shift+l exec --no-startup-id lock -mfb, mode "default"
-	bindsym Shift+s exec --no-startup-id lock && sleep 1 && systemctl suspend, mode "default"
+	bindsym Shift+s exec --no-startup-id lock -f && sleep 1 && systemctl suspend, mode "default"
 
 	bindsym c exec --no-startup-id urxvt -name urxvt-floating -e vim .config/i3/config; mode "default"
 

@@ -1,0 +1,72 @@
+#!/bin/bash
+
+pgrep -x i3lock > /dev/null && exit 1
+
+mute=0
+force=0
+blank=0
+delay=15
+excluded=(mpv)
+
+_print_help() {
+	echo "Usage: "
+	echo "  lock [-f] [-m] [-b]"
+	echo
+	echo "Options: "
+	echo "  -f    Force screen locking when fullscreen is on and regardless of ignored classes (${excluded[*]})"
+	echo "  -m    Mute volume before locking"
+	echo "  -b    Turn off the screen after $delay seconds"
+	echo
+}
+
+while getopts ":mfbh" OPT; do
+	case $OPT in
+		m)
+			mute=1
+			;;
+		f)
+			force=1
+			;;
+		b)
+			blank=1
+			;;
+		h)
+			_print_help
+			exit
+			;;
+		\?)
+			echo 1>&2 "Invalid option: $OPTARG"
+			_print_help
+			exit 1
+			;;
+	esac
+done
+shift $((OPTIND - 1))
+
+if [[ "$force" -eq 0 ]]; then
+	id=$(xdotool getwindowfocus)
+	# Do not lock the screen when fullscreen is active
+	wm_state=$(xprop -id "$id" | grep _NET_WM_STATE)
+	if echo "$wm_state" | grep -q FULLSCREEN; then
+		echo 1>&2 "Cannot lock screen: fullscreen on"
+		exit 1
+	fi
+	# Do not lock the screen when certain windows are focused
+	wm_class=$(xprop -id "$id" 2> /dev/null | grep WM_CLASS)
+	class=$(echo "$wm_class" | grep -Po '(?<=")\w+(?=")' | tail -n1)
+	if echo "${excluded[@]}" | grep -qiP "(^|\\s)$class($|\\s)"; then
+		echo 1>&2 "Cannot lock screen: focused window class is '$class'"
+		exit 1
+	fi
+fi
+
+if [[ "$mute" -eq 1 ]]; then
+	volume -q mute
+fi
+
+i3lock -eu -i ~/.local/share/wallpapers/locked.png
+
+if [[ "$blank" -eq 1 ]]; then
+	sleep "$delay"
+	pgrep -x i3lock > /dev/null && xset dpms force off
+fi

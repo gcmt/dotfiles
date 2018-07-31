@@ -195,8 +195,6 @@ mode "float" {
 
 bindsym $mod+Shift+f mode "float"
 
-set $locker i3lock -u -i ~/.local/share/wallpapers/lock.png
-
 # i3 commands
 mode "i3" {
 
@@ -204,9 +202,8 @@ mode "i3" {
 	bindsym Shift+r restart
 	bindsym Shift+x exit
 
-	bindsym Shift+l exec --no-startup-id volume -q mute && $locker, mode "default"
-	bindsym Shift+s exec --no-startup-id $locker && sleep 1 && systemctl suspend, mode "default"
-	bindsym Shift+h exec --no-startup-id $locker && sleep 1 && systemctl hibernate, mode "default"
+	bindsym Shift+l exec --no-startup-id lock -mfb, mode "default"
+	bindsym Shift+s exec --no-startup-id lock && sleep 1 && systemctl suspend, mode "default"
 
 	bindsym c exec --no-startup-id urxvt -name urxvt-floating -e vim .config/i3/config; mode "default"
 

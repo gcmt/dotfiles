@@ -7,7 +7,11 @@ setxkbmap -layout it
 
 xmodmap ~/.Xmodmap
 
+xset s off dpms 0 0 0
+
 xset r rate 175 25
+
+xautolock &
 
 sh ~/.config/dunst/start.sh &
 

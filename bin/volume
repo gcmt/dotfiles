@@ -40,18 +40,22 @@ notify_mute() {
 case "$1" in
 	up)
 		volume=$(amixer -D pulse sset Master unmute 3%+ | grep -Pom1 '[0-9]+(?=%)')
-		notify_volume $volume
+		notify_volume "$volume"
 		;;
 	down)
 		volume=$(amixer -D pulse sset Master unmute 3%- | grep -Pom1 '[0-9]+(?=%)')
-		notify_volume $volume
+		notify_volume "$volume"
 		;;
 	toggle)
 		volume=$(amixer -D pulse sset Master toggle | grep -Pom1 '[0-9]+(?=%)')
-		is_mute && notify_mute || notify_volume $volume
+		is_mute && notify_mute || notify_volume "$volume"
 		;;
 	mute)
-		volume=$(amixer -D pulse sset Master mute | grep -Pom1 '[0-9]+(?=%)')
-		is_mute && notify_mute || notify_volume $volume
+		amixer -D pulse sset Master mute > /dev/null
+		is_mute && notify_mute
+		;;
+	unmute)
+		volume=$(amixer -D pulse sset Master unmute | grep -Pom1 '[0-9]+(?=%)')
+		notify_volume "$volume"
 		;;
 esac

@@ -62,7 +62,9 @@ bindsym $mod+Shift+m [con_id="__focused__"] unmark
 
 # Open tmux
 bindsym $mod+u exec i3-t
+bindsym $mod+Shift+u exec i3-t -n
 bindsym $mod+plus exec i3-t scratch
+bindsym $mod+Shift+plus exec i3-t -n scratch
 
 # Pick tmux session
 bindsym $mod+Control+u exec rofi-tmux

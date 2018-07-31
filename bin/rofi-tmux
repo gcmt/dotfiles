@@ -5,7 +5,7 @@ style="$style -theme-str 'window { width: 25%; }'"
 style="$style -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
 style="$style -theme-str 'case-indicator { enabled: false; }'"
 
-options="-dmenu -kb-custom-1 'Control+BackSpace'"
+options="-dmenu -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Shift+Return'"
 
 sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus")
 session=$(echo "$sessions" | eval "rofi $options $style")
@@ -26,6 +26,11 @@ case $rofi_exit in
 			tmux kill-session -t "=$session"
 		fi
 		exec "$0"
+		;;
+
+	11)
+
+		exec urxvt -e t "$session"
 		;;
 
 	*)

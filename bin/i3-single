@@ -1,0 +1,17 @@
+#!/bin/bash
+
+new_window=0
+while getopts "n" OPT; do
+	case $OPT in
+		n) new_window=1 ;;
+	esac
+done
+shift $((OPTIND - 1))
+
+if (( new_window == 1 )); then
+	exec $2
+else
+	if i3-msg "$1 focus" 2>/dev/null | grep -q false; then
+		exec $2
+	fi
+fi

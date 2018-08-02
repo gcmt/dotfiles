@@ -104,6 +104,9 @@ _colorscheme() {
 }
 
 set-colors() {
+	if [[ ! $DISPLAY ]]; then
+		return
+	fi
 	if [[ "$(_colorscheme)" == "dark" ]]; then
 		export LS_COLORS='fi=97'
 		export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=237'
@@ -112,6 +115,7 @@ set-colors() {
 		export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=249'
 	fi
 }
+
 add-zsh-hook precmd set-colors
 
 # VI MODE

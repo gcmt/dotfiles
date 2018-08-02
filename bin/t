@@ -20,7 +20,7 @@ last_active_session() {
 	local candidate session activity delta last_delta
 	while IFS= read -r line; do
 		candidate="$(echo $line | sed 's/^[0-9]\+://')"
-		if [[ "$candidate" =~ $default|cmus ]]; then
+		if [[ "$candidate" =~ $default|cmus|calc ]]; then
 			continue
 		fi
 		activity="$(echo $line | grep -o '^[0-9]\+')"

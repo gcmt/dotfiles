@@ -26,14 +26,16 @@ gaps outer 1
 # Rules
 # ----------------------------------------------------------------------------
 
+for_window [instance="urxvt-floating"] floating enable, $float_m, move position center
+for_window [instance="urxvt-calc"] floating enable, resize set 35ppt 30ppt, move position center
+
 for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable
 for_window [class="Ssh-askpass"] floating enable
+
 for_window [class="KeepassXC"] layout stacking
 for_window [class="git-cola"] layout stacking
 for_window [class="Firefox" title="Library"] layout stacking
-
-for_window [instance="urxvt-floating"] floating enable, $float_m, move position center
 
 for_window [class=".*"] title_format " %title"
 for_window [class="git-cola"] title_format " %title - Git Cola"
@@ -41,6 +43,9 @@ for_window [class="Firefox" instance="Places"] title_format " %title - Mozilla F
 
 # Bindings
 # ----------------------------------------------------------------------------
+
+# Open console calculator
+bindsym $mod+backslash exec i3-calc
 
 # Edit files
 bindsym $mod+e exec --no-startup-id rofi-edit

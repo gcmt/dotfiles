@@ -7,7 +7,7 @@ style="$style -theme-str 'case-indicator { enabled: false; }'"
 
 options="-dmenu -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Shift+Return'"
 
-sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus")
+sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus\\|calc")
 session=$(echo "$sessions" | eval "rofi $options $style")
 rofi_exit=$?
 

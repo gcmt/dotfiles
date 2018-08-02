@@ -1,0 +1,13 @@
+#!/bin/bash
+# Keep calculator running in a tmux session so that state is preserved.
+
+session=calc
+
+if ! tmux has -t "$session" 2> /dev/null; then
+	tmux new -ds "$session" bc -ql
+	tmux set -t "$session" set-titles on
+	tmux set -t "$session" set-titles-string 'Calculator'
+	tmux set -t "$session" status off
+fi
+
+exec t "$session"

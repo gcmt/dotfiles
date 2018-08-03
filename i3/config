@@ -26,8 +26,8 @@ gaps outer 1
 # Rules
 # ----------------------------------------------------------------------------
 
-for_window [instance="urxvt-floating"] floating enable, $float_m, move position center
-for_window [instance="urxvt-calc"] floating enable, resize set 35ppt 30ppt, move position center
+for_window [class="URxvt" instance="floating"] floating enable, $float_m, move position center
+for_window [class="URxvt" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
 
 for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable
@@ -212,7 +212,7 @@ mode "i3" {
 	bindsym Shift+l exec --no-startup-id lock -mfb, mode "default"
 	bindsym Shift+s exec --no-startup-id lock -f && sleep 1 && systemctl suspend, mode "default"
 
-	bindsym c exec --no-startup-id urxvt -name urxvt-floating -e vim .config/i3/config; mode "default"
+	bindsym c exec --no-startup-id urxvt -name floating -e vim .config/i3/config; mode "default"
 
 	bindsym q mode "default"
 	bindsym Return mode "default"
@@ -229,8 +229,8 @@ bindsym $mod+$alt+space mode "i3"
 bindsym XF86AudioPlay exec --no-startup-id mpc toggle
 bindsym XF86AudioNext exec --no-startup-id mpc next
 bindsym XF86AudioPrev exec --no-startup-id mpc prev
-bindsym $mod+XF86AudioPlay exec --no-startup-id urxvt -name urxvt-floating -e ncmpcpp
-bindsym $mod+F5 exec --no-startup-id urxvt -name urxvt-floating -e ncmpcpp
+bindsym $mod+XF86AudioPlay exec --no-startup-id urxvt -name floating -e ncmpcpp
+bindsym $mod+F5 exec --no-startup-id urxvt -name floating -e ncmpcpp
 bindsym $mod+F6 exec --no-startup-id mpc toggle
 bindsym $mod+F7 exec --no-startup-id mpc prev
 bindsym $mod+F8 exec --no-startup-id mpc next

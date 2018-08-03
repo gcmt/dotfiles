@@ -34,4 +34,4 @@ if [[ -z "$idx" ]]; then
 	exit 1
 fi
 
-exec urxvt -name urxvt-floating -e vim "${files[$idx]}" +'cd %:p:h'
+exec urxvt -name floating -e vim "${files[$idx]}" +'cd %:p:h'

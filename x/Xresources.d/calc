@@ -1,0 +1,42 @@
+
+calc*font: xft:Noto Mono Patched:size=10
+calc*letterSpace: 4
+calc*lineSpace: 4
+
+calc*internalBorder: 4
+
+calc*foreground: _LIGHT_fg_dim
+calc*background: _LIGHT_bg_color
+calc*borderColor: _LIGHT_bg_color
+calc*cursorColor: _LIGHT_cursor_color
+calc*highlightColor: _LIGHT_fg_super_dim
+
+calc*color0: _LIGHT_black
+calc*color1: _LIGHT_red
+calc*color2: _LIGHT_green
+calc*color3: _LIGHT_yellow
+calc*color4: _LIGHT_blue
+calc*color5: _LIGHT_magenta
+calc*color6: _LIGHT_cyan
+calc*color7: _LIGHT_white
+
+calc*color8:  _LIGHT_black_bright
+calc*color9:  _LIGHT_red_bright
+calc*color10: _LIGHT_green_bright
+calc*color11: _LIGHT_yellow_bright
+calc*color12: _LIGHT_blue_bright
+calc*color13: _LIGHT_magenta_bright
+calc*color14: _LIGHT_cyan_bright
+calc*color15: _LIGHT_white_bright
+
+calc*color16: _LIGHT_orange
+calc*color17: _LIGHT_orange_bright
+
+calc*color18: _LIGHT_fg_color
+calc*color19: _LIGHT_bg_color
+calc*color20: _LIGHT_cursor_color
+
+calc*color21: _LIGHT_bg_accent
+calc*color22: _LIGHT_fg_dim
+calc*color23: _LIGHT_fg_very_dim
+calc*color24: _LIGHT_fg_super_dim

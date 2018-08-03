@@ -12,13 +12,14 @@
 	URxvt.cursorColor: _DARK_cursor_color
 	URxvt.highlightColor: _DARK_fg_super_dim
 #endif
+
 URxvt.perl-ext-common: default,matcher,font-manager,message,focus
 
-URxvt.internalBorder: 4
+URxvt.internalBorder: 5
 URxvt.scrollBar: false
 URxvt.saveLines: 8192
 URxvt.iso14755: false
-URxvt*pointerBlank: true
+URxvt.pointerBlank: true
 
 URxvt.keysym.Shift-Control-V: eval:paste_clipboard
 URxvt.keysym.Shift-Control-C: eval:selection_to_clipboard

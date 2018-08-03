@@ -1,32 +1,30 @@
 
-colorscheme.name: dark
+#define _DARK_black rgb:1e/22/2b
+#define _DARK_red rgb:94/5f/65
+#define _DARK_green rgb:76/8a/78
+#define _DARK_yellow rgb:a3/94/65
+#define _DARK_blue rgb:65/7b/99
+#define _DARK_magenta rgb:91/70/86
+#define _DARK_cyan rgb:73/94/92
+#define _DARK_white rgb:8e/92/99
 
-#define _black rgb:1e/22/2b
-#define _red rgb:94/5f/65
-#define _green rgb:76/8a/78
-#define _yellow rgb:a3/94/65
-#define _blue rgb:65/7b/99
-#define _magenta rgb:91/70/86
-#define _cyan rgb:73/94/92
-#define _white rgb:8e/92/99
+#define _DARK_black_bright _DARK_black
+#define _DARK_red_bright _DARK_red
+#define _DARK_green_bright _DARK_green
+#define _DARK_yellow_bright _DARK_yellow
+#define _DARK_blue_bright _DARK_blue
+#define _DARK_magenta_bright _DARK_magenta
+#define _DARK_cyan_bright _DARK_cyan
+#define _DARK_white_bright _DARK_white
 
-#define _black_bright _black
-#define _red_bright _red
-#define _green_bright _green
-#define _yellow_bright _yellow
-#define _blue_bright _blue
-#define _magenta_bright _magenta
-#define _cyan_bright _cyan
-#define _white_bright _white
+#define _DARK_orange rgb:99/80/68
+#define _DARK_orange_bright _DARK_orange
 
-#define _orange rgb:99/80/68
-#define _orange_bright _orange
+#define _DARK_fg_color _DARK_white
+#define _DARK_bg_color _DARK_black
+#define _DARK_cursor_color _DARK_magenta
 
-#define _fg_color _white
-#define _bg_color _black
-#define _cursor_color _magenta
-
-#define _bg_accent rgb:25/29/33
-#define _fg_dim rgb:63/67/70
-#define _fg_very_dim rgb:44/47/51
-#define _fg_super_dim rgb:35/39/44
+#define _DARK_bg_accent rgb:25/29/33
+#define _DARK_fg_dim rgb:63/67/70
+#define _DARK_fg_very_dim rgb:44/47/51
+#define _DARK_fg_super_dim rgb:35/39/44

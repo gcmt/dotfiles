@@ -1,4 +1,18 @@
 
+#ifdef LIGHT
+	XTerm*foreground: _LIGHT_fg_dim
+	XTerm*background: _LIGHT_bg_color
+	XTerm*cursorColor: _LIGHT_cursor_color
+	XTerm*borderColor: _LIGTH_bg_color
+	XTerm*highlightColor: _LIGHT_fg_super_dim
+#else
+	XTerm*foreground: _DARK_fg_dim
+	XTerm*background: _DARK_bg_color
+	XTerm*cursorColor: _DARK_cursor_color
+	XTerm*borderColor: _DARK_bg_color
+	XTerm*highlightColor: _DARK_fg_super_dim
+#endif
+
 XTerm*termName: xterm-256color
 XTerm*loginShell: false
 XTerm*saveLines: 8192
@@ -12,7 +26,6 @@ XTerm*ttyModes: erase ^?
 
 XTerm*VT100.internalBorder: 4
 XTerm*borderWidth: 0
-XTerm*borderColor: _bg_color
 
 XTerm*utf8: true
 XTerm*utf8Title: true
@@ -30,8 +43,3 @@ Ctrl Shift <Key> V: insert-selection(CLIPBOARD) \n\
 Ctrl Shift <Key> J: exec-selectable("XTerm-move down", word) \n\
 Ctrl Shift <Key> K: exec-selectable("XTerm-move up", word) \n\
 Ctrl Shift <Key> O: exec-formatted("firefox '%t'", PRIMARY) \n\
-
-XTerm*foreground: _fg_dim
-XTerm*background: _bg_color
-XTerm*cursorColor: _cursor_color
-XTerm*highlightColor: _fg_super_dim

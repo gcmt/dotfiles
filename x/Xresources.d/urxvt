@@ -1,4 +1,17 @@
 
+#ifdef LIGHT
+	URxvt.foreground: _LIGHT_fg_dim
+	URxvt.background: _LIGHT_bg_color
+	URxvt.borderColor: _LIGHT_bg_color
+	URxvt.cursorColor: _LIGHT_cursor_color
+	URxvt.highlightColor: _LIGHT_fg_super_dim
+#else
+	URxvt.foreground: _DARK_fg_dim
+	URxvt.background: _DARK_bg_color
+	URxvt.borderColor: _DARK_bg_color
+	URxvt.cursorColor: _DARK_cursor_color
+	URxvt.highlightColor: _DARK_fg_super_dim
+#endif
 URxvt.perl-ext-common: default,matcher,font-manager,message,focus
 
 URxvt.internalBorder: 4
@@ -35,9 +48,3 @@ URxvt.font-manager.font.3: xft:Liberation Mono:size=10
 URxvt.font-manager.font.4: xft:DejaVu Sans Mono:size=10
 URxvt.font-manager.font.5: xft:Inconsolata:size=11
 URxvt.font-manager.font.6: xft:Source Code Variable:size=10
-
-URxvt.foreground: _fg_dim
-URxvt.background: _bg_color
-URxvt.borderColor: _bg_color
-URxvt.cursorColor: _cursor_color
-URxvt.highlightColor: _fg_super_dim

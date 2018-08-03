@@ -1,36 +1,73 @@
 
+#include "colors-dark"
+#include "colors-light"
+
 #ifdef LIGHT
-	#include "colors-light"
+
+	colorscheme.name: light
+
+	*color0: _LIGHT_black
+	*color1: _LIGHT_red
+	*color2: _LIGHT_green
+	*color3: _LIGHT_yellow
+	*color4: _LIGHT_blue
+	*color5: _LIGHT_magenta
+	*color6: _LIGHT_cyan
+	*color7: _LIGHT_white
+
+	*color8:  _LIGHT_black_bright
+	*color9:  _LIGHT_red_bright
+	*color10: _LIGHT_green_bright
+	*color11: _LIGHT_yellow_bright
+	*color12: _LIGHT_blue_bright
+	*color13: _LIGHT_magenta_bright
+	*color14: _LIGHT_cyan_bright
+	*color15: _LIGHT_white_bright
+
+	*color16: _LIGHT_orange
+	*color17: _LIGHT_orange_bright
+
+	*color18: _LIGHT_fg_color
+	*color19: _LIGHT_bg_color
+	*color20: _LIGHT_cursor_color
+
+	*color21: _LIGHT_bg_accent
+	*color22: _LIGHT_fg_dim
+	*color23: _LIGHT_fg_very_dim
+	*color24: _LIGHT_fg_super_dim
+
 #else
-	#include "colors-dark"
+
+	colorscheme.name: dark
+
+	*color0: _DARK_black
+	*color1: _DARK_red
+	*color2: _DARK_green
+	*color3: _DARK_yellow
+	*color4: _DARK_blue
+	*color5: _DARK_magenta
+	*color6: _DARK_cyan
+	*color7: _DARK_white
+
+	*color8:  _DARK_black_bright
+	*color9:  _DARK_red_bright
+	*color10: _DARK_green_bright
+	*color11: _DARK_yellow_bright
+	*color12: _DARK_blue_bright
+	*color13: _DARK_magenta_bright
+	*color14: _DARK_cyan_bright
+	*color15: _DARK_white_bright
+
+	*color16: _DARK_orange
+	*color17: _DARK_orange_bright
+
+	*color18: _DARK_fg_color
+	*color19: _DARK_bg_color
+	*color20: _DARK_cursor_color
+
+	*color21: _DARK_bg_accent
+	*color22: _DARK_fg_dim
+	*color23: _DARK_fg_very_dim
+	*color24: _DARK_fg_super_dim
+
 #endif
-
-*color0: _black
-*color1: _red
-*color2: _green
-*color3: _yellow
-*color4: _blue
-*color5: _magenta
-*color6: _cyan
-*color7: _white
-
-*color8:  _black_bright
-*color9:  _red_bright
-*color10: _green_bright
-*color11: _yellow_bright
-*color12: _blue_bright
-*color13: _magenta_bright
-*color14: _cyan_bright
-*color15: _white_bright
-
-*color16: _orange
-*color17: _orange_bright
-
-*color18: _fg_color
-*color19: _bg_color
-*color20: _cursor_color
-
-*color21: _bg_accent
-*color22: _fg_dim
-*color23: _fg_very_dim
-*color24: _fg_super_dim

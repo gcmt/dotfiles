@@ -5,10 +5,12 @@ calc*lineSpace: 4
 
 calc*internalBorder: 4
 
+calc*cursorUnderline: true
+
 calc*foreground: _LIGHT_fg_dim
 calc*background: _LIGHT_bg_color
 calc*borderColor: _LIGHT_bg_color
-calc*cursorColor: _LIGHT_cursor_color
+calc*cursorColor: _LIGHT_fg_super_dim
 calc*highlightColor: _LIGHT_fg_super_dim
 
 calc*color0: _LIGHT_black

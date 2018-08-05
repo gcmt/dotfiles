@@ -39,6 +39,13 @@ func! buffers#actions#toggle_unlisted()
 	call buffers#render()
 endf
 
+" buffers#switch_to_explorer() -> 0
+" Close the window and open the explorer instead.
+func! buffers#actions#switch_to_explorer()
+	close
+	exec 'Explorer' expand('%:p:h')
+endf
+
 " s:err({msg:string}) -> 0
 " Display a simple error message.
 func! s:err(msg)

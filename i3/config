@@ -55,7 +55,7 @@ bindsym $mod+i exec --no-startup-id i3-focus -c Firefox
 bindsym $mod+apostrophe exec --no-startup-id "i3-focus -m _m,_mark,_marked"
 
 # Open mail in a new browser window
-bindsym $mod+ograve exec --no-startup-id i3-single '[title="(?i)Fastmail"]' "firefox --new-window -P Mail"
+bindsym $mod+ograve exec i3-single '[title="(?i)\| Fastmail -"]' "firefox --no-remote -P Mail"
 
 # Kill window
 bindsym $mod+Shift+q kill

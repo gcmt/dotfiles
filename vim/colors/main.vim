@@ -25,7 +25,7 @@ else
 	let s:bg_accent    =  ['#252933', 21]
 	let s:fg           =  ['#8e9299', 18]
 	let s:fg_dim       =  ['#636770', 22]
-	let s:fg_very_dim  =  ['#444751', 23]
+	let s:fg_very_dim  =  ['#4a4e59', 23]
 	let s:fg_super_dim =  ['#353944', 24]
 	let s:red          =  ['#945F65', 1]
 	let s:green        =  ['#768A78', 2]

@@ -26,5 +26,5 @@
 
 #define _DARK_bg_accent rgb:25/29/33
 #define _DARK_fg_dim rgb:63/67/70
-#define _DARK_fg_very_dim rgb:44/47/51
+#define _DARK_fg_very_dim rgb:4a/4e/59
 #define _DARK_fg_super_dim rgb:35/39/44

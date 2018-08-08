@@ -7,6 +7,7 @@ set $mod Mod4
 set $float_l resize set 90ppt 80ppt
 set $float_m resize set 80ppt 70ppt
 set $float_s resize set 70ppt 60ppt
+set $float_x resize set 60ppt 50ppt
 
 # Options
 # ----------------------------------------------------------------------------
@@ -45,7 +46,7 @@ for_window [class="Firefox" instance="Places"] title_format " %title - Mozilla F
 # ----------------------------------------------------------------------------
 
 # Open console calculator
-bindsym $mod+backslash exec i3-calc
+bindsym $mod+backslash exec --no-startup-id i3-calc
 
 # Edit files
 bindsym $mod+e exec --no-startup-id rofi-edit
@@ -53,6 +54,7 @@ bindsym $mod+e exec --no-startup-id rofi-edit
 # Shortcuts
 bindsym $mod+i exec --no-startup-id i3-focus -c Firefox
 bindsym $mod+apostrophe exec --no-startup-id "i3-focus -m _m,_mark,_marked"
+bindsym $mod+Shift+apostrophe mark _m
 
 # Open mail in a new browser window
 bindsym $mod+ograve exec i3-single '[title="(?i)\| Fastmail -"]' "firefox --no-remote -P Mail"
@@ -112,7 +114,7 @@ bindsym $mod+b split vertical
 bindsym $mod+r split horizontal
 
 # Reset workspace layout
-bindsym $mod+0 [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
+bindsym $mod+Shift+w [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 
 # Change window layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
@@ -163,8 +165,8 @@ bindsym $mod+Shift+8 move container to workspace number 8; workspace number 8
 bindsym $mod+Shift+9 move container to workspace number 9; workspace number 9
 
 # Move window to new workspace and back
-bindsym $mod+Shift+w exec --no-startup-id i3-move-container-to-new-workspace -f
-bindsym $mod+Shift+e exec --no-startup-id i3-move-container-to-new-workspace
+bindsym $mod+0 exec --no-startup-id i3-move-container-to-new-workspace -f
+bindsym $mod+Shift+0 exec --no-startup-id i3-move-container-to-new-workspace
 bindsym $mod+Shift+a move container to workspace back_and_forth; workspace back_and_forth
 
 # Move to last focused workspace
@@ -178,8 +180,8 @@ bindsym $mod+p workspace prev
 bindsym $mod+z focus mode_toggle
 
 # Scratchpad bindings
-bindsym $mod+minus scratchpad show; floating disable
-bindsym $mod+Control+minus scratchpad show; $float_m; move position center
+bindsym $mod+minus scratchpad show
+bindsym $mod+Control+minus scratchpad show; floating disable
 bindsym $mod+Shift+minus move scratchpad
 
 # Toggle tiling / floating
@@ -190,9 +192,10 @@ mode "float" {
 	bindsym l floating enable; $float_l; move position center
 	bindsym m floating enable; $float_m; move position center
 	bindsym s floating enable; $float_s; move position center
+	bindsym x floating enable; $float_x; move position center
 
-	bindsym plus floating enable; resize grow right 5px; resize grow down 4px; move position center
-	bindsym minus floating enable; resize shrink right 5px; resize shrink down 4px; move position center
+	bindsym plus floating enable; resize grow right 40px; resize grow down 10px; move position center
+	bindsym minus floating enable; resize shrink right 40px; resize shrink down 10px; move position center
 
 	bindsym q mode "default"
 	bindsym Return mode "default"

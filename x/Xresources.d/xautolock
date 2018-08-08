@@ -1,6 +1,4 @@
 
 Xautolock.time: 30
 Xautolock.locker: lock -bm
-Xautolock.notify: 15
-Xautolock.notifier: notify-send -t 10000 'Xautolock' 'Screen is about to get locked in 15 seconds'
 Xautolock.secure: true

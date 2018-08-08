@@ -35,7 +35,7 @@ URxvt.keysym.Shift-Control-L: matcher:list
 URxvt.font: xft:Noto Mono Patched:size=10
 URxvt.boldFont:
 URxvt.letterSpace: 1
-URxvt.lineSpace: 1
+URxvt.lineSpace: 2
 
 URxvt.keysym.Control-plus: font-manager:larger
 URxvt.keysym.Control-minus: font-manager:smaller

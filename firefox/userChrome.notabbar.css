@@ -1,0 +1,20 @@
+/*
+ * Hide tab bar with only one tab open
+ * Credits: https://gist.github.com/BenoitAverty/af633ee20e27f48f9ba7178451432206
+ */
+
+#tabbrowser-tabs, #tabbrowser-tabs > .tabbrowser-arrowscrollbox {
+	min-height: 0 !important;
+}
+
+#tabbrowser-tabs tab[first-visible-tab="true"][last-visible-tab="true"] {
+	visibility: collapse;
+}
+
+#tabbrowser-tabs .tabs-newtab-button {
+	visibility: collapse !important;
+}
+
+#tabbrowser-tabs tab {
+	min-height: var(--tab-min-height)
+}

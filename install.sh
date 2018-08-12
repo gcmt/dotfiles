@@ -42,6 +42,11 @@ if [[ "$*" =~ -x($| ) || -n "$ALL" ]]; then
 	echo ""
 fi
 
+if [[ "$*" =~ -redshift($| ) || -n "$ALL" ]]; then
+	link "$DOTDIR/redshift" "$XDG_CONFIG_HOME/redshift"
+	echo ""
+fi
+
 if [[ "$*" =~ -fontconfig($| ) || -n "$ALL" ]]; then
 	link "$DOTDIR/fontconfig" "$XDG_CONFIG_HOME/fontconfig"
 	echo ""

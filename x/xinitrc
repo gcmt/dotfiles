@@ -13,7 +13,9 @@ xset r rate 175 25
 
 xautolock &
 
-sh ~/.config/dunst/start.sh &
+~/.config/dunst/start.sh &
+
+~/.config/redshift/start.sh &
 
 compton -b
 

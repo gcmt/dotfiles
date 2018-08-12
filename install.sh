@@ -1,16 +1,16 @@
 #!/bin/bash
 
 if [[ "$*" =~ -all($| ) ]]; then
-	ALL=yes
+	all=yes
 fi
 
 if [[ "$*" =~ -force($| ) ]]; then
-	FORCE=yes
+	force=yes
 fi
 
-DOTDIR="$(cd "$(dirname "$0")" && pwd)"
+dotdir="$(cd "$(dirname "$0")" && pwd)"
 
-source "$DOTDIR/zsh/.zshenv"
+source "$dotdir/zsh/.zshenv"
 
 if [[ -z "$XDG_CONFIG_HOME" || -z "$XDG_CACHE_HOME" || -z "$XDG_DATA_HOME" ]]; then
 	echo >&2 'XDG directories not set'
@@ -34,138 +34,138 @@ mkdir -p "$XDG_CONFIG_HOME"
 
 echo ""
 
-if [[ "$*" =~ -x($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/x/xinitrc" "$HOME/.xinitrc"
-	link "$DOTDIR/x/Xmodmap" "$HOME/.Xmodmap"
-	link "$DOTDIR/x/Xresources" "$HOME/.Xresources"
-	link "$DOTDIR/x/Xresources.d" "$HOME/.Xresources.d"
 	echo ""
+if [[ "$*" =~ -x($| ) || -n "$all" ]]; then
+	link "$dotdir/x/xinitrc" "$HOME/.xinitrc"
+	link "$dotdir/x/Xmodmap" "$HOME/.Xmodmap"
+	link "$dotdir/x/Xresources" "$HOME/.Xresources"
+	link "$dotdir/x/Xresources.d" "$HOME/.Xresources.d"
 fi
 
-if [[ "$*" =~ -redshift($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/redshift" "$XDG_CONFIG_HOME/redshift"
 	echo ""
+if [[ "$*" =~ -redshift($| ) || -n "$all" ]]; then
+	link "$dotdir/redshift" "$XDG_CONFIG_HOME/redshift"
 fi
 
-if [[ "$*" =~ -fontconfig($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/fontconfig" "$XDG_CONFIG_HOME/fontconfig"
 	echo ""
+if [[ "$*" =~ -fontconfig($| ) || -n "$all" ]]; then
+	link "$dotdir/fontconfig" "$XDG_CONFIG_HOME/fontconfig"
 fi
 
-if [[ "$*" =~ -rofi($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/rofi" "$XDG_CONFIG_HOME/rofi"
 	echo ""
+if [[ "$*" =~ -rofi($| ) || -n "$all" ]]; then
+	link "$dotdir/rofi" "$XDG_CONFIG_HOME/rofi"
 fi
 
-if [[ "$*" =~ -compton($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/compton/compton.conf" "$XDG_CONFIG_HOME/compton.conf"
 	echo ""
+if [[ "$*" =~ -compton($| ) || -n "$all" ]]; then
+	link "$dotdir/compton/compton.conf" "$XDG_CONFIG_HOME/compton.conf"
 fi
 
-if [[ "$*" =~ -i3($| ) || -n "$ALL" ]]; then
+if [[ "$*" =~ -i3($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_DATA_HOME/i3"
-	link "$DOTDIR/i3" "$XDG_CONFIG_HOME/i3"
 	echo ""
+	link "$dotdir/i3" "$XDG_CONFIG_HOME/i3"
 fi
 
-if [[ "$*" =~ -polybar($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/polybar" "$XDG_CONFIG_HOME/polybar"
 	echo ""
+if [[ "$*" =~ -polybar($| ) || -n "$all" ]]; then
+	link "$dotdir/polybar" "$XDG_CONFIG_HOME/polybar"
 fi
 
-if [[ "$*" =~ -termite($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/termite" "$XDG_CONFIG_HOME/termite"
 	echo ""
+if [[ "$*" =~ -termite($| ) || -n "$all" ]]; then
+	link "$dotdir/termite" "$XDG_CONFIG_HOME/termite"
 fi
 
-if [[ "$*" =~ -urxvt($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/urxvt" "$HOME/.urxvt"
 	echo ""
+if [[ "$*" =~ -urxvt($| ) || -n "$all" ]]; then
+	link "$dotdir/urxvt" "$HOME/.urxvt"
 fi
 
-if [[ "$*" =~ -vim($| ) || -n "$ALL" ]]; then
+if [[ "$*" =~ -vim($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_DATA_HOME/vim"
 	mkdir -p "$XDG_CACHE_HOME/vim/undofiles"
-	link "$DOTDIR/vim" "$XDG_CONFIG_HOME/vim"
 	echo ""
+	link "$dotdir/vim" "$XDG_CONFIG_HOME/vim"
 fi
 
-if [[ "$*" =~ -zsh($| ) || -n "$ALL" ]]; then
+if [[ "$*" =~ -zsh($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_DATA_HOME/zsh"
 	mkdir -p "$XDG_DATA_HOME/zsh/ext"
-	link "$DOTDIR/zsh" "$XDG_CONFIG_HOME/zsh"
-	link "$DOTDIR/zsh/.zshenv" "$HOME/.zshenv"
-	link "$DOTDIR/zsh/ext/rofi.zsh" "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
 	echo ""
+	link "$dotdir/zsh" "$XDG_CONFIG_HOME/zsh"
+	link "$dotdir/zsh/.zshenv" "$HOME/.zshenv"
+	link "$dotdir/zsh/ext/rofi.zsh" "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
 fi
 
-if [[ "$*" =~ -bash($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/bash/.bashrc" "$HOME/.bashrc"
-	link "$DOTDIR/bash/.bash_profile" "$HOME/.bash_profile"
 	echo ""
+if [[ "$*" =~ -bash($| ) || -n "$all" ]]; then
+	link "$dotdir/bash/.bashrc" "$HOME/.bashrc"
+	link "$dotdir/bash/.bash_profile" "$HOME/.bash_profile"
 fi
 
-if [[ "$*" =~ -tmux($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/tmux/tmux.conf" "$HOME/.tmux.conf"
 	echo ""
+if [[ "$*" =~ -tmux($| ) || -n "$all" ]]; then
+	link "$dotdir/tmux/tmux.conf" "$HOME/.tmux.conf"
 fi
 
-if [[ "$*" =~ -git($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/git" "$XDG_CONFIG_HOME/git"
 	echo ""
+if [[ "$*" =~ -git($| ) || -n "$all" ]]; then
+	link "$dotdir/git" "$XDG_CONFIG_HOME/git"
 fi
 
-if [[ "$*" =~ -ctags($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/ctags/ctags" "$HOME/.ctags"
 	echo ""
+if [[ "$*" =~ -ctags($| ) || -n "$all" ]]; then
+	link "$dotdir/ctags/ctags" "$HOME/.ctags"
 fi
 
-if [[ "$*" =~ -elixir($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/elixir/iex.exs" "$HOME/.iex.exs"
 	echo ""
+if [[ "$*" =~ -elixir($| ) || -n "$all" ]]; then
+	link "$dotdir/elixir/iex.exs" "$HOME/.iex.exs"
 fi
 
-if [[ "$*" =~ -gtk($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/gtk-2.0" "$XDG_CONFIG_HOME/gtk-2.0"
-	link "$DOTDIR/gtk-3.0" "$XDG_CONFIG_HOME/gtk-3.0"
 	echo ""
+if [[ "$*" =~ -gtk($| ) || -n "$all" ]]; then
+	link "$dotdir/gtk-2.0" "$XDG_CONFIG_HOME/gtk-2.0"
+	link "$dotdir/gtk-3.0" "$XDG_CONFIG_HOME/gtk-3.0"
 fi
 
-if [[ "$*" =~ -dunst($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/dunst" "$XDG_CONFIG_HOME/dunst"
 	echo ""
+if [[ "$*" =~ -dunst($| ) || -n "$all" ]]; then
+	link "$dotdir/dunst" "$XDG_CONFIG_HOME/dunst"
 fi
 
-if [[ "$*" =~ -mpd($| ) || -n "$ALL" ]]; then
+if [[ "$*" =~ -mpd($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_DATA_HOME/mpd"
 	mkdir -p "$XDG_DATA_HOME/mpd/playlists"
-	link "$DOTDIR/mpd" "$XDG_CONFIG_HOME/mpd"
 	echo ""
+	link "$dotdir/mpd" "$XDG_CONFIG_HOME/mpd"
 fi
 
-if [[ "$*" =~ -ncmpcpp($| ) || -n "$ALL" ]]; then
+if [[ "$*" =~ -ncmpcpp($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_CONFIG_HOME/ncmpcpp"
-	link "$DOTDIR/ncmpcpp/config" "$XDG_CONFIG_HOME/ncmpcpp/config"
-	link "$DOTDIR/ncmpcpp/bindings" "$XDG_CONFIG_HOME/ncmpcpp/bindings"
 	echo ""
+	link "$dotdir/ncmpcpp/config" "$XDG_CONFIG_HOME/ncmpcpp/config"
+	link "$dotdir/ncmpcpp/bindings" "$XDG_CONFIG_HOME/ncmpcpp/bindings"
 fi
 
-if [[ "$*" =~ -zathura($| ) || -n "$ALL" ]]; then
-	link "$DOTDIR/zathura" "$XDG_CONFIG_HOME/zathura"
 	echo ""
+if [[ "$*" =~ -zathura($| ) || -n "$all" ]]; then
+	link "$dotdir/zathura" "$XDG_CONFIG_HOME/zathura"
 fi
 
-if [[ "$*" =~ -cmus($| ) || -n "$ALL" ]]; then
+if [[ "$*" =~ -cmus($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_CONFIG_HOME/cmus"
-	link "$DOTDIR/cmus/rc" "$XDG_CONFIG_HOME/cmus/rc"
-	link "$DOTDIR/cmus/dark.theme" "$XDG_CONFIG_HOME/cmus/dark.theme"
 	echo ""
+	link "$dotdir/cmus/rc" "$XDG_CONFIG_HOME/cmus/rc"
+	link "$dotdir/cmus/dark.theme" "$XDG_CONFIG_HOME/cmus/dark.theme"
 fi
 
-if [[ "$*" =~ -mpv($| ) || -n "$ALL" ]]; then
+if [[ "$*" =~ -mpv($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_CONFIG_HOME/mpv"
-	link "$DOTDIR/mpv/mpv.conf" "$XDG_CONFIG_HOME/mpv/mpv.conf"
-	link "$DOTDIR/mpv/input.conf" "$XDG_CONFIG_HOME/mpv/input.conf"
-	link "$DOTDIR/mpv/lua-settings" "$XDG_CONFIG_HOME/mpv/lua-settings"
 	echo ""
+	link "$dotdir/mpv/mpv.conf" "$XDG_CONFIG_HOME/mpv/mpv.conf"
+	link "$dotdir/mpv/input.conf" "$XDG_CONFIG_HOME/mpv/input.conf"
+	link "$dotdir/mpv/lua-settings" "$XDG_CONFIG_HOME/mpv/lua-settings"
 fi

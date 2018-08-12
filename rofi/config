@@ -173,6 +173,10 @@ rofi.kb-remove-to-sol:
 ! Actions
 ! ----------------------------------------------------------------------------
 
+! Accept entries with a single mouse click
+rofi.me-select-entry:
+rofi.me-accept-entry: MousePrimary
+
 ! Accept entry
 rofi.kb-accept-entry: Control+d,Return
 

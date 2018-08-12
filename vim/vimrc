@@ -552,6 +552,9 @@
 			return
 		end
 		let lines = v:event.regcontents
+		if len(lines) > &lines*2
+			return
+		end
 		call map(lines, {-> escape(v:val, '\\')})
 		if !empty(lines) && empty(lines[-1])
 			let lines[-1] = '\n'

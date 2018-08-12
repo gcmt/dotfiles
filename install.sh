@@ -1,5 +1,10 @@
 #!/bin/bash
 
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+white=$(tput setaf 7)
+nc=$(tput sgr0)
+
 if [[ "$*" =~ -all($| ) ]]; then
 	all=yes
 fi
@@ -19,22 +24,20 @@ fi
 
 link() {
 	if [[ -e "$2" && ! -L "$2" ]]; then
-		if [[ -z "$FORCE" ]]; then
-			echo >&2 "$2: file exists and it's a real file. Use -force to override."
+		if [[ -z "$force" ]]; then
+			echo >&2 "[ ${red}FAIL${nc} ] $2: file exists and it's a real file. Use -force to override."
 			return 1
 		fi
 	fi
 	ln -sfn "$1" "$2"
-	echo "$2 -> $1"
+	echo "[ ${green}OK${nc} ] ${2/$HOME/\~} ${white}->${nc} ${1/$HOME/\~}"
 }
 
 mkdir -p "$XDG_DATA_HOME"
 mkdir -p "$XDG_CACHE_HOME"
 mkdir -p "$XDG_CONFIG_HOME"
 
-echo ""
 
-	echo ""
 if [[ "$*" =~ -x($| ) || -n "$all" ]]; then
 	link "$dotdir/x/xinitrc" "$HOME/.xinitrc"
 	link "$dotdir/x/Xmodmap" "$HOME/.Xmodmap"
@@ -42,43 +45,35 @@ if [[ "$*" =~ -x($| ) || -n "$all" ]]; then
 	link "$dotdir/x/Xresources.d" "$HOME/.Xresources.d"
 fi
 
-	echo ""
 if [[ "$*" =~ -redshift($| ) || -n "$all" ]]; then
 	link "$dotdir/redshift" "$XDG_CONFIG_HOME/redshift"
 fi
 
-	echo ""
 if [[ "$*" =~ -fontconfig($| ) || -n "$all" ]]; then
 	link "$dotdir/fontconfig" "$XDG_CONFIG_HOME/fontconfig"
 fi
 
-	echo ""
 if [[ "$*" =~ -rofi($| ) || -n "$all" ]]; then
 	link "$dotdir/rofi" "$XDG_CONFIG_HOME/rofi"
 fi
 
-	echo ""
 if [[ "$*" =~ -compton($| ) || -n "$all" ]]; then
 	link "$dotdir/compton/compton.conf" "$XDG_CONFIG_HOME/compton.conf"
 fi
 
 if [[ "$*" =~ -i3($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_DATA_HOME/i3"
-	echo ""
 	link "$dotdir/i3" "$XDG_CONFIG_HOME/i3"
 fi
 
-	echo ""
 if [[ "$*" =~ -polybar($| ) || -n "$all" ]]; then
 	link "$dotdir/polybar" "$XDG_CONFIG_HOME/polybar"
 fi
 
-	echo ""
 if [[ "$*" =~ -termite($| ) || -n "$all" ]]; then
 	link "$dotdir/termite" "$XDG_CONFIG_HOME/termite"
 fi
 
-	echo ""
 if [[ "$*" =~ -urxvt($| ) || -n "$all" ]]; then
 	link "$dotdir/urxvt" "$HOME/.urxvt"
 fi
@@ -86,52 +81,43 @@ fi
 if [[ "$*" =~ -vim($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_DATA_HOME/vim"
 	mkdir -p "$XDG_CACHE_HOME/vim/undofiles"
-	echo ""
 	link "$dotdir/vim" "$XDG_CONFIG_HOME/vim"
 fi
 
 if [[ "$*" =~ -zsh($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_DATA_HOME/zsh"
 	mkdir -p "$XDG_DATA_HOME/zsh/ext"
-	echo ""
 	link "$dotdir/zsh" "$XDG_CONFIG_HOME/zsh"
 	link "$dotdir/zsh/.zshenv" "$HOME/.zshenv"
 	link "$dotdir/zsh/ext/rofi.zsh" "$XDG_DATA_HOME/zsh/ext/rofi.zsh"
 fi
 
-	echo ""
 if [[ "$*" =~ -bash($| ) || -n "$all" ]]; then
 	link "$dotdir/bash/.bashrc" "$HOME/.bashrc"
 	link "$dotdir/bash/.bash_profile" "$HOME/.bash_profile"
 fi
 
-	echo ""
 if [[ "$*" =~ -tmux($| ) || -n "$all" ]]; then
 	link "$dotdir/tmux/tmux.conf" "$HOME/.tmux.conf"
 fi
 
-	echo ""
 if [[ "$*" =~ -git($| ) || -n "$all" ]]; then
 	link "$dotdir/git" "$XDG_CONFIG_HOME/git"
 fi
 
-	echo ""
 if [[ "$*" =~ -ctags($| ) || -n "$all" ]]; then
 	link "$dotdir/ctags/ctags" "$HOME/.ctags"
 fi
 
-	echo ""
 if [[ "$*" =~ -elixir($| ) || -n "$all" ]]; then
 	link "$dotdir/elixir/iex.exs" "$HOME/.iex.exs"
 fi
 
-	echo ""
 if [[ "$*" =~ -gtk($| ) || -n "$all" ]]; then
 	link "$dotdir/gtk-2.0" "$XDG_CONFIG_HOME/gtk-2.0"
 	link "$dotdir/gtk-3.0" "$XDG_CONFIG_HOME/gtk-3.0"
 fi
 
-	echo ""
 if [[ "$*" =~ -dunst($| ) || -n "$all" ]]; then
 	link "$dotdir/dunst" "$XDG_CONFIG_HOME/dunst"
 fi
@@ -139,32 +125,27 @@ fi
 if [[ "$*" =~ -mpd($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_DATA_HOME/mpd"
 	mkdir -p "$XDG_DATA_HOME/mpd/playlists"
-	echo ""
 	link "$dotdir/mpd" "$XDG_CONFIG_HOME/mpd"
 fi
 
 if [[ "$*" =~ -ncmpcpp($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_CONFIG_HOME/ncmpcpp"
-	echo ""
 	link "$dotdir/ncmpcpp/config" "$XDG_CONFIG_HOME/ncmpcpp/config"
 	link "$dotdir/ncmpcpp/bindings" "$XDG_CONFIG_HOME/ncmpcpp/bindings"
 fi
 
-	echo ""
 if [[ "$*" =~ -zathura($| ) || -n "$all" ]]; then
 	link "$dotdir/zathura" "$XDG_CONFIG_HOME/zathura"
 fi
 
 if [[ "$*" =~ -cmus($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_CONFIG_HOME/cmus"
-	echo ""
 	link "$dotdir/cmus/rc" "$XDG_CONFIG_HOME/cmus/rc"
 	link "$dotdir/cmus/dark.theme" "$XDG_CONFIG_HOME/cmus/dark.theme"
 fi
 
 if [[ "$*" =~ -mpv($| ) || -n "$all" ]]; then
 	mkdir -p "$XDG_CONFIG_HOME/mpv"
-	echo ""
 	link "$dotdir/mpv/mpv.conf" "$XDG_CONFIG_HOME/mpv/mpv.conf"
 	link "$dotdir/mpv/input.conf" "$XDG_CONFIG_HOME/mpv/input.conf"
 	link "$dotdir/mpv/lua-settings" "$XDG_CONFIG_HOME/mpv/lua-settings"

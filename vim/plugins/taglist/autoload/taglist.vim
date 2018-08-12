@@ -53,7 +53,7 @@ endf
 func s:search(query, tagfiles) abort
 	let args = ['-m', g:taglist_max_results, '^'.a:query, '-w'] + a:tagfiles
 	let args = map(args, 'shellescape(v:val)')
-	let lines = systemlist(g:taglist_grepprg . ' ' . join(args))
+	let lines = systemlist('rg -j 1 -N -H --no-heading --no-messages' . ' ' . join(args))
 	if v:shell_error
 		return lines
 	end

@@ -1,0 +1,23 @@
+
+@import "main-light"
+
+* {
+	font: "Noto Sans Regular 10";
+	background: rgba(231, 232, 235, 100%);
+	foreground: rgba(82, 86, 94, 100%);
+	selected-normal-background: rgba(194, 199, 206, 100%);
+}
+
+window {
+	width: 20%;
+	y-offset: 41px;
+}
+
+listview {
+	fixed-height: false;
+	scrollbar: false;
+}
+
+mainbox {
+	children: [listview];
+}

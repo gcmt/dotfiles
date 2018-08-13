@@ -10,10 +10,6 @@ if [[ "$*" =~ -all($| ) ]]; then
 	all=yes
 fi
 
-if [[ "$*" =~ -force($| ) ]]; then
-	force=yes
-fi
-
 dotdir="$(cd "$(dirname "$0")" && pwd)"
 
 source "$dotdir/zsh/.zshenv"
@@ -25,10 +21,8 @@ fi
 
 link() {
 	if [[ -e "$2" && ! -L "$2" ]]; then
-		if [[ -z "$force" ]]; then
-			echo >&2 "[ ${colors[red]}FAIL${colors[nc]} ] $2: file exists and it's a real file. Use -force to override."
-			return 1
-		fi
+		echo >&2 "[ ${colors[red]}FAIL${colors[nc]} ] $2: file exists and it's a real file."
+		return 1
 	fi
 	ln -sfn "$1" "$2"
 	echo "[ ${colors[green]}OK${colors[nc]} ] ${2/$HOME/\~} ${colors[white]}->${colors[nc]} ${1/$HOME/\~}"

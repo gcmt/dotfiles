@@ -10,7 +10,7 @@ func! buffers#actions#edit(mode) abort
 	wincmd c
 	let map = {'current': '', 'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
 	exec map[a:mode]
-	sil exec 'b' bufnr
+	sil exec 'edit' fnameescape(bufname(bufnr))
 endf
 
 " buffers#actions#delete({cmd:string}) -> 0

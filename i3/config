@@ -1,5 +1,29 @@
 # i3 config file (v4)
 
+# Applications
+# ----------------------------------------------------------------------------
+
+bar {
+	i3bar_command $HOME/.config/polybar/start.sh
+}
+
+exec --no-startup-id compton
+
+exec_always --no-startup-id nitrogen --restore
+
+exec_always --no-startup-id ~/.config/redshift/start.sh
+
+exec_always --no-startup-id ~/.config/dunst/start.sh
+
+exec_always --no-startup-id ~/.local/bin/xautolock.sh
+
+exec --no-startup-id tmux new -ds scratch
+
+exec --no-startup-id mpd
+
+# Variables
+# ----------------------------------------------------------------------------
+
 set $alt Mod1
 set $cmd Mod4
 set $mod Mod4
@@ -292,10 +316,3 @@ client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
 client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
 
 client.background       #e7e8eb
-
-# Status Bar
-# ----------------------------------------------------------------------------
-
-bar {
-	i3bar_command $HOME/.config/polybar/start.sh
-}

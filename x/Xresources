@@ -1,6 +1,5 @@
 
 #include ".Xresources.d/colors"
 
-#include ".Xresources.d/xautolock"
 #include ".Xresources.d/urxvt"
 #include ".Xresources.d/calc"

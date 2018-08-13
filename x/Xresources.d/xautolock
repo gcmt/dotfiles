@@ -1,4 +1,0 @@
-
-Xautolock.time: 30
-Xautolock.locker: lock -bm
-Xautolock.secure: true

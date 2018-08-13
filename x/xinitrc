@@ -11,18 +11,4 @@ xset s off dpms 0 0 0
 
 xset r rate 175 25
 
-xautolock &
-
-~/.config/dunst/start.sh &
-
-~/.config/redshift/start.sh &
-
-compton -b
-
-nitrogen --restore &
-
-mpd
-
-tmux new -ds scratch 2>/dev/null
-
 exec i3

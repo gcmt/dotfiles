@@ -1,9 +1,10 @@
 #!/bin/bash
 
-red=$(tput setaf 1)
-green=$(tput setaf 2)
-white=$(tput setaf 7)
-nc=$(tput sgr0)
+declare -A colors
+colors[nc]=$(tput sgr0)
+colors[red]=$(tput setaf 1)
+colors[green]=$(tput setaf 2)
+colors[white]=$(tput setaf 7)
 
 if [[ "$*" =~ -all($| ) ]]; then
 	all=yes
@@ -25,12 +26,12 @@ fi
 link() {
 	if [[ -e "$2" && ! -L "$2" ]]; then
 		if [[ -z "$force" ]]; then
-			echo >&2 "[ ${red}FAIL${nc} ] $2: file exists and it's a real file. Use -force to override."
+			echo >&2 "[ ${colors[red]}FAIL${colors[nc]} ] $2: file exists and it's a real file. Use -force to override."
 			return 1
 		fi
 	fi
 	ln -sfn "$1" "$2"
-	echo "[ ${green}OK${nc} ] ${2/$HOME/\~} ${white}->${nc} ${1/$HOME/\~}"
+	echo "[ ${colors[green]}OK${colors[nc]} ] ${2/$HOME/\~} ${colors[white]}->${colors[nc]} ${1/$HOME/\~}"
 }
 
 mkdir -p "$XDG_DATA_HOME"

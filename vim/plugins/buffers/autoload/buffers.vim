@@ -91,7 +91,8 @@ func! buffers#render()
 	endfo
 
 	call s:resize_window()
-	call cursor(pos)
+	norm! gg
+	exec pos[0]
 	setl nomodifiable
 
 endf

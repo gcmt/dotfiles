@@ -76,8 +76,8 @@ func! buffers#render()
 		end
 
 		let line .= tail
-		let line .= getbufvar(bufnr, '&mod') ? ' *' : ''
 		let group = buflisted(bufnr) ? 'BuffersListed' : 'BuffersUnlisted'
+		let group = getbufvar(bufnr, '&mod') ? 'BuffersMod' : group
 		call s:highlight(group, i, 0, len(line)+2)
 
 		if !empty(path) && path != tail

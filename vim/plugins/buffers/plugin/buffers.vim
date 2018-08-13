@@ -21,6 +21,7 @@ for [s:option, s:default] in items(s:options)
 endfo
 
 func s:setup_colors()
+	hi default link BuffersMod Red
 	hi default link BuffersDim Comment
 	hi default link BuffersListed Normal
 	hi default link BuffersUnlisted FgDim

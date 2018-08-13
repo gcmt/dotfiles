@@ -1,7 +1,8 @@
-" buffers#actions#edit({mode:string}) -> 0
-" Edit the buffer under cursor with the given {mode}. {mode} is expected to be
-" one of (current|tab|split|vsplit)
-func! buffers#actions#edit(mode) abort
+" buffers#actions#edit([{mode:string}]) -> 0
+" Edit the buffer under cursor with the given {mode}. If no {mode} is given, the
+" buffer will be edited in the current window, otherwise {mode} is expected to
+" be one of (tab|split|vsplit).
+func! buffers#actions#edit(...) abort
 	let bufnr = get(b:buffers.table, line('.'), -1)
 	if bufnr == -1
 		return
@@ -10,8 +11,9 @@ func! buffers#actions#edit(mode) abort
 	if bufnr == bufnr('%')
 		return
 	end
+	let mode = a:0 ? a:1 : ''
 	let map = {'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
-	sil exec get(map, a:mode, '')
+	sil exec get(map, mode, '')
 	sil exec 'edit' fnameescape(bufname(bufnr))
 endf
 

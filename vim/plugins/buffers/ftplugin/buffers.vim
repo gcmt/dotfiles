@@ -3,9 +3,9 @@ nnoremap <silent> <buffer> q :close<cr>
 
 nnoremap <silent> <buffer> a :call buffers#actions#toggle_unlisted()<cr>
 
-nnoremap <silent> <buffer> <enter> :call buffers#actions#edit('current')<cr>
-nnoremap <silent> <buffer> <c-j> :call buffers#actions#edit('current')<cr>
-nnoremap <silent> <buffer> l :call buffers#actions#edit('current')<cr>
+nnoremap <silent> <buffer> <enter> :call buffers#actions#edit()<cr>
+nnoremap <silent> <buffer> <c-j> :call buffers#actions#edit()<cr>
+nnoremap <silent> <buffer> l :call buffers#actions#edit()<cr>
 nnoremap <silent> <buffer> t :call buffers#actions#edit('tab')<cr>
 nnoremap <silent> <buffer> s :call buffers#actions#edit('split')<cr>
 nnoremap <silent> <buffer> v :call buffers#actions#edit('vsplit')<cr>

@@ -39,11 +39,11 @@ notify_mute() {
 
 case "$1" in
 	up)
-		volume=$(amixer -D pulse sset Master unmute 3%+ | grep -Pom1 '[0-9]+(?=%)')
+		volume=$(amixer -D pulse sset Master unmute 1%+ | grep -Pom1 '[0-9]+(?=%)')
 		notify_volume "$volume"
 		;;
 	down)
-		volume=$(amixer -D pulse sset Master unmute 3%- | grep -Pom1 '[0-9]+(?=%)')
+		volume=$(amixer -D pulse sset Master unmute 1%- | grep -Pom1 '[0-9]+(?=%)')
 		notify_volume "$volume"
 		;;
 	toggle)

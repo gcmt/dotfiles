@@ -242,6 +242,8 @@ mode "i3" {
 
 	bindsym c exec --no-startup-id urxvt -name floating -e vim .config/i3/config; mode "default"
 
+	bindsym t exec --no-startup-id urxvt -name floating -e vim .config/redshift/redshift.conf; mode "default"
+
 	bindsym q mode "default"
 	bindsym Return mode "default"
 	bindsym Escape mode "default"

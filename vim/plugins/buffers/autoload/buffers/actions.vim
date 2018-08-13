@@ -1,4 +1,3 @@
-
 " buffers#actions#edit({mode:string}) -> 0
 " Edit the buffer under cursor with the given {mode}. {mode} is expected to be
 " one of (current|tab|split|vsplit)
@@ -11,8 +10,8 @@ func! buffers#actions#edit(mode) abort
 	if bufnr == bufnr('%')
 		return
 	end
-	let map = {'current': '', 'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
-	exec map[a:mode]
+	let map = {'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
+	sil exec get(map, a:mode, '')
 	sil exec 'edit' fnameescape(bufname(bufnr))
 endf
 

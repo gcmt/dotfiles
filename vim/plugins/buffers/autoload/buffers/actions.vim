@@ -8,6 +8,9 @@ func! buffers#actions#edit(mode) abort
 		return
 	end
 	wincmd c
+	if bufnr == bufnr('%')
+		return
+	end
 	let map = {'current': '', 'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
 	exec map[a:mode]
 	sil exec 'edit' fnameescape(bufname(bufnr))

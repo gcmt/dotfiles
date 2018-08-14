@@ -815,15 +815,13 @@
 " Buffers
 " ----------------------------------------------------------------------------
 
-	" nnoremap <silent> gl :Buffers<cr>
-	" nnoremap <silent> gL :Buffers!<cr>
+	nnoremap <silent> gl :Buffers<cr>
+	nnoremap <silent> gL :Buffers!<cr>
 
-" Rofi
+" Finder
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> gl :RofiBuffers<cr>
-	nnoremap <silent> gL :RofiBuffers!<cr>
-	nnoremap <silent> gp :RofiEdit<cr>
+	nnoremap gp :Find<space>
 
 " Marks
 " ----------------------------------------------------------------------------

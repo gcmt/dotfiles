@@ -106,7 +106,7 @@
 		set viminfo=!,'100,f0
 		set viminfofile=$VIMCACHE/viminfo
 		set undofile
-		set undodir=$VIMCACHE/undofiles
+		set undodir=$VIMCACHE/undo
 	end
 
 	set directory=

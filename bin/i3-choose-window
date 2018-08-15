@@ -7,6 +7,7 @@ import argparse
 from html import escape
 from subprocess import run, PIPE
 
+
 # Turn windows into formatted lines to be passed to Rofi.
 # Pango markup is supported if the '-markup-rows' Rofi option is used:
 # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
@@ -47,7 +48,6 @@ def fix_windows(windows):
         yield win
 
 
-
 # Execute rofi and return the user choice.
 def rofi(windows, inputbar=True):
 
@@ -72,10 +72,10 @@ def rofi(windows, inputbar=True):
         options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,Super+Tab,j']
         options += ['-kb-accept-entry', 'l,Return,Control+d', '-kb-cancel', 'Escape,q']
         options += ['-kb-custom-1', 'm', '-kb-custom-2', 'underscore']
-        options += ['-kb-custom-3', 'o', '-kb-custom-4', 'Q']
+        options += ['-kb-custom-3', 'o', '-kb-custom-4', 'Q', '-kb-custom-5', 'a']
     else:
         options += ['-kb-custom-1', 'Control+m', '-kb-custom-2', 'Super+underscore']
-        options += ['-kb-custom-3', 'Control+o', '-kb-custom-4', 'Super+Q']
+        options += ['-kb-custom-3', 'Control+o', '-kb-custom-4', 'Super+Q', '-kb-custom-5', 'Control+a']
 
     input = "\n".join(format_windows(windows))
     cmd = ['rofi'] + options + style
@@ -145,6 +145,13 @@ def main():
         # kill selected window
         run(['xkill', '-id', f"{win.window}"])
         os.execv(sys.argv[0], sys.argv)
+
+    # -kb-custom-5
+    if exitcode == 14:
+        # hide/show scratchpad windows
+        argv  = [a for a in sys.argv if 'scratchpad' not in a]
+        argv += ['-no-scratchpad'] if args.scratchpad else ['-scratchpad']
+        os.execv(sys.argv[0], argv)
 
 
 if __name__ == '__main__':

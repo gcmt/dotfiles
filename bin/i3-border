@@ -1,10 +1,42 @@
 #!/bin/bash
 # Change the border of all open windows on the fly
 
+_print_help() {
+	echo 1>&2 "Usage: i3-border [normal|pixel|toggle] [width]"
+}
+
+config="$HOME/.config/i3/config"
+
+cur_style=$(grep -Po "(?<=default_border )\\w+" "$config")
+cur_width=$(grep -Po "(?<=default_border $cur_style )\\w+" "$config")
+
+if [[ "$1" == "toggle" ]]; then
+	case "$cur_style" in
+		pixel) style=normal ;;
+		normal) style=pixel ;;
+	esac
+else
+	if [[ ! "$1" =~ ^(normal|pixel)$ ]]; then
+		_print_help
+		exit 1
+	fi
+	style="$1"
+fi
+
+if [[ -z "$2" ]]; then
+	width="$cur_width"
+else
+	if [[ ! "$2" =~ ^[0-9]+$ ]]; then
+		_print_help
+		exit 1
+	fi
+	width="$2"
+fi
+
 ids=$(xprop -root | grep "^_NET_CLIENT_LIST(" | grep -io "0x[a-f0-9]\\+")
 echo "$ids" | while read -r id; do
-	i3-msg "[id=$id] border $1 $2"
+	i3-msg "[id=$id] border $style $width" >/dev/null
 done
 
-sed -i "s/^default_border.*/default_border $1 $2/" "$HOME/.config/i3/config"
-i3-msg reload
+sed -i "s/^default_border.*/default_border $style $width/" "$config"
+i3-msg reload >/dev/null

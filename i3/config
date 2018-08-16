@@ -111,7 +111,7 @@ bindsym $mod+w exec --no-startup-id i3-new-workspace
 # Rofi bindings
 bindsym $mod+Tab exec --no-startup-id i3-choose-window -no-inputbar
 bindsym $mod+space exec --no-startup-id rofi -show drun
-bindsym $alt+space exec --no-startup-id rofi -show run
+bindsym $alt+space exec --no-startup-id "rofi -show run -kb-accept-entry Control+d -kb-accept-custom Return,Control+m,Control+f"
 
 # Choose workspace with rofi
 bindsym $mod+g exec --no-startup-id i3-choose-workspace

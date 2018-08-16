@@ -1,0 +1,10 @@
+#!/bin/bash
+# Change the border of all open windows on the fly
+
+ids=$(xprop -root | grep "^_NET_CLIENT_LIST(" | grep -io "0x[a-f0-9]\\+")
+echo "$ids" | while read -r id; do
+	i3-msg "[id=$id] border $1 $2"
+done
+
+sed -i "s/^default_border.*/default_border $1 $2/" "$HOME/.config/i3/config"
+i3-msg reload

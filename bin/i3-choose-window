@@ -8,6 +8,9 @@ from html import escape
 from subprocess import run, PIPE
 
 
+SCRATCHPAD = '__i3_scratch'
+
+
 # Turn windows into formatted lines to be passed to Rofi.
 # Pango markup is supported if the '-markup-rows' Rofi option is used:
 # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
@@ -15,7 +18,7 @@ def format_windows(windows):
     dimcolor = '#797d84'
     for w in windows:
         wsname = w.workspace().name
-        ws = '$' if wsname == '__i3_scratch' else wsname
+        ws = '$' if wsname == SCRATCHPAD else wsname
         row = f"<span foreground='{dimcolor}'>{escape(ws)}</span>   "
         if wsname == '__i3_scratch':
             row += f"<span foreground='{dimcolor}'>{escape(w.name)}</span>"
@@ -119,7 +122,10 @@ def main():
     # -kb-accept-entry
     if exitcode == 0:
         # focus the selected window
-        win.command('focus; floating disable')
+        cmd = 'focus;'
+        if win.workspace().name == SCRATCHPAD:
+            cmd += 'floating disable'
+        win.command(cmd)
         sys.exit(0)
 
     # -kb-custom-1

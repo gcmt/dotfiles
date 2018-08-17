@@ -97,12 +97,11 @@ bindsym $mod+m exec --no-startup-id i3-mark
 bindsym $mod+Shift+m [con_id="__focused__"] unmark
 
 # Open tmux
-bindsym $mod+u exec i3-t
-bindsym $mod+Shift+u exec rofi-tmux
-bindsym $mod+plus exec i3-t scratch
+bindsym $mod+u exec --no-startup-id i3-t
+bindsym $mod+plus exec --no-startup-id i3-t scratch
 
 # Pick tmux session
-bindsym $mod+Control+u exec rofi-tmux
+bindsym $mod+Shift+u exec --no-startup-id rofi-tmux
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace

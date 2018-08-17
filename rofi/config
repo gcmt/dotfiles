@@ -55,7 +55,7 @@ rofi.pid: /run/user/1000/rofi.pid
 
 ! Click the mouse outside of the rofi window to exit.
 ! XXX: Freeze everything if enbled.
-rofi.click-to-exit: false
+rofi.click-to-exit: true
 
 ! Terminal to use
 rofi.terminal: urxvt

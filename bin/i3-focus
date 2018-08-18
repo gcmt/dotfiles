@@ -23,7 +23,7 @@ def parse_args():
     parser.add_argument('-fallback', help="The program to execute when focusing fails")
     args = parser.parse_args()
 
-    if not (args.t or args.c or args.n or args.m):
+    if args.t is None and args.c is None and args.n is None and args.m is None:
         parser.print_usage(file=sys.stderr)
         error("provide at least one selection criteria")
         sys.exit(2)

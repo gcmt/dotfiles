@@ -20,7 +20,7 @@ def parse_args():
     parser.add_argument('-c', help="The window class")
     parser.add_argument('-n', help="The window instance")
     parser.add_argument('-m', help="The window marks")
-    parser.add_argument('-fallback', help="The program to execute when focusing fails")
+    parser.add_argument('-fallback', default="", help="The program to execute when focusing fails")
     args = parser.parse_args()
 
     if args.t is None and args.c is None and args.n is None and args.m is None:
@@ -38,7 +38,7 @@ def main():
     i3 = i3ipc.Connection()
     windows = i3.get_tree().leaves()
 
-    fallback = shlex.split(args.fallback) if args.fallback else None
+    fallback = shlex.split(args.fallback)
     wanted_marks = set(args.m.split(',')) if args.m else set()
 
     success = False

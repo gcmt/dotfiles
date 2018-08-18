@@ -55,7 +55,7 @@ def main():
         if args.n and not re.match(args.n, w.window_instance):
             continue
         res = w.command('focus')
-        success = "success" in str(res)
+        success = "True" in str(res)
 
     if fallback and not success:
         try:

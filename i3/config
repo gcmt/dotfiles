@@ -82,12 +82,12 @@ bindsym $mod+backslash exec --no-startup-id i3-calc
 bindsym $mod+e exec --no-startup-id rofi-edit
 
 # Shortcuts
-bindsym $mod+i exec --no-startup-id i3-focus -c Firefox
+bindsym $mod+Shift+plus exec --no-startup-id i3-focus -c Firefox -fallback firefox
 bindsym $mod+apostrophe exec --no-startup-id "i3-focus -m _m,_mark,_marked"
 bindsym $mod+Shift+apostrophe mark _m
 
 # Open mail in a new browser window
-bindsym $mod+ograve exec i3-single '[title="(?i)\| Fastmail -"]' "firefox --no-remote -P Mail"
+bindsym $mod+ograve exec i3-focus -t "\| FastMail -" -fallback "firefox --no-remote -P Mail"
 
 # Kill window
 bindsym $mod+Shift+q kill

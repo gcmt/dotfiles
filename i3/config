@@ -87,8 +87,8 @@ bindsym $mod+e exec --no-startup-id rofi-edit
 
 # Shortcuts
 bindsym $mod+Shift+plus exec --no-startup-id i3-focus -c Firefox -m - -fallback firefox
-bindsym $mod+apostrophe exec --no-startup-id "i3-focus -m _m,_mark,_marked"
-bindsym $mod+Shift+apostrophe mark _m
+bindsym $mod+apostrophe exec --no-startup-id i3-focus -m _mark
+bindsym $mod+Shift+apostrophe mark _mark
 
 # Open mail in a new browser window
 bindsym $mod+ograve exec i3-focus -t "\| FastMail -" -fallback "firefox --no-remote -P Mail"
@@ -130,7 +130,7 @@ bindsym $mod+Shift+Return fullscreen toggle
 
 # Cycle through containers
 bindsym $mod+o exec --no-startup-id i3-next-window -next
-bindsym $mod+Shift+o exec --no-startup-id i3-next-window -prev
+bindsym $mod+i exec --no-startup-id i3-next-window -prev
 
 # Change focus
 bindsym $mod+h focus left

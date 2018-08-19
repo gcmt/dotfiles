@@ -86,7 +86,7 @@ bindsym $mod+backslash exec --no-startup-id i3-calc
 bindsym $mod+e exec --no-startup-id rofi-edit
 
 # Shortcuts
-bindsym $mod+Shift+plus exec --no-startup-id i3-focus -c Firefox -fallback firefox
+bindsym $mod+Shift+plus exec --no-startup-id i3-focus -c Firefox -m - -fallback firefox
 bindsym $mod+apostrophe exec --no-startup-id "i3-focus -m _m,_mark,_marked"
 bindsym $mod+Shift+apostrophe mark _m
 

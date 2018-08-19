@@ -138,6 +138,10 @@
     # geometry.
     word_wrap = yes
 
+    # When word_wrap is set to no, specify where to ellipsize long lines.
+    # Possible values are "start", "middle" and "end".
+    ellipsize = middle
+
     # Ignore newlines '\n' in notifications.
     ignore_newline = no
 
@@ -173,7 +177,7 @@
     ### Misc/Advanced ###
 
     # dmenu path.
-    dmenu = /usr/bin/dmenu -p dunst:
+    dmenu = /usr/bin/rofi -dmenu -p 'dunst '
 
     # Browser for opening urls in context menu.
     browser = /usr/bin/firefox -new-tab
@@ -231,25 +235,10 @@
     # On the US keyboard layout "grave" is normally above TAB and left
     # of "1". Make sure this key actually exists on your keyboard layout,
     # e.g. check output of 'xmodmap -pke'
-    history = mod4+igrave
+    history = mod4+ctrl+BackSpace
 
     # Context menu.
     context = mod4+shift+igrave
-
-# Dark theme
-
-# [urgency_low]
-    # background = "#3a3e4a"
-    # foreground = "#636770"
-    # timeout = 10
-# [urgency_normal]
-    # background = "#3a3e4a"
-    # foreground = "#8e9299"
-    # timeout = 10
-# [urgency_critical]
-    # background = "#af5d66"
-    # foreground = "#252933"
-    # timeout = 0
 
 # Light theme
 
@@ -284,45 +273,6 @@
 # to "".
 # NOTE: It might be helpful to run dunst -print in a terminal in order
 # to find fitting options for rules.
-
-#[espeak]
-#    summary = "*"
-#    script = dunst_espeak.sh
-
-#[script-test]
-#    summary = "*script*"
-#    script = dunst_test.sh
-
-#[ignore]
-#    # This notification will not be displayed
-#    summary = "foobar"
-#    format = ""
-
-#[history-ignore]
-#    # This notification will not be saved in history
-#    summary = "foobar"
-#    history_ignore = yes
-
-#[signed_on]
-#    appname = Pidgin
-#    summary = "*signed on*"
-#    urgency = low
-#
-#[signed_off]
-#    appname = Pidgin
-#    summary = *signed off*
-#    urgency = low
-#
-#[says]
-#    appname = Pidgin
-#    summary = *says*
-#    urgency = critical
-#
-#[twitter]
-#    appname = Pidgin
-#    summary = *twitter.com*
-#    urgency = normal
-#
 
 [volume]
 	summary = "Volume"

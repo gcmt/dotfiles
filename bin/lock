@@ -5,7 +5,7 @@ pgrep -x i3lock > /dev/null && exit 1
 mute=0
 force=0
 blank=0
-delay=15
+delay=2
 excluded=(mpv)
 
 _print_help() {
@@ -68,5 +68,5 @@ i3lock -eu -i ~/.local/share/wallpapers/locked.png
 
 if [[ "$blank" -eq 1 ]]; then
 	sleep "$delay"
-	pgrep -x i3lock > /dev/null && xset dpms force off
+	xset dpms force off
 fi

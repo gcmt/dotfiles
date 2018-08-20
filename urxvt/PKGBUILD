@@ -60,11 +60,11 @@ build() {
 		--enable-wtmp \
 		--enable-xft \
 		--enable-xim \
+		--enable-pixbuf \
+		--enable-frills \
 		--enable-xterm-scroll \
-		--disable-frills \
 		--disable-transparency \
 		--disable-smart-resize \
-		--disable-pixbuf \
 		--disable-iso14755 \
 
 	make

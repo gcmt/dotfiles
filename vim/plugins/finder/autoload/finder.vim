@@ -103,8 +103,8 @@ func s:render(files) abort
 
 	endfor
 
-	call s:resize_window()
 	setl nomodifiable
+	call s:resize_window()
 	norm! gg
 	exec line_save
 

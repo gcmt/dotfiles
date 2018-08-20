@@ -4,7 +4,7 @@
 " true, ranger is executed in an external terminal specified in the option
 " 'g:ranger_termprg', otherwise ranger is excuted in the current terminal.
 func! ranger#open(target, ...)
-	let external = a:0 > 0 && a:1
+	let external = a:0 && a:1
 	let tmp = tempname()
 	let cmd  = ['ranger']
 	let cmd += ['--choosefiles='.tmp]

@@ -44,7 +44,7 @@ func! buffers#render()
 
 	syntax clear
 	setl modifiable
-	let pos = getcurpos()[1:2]
+	let line_save = line('.')
 	sil %delete _
 
 	let buffers = s:buffers(b:buffers.all)
@@ -90,10 +90,10 @@ func! buffers#render()
 
 	endfo
 
+	setl nomodifiable
 	call s:resize_window()
 	norm! gg
-	exec pos[0]
-	setl nomodifiable
+	exec line_save
 
 endf
 

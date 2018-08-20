@@ -50,8 +50,8 @@ endf
 func! s:open_files(tmp)
 	let mode = 'window'
 	let files = readfile(a:tmp)
-	if get(files, 0, '') =~ '\v^#mode \w+'
-		let mode = matchstr(files[0], '\v^#mode \zs\w+')
+	if get(files, 0, '') =~ '\v^#meta'
+		let mode = matchstr(files[0], '\v<mode\=\zs\w+')
 		let files = files[1:]
 	end
 	let files = map(files, {i, v -> fnameescape(v)})
@@ -73,7 +73,7 @@ endf
 func! s:bindings()
 	let bindings = []
 	for [key, mode] in items(g:ranger_bindings)
-		call add(bindings, printf("--cmd='map %s %s %s'", key, s:edit_cmd, mode))
+		call add(bindings, printf("--cmd='map %s %s mode=%s'", key, s:edit_cmd, mode))
 	endfo
 	return bindings
 endf

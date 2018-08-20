@@ -38,12 +38,8 @@ class vim_edit(Command):
 
     To be used in conjuntion with the ranger vim plugin and the --choosefile[s] option.
 
-    Overrides the normal --choosefile[s] behavior to also write to the give file
-    argument the mode in which the selected file should be opened (or the first
-    file of the selection).
-
-    Mode line format: #mode <mode>
-    Possible modes are: window, split, vsplit and tab.
+    Overrides the normal --choosefile[s] behavior to also write additional meta information.
+    Meta line format: #meta <data>
     """
 
     def execute(self):
@@ -52,32 +48,31 @@ class vim_edit(Command):
             self.fm.notify('Ranger was expected to be run with the --choosefile[s] option', bad=True)
             return
 
-        mode = self.arg(1) if self.arg(1) else 'window'
-
         selection = self.fm.thistab.get_selection()
         if not selection:
             raise SystemExit
 
-        tfile = self.fm.thisfile
-        if tfile.is_directory:
-            self.fm.thistab.enter_dir(tfile)
+        if self.fm.thisfile.is_directory:
+            self.fm.thistab.enter_dir(self.fm.thisfile)
             return
 
         if ranger.args.choosefile:
-            with open(ranger.args.choosefile, 'w') as fobj:
-                fobj.write("#mode " + mode + "\n")
-                fobj.write(tfile.path)
+
+            with open(ranger.args.choosefile, 'w') as f:
+                f.write("#meta " + self.rest(1) + "\n")
+                f.write(self.fm.thisfile.path)
 
         if ranger.args.choosefiles:
+
             paths = []
             for hist in self.fm.thistab.history:
-                for fobj in hist.files:
-                    if fobj.marked and fobj.path not in paths:
-                        paths += [fobj.path]
+                for f in hist.files:
+                    if f.marked and f.path not in paths:
+                        paths += [f.path]
             paths += [f.path for f in selection if f.path not in paths]
 
-            with open(ranger.args.choosefiles, 'w') as fobj:
-                fobj.write("#mode " + mode + "\n")
-                fobj.write('\n'.join(paths) + '\n')
+            with open(ranger.args.choosefiles, 'w') as f:
+                f.write("#meta " + self.rest(1) + "\n")
+                f.write('\n'.join(paths) + '\n')
 
         raise SystemExit

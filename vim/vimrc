@@ -890,8 +890,8 @@
 	let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
 
 	if executable('ranger')
-		nnoremap <silent> g. :exec 'Ranger' expand('%:p')<cr>
-		nnoremap <silent> g: :exec 'Ranger' getcwd()<cr>
+		nnoremap <silent> g. :exec 'Ranger!' expand('%:p')<cr>
+		nnoremap <silent> g: :exec 'Ranger!' getcwd()<cr>
 	else
 		nnoremap <silent> gy :Explorer<cr>
 		nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>

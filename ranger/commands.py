@@ -74,7 +74,7 @@ class vim_edit(Command):
                 for fobj in hist.files:
                     if fobj.marked and fobj.path not in paths:
                         paths += [fobj.path]
-            paths += [f.path for f in self.fm.thistab.get_selection() if f.path not in paths]
+            paths += [f.path for f in selection if f.path not in paths]
 
             with open(ranger.args.choosefiles, 'w') as fobj:
                 fobj.write("#mode " + mode + "\n")

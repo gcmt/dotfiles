@@ -12,10 +12,10 @@ let g:finder_loaded = 1
 
 " Search for files that match the given pattern.
 " Without arguments, the last search results are shown.
-command! -bang -nargs=+ -complete=custom,<sid>find_preview Find call <sid>find(<q-bang>, <q-args>)
+command! -bang -nargs=* -complete=custom,<sid>find_preview Find call <sid>find(<q-bang>, <q-args>)
 
 " Search for files that contain the given pattern.
-command! -bang -nargs=+ -complete=custom,<sid>findg_preview Findg call <sid>findg(<q-bang>, <q-args>)
+command! -bang -nargs=* -complete=custom,<sid>findg_preview Findg call <sid>findg(<q-bang>, <q-args>)
 
 func s:find(bang, args)
 	let args = join(split(a:args), '.*')

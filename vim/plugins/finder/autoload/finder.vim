@@ -2,40 +2,49 @@
 let s:bufname = '__finder__'
 
 func finder#findg(path, query) abort
-	if empty(a:query)
-		return s:err('Empty query')
+	if empty(a:query) && !bufexists(s:bufname)
+		return s:err('No previous searches')
 	end
-	let cmd = printf('rg -l %s %s', shellescape(a:query), shellescape(a:path))
-	let results = systemlist(cmd)
-	if v:shell_error
-		return s:err(join(results, "\n"))
+	let results = []
+	if !empty(a:query)
+		let cmd = printf('rg -l %s %s', shellescape(a:query), shellescape(a:path))
+		let results = systemlist(cmd)
+		if v:shell_error
+			if empty(results)
+				return s:err("Nothing found")
+			else
+				return s:err(join(results, "\n"))
+			end
+		end
 	end
 	call s:view_results(results)
 endf
 
 
 func finder#find(path, query) abort
-	if empty(a:query)
-		return s:err('Empty query')
+	if empty(a:query) && !bufexists(s:bufname)
+		return s:err('No previous searches')
 	end
-	let input = system('rg --files ' . shellescape(a:path))
-	let results = systemlist('rg ' . shellescape(a:query), input)
-	if v:shell_error
-		return s:err(join(results, "\n"))
+	let results = []
+	if !empty(a:query)
+		let input = system('rg --files ' . shellescape(a:path))
+		let results = systemlist('rg ' . shellescape(a:query), input)
+		if v:shell_error
+			if empty(results)
+				return s:err("Nothing found")
+			else
+				return s:err(join(results, "\n"))
+			end
+		end
 	end
 	call s:view_results(results)
 endf
 
 func s:view_results(results) abort
-	if empty(a:results)
-		return s:err("Nothing found")
-	end
 	if bufwinnr(s:bufname) != -1
-		" if the buffer is already visible, just move there
 		exec bufwinnr(s:bufname).'wincmd w'
 	else
 		exec 'sil keepj keepa botright 1new' s:bufname
-		let b:finder = {'table': {}}
 		setl filetype=finder buftype=nofile bufhidden=hide nobuflisted
 		setl noundofile nobackup noswapfile nospell
 		setl nowrap nonumber norelativenumber nolist textwidth=0
@@ -43,24 +52,37 @@ func s:view_results(results) abort
 		call setwinvar(0, '&stl', ' finder')
 	end
 	call s:render(a:results[:g:finder_max_results])
-	call cursor(1, 1)
 endf
 
 func s:render(files) abort
 
+	if empty(a:files)
+		if !exists('b:finder')
+			return s:err("Finder: error: b:finder not found")
+		end
+		let files = map(sort(keys(b:finder.table)), {-> b:finder.table[v:val]})
+	else
+		let files = a:files
+	end
+
+	if empty(files)
+		return s:err("Finder: error: no files to render")
+	end
+
 	syntax clear
 	setl modifiable
+	let line_save = line('.')
 	sil %delete _
 
 	let tails = {}
-	for path in a:files
+	for path in files
 		let tail = fnamemodify(path, ':t')
 		let tails[tail] = get(tails, tail) + 1
 	endfo
 
 	let i = 1
-	let b:finder.table = {}
-	for path in a:files
+	let b:finder = { 'table': {}}
+	for path in files
 
 		let line = ''
 		let b:finder.table[i] = path
@@ -84,6 +106,8 @@ func s:render(files) abort
 
 	call s:resize_window()
 	setl nomodifiable
+	norm! gg
+	exec line_save
 
 endf
 

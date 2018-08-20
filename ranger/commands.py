@@ -56,11 +56,12 @@ class vim_edit(Command):
             self.fm.thistab.enter_dir(self.fm.thisfile)
             return
 
+        meta = "#meta " + self.rest(1)
+
         if ranger.args.choosefile:
 
             with open(ranger.args.choosefile, 'w') as f:
-                f.write("#meta " + self.rest(1) + "\n")
-                f.write(self.fm.thisfile.path)
+                f.write(meta + '\n' + self.fm.thisfile.path)
 
         if ranger.args.choosefiles:
 
@@ -72,7 +73,6 @@ class vim_edit(Command):
             paths += [f.path for f in selection if f.path not in paths]
 
             with open(ranger.args.choosefiles, 'w') as f:
-                f.write("#meta " + self.rest(1) + "\n")
-                f.write('\n'.join(paths) + '\n')
+                f.write(meta + '\n' + '\n'.join(paths) + '\n')
 
         raise SystemExit

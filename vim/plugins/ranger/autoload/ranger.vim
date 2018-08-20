@@ -8,7 +8,7 @@ func! ranger#open(target, ...)
 	let tmp = tempname()
 	let cmd  = ['ranger']
 	let cmd += ['--choosefiles='.tmp]
-		" Hide the preview column when the window is too small
+	" Hide the preview column when the window is too small
 	if !external && &columns < g:ranger_preview_treshold
 		let cmd += ["--cmd='set column_ratios 1'"]
 		let cmd += ["--cmd='set preview_files false'"]

@@ -57,15 +57,14 @@ endf
 func s:render(files) abort
 
 	if empty(a:files)
-		if !exists('b:finder')
-			return s:err("Finder: error: b:finder not found")
-		end
-		let files = map(sort(keys(b:finder.table)), {-> b:finder.table[v:val]})
+		let table = get(get(b:, 'finder', {}), 'table', {})
+		let files = map(sort(keys(table)), {-> b:finder.table[v:val]})
 	else
 		let files = a:files
 	end
 
 	if empty(files)
+		close
 		return s:err("Finder: error: no files to render")
 	end
 

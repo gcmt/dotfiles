@@ -55,7 +55,6 @@ func! s:open_files(tmp)
 		let files = files[1:]
 	end
 	let files = map(files, {i, v -> fnameescape(v)})
-	let g:rfiles = files
 	if len(files) > 1
 		exec 'argadd' join(files)
 	end

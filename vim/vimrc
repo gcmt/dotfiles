@@ -888,9 +888,45 @@
 
 	let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
 
-	nnoremap <silent> gy :Explorer<cr>
-	nnoremap <silent> g. :exec 'Explorer' expand('%:p:h')<cr>
-	nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
+	" nnoremap <silent> gy :Explorer<cr>
+	" nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
+	" nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
+
+" Ranger
+" ----------------------------------------------------------------------------
+
+	fun! s:ranger(target)
+		let tmp = tempname()
+		let cmd  = ['!ranger']
+		let cmd += ['--choosefiles='.tmp]
+		if filereadable(a:target)
+			let cmd += ['--selectfile='.shellescape(a:target)]
+		end
+		if &columns < 150
+			let cmd += ["--cmd='set column_ratios 1'"]
+			let cmd += ["--cmd='set preview_files false'"]
+			let cmd += ["--cmd='set preview_directories false'"]
+			let cmd += ["--cmd='set collapse_preview true'"]
+		end
+		sil exec join(cmd)
+		if v:shell_error
+			echoerr "Command failed with error" v:shell_error.":" join(cmd)
+		end
+		if filereadable(tmp)
+			let files = map(readfile(tmp), {i, v -> fnameescape(v)})
+			if len(files) > 1
+				exec 'argadd' join(files)
+			end
+			exec 'edit' files[0]
+			call delete(tmp)
+		end
+		redraw!
+	endf
+
+	if executable('ranger')
+		nnoremap <silent> g. :call <sid>ranger(expand('%:p'))<cr>
+		nnoremap <silent> g: :call <sid>ranger(getcwd())<cr>
+	end
 
 " Ultisnips
 " ----------------------------------------------------------------------------

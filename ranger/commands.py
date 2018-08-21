@@ -48,30 +48,30 @@ class vim_edit(Command):
             self.fm.notify('Ranger was expected to be run with the --choosefile[s] option', bad=True)
             return
 
-        selection = self.fm.thistab.get_selection()
-        if not selection:
-            raise SystemExit
-
         if self.fm.thisfile.is_directory:
             self.fm.thistab.enter_dir(self.fm.thisfile)
             return
 
+        # thistab.get_selection() returns the file under cursor if there is no
+        # marked file. When there are marked files, in the current directory or
+        # elsewhere, we don't want to return it unless it's marked as well.
+
+        paths = [f.path for hist in self.fm.thistab.history for f in hist.files if f.marked]
+        if self.fm.thisdir.marked_items:
+            paths += [f.path for f in self.fm.thistab.get_selection()]
+
+        paths = set(paths)
+
+        if not paths:
+            paths.add(self.fm.thisfile.path)
+
         meta = "#meta " + self.rest(1)
 
         if ranger.args.choosefile:
-
             with open(ranger.args.choosefile, 'w') as f:
                 f.write(meta + '\n' + self.fm.thisfile.path)
 
         if ranger.args.choosefiles:
-
-            paths = []
-            for hist in self.fm.thistab.history:
-                for f in hist.files:
-                    if f.marked and f.path not in paths:
-                        paths += [f.path]
-            paths += [f.path for f in selection if f.path not in paths]
-
             with open(ranger.args.choosefiles, 'w') as f:
                 f.write(meta + '\n' + '\n'.join(paths) + '\n')
 

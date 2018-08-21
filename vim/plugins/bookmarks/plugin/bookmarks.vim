@@ -12,7 +12,8 @@ let g:loaded_bookmarks = 1
 
 let s:options = {
 	\ 'max_winsize': 50,
-	\ 'marks': 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM'
+	\ 'marks': 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM',
+	\ 'explorer_cmd': executable('ranger') ? 'Ranger!' : 'Explorer'
 \ }
 
 for [s:option, s:default] in items(s:options)

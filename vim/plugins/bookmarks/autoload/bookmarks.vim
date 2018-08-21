@@ -44,7 +44,7 @@ func bookmarks#jump(mark, ...) abort
 		return s:err("Mark not set")
 	end
 	if isdirectory(target)
-		exec 'Explorer' fnameescape(target)
+		exec g:bookmarks_explorer_cmd fnameescape(target)
 	else
 		exec 'edit' fnameescape(s:prettify_path(target))
 	end

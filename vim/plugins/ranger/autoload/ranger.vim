@@ -32,7 +32,7 @@ func! ranger#open(target, ...)
 		sil exec '!' . join(cmd)
 	end
 	if v:shell_error
-		echoerr printf("Command failed with error %d: %s", v:shell_error, join(cmd))
+		return s:err(printf("Command failed with error %d: %s", v:shell_error, join(cmd)))
 	end
 	if filereadable(tmp)
 		call s:open_files(tmp)
@@ -55,6 +55,11 @@ func! s:open_files(tmp)
 		let files = files[1:]
 	end
 	let files = map(files, {i, v -> fnameescape(v)})
+	if empty(files)
+	end
+	if empty(files)
+		return s:err("No files to open.")
+	end
 	if len(files) > 1
 		exec 'argadd' join(files)
 	end
@@ -76,4 +81,10 @@ func! s:bindings()
 		call add(bindings, printf("--cmd='map %s %s mode=%s'", key, s:edit_cmd, mode))
 	endfo
 	return bindings
+endf
+
+" s:err({msg:string}) -> 0
+" Display a simple error message.
+func! s:err(msg)
+	echohl WarningMsg | echo a:msg | echohl None
 endf

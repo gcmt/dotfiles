@@ -1,0 +1,9 @@
+#!/bin/bash
+
+entries="kill window\\nmove to scratchpad"
+choice="$(echo -e "$entries" | i3-tiny-menu -format d)"
+
+case "$choice" in
+	1) i3-msg kill window ;;
+	2) i3-msg move scratchpad ;;
+esac

@@ -1,0 +1,68 @@
+#!/usr/bin/env python
+
+import os
+import re
+import sys
+import argparse
+from subprocess import run, PIPE
+
+
+def error(msg):
+    script = os.path.basename(__file__)
+    print(f"{script}: error: {msg}", file=sys.stderr)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="i3 tiny menu")
+    parser.add_argument('-width', help="force a certain width (see rofi man page)")
+    parser.add_argument('-inputbar', action='store_true', default=False, help="display the input bar")
+    return parser.parse_known_args()
+
+
+def rofi(args, rofiargs):
+
+    input = [ln.strip() for ln in sys.stdin]
+
+    options = ['-dmenu', '-click-to-exit', '-theme', 'i3-tiny-menu']
+    options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary']
+
+    # Get mouse location
+    cmd = ['xdotool', 'getmouselocation']
+    stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout
+    match = re.search('x:(\d+) y:(\d+)', stdout)
+    if not match:
+        error("can't get mouse location")
+        sys.exit(1)
+
+    x, y = match.group(1), match.group(2)
+    options += ['-theme-str', f'window {{ x-offset: {x}px; y-offset: {y}px; }}']
+
+    if args.width:
+        options += ['-theme-str', f'window {{ width: {args.width}; }}']
+    else:
+        chars = max(len(max(input, key=len)) + 10, 20)
+        options += ['-theme-str', f'window {{ width: {chars}ch; }}']
+
+    if not args.inputbar:
+        options += ['-theme-str', 'mainbox { children: [listview]; }']
+        options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,j']
+        options += ['-kb-accept-entry', 'l,Return,Control+d', '-kb-cancel', 'Escape,q']
+
+    cmd = ['rofi'] + options + rofiargs
+    stdout = run(cmd, input="\n".join(input), stdout=PIPE, encoding='utf8').stdout
+    return stdout.strip()
+
+
+def main():
+
+    args, rofiargs = parse_args()
+
+    choice = rofi(args, rofiargs)
+    if not choice:
+        sys.exit(0)
+
+    print(choice)
+
+
+if __name__ == '__main__':
+    main()

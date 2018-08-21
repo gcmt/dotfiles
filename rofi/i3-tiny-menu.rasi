@@ -1,0 +1,29 @@
+
+@import "main-light"
+
+* {
+	font: "Noto Sans Regular 10";
+	background: rgba(231, 232, 235, 100%);
+	foreground: rgba(82, 86, 94, 100%);
+	selected-normal-background: rgba(208, 211, 216, 100%);
+	separator-color: rgba(222, 225, 229, 100%);
+}
+
+window {
+	width: 200px;
+	location: north west;
+	anchor: north west;
+}
+
+listview {
+	fixed-height: false;
+	scrollbar: false;
+}
+
+element, inputbar {
+	padding: 2px 6px;
+}
+
+case-indicator {
+	enabled: false;
+}

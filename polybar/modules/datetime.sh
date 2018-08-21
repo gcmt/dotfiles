@@ -15,15 +15,12 @@ if [[ "$*" =~ -menu($| ) ]]; then
 	styles=(default seconds utc)
 	entries="default\\nshow seconds\\nutc time"
 
-	rofi_options="-dmenu -format i -click-to-exit -select '$style'"
-	rofi_style="-theme 'polybar.rasi' -theme-str 'window { width:15%; location:north; anchor:north; }'"
-
-	idx=$(echo -e "$entries" | eval "rofi $rofi_options $rofi_style")
-	if [[ -z "$idx" ]]; then
+	choice="$(echo -e "$entries" | i3-tiny-menu -format i -select "$style")"
+	if [[ -z "$choice" ]]; then
 		exit 1
 	fi
 
-	style="${styles[$idx]}"
+	style="${styles[$choice]}"
 	sed -i "s/^style=.*/style=$style/" "$state_file"
 
 fi

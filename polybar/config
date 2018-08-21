@@ -130,7 +130,7 @@ type = custom/script
 exec = ~/.config/polybar/modules/datetime.sh
 interval = 1
 
-click-left = ~/.config/polybar/modules/datetime.sh -menu
+click-right = ~/.config/polybar/modules/datetime.sh -menu
 
 label =  %output%
 

@@ -30,7 +30,10 @@ def get_mouse_coordinates():
 
 def rofi(args, rofiargs):
 
-    input = [ln.strip() for ln in sys.stdin]
+    if not sys.stdin.isatty():
+        input = [line.strip() for line in sys.stdin]
+    else:
+        input = None
 
     options  = ['-dmenu', '-click-to-exit', '-theme', 'i3-tiny-menu']
     options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary']
@@ -44,7 +47,7 @@ def rofi(args, rofiargs):
 
     if args.width:
         options += ['-theme-str', f'window {{ width: {args.width}; }}']
-    else:
+    elif input:
         chars = max(len(max(input, key=len)) + 10, 20)
         options += ['-theme-str', f'window {{ width: {chars}ch; }}']
 
@@ -55,7 +58,8 @@ def rofi(args, rofiargs):
 
     try:
         cmd = ['rofi'] + options + rofiargs
-        stdout = run(cmd, input="\n".join(input), stdout=PIPE, encoding='utf8').stdout
+        input = "\n".join(input) if input else None
+        stdout = run(cmd, input=input, stdout=PIPE, encoding='utf8').stdout
         return stdout.strip()
     except FileNotFoundError as e:
         error('rofi not found')

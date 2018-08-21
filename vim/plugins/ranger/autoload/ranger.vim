@@ -56,8 +56,6 @@ func! s:open_files(tmp)
 	end
 	let files = map(files, {i, v -> fnameescape(v)})
 	if empty(files)
-	end
-	if empty(files)
 		return s:err("No files to open.")
 	end
 	if len(files) > 1

@@ -38,7 +38,9 @@ class vim_edit(Command):
 
     To be used in conjuntion with the ranger vim plugin and the --choosefile[s] option.
 
-    Overrides the normal --choosefile[s] behavior to also write additional meta information.
+    Overrides the normal --choosefile[s] behavior to also write additional meta
+    information to the given file.
+
     Meta line format: #meta <data>
     """
 

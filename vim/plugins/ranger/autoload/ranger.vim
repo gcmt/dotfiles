@@ -1,6 +1,6 @@
 
-" See ~/.config/ranger/commands.py
-let s:edit_cmd = 'vim_edit'
+" See ~/.config/ranger/plugins/choose_meta.py
+let s:cmd = '_choose_meta'
 
 let s:no_preview = [
 	\ "--cmd='set column_ratios 1'",
@@ -78,7 +78,7 @@ endf
 func! s:bindings()
 	let bindings = []
 	for [key, mode] in items(g:ranger_bindings)
-		call add(bindings, printf("--cmd='map %s %s mode=%s'", key, s:edit_cmd, mode))
+		call add(bindings, printf("--cmd='map %s %s mode=%s'", key, s:cmd, mode))
 	endfo
 	return bindings
 endf

@@ -63,7 +63,7 @@ def rofi(args, rofiargs):
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description="i3 tiny menu")
+    parser = argparse.ArgumentParser(allow_abbrev=False, description="i3 tiny menu")
     parser.add_argument('-width', help="force a certain width (see rofi man page)")
     parser.add_argument('-inputbar', action='store_true', default=False, help="display the input bar")
     return parser.parse_known_args()

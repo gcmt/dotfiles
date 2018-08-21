@@ -12,33 +12,34 @@ def error(msg):
     print(f"{script}: {msg}", file=sys.stderr)
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(description="i3 tiny menu")
-    parser.add_argument('-width', help="force a certain width (see rofi man page)")
-    parser.add_argument('-inputbar', action='store_true', default=False, help="display the input bar")
-    return parser.parse_known_args()
+def get_mouse_coordinates():
+
+    try:
+        cmd = ['xdotool', 'getmouselocation']
+        stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout
+    except FileNotFoundError as e:
+        error('xdotool not found')
+        sys.exit(1)
+
+    match = re.search('x:(\d+) y:(\d+)', stdout)
+    if not match:
+        return None, None
+
+    return match.group(1), match.group(2)
 
 
 def rofi(args, rofiargs):
 
     input = [ln.strip() for ln in sys.stdin]
 
-    options = ['-dmenu', '-click-to-exit', '-theme', 'i3-tiny-menu']
+    options  = ['-dmenu', '-click-to-exit', '-theme', 'i3-tiny-menu']
     options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary']
 
-    try:
-        cmd = ['xdotoolsda', 'getmouselocation']
-        stdout = run(cmd, stdout=PIPE, encoding='utf8', check=True).stdout
-    except FileNotFoundError as e:
-        error('command not found: ' + e.filename)
-        sys.exit(1)
-
-    match = re.search('x:(\d+) y:(\d+)', stdout)
-    if not match:
+    x, y = get_mouse_coordinates()
+    if not x and not y:
         error("can't get mouse location")
         sys.exit(1)
 
-    x, y = match.group(1), match.group(2)
     options += ['-theme-str', f'window {{ x-offset: {x}px; y-offset: {y}px; }}']
 
     if args.width:
@@ -57,8 +58,15 @@ def rofi(args, rofiargs):
         stdout = run(cmd, input="\n".join(input), stdout=PIPE, encoding='utf8').stdout
         return stdout.strip()
     except FileNotFoundError as e:
-        error('command not found: ' + e.filename)
+        error('rofi not found')
         sys.exit(1)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="i3 tiny menu")
+    parser.add_argument('-width', help="force a certain width (see rofi man page)")
+    parser.add_argument('-inputbar', action='store_true', default=False, help="display the input bar")
+    return parser.parse_known_args()
 
 
 def main():

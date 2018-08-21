@@ -64,7 +64,6 @@ func! s:open_files(tmp)
 		\ 'split': 'split',
 		\ 'vsplit': 'vsplit',
 	\ }
-	let mode = empty(mode) ? 'window' : mode
 	sil exec get(commands, mode, '')
 	exec 'edit' files[0]
 endf

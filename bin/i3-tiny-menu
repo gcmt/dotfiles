@@ -17,7 +17,7 @@ def get_mouse_coordinates():
     try:
         cmd = ['xdotool', 'getmouselocation']
         stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         error('xdotool not found')
         sys.exit(1)
 
@@ -61,7 +61,7 @@ def rofi(args, rofiargs):
         input = "\n".join(input) if input else None
         stdout = run(cmd, input=input, stdout=PIPE, encoding='utf8').stdout
         return stdout.strip()
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         error('rofi not found')
         sys.exit(1)
 

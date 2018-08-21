@@ -48,7 +48,7 @@ endf
 " .config/ranger/commands.py)
 " Possible modes are: window, slit, vsplit, tab.
 func! s:open_files(tmp)
-	let mode = 'window'
+	let mode = ''
 	let files = readfile(a:tmp)
 	if get(files, 0, '') =~ '\v^#meta'
 		let mode = matchstr(files[0], '\v<mode\=\zs\w+')
@@ -64,6 +64,7 @@ func! s:open_files(tmp)
 		\ 'split': 'split',
 		\ 'vsplit': 'vsplit',
 	\ }
+	let mode = empty(mode) ? 'window' : mode
 	sil exec get(commands, mode, '')
 	exec 'edit' files[0]
 endf

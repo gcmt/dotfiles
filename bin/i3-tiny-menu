@@ -9,7 +9,7 @@ from subprocess import run, PIPE
 
 def error(msg):
     script = os.path.basename(__file__)
-    print(f"{script}: error: {msg}", file=sys.stderr)
+    print(f"{script}: {msg}", file=sys.stderr)
 
 
 def parse_args():
@@ -26,9 +26,13 @@ def rofi(args, rofiargs):
     options = ['-dmenu', '-click-to-exit', '-theme', 'i3-tiny-menu']
     options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary']
 
-    # Get mouse location
-    cmd = ['xdotool', 'getmouselocation']
-    stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout
+    try:
+        cmd = ['xdotoolsda', 'getmouselocation']
+        stdout = run(cmd, stdout=PIPE, encoding='utf8', check=True).stdout
+    except FileNotFoundError as e:
+        error('command not found: ' + e.filename)
+        sys.exit(1)
+
     match = re.search('x:(\d+) y:(\d+)', stdout)
     if not match:
         error("can't get mouse location")
@@ -48,9 +52,13 @@ def rofi(args, rofiargs):
         options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,j']
         options += ['-kb-accept-entry', 'l,Return,Control+d', '-kb-cancel', 'Escape,q']
 
-    cmd = ['rofi'] + options + rofiargs
-    stdout = run(cmd, input="\n".join(input), stdout=PIPE, encoding='utf8').stdout
-    return stdout.strip()
+    try:
+        cmd = ['rofi'] + options + rofiargs
+        stdout = run(cmd, input="\n".join(input), stdout=PIPE, encoding='utf8').stdout
+        return stdout.strip()
+    except FileNotFoundError as e:
+        error('command not found: ' + e.filename)
+        sys.exit(1)
 
 
 def main():

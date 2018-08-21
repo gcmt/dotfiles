@@ -1,6 +1,8 @@
+__pycache__
 gtk-3.0/bookmarks
 .DS_Store
 .netrwhist
 .zcompdump
 *.old
+*.pyc
 tags

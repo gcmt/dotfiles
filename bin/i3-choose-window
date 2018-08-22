@@ -28,7 +28,7 @@ def format_windows(windows):
         if wsname == '__i3_scratch':
             row += f"<span foreground='{dimcolor}'>{escape(w.name)}</span>"
         else:
-            row += f"<b>{escape(w.name)}</b>" if w.focused else escape(w.name)
+            row += f"{escape(w.name)}" if w.focused else escape(w.name)
         yield row
 
 

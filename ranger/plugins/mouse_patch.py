@@ -1,4 +1,5 @@
 
+import os
 import ranger
 from ranger.gui.widgets.browsercolumn import BrowserColumn
 
@@ -20,6 +21,7 @@ def click(self, event):
 
     index = self.scroll_begin + event.y - self.y
 
+    # Mouse scroll
     if direction:
 
         if self.level == -1:
@@ -27,12 +29,14 @@ def click(self, event):
         else:
             return False
 
-    # right click
+    # Right click
+    # Go to parent directory
     elif event.pressed(3):
 
         self.fm.move(left=1)
 
-    # left click
+    # Left click
+    # Enter directory or execute file
     elif event.pressed(1):
 
         try:
@@ -50,7 +54,13 @@ def click(self, event):
 
 
 def hook_init(fm):
+
+    if os.environ.get('TMUX'):
+        fm.settings.set('mouse_enabled', False)
+        return
+
     BrowserColumn.click = click
+
     return HOOK_INIT_OLD(fm)
 
 

@@ -27,12 +27,16 @@ class Scheme(Default):
 
         elif context.in_browser:
             attr = normal
-            if context.selected:
-                bg = bg_accent
             if context.file:
                 fg = foreground
             if context.marked:
-                fg = yellow
+                fg = foreground
+                bg = fg_super_dim
+            if context.selected:
+                if context.marked:
+                    bg = fg_very_dim
+                else:
+                    bg = bg_accent
 
         elif context.in_titlebar:
 

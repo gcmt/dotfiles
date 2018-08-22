@@ -11,6 +11,11 @@ from subprocess import run, PIPE
 SCRATCHPAD = '__i3_scratch'
 
 
+def error(msg):
+    script = os.path.basename(__file__)
+    print(f"{script}: {msg}", file=sys.stderr)
+
+
 # Turn windows into formatted lines to be passed to Rofi.
 # Pango markup is supported if the '-markup-rows' Rofi option is used:
 # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
@@ -80,11 +85,14 @@ def rofi(windows, inputbar=True):
         options += ['-kb-custom-1', 'Control+m', '-kb-custom-2', 'Super+underscore']
         options += ['-kb-custom-3', 'Control+o', '-kb-custom-4', 'Super+Q', '-kb-custom-5', 'Control+a']
 
-    input = "\n".join(format_windows(windows))
-    cmd = ['rofi'] + options + style
-    proc = run(cmd, input=input, stdout=PIPE, encoding='utf8')
-
-    return proc.stdout.strip(), proc.returncode
+    try:
+        input = "\n".join(format_windows(windows))
+        cmd = ['rofi'] + options + style
+        proc = run(cmd, input=input, stdout=PIPE, encoding='utf8')
+        return proc.stdout.strip(), proc.returncode
+    except FileNotFoundError:
+        error('rofi not found')
+        sys.exit(1)
 
 
 # Parse command line arguments.

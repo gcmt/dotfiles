@@ -36,7 +36,6 @@ class Menu(FileManagerAware):
             return
 
         entries = self.entries
-
         try:
 
             while True:
@@ -45,7 +44,9 @@ class Menu(FileManagerAware):
                 if not index:
                     return
 
+                entry = entries[int(index)][0]
                 cmd = entries[int(index)][1]
+
                 if isinstance(cmd, str):
                     return self.fm.execute_console(cmd)
                 if callable(cmd):
@@ -54,7 +55,9 @@ class Menu(FileManagerAware):
                     entries = cmd
                     continue
 
-                raise TypeError(f"a command must be type string or callable: got '{type(cmd)}'")
+                msg = "expected type string, callable or non-empty list, "
+                msg += f"got value '{repr(cmd)}' (type {type(cmd)}) for entry '{entry}'"
+                raise TypeError(msg)
 
         except (IndexError, TypeError) as e:
             self.error(f"{e}")

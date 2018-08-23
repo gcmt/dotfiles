@@ -1,9 +1,11 @@
 
 import os
+import curses
 from datetime import datetime
 
 import ranger
 from ranger.gui.widgets.browsercolumn import BrowserColumn
+from ranger.gui.mouse_event import MouseEvent
 
 
 HOOK_INIT_OLD = ranger.api.hook_init
@@ -19,6 +21,15 @@ LAST_CLICK = {
 
 
 def click(self, event):
+    """Handle a MouseEvent.
+
+    - Enter a directory or select a file with a single left click.
+    - Execute a file with a double click.
+    - Go to parent directory with a single right click.
+    - Move up and down with the mouse wheel.
+
+    See ranger/gui/widgets/browsercolumn.py for the original implementation.
+    """
 
     direction = event.mouse_wheel_direction()
     if not (event.pressed(LEFT_BTN) or event.pressed(RIGHT_BTN) or direction):
@@ -71,13 +82,32 @@ def click(self, event):
     return True
 
 
+def mouse_wheel_direction(self):
+    """Returns the direction of the scroll action, 0 if there was none.
+
+    See ranger/gui/mouse_event.py for the original implementation.
+    """
+    # When opening Rofi over Ranger and clicking on an entry,
+    # `self.bstate > curses.ALL_MOUSE_EVENTS == True`. We don't want this to be
+    # interpreted as scroll down one line.
+    if self.bstate & curses.BUTTON4_PRESSED:
+            return -self.CTRL_SCROLLWHEEL_MULTIPLIER if self.ctrl() else -1
+    elif self.bstate & curses.BUTTON2_PRESSED \
+            or self.bstate & 2**21:
+        return self.CTRL_SCROLLWHEEL_MULTIPLIER if self.ctrl() else 1
+    return 0
+
+
 def hook_init(fm):
 
+    # Disable mouse handling inside Tmux. Nothing seems to work right.
     if os.environ.get('TMUX'):
         fm.settings.set('mouse_enabled', False)
         return
 
+    # Monkey patching
     BrowserColumn.click = click
+    MouseEvent.mouse_wheel_direction = mouse_wheel_direction
 
     return HOOK_INIT_OLD(fm)
 

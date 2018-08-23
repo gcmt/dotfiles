@@ -77,7 +77,10 @@ stty -ixon
 autoload -U add-zsh-hook
 
 set-title() {
-	[ -z "$TMUX" ] && print -n "\e]2;$PWD - Terminal\a"
+	if [[ -n "$TMUX" || -n "$RANGER_LEVEL" ]]; then
+		return
+	fi
+	print -n "\e]2;$PWD - Terminal\a"
 }
 add-zsh-hook precmd set-title
 

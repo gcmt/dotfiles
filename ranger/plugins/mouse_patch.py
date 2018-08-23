@@ -21,7 +21,7 @@ DOUBLE_CLICK_TRESHOLD = 500
 
 
 def right_click_handler(fm):
-    return
+    fm.move(left=1)
 
 
 def click(self, event):

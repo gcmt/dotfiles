@@ -1,0 +1,15 @@
+
+@import "term-dark"
+
+* {
+	font: "Noto Mono patched 10";
+}
+
+listview {
+	fixed-height: false;
+	scrollbar: false;
+}
+
+element, inputbar {
+	padding: 2px 6px;
+}

@@ -7,13 +7,7 @@ import ranger
 from ranger.gui.widgets.browsercolumn import BrowserColumn
 from ranger.gui.mouse_event import MouseEvent
 
-from .menu import Menu
-
-
 HOOK_INIT_OLD = ranger.api.hook_init
-
-ENTER_DIRS_WITH_SINGLE_CLICK = False
-DOUBLE_CLICK_TRESHOLD = 500
 
 LEFT_BTN = 1
 RIGHT_BTN = 3
@@ -21,6 +15,13 @@ RIGHT_BTN = 3
 LAST_CLICK = {
     LEFT_BTN: datetime.now()
 }
+
+ENTER_DIRS_WITH_SINGLE_CLICK = False
+DOUBLE_CLICK_TRESHOLD = 500
+
+
+def right_click_handler(fm):
+    return
 
 
 def click(self, event):
@@ -61,7 +62,10 @@ def click(self, event):
     # Go to parent directory
     elif event.pressed(RIGHT_BTN):
 
-        self.fm.move(left=1)
+        self.fm.thisdir.move_to_obj(clicked_file)
+        self.fm.ui.redraw()
+
+        right_click_handler(self.fm)
 
     # Enter directory or select file. Double click on a file opens it.
     elif event.pressed(LEFT_BTN):

@@ -1,5 +1,5 @@
 
-import plugins.mouse_patch
+import plugins.mouse
 from .menu import Menu
 
 
@@ -18,4 +18,4 @@ def menu_loader(fm):
     rv = menu.open()
 
 
-plugins.mouse_patch.right_click_handler = menu_loader
+plugins.mouse.right_click_handler = menu_loader

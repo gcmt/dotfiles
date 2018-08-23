@@ -86,6 +86,7 @@ bindsym $mod+backslash exec --no-startup-id i3-calc
 bindsym $mod+e exec --no-startup-id rofi-edit
 
 # Shortcuts
+bindsym $mod+x exec --no-startup-id i3-focus -c URxvt -n ranger -fallback "urxvt -name ranger -title Ranger -e ranger"
 bindsym $mod+Shift+plus exec --no-startup-id i3-focus -c Firefox -m - -fallback firefox
 bindsym $mod+apostrophe exec --no-startup-id i3-focus -m _mark
 bindsym $mod+Shift+apostrophe mark _mark

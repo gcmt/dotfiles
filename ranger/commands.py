@@ -1,6 +1,4 @@
 
-from __future__ import (absolute_import, division, print_function)
-
 import os
 import subprocess
 
@@ -31,3 +29,26 @@ class ext(Command):
 
     def tab(self, tabnum):
         return self._tab_directory_content()
+
+
+class cd_root(Command):
+    """:cd_root
+
+    Cd into the current project root.
+    """
+
+    def execute(self):
+        root_markers = set(['.gitignore', 'node_modules'])
+        path = self.find_root(self.fm.thisdir.path, root_markers)
+        if not path:
+            self.fm.notify("Root cannot be located", bad=True)
+        else:
+            self.fm.cd(path)
+            self.fm.notify("cd " + path)
+
+    def find_root(self, path, markers):
+        if not path or path == '/':
+            return ''
+        if set(os.listdir(path)) & markers:
+            return path
+        return self.find_root(os.path.dirname(path), markers)

@@ -50,7 +50,7 @@ class Menu(FileManagerAware):
                     return self.fm.execute_console(cmd)
                 if callable(cmd):
                     return cmd(self.fm)
-                if isinstance(cmd, list) or isinstance(cmd, tuple):
+                if (isinstance(cmd, list) or isinstance(cmd, tuple)) and cmd:
                     entries = cmd
                     continue
 

@@ -29,12 +29,13 @@ class _choose_meta(Command):
             self.fm.thistab.enter_dir(self.fm.thisfile)
             return
 
-        meta = "#meta " + self.rest(1)
+        data = self.rest(1)
+        meta = "#meta " + data + "\n" if data else ""
 
         if ranger.args.choosefile:
 
             with open(ranger.args.choosefile, 'w') as f:
-                f.write(meta + '\n' + self.fm.thisfile.path)
+                f.write(meta + self.fm.thisfile.path)
 
         if ranger.args.choosefiles:
 
@@ -50,7 +51,7 @@ class _choose_meta(Command):
                 paths.add(self.fm.thisfile.path)
 
             with open(ranger.args.choosefiles, 'w') as f:
-                f.write(meta + '\n' + '\n'.join(paths))
+                f.write(meta + '\n'.join(paths))
 
         raise SystemExit
 

@@ -27,10 +27,12 @@ def right_click_handler(fm):
 def click(self, event):
     """Handle a MouseEvent.
 
-    - Enter a directory or select a file with a single left click.
-    - Execute a file with a double click.
-    - Go to parent directory with a single right click.
-    - Move up and down with the mouse wheel.
+    - Select a file or directory with a single click. Set ENTER_DIRS_WITH_SINGLE_CLICK
+      to True to enter a directory with a single click.
+    - Double clicking on a file or directory respectively execute the file or
+      enters the directory.
+    - By default a right click enters the parent directory.
+    - Use the mouse wheel to move up and down.
 
     See ranger/gui/widgets/browsercolumn.py for the original implementation.
     """
@@ -59,7 +61,6 @@ def click(self, event):
         else:
             return False
 
-    # Go to parent directory
     elif event.pressed(RIGHT_BTN):
 
         self.fm.thisdir.move_to_obj(clicked_file)
@@ -67,7 +68,6 @@ def click(self, event):
 
         right_click_handler(self.fm)
 
-    # Enter directory or select file. Double click on a file opens it.
     elif event.pressed(LEFT_BTN):
 
         delta = datetime.now() - LAST_CLICK[LEFT_BTN]
@@ -85,8 +85,7 @@ def click(self, event):
 
         elif self.level == 0:
 
-            if clicked_file == self.fm.thisfile \
-                    and millis < DOUBLE_CLICK_TRESHOLD:
+            if clicked_file == self.fm.thisfile and millis < DOUBLE_CLICK_TRESHOLD:
                 self.fm.execute_file(clicked_file)
             else:
                 self.fm.thisdir.move_to_obj(clicked_file)

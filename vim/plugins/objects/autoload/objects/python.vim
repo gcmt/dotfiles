@@ -10,6 +10,7 @@ endf
 func! s:select(kw, inner, count)
 
 	if a:count <= 0
+		call feedkeys("o")
 		return
 	end
 
@@ -133,9 +134,9 @@ func! s:select(kw, inner, count)
 
 	if end != line('$')
 		call s:select(a:kw, a:inner, a:count-1)
+	else
+		call feedkeys("o")
 	end
-
-	call feedkeys("o")
 
 endf
 

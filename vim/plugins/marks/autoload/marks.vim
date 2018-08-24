@@ -102,7 +102,7 @@ func! marks#render(marks)
 			call matchadd('MarksMark', '\v%'.i.'l%'.(len(line)).'c')
 			let line .= printf(' %'.width.'S', mark.linenr)
 			call matchadd('MarksLineNr', '\v%'.i.'l\d+%'.(len(line)+1).'c')
-			let line .= printf(' %s', substitute(mark.line, '\v^\s+', '', ''))
+			let line .= printf(' %s', trim(mark.line))
 			call setline(i, line)
 			let i += 1
 			let k += 1

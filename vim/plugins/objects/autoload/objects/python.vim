@@ -9,11 +9,6 @@ endf
 
 func! s:select(kw, inner, count)
 
-	if a:count <= 0
-		call feedkeys("o")
-		return
-	end
-
 	let curpos = getcurpos()[1:2]
 	let wanted = a:kw == 'class' ? 'class>' : 'def>|async def>'
 
@@ -132,9 +127,12 @@ func! s:select(kw, inner, count)
 		call cursor(end, len(getline(end)))
 	end
 
-	if end != line('$')
+	" --------------------------------------------------------------------
+
+	if end != line('$') && a:count-1 > 0
 		call s:select(a:kw, a:inner, a:count-1)
 	else
+		" Move cursor at the start of the selection
 		call feedkeys("o")
 	end
 

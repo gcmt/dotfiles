@@ -48,6 +48,8 @@ class Menu(FileManagerAware):
                 cmd = entries[int(index)][1]
 
                 if isinstance(cmd, str):
+                    if not cmd:
+                        return
                     return self.fm.execute_console(cmd)
                 if callable(cmd):
                     return cmd(self.fm)

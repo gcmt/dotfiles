@@ -1,4 +1,5 @@
 
+import time
 import re
 from subprocess import run, PIPE
 
@@ -52,6 +53,9 @@ class Menu(FileManagerAware):
                     return cmd(self.fm)
                 if (isinstance(cmd, list) or isinstance(cmd, tuple)) and cmd:
                     entries = cmd
+                    # XXX: Without some delay Rofi quits unexpectedly when
+                    # launched repeatedly
+                    time.sleep(0.1)
                     continue
 
                 msg = "expected type string, callable or non-empty list, "

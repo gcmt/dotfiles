@@ -22,16 +22,13 @@ class Menu(FileManagerAware):
         self.theme = theme
         self.width = width
 
-    def error(self, msg):
-        self.fm.notify(f"Menu: {msg}", bad=True)
-
     def open(self):
         """Open the menu at mouse position."""
 
         if not self.entries:
             return
 
-        x, y = self.get_mouse_coordinates()
+        x, y = self._get_mouse_coordinates()
         if not x and not y:
             return
 
@@ -40,7 +37,7 @@ class Menu(FileManagerAware):
 
             while True:
 
-                index = self.rofi(x, y, list(map(lambda e: e[0], entries)))
+                index = self._rofi(x, y, list(map(lambda e: e[0], entries)))
                 if not index:
                     return
 
@@ -62,17 +59,17 @@ class Menu(FileManagerAware):
                 raise TypeError(msg)
 
         except (IndexError, TypeError) as e:
-            self.error(f"{e}")
+            self._error(f"{e}")
             return
 
-    def get_mouse_coordinates(self):
+    def _get_mouse_coordinates(self):
         """Retrieve mouse location using 'xdotool'."""
 
         try:
             cmd = ['xdotool', 'getmouselocation']
             stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout
         except FileNotFoundError:
-            self.error('xdotool not found')
+            self._error('xdotool not found')
             return None, None
 
         match = re.search('x:(\d+) y:(\d+)', stdout)
@@ -81,13 +78,13 @@ class Menu(FileManagerAware):
 
         return int(match.group(1)), int(match.group(2))
 
-    def get_screen_size(self):
+    def _get_screen_size(self):
         """Retrieve screen size using 'xrandr'."""
 
         try:
             stdout = run(['xrandr'], stdout=PIPE, encoding='utf8').stdout
         except FileNotFoundError as e:
-            self.error('xrandr not found')
+            self._error('xrandr not found')
             return None, None
 
         for line in stdout.split('\n'):
@@ -98,7 +95,7 @@ class Menu(FileManagerAware):
 
         return None, None
 
-    def rofi(self, x, y, entries):
+    def _rofi(self, x, y, entries):
         """Open the rofi menu at position x and y on the screen."""
 
         options  = ['-dmenu', '-format', 'i', '-click-to-exit']
@@ -109,7 +106,7 @@ class Menu(FileManagerAware):
         options += ['-theme-str', f'window {{ x-offset: {x}px; y-offset: {y}px; }}']
         options += ['-theme-str', 'listview { fixed-height: false; }']
 
-        w, h = self.get_screen_size()
+        w, h = self._get_screen_size()
         if w and w-x <= 200:
             options += ['-theme-str', 'window { anchor: north east; }']
 
@@ -132,5 +129,8 @@ class Menu(FileManagerAware):
             stdout = run(cmd, input=input, stdout=PIPE, encoding='utf8').stdout
             return stdout.strip()
         except FileNotFoundError:
-            error('rofi not found')
+            self._error('rofi not found')
             return
+
+    def _error(self, msg):
+        self.fm.notify(f"Menu: {msg}", bad=True)

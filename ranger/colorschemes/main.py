@@ -27,6 +27,9 @@ class Scheme(Default):
 
         elif context.in_browser:
             attr = normal
+            if context.empty or context.error:
+                fg = fg_very_dim
+                bg = default
             if context.file:
                 fg = foreground
             if context.marked:

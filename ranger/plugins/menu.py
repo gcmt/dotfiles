@@ -111,7 +111,7 @@ class Menu(FileManagerAware):
             options += ['-theme-str', 'window { anchor: north east; }']
 
         if self.width:
-            options += ['-theme-str', f'window {{ width: {args.width}; }}']
+            options += ['-theme-str', f'window {{ width: {self.width}; }}']
         elif entries:
             chars = max(len(max(entries, key=len)) + 10, 20)
             options += ['-theme-str', f'window {{ width: {chars}ch; }}']

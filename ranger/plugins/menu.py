@@ -7,7 +7,7 @@ from ranger.core.shared import FileManagerAware
 
 class Menu(FileManagerAware):
 
-    def __init__(self, entries, theme="", width=None):
+    def __init__(self, entries=None, theme="", width=None):
         """Create a clickable rofi menu at mouse position.
 
         Example entries:
@@ -18,9 +18,9 @@ class Menu(FileManagerAware):
                 ["entry", "cmd"],
             ]
         """
+        self.entries = entries
         self.theme = theme
         self.width = width
-        self.entries = entries
 
     def error(self, msg):
         self.fm.notify(f"Menu: {msg}", bad=True)

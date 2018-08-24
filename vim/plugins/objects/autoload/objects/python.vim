@@ -135,6 +135,8 @@ func! s:select(kw, inner, count)
 		call s:select(a:kw, a:inner, a:count-1)
 	end
 
+	call feedkeys("o")
+
 endf
 
 func! s:emptyline(line)

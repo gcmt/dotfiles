@@ -185,6 +185,7 @@
 
 	set virtualedit=block,onemore
 	set mouse=a
+	set ttymouse=xterm2
 
 	set noexpandtab
 	set tabstop=3

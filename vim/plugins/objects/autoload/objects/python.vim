@@ -16,6 +16,11 @@ func! s:select(kw, inner, count)
 	let curpos = getcurpos()[1:2]
 	let wanted = a:kw == 'class' ? 'class>' : 'def>|async def>'
 
+	" Check whether or not we need to extend the current selection
+	" This makes sure we can use counts to select consecutive definition blocks,
+	" just like with paragraphs. Eg. v2af
+	" --------------------------------------------------------------------
+
 	norm! gv
 
 	let extend_selection = 0
@@ -29,13 +34,13 @@ func! s:select(kw, inner, count)
 
 	exec "norm! \<esc>"
 
-	" search for the definition start
+	" Search for the definition start
 	" --------------------------------------------------------------------
 
 	let start = 0
 	let indent = -1
 
-	" check for a definition in the current indent block
+	" Check for a definition in the current indent block
 	let linenr = curpos[0]
 	if s:emptyline(linenr) && !s:emptyline(linenr+1)
 		let linenr += 1
@@ -52,11 +57,12 @@ func! s:select(kw, inner, count)
 		endfo
 	end
 
-	" Search for a definition backwards
+	" Search for a definition on the current line and backwards
 	let candidate = start ? start : prevnonblank(curpos[0])
 	let indent = indent(candidate)
 	while indent >= 0
 		if getline(candidate) =~ '\v^\s*('.wanted.')'
+			" Check for decorators or comments to include in the selection
 			for i in range(candidate, 0, -1)
 				if i == 0 || getline(i-1) !~ '\v^\s{'.indent.'}(\@|#)'
 					let start = i
@@ -74,7 +80,7 @@ func! s:select(kw, inner, count)
 		return
 	end
 
-	" search for the definition end
+	" Search for the definition end
 	" --------------------------------------------------------------------
 
 	let end = 0
@@ -100,7 +106,7 @@ func! s:select(kw, inner, count)
 		return
 	end
 
-	" do selection
+	" Do selection
 	" --------------------------------------------------------------------
 
 	if a:inner

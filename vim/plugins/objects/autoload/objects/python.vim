@@ -47,29 +47,26 @@ func! s:select(kw, inner, count)
 			end
 			if getline(i) =~ '\v^\s*('.wanted.')'
 				let start = i
-				let indent = indent(i)
+				break
 			end
 		endfo
 	end
 
-	if start == 0
-		let start = prevnonblank(curpos[0])
-		let indent = indent(start)
-	end
-
+	" Search for a definition backwards
+	let candidate = start ? start : prevnonblank(curpos[0])
+	let indent = indent(candidate)
 	while indent >= 0
-		if getline(start) =~ '\v^\s*('.wanted.')'
-			for i in range(start, 0, -1)
+		if getline(candidate) =~ '\v^\s*('.wanted.')'
+			for i in range(candidate, 0, -1)
 				if i == 0 || getline(i-1) !~ '\v^\s{'.indent.'}(\@|#)'
 					let start = i
 					break
 				end
 			endfo
+			break
 		end
 		let indent -= &shiftwidth
-		echom "indent" indent
-		let start = indent >= 0 ? searchpos('\v^\s{'.indent.'}\w', 'Wb')[0] : 0
-		echom "start" start
+		let candidate = searchpos('\v^\s{'.indent.'}\w', 'Wb')[0]
 	endw
 
 	if start == 0

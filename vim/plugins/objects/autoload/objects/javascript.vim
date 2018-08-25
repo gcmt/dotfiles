@@ -72,12 +72,12 @@ func! objects#javascript#function(inner, leftside)
 				break
 			end
 
-			" Find signature start of getter/setter fucntions
+			" Find signature of shorthand method definitions
 			call cursor(candidate.body)
 			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.'))
 				\ && searchpair('(', '', ')', 'Wb', skip)
 				\ && search('\v^\s*\zs((get|set)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.col('.').'c\(', 'Wb', line('.'))
-				\ && getline('.') !~ '\v^\s*(for|while|if)>'
+				\ && getline('.') !~ '\v^\s*(for|while|if|switch)>'
 				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break

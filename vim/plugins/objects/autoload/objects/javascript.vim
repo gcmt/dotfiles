@@ -52,9 +52,8 @@ func! objects#javascript#function(inner, leftside)
 
 			" Find signature start of arrow functions
 			call cursor(candidate.body_start)
-			if (search('\V\w\+\s\*=>\s\*\%'.(candidate.body_start[1]).'c{', 'Wb', line('.'))
-				\ || search('\V)\s\*=>\s\*\%'.(candidate.body_start[1]).'c{', 'Wb', line('.'))
-				\ && searchpair('(', '', ')', 'Wb', skip))
+			if (search('\V\w\+\s\*=>', 'Wb', line('.'))
+				\ || search('\V)\s\*=>', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip))
 				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.sign_start = getcurpos()[1:2]
 				break
@@ -83,7 +82,7 @@ func! objects#javascript#function(inner, leftside)
 
 			" Detect computed properties names
 			call cursor(candidate.body_start)
-			if search('\V)\s\*\%'.(candidate.body_start[1]).'c{', 'Wb', line('.'))
+			if search('\V)', 'Wb', line('.'))
 				\ && searchpair('(', '', ')', 'Wb', skip)
 				\ && search('\v^\s*\zs((get|set)\s+)?\[.*\]\s*%'.col('.').'c\(', 'Wb', line('.'))
 				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))

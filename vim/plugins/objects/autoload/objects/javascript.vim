@@ -3,8 +3,8 @@ func! objects#javascript#function(inner, leftside)
 
 	let curpos = getcurpos()[1:2]
 	let skip = "objects#cursyn() =~ '\\v^(String|Comment)$'"
-
 	let match = {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
+
 	for i in range(1, v:count1)
 
 		let k = 0

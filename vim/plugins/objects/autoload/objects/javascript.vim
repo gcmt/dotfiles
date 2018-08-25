@@ -18,8 +18,6 @@ func! objects#javascript#function(inner, leftside)
 
 				let candidate = s:detect_inline_arrow_function()
 				if candidate.sign_start != [0, 0]
-					let match = candidate
-					call cursor(match.sign_start[0], max([match.sign_start[1]-1, 1]))
 					break
 				end
 

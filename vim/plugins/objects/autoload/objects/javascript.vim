@@ -40,7 +40,8 @@ func! objects#javascript#function(inner, leftside)
 						continue
 					end
 				end
-			elseif searchpair('{', '', '}', 'Wb', skip, line('w0'))
+
+			elseif searchpair('{', '', '}', 'Wb', skip)
 				let candidate.body = getcurpos()[1:2]
 			else
 				break

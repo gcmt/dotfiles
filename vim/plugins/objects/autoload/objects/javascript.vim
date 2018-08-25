@@ -14,14 +14,15 @@ func! objects#javascript#function(inner, leftside)
 
 			let k += 1
 
-			let candidate = s:detect_inline_arrow_function()
-			if candidate.start != [0, 0]
-				let match = candidate
-				call cursor(match.start[0], max([match.start[1]-1, 1]))
-				break
-			end
-
 			if i == 1 && k == 1
+
+				let candidate = s:detect_inline_arrow_function()
+				if candidate.start != [0, 0]
+					let match = candidate
+					call cursor(match.start[0], max([match.start[1]-1, 1]))
+					break
+				end
+
 				" Search the start of the function body when the cursor is inside
 				" the function signature
 				if search('\v(async\s+)?<function>', 'Wbc')

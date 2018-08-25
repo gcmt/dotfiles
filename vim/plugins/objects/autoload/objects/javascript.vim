@@ -128,13 +128,13 @@ func! s:detect_inline_arrow_function()
 
 		for i in range(col('.'), col('$')-1)
 			if objects#synat(line('.'), i) =~ 'String'
+				if i == len(line) && empty(stack)
+					let candidate.end = [line('.'), i]
+					break
+				end
 				continue
 			end
 			let char = line[i-1]
-			if i == len(line) && empty(stack)
-				let candidate.end = [line('.'), i]
-				break
-			end
 			if char =~ '\v(,|;|\)|\]|})' && empty(stack)
 				let candidate.end = [line('.'), i-1]
 				break
@@ -146,22 +146,26 @@ func! s:detect_inline_arrow_function()
 			end
 		endfo
 
-		call cursor(candidate.body)
-		let skip = "objects#cursyn() =~ 'String'"
-		if (search('\V\w\+\s\*=>', 'Wb', line('.')) ||
-			\ search('\V)\s\*=>', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip))
-			let candidate.start = getcurpos()[1:2]
+		if candidate.end == [0, 0]
+			break
 		end
 
-		if candidate.start == [0, 0] || candidate.end == [0, 0]
-			break
+		call cursor(candidate.body)
+		if search('\V\(\w\+\|)\)\s\*=>', 'Wb', line('.'))
+			if getline('.')[col('.')-1] == ')'
+				let skip = "objects#cursyn() =~ 'String'"
+				call searchpair('(', '', ')', 'Wb', skip)
+			end
+			let candidate.start = getcurpos()[1:2]
 		end
 
 		if pos[1] >= candidate.start[1] && pos[1] <= candidate.end[1]
 			let match = candidate
+			break
 		end
 
 		call cursor(candidate.body)
+
 	endw
 
 	call cursor(pos)

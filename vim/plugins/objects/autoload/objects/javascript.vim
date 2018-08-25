@@ -8,7 +8,11 @@ func! objects#javascript#function(inner, leftside)
 	for i in range(1, v:count1)
 
 		let candidate = {"start": [0, 0], "body": [0, 0], "end": [0, 0]}
+		let loops = 0
+
 		while 1
+
+			let loops += 1
 
 			let candidate = s:detect_inline_arrow_function()
 			if candidate.start != [0, 0]
@@ -17,7 +21,7 @@ func! objects#javascript#function(inner, leftside)
 				break
 			end
 
-			if i == 1 && search('{', 'W', line('.')) || searchpair('{', '', '}', 'Wb', skip, line('w0'))
+			if i == 1 && loops == 1 && search('{', 'W') || searchpair('{', '', '}', 'Wb', skip, line('w0'))
 				let candidate.body = getcurpos()[1:2]
 				norm! %
 				let candidate.end = getcurpos()[1:2]

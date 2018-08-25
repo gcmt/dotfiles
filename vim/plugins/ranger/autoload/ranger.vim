@@ -1,6 +1,6 @@
 
-" See ~/.config/ranger/plugins/choose_meta.py
-let s:cmd = '_choose_meta'
+" See ~/.config/ranger/plugins/choose.py
+let s:cmd = 'choose'
 
 let s:no_preview = [
 	\ "--cmd='set column_ratios 1'",

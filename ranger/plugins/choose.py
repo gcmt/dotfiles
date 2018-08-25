@@ -6,8 +6,8 @@ from ranger.api.commands import Command
 HOOK_INIT_OLD = ranger.api.hook_init
 
 
-class _choose_meta(Command):
-    """:_choose_meta <data>
+class choose(Command):
+    """:choose <data>
 
     This command mimicks the behavior of the command 'move right=1', but
     it overrides the normal --choosefile[s] behavior to also write additional meta
@@ -58,7 +58,7 @@ class _choose_meta(Command):
 
 def hook_init(fm):
     if not ranger.args.choosefiles and not ranger.args.choosefile:
-        del fm.commands.commands['_choose_meta']
+        del fm.commands.commands['choose']
     return HOOK_INIT_OLD(fm)
 
 

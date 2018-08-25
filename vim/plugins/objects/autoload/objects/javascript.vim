@@ -74,7 +74,7 @@ func! objects#javascript#function(inner, leftside)
 
 			" Find signature of shorthand method definitions
 			call cursor(candidate.body)
-			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.'))
+			if search('\V)', 'Wb', line('.'))
 				\ && searchpair('(', '', ')', 'Wb', skip)
 				\ && search('\v^\s*\zs((get|set)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.col('.').'c\(', 'Wb', line('.'))
 				\ && getline('.') !~ '\v^\s*(for|while|if|switch)>'

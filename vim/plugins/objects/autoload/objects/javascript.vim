@@ -8,11 +8,11 @@ func! objects#javascript#function(inner, leftside)
 	for i in range(1, v:count1)
 
 		let candidate = {"start": [0, 0], "body": [0, 0], "end": [0, 0]}
-		let loops = 0
+		let k = 0
 
 		while 1
 
-			let loops += 1
+			let k += 1
 
 			let candidate = s:detect_inline_arrow_function()
 			if candidate.start != [0, 0]
@@ -21,13 +21,33 @@ func! objects#javascript#function(inner, leftside)
 				break
 			end
 
-			if i == 1 && loops == 1 && search('{', 'W') || searchpair('{', '', '}', 'Wb', skip, line('w0'))
+			if i == 1 && k == 1
+				" Search the start of the function body when the cursor is inside
+				" the function signature
+				if search('\v(async\s+)?<function>', 'Wbc')
+					\ && (curpos[0] >= line('.') || (curpos[0] == line('.') && curpos[1] >= col('.')))
+					\ && search('\V(', 'W')
+					\ && searchpair('(', '', ')', 'W', skip)
+					\ && search('\V{', 'W', line('.'))
+					\ && (curpos[0] <= line('.') || (curpos[0] == line('.') && curpos[1] <= col('.')))
+					let candidate.body = getcurpos()[1:2]
+				else
+					call cursor(curpos)
+					if search('{', 'W', line('.'))
+						let candidate.body = getcurpos()[1:2]
+					else
+						continue
+					end
+				end
+			elseif searchpair('{', '', '}', 'Wb', skip, line('w0'))
 				let candidate.body = getcurpos()[1:2]
-				norm! %
-				let candidate.end = getcurpos()[1:2]
 			else
 				break
 			end
+
+			call cursor(candidate.body)
+			norm! %
+			let candidate.end = getcurpos()[1:2]
 
 			" detect arrow function
 			call cursor(candidate.body)
@@ -40,10 +60,10 @@ func! objects#javascript#function(inner, leftside)
 
 			" detect regular function
 			call cursor(candidate.body)
-			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) &&
-				\ searchpair('(', '', ')', 'Wb', skip) &&
-				\ search('\v(async\s+)?<function>', 'Wb', line('.')) &&
-				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+			if search('\V)', 'Wb', line('.'))
+				\ && searchpair('(', '', ')', 'Wb', skip)
+				\ && search('\v(async\s+)?<function>', 'Wb', line('.'))
+				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end

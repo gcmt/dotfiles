@@ -113,6 +113,8 @@ func! objects#javascript#function(inner, leftside)
 		end
 	end
 
+	call feedkeys('o')
+
 endf
 
 func! s:detect_inline_arrow_function()

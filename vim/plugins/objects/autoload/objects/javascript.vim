@@ -1,5 +1,5 @@
 
-func! objects#javascript#function(inner, leftside)
+func! objects#javascript#function(inner, include_assignment)
 
 	let curpos = getcurpos()[1:2]
 	let skip = "objects#cursyn() =~ '\\v^(String|Comment)$'"
@@ -115,7 +115,7 @@ func! objects#javascript#function(inner, leftside)
 	else
 		let before = strpart(getline(match.sign_start[0]), 0, match.sign_start[1]-1)
 		let after = strpart(getline(match.body_end[0]), match.body_end[1])
-		if before =~ '\v^\s*$' && after =~ '\v^\s*$' || a:leftside && before =~ '\v(:|\=)\s*\(?$'
+		if before =~ '\v^\s*$' && after =~ '\v^\s*$' || a:include_assignment && before =~ '\v(:|\=)\s*\(?$'
 			" Do linewise selection when the function is not an expression or the function is assigned
 			" to something and a:leftseide is 1.
 			" All empty lines after the function are also selected.

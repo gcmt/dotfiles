@@ -103,40 +103,54 @@ func! objects#javascript#function(inner, include_assignment)
 
 	endfo
 
-	if match.sign_start == [0, 0]
-		call cursor(curpos)
+	call cursor(curpos)
+	call s:select(match, a:inner, a:include_assignment)
+
+endf
+
+
+func! s:select(match, inner, include_assignment)
+
+	if a:match.sign_start == [0, 0]
 		return
 	end
 
 	if a:inner
-		call cursor(match.body_start)
+
+		call cursor(a:match.body_start)
 		norm! v
-		call cursor(match.body_end)
+		call cursor(a:match.body_end)
+
 	else
-		let before = strpart(getline(match.sign_start[0]), 0, match.sign_start[1]-1)
-		let after = strpart(getline(match.body_end[0]), match.body_end[1])
-		if before =~ '\v^\s*$' && after =~ '\v^\s*$' || a:include_assignment && before =~ '\v(:|\=)\s*\(?$'
+
+		let before = strpart(getline(a:match.sign_start[0]), 0, a:match.sign_start[1]-1)
+		let after = strpart(getline(a:match.body_end[0]), a:match.body_end[1])
+		if before =~ '\v^\s*$' && after =~ '\v^\s*$'
+			\ || a:include_assignment && before =~ '\v(:|\=)\s*\(?$'
 			" Do linewise selection when the function is not an expression or the function is assigned
 			" to something and a:leftseide is 1.
 			" All empty lines after the function are also selected.
-			call cursor(match.sign_start)
+			call cursor(a:match.sign_start)
 			norm! 0
 			norm! V
-			call cursor(match.body_end)
+			call cursor(a:match.body_end)
 			let next = nextnonblank(line('.')+1)
 			if next
 				call cursor(next-1, 1)
 			end
 		else
-			call cursor(match.sign_start)
+			call cursor(a:match.sign_start)
 			norm! v
-			call cursor(match.body_end)
+			call cursor(a:match.body_end)
 		end
+
 	end
 
+	" move the cursor to the start of the selection
 	call feedkeys('o')
 
 endf
+
 
 func! s:detect_inline_arrow_function()
 

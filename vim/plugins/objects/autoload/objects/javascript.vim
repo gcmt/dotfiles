@@ -75,7 +75,7 @@ func! objects#javascript#function(inner, leftside)
 			if search('\V)', 'Wb', line('.'))
 				\ && searchpair('(', '', ')', 'Wb', skip)
 				\ && search('\v^\s*\zs((get|set)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.col('.').'c\(', 'Wb', line('.'))
-				\ && getline('.') !~ '\v^\s*(for|while|if|switch)>'
+				\ && getline('.') !~ '\v^\s*(for|while|if|switch|return)>'
 				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.sign_start = getcurpos()[1:2]
 				break

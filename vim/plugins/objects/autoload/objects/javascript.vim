@@ -154,17 +154,17 @@ func! s:detect_inline_arrow_function()
 		let line = getline('.')
 
 		for i in range(col('.'), col('$')-1)
-			if objects#synat(line('.'), i) =~ 'String'
-				if i == len(line) && empty(stack)
-					let candidate.body_end = [line('.'), i]
-					break
-				end
-				continue
-			end
 			let char = line[i-1]
 			if char =~ '\v(,|;|\)|\]|})' && empty(stack)
 				let candidate.body_end = [line('.'), i-1]
 				break
+			end
+			if i == len(line) && empty(stack)
+				let candidate.body_end = [line('.'), i]
+				break
+			end
+			if objects#synat(line('.'), i) =~ 'String'
+				continue
 			end
 			if has_key(pairs, char)
 				call add(stack, char)

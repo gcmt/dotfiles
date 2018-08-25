@@ -99,7 +99,7 @@ func! objects#javascript#function(inner, include_assignment)
 		end
 
 		let match = candidate
-		call cursor(match.sign_start[0], max([match.sign_start[1]-1, 1]))
+		call cursor(match.sign_start)
 
 	endfo
 

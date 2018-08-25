@@ -45,20 +45,22 @@ func! objects#javascript#function(inner, leftside)
 				break
 			end
 
+			" Find the end of the function body
 			call cursor(candidate.body)
 			norm! %
 			let candidate.end = getcurpos()[1:2]
 
-			" detect arrow function
+			" Find signature start of arrow functions
 			call cursor(candidate.body)
-			if (search('\V\w\+\s\*=>\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) ||
-				\ search('\V)\s\*=>\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip)) &&
-				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+			if (search('\V\w\+\s\*=>\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.'))
+				\ || search('\V)\s\*=>\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.'))
+				\ && searchpair('(', '', ')', 'Wb', skip))
+				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end
 
-			" detect regular function
+			" Find signature start of regular functions
 			call cursor(candidate.body)
 			if search('\V)', 'Wb', line('.'))
 				\ && searchpair('(', '', ')', 'Wb', skip)
@@ -68,23 +70,23 @@ func! objects#javascript#function(inner, leftside)
 				break
 			end
 
-			" detect short form and getter/setters
+			" Find signature start of getter/setter fucntions
 			call cursor(candidate.body)
-			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) &&
-				\ searchpair('(', '', ')', 'Wb', skip) &&
-				\ search('\v^\s*\zs((get|set)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.col('.').'c\(', 'Wb', line('.')) &&
-				\ getline('.') !~ '\v^\s*(for|while|if)>' &&
-				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.'))
+				\ && searchpair('(', '', ')', 'Wb', skip)
+				\ && search('\v^\s*\zs((get|set)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.col('.').'c\(', 'Wb', line('.'))
+				\ && getline('.') !~ '\v^\s*(for|while|if)>'
+				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end
 
-			" detect computed property names
+			" Detect computed properties names
 			call cursor(candidate.body)
-			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.')) &&
-				\ searchpair('(', '', ')', 'Wb', skip) &&
-				\ search('\v^\s*\zs((get|set)\s+)?\[.*\]\s*%'.col('.').'c\(', 'Wb', line('.')) &&
-				\ (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+			if search('\V)\s\*\%'.(candidate.body[1]).'c{', 'Wb', line('.'))
+				\ && searchpair('(', '', ')', 'Wb', skip)
+				\ && search('\v^\s*\zs((get|set)\s+)?\[.*\]\s*%'.col('.').'c\(', 'Wb', line('.'))
+				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 				let candidate.start = getcurpos()[1:2]
 				break
 			end

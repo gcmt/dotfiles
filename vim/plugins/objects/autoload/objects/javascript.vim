@@ -47,7 +47,7 @@ func! objects#javascript#function(inner, leftside)
 
 			" Find the end of the function body
 			call cursor(candidate.body_start)
-			norm! %
+			keepj norm! %
 			let candidate.body_end = getcurpos()[1:2]
 
 			" Find signature start of arrow functions

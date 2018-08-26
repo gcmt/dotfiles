@@ -141,7 +141,7 @@ func! s:select(match, only_body, include_assignment)
 		let before = strpart(getline(a:match.sign_start[0]), 0, a:match.sign_start[1]-1)
 		let after = strpart(getline(a:match.body_end[0]), a:match.body_end[1])
 		if before =~ '\v^\s*$' && after =~ '\v^\s*$'
-			\ || a:include_assignment && before =~ '\v(:|\=)\s*\(?$'
+			\ || a:include_assignment && before =~ '\v(:|\=)\s*$'
 			" Do linewise selection when the function is not an expression or the
 			" function is assigned to something and a:include_assignment is 1. All
 			" empty lines after the function are also selected.

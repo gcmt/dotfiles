@@ -7,7 +7,7 @@ func finder#findg(path, query) abort
 	end
 	let results = []
 	if !empty(a:query)
-		let cmd = printf('rg -l %s %s', shellescape(a:query), shellescape(a:path))
+		let cmd = printf('rg -l --sort-files %s %s', shellescape(a:query), shellescape(a:path))
 		let results = systemlist(cmd)
 		if v:shell_error
 			if empty(results)
@@ -27,7 +27,7 @@ func finder#find(path, query) abort
 	end
 	let results = []
 	if !empty(a:query)
-		let input = system('rg --files ' . shellescape(a:path))
+		let input = system('rg --files --sort-files ' . shellescape(a:path))
 		let results = systemlist('rg ' . shellescape(a:query), input)
 		if v:shell_error
 			if empty(results)

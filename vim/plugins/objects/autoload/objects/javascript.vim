@@ -175,6 +175,10 @@ func! s:detect_inline_arrow_function()
 	norm! 0
 	while search('\V=>\s\*\S', 'e', line('.'))
 
+		if objects#synat('.') =~ 'String'
+			continue
+		end
+
 		let candidate = {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
 		let candidate.body_start = getcurpos()[1:2]
 

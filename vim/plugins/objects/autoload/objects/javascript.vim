@@ -4,16 +4,31 @@ let g:objects_javascript_exclude_braces =
 	\ get(g:, 'objects_javascript_exclude_braces', 1)
 
 
+func! objects#javascript#class(only_body, include_assignment)
+	call s:select('class', a:only_body, a:include_assignment)
+endf
+
+
 func! objects#javascript#function(only_body, include_assignment)
+	call s:select('function', a:only_body, a:include_assignment)
+endf
+
+
+func! s:empty_match()
+	return {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
+endf
+
+
+func! s:select(wanted, only_body, include_assignment)
 
 	let curpos = getcurpos()[1:2]
 	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
-	let match = {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
+	let match = s:empty_match()
 
 	for i in range(1, v:count1)
 
 		let k = 0
-		let candidate = {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
+		let candidate = s:empty_match()
 
 		while 1
 
@@ -21,14 +36,17 @@ func! objects#javascript#function(only_body, include_assignment)
 
 			if i == 1 && k == 1
 
-				let candidate = s:detect_inline_arrow_function()
-				if candidate.sign_start != [0, 0]
-					break
+				if a:wanted == 'function'
+					let candidate = s:detect_inline_arrow_function()
+					if candidate.sign_start != [0, 0]
+						break
+					end
 				end
 
 				" Search the start of the function body when the cursor is inside
 				" the function signature
-				if search('\v(async\s+)?<function>', 'Wbc')
+				if a:wanted == 'function'
+					\ && search('\v(async\s+)?<function>', 'Wbc')
 					\ && (curpos[0] >= line('.') || (curpos[0] == line('.') && curpos[1] >= col('.')))
 					\ && search('\V(', 'W')
 					\ && searchpair('(', '', ')', 'W', skip)
@@ -45,54 +63,73 @@ func! objects#javascript#function(only_body, include_assignment)
 				end
 
 			elseif searchpair('{', '', '}', 'Wb', skip)
+
 				let candidate.body_start = getcurpos()[1:2]
+
 			else
 				break
 			end
 
-			" Find the end of the function body
+			" Find the end of the function/class body
 			call cursor(candidate.body_start)
 			keepj norm! %
 			let candidate.body_end = getcurpos()[1:2]
 
-			" Find signature start of arrow functions
-			call cursor(candidate.body_start)
-			if (search('\V\w\+\s\*=>', 'Wb', line('.'))
-				\ || search('\V)\s\*=>', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip))
-				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-				let candidate.sign_start = getcurpos()[1:2]
-				break
-			end
+			if a:wanted == 'class'
 
-			" Find signature start of regular functions
-			call cursor(candidate.body_start)
-			if search('\V)', 'Wb', line('.'))
-				\ && searchpair('(', '', ')', 'Wb', skip)
-				\ && search('\v(async\s+)?<function>', 'Wb', line('.'))
-				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-				let candidate.sign_start = getcurpos()[1:2]
-				break
-			end
+				" Find the class start
+				call cursor(candidate.body_start)
+				if search('\v<class>', 'Wb', line('.'))
+					\ && objects#synat('.') !~ 'String'
+					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+					let candidate.sign_start = getcurpos()[1:2]
+					break
+				end
 
-			" Find signature of shorthand method definitions
-			call cursor(candidate.body_start)
-			if search('\V)', 'Wb', line('.'))
-				\ && searchpair('(', '', ')', 'Wb', skip)
-				\ && search('\v^\s*\zs((get|set|static)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*', 'Wb', line('.'))
-				\ && getline('.') !~ '\v^\s*(for|while|if|switch|return)>'
-				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-				let candidate.sign_start = getcurpos()[1:2]
-				break
-			end
+			elseif a:wanted == 'function'
 
-			" Detect computed properties names
-			call cursor(candidate.body_start)
-			if search('\V)', 'Wb', line('.'))
-				\ && searchpair('(', '', ')', 'Wb', skip)
-				\ && search('\v^\s*\zs((get|set|static)\s+)?\[.*\]\s*', 'Wb', line('.'))
-				\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-				let candidate.sign_start = getcurpos()[1:2]
-				break
+				" Find signature start of arrow functions
+				call cursor(candidate.body_start)
+				if (search('\V\w\+\s\*=>', 'Wb', line('.'))
+					\ || search('\V)\s\*=>', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip))
+					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+					let candidate.sign_start = getcurpos()[1:2]
+					break
+				end
+
+				" Find signature start of regular functions
+				call cursor(candidate.body_start)
+				if search('\V)', 'Wb', line('.'))
+					\ && searchpair('(', '', ')', 'Wb', skip)
+					\ && search('\v(async\s+)?<function>', 'Wb', line('.'))
+					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+					let candidate.sign_start = getcurpos()[1:2]
+					break
+				end
+
+				" Find signature of shorthand method definitions
+				call cursor(candidate.body_start)
+				if search('\V)', 'Wb', line('.'))
+					\ && searchpair('(', '', ')', 'Wb', skip)
+					\ && search('\v^\s*\zs((get|set|static)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*', 'Wb', line('.'))
+					\ && getline('.') !~ '\v^\s*(for|while|if|switch|return)>'
+					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+					let candidate.sign_start = getcurpos()[1:2]
+					break
+				end
+
+				" Detect computed properties names
+				call cursor(candidate.body_start)
+				if search('\V)', 'Wb', line('.'))
+					\ && searchpair('(', '', ')', 'Wb', skip)
+					\ && search('\v^\s*\zs((get|set|static)\s+)?\[.*\]\s*', 'Wb', line('.'))
+					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
+					let candidate.sign_start = getcurpos()[1:2]
+					break
+				end
+
+			else
+				throw "Can only select classes or functions"
 			end
 
 			call cursor(candidate.body_start)
@@ -109,12 +146,12 @@ func! objects#javascript#function(only_body, include_assignment)
 	endfo
 
 	call cursor(curpos)
-	call s:select(match, a:only_body, a:include_assignment)
+	call s:do_selection(match, a:only_body, a:include_assignment)
 
 endf
 
 
-func! s:select(match, only_body, include_assignment)
+func! s:do_selection(match, only_body, include_assignment)
 
 	if a:match.sign_start == [0, 0]
 		return
@@ -170,7 +207,7 @@ endf
 func! s:detect_inline_arrow_function()
 
 	let pos = getcurpos()[1:2]
-	let match = {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
+	let match = s:empty_match()
 
 	norm! 0
 	while search('\V=>\s\*\S', 'e', line('.'))
@@ -179,7 +216,7 @@ func! s:detect_inline_arrow_function()
 			continue
 		end
 
-		let candidate = {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
+		let candidate = s:empty_match()
 		let candidate.body_start = getcurpos()[1:2]
 
 		let stack = []

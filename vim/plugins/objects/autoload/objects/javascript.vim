@@ -1,4 +1,9 @@
 
+
+let g:objects_javascript_exclude_braces =
+	\ get(g:, 'objects_javascript_exclude_braces', 1)
+
+
 func! objects#javascript#function(only_body, include_assignment)
 
 	let curpos = getcurpos()[1:2]
@@ -118,8 +123,18 @@ func! s:select(match, only_body, include_assignment)
 	if a:only_body
 
 		call cursor(a:match.body_start)
+		if getline('.')[col('.')-1] == '{'
+			\ && g:objects_javascript_exclude_braces
+			call search('\S', 'W')
+		end
+
 		norm! v
+
 		call cursor(a:match.body_end)
+		if getline('.')[col('.')-1] == '}'
+			\ && g:objects_javascript_exclude_braces
+			call search('\S', 'Wb')
+		end
 
 	else
 

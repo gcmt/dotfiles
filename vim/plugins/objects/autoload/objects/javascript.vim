@@ -1,5 +1,5 @@
 
-func! objects#javascript#function(inner, include_assignment)
+func! objects#javascript#function(only_body, include_assignment)
 
 	let curpos = getcurpos()[1:2]
 	let skip = "objects#cursyn() =~ '\\v^(String|Comment)$'"
@@ -104,18 +104,18 @@ func! objects#javascript#function(inner, include_assignment)
 	endfo
 
 	call cursor(curpos)
-	call s:select(match, a:inner, a:include_assignment)
+	call s:select(match, a:only_body, a:include_assignment)
 
 endf
 
 
-func! s:select(match, inner, include_assignment)
+func! s:select(match, only_body, include_assignment)
 
 	if a:match.sign_start == [0, 0]
 		return
 	end
 
-	if a:inner
+	if a:only_body
 
 		call cursor(a:match.body_start)
 		norm! v

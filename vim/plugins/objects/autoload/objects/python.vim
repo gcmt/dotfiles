@@ -38,12 +38,12 @@ func! s:select(kw, inner, count)
 
 	" Check for a definition in the current indent block
 	let linenr = curpos[0]
-	if s:emptyline(linenr) && !s:emptyline(linenr+1)
+	if objects#emptyline(linenr) && !objects#emptyline(linenr+1)
 		let linenr += 1
 	end
 	if getline(linenr) =~ '\v^\s*(\@|#|'.wanted.')'
 		for i in range(linenr, line('$'))
-			if s:emptyline(i) || indent(i) != indent(linenr)
+			if objects#emptyline(i) || indent(i) != indent(linenr)
 				break
 			end
 			if getline(i) =~ '\v^\s*('.wanted.')'
@@ -82,13 +82,13 @@ func! s:select(kw, inner, count)
 	let end = 0
 	let indent = indent(start)
 	for i in range(start, line('$'))
-		if s:emptyline(i) || indent(i) != indent
+		if objects#emptyline(i) || indent(i) != indent
 			for k in range(i, line('$'))
 				if k == line('$')
 					let end = k
 					break
 				end
-				if !s:emptyline(k) && indent(k) <= indent
+				if !objects#emptyline(k) && indent(k) <= indent
 					let end = k-1
 					break
 				end
@@ -136,9 +136,4 @@ func! s:select(kw, inner, count)
 		call feedkeys("o")
 	end
 
-endf
-
-func! s:emptyline(line)
-	let line = type(a:line) == v:t_number ? getline(a:line) : a:line
-	return line =~ '\v^\s*$'
 endf

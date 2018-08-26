@@ -13,3 +13,12 @@ func! objects#synat(...)
 	end
 	return synIDattr(synIDtrans(synID(line, col, 0)), 'name')
 endf
+
+
+" objects#emptyline({line:number|string}) -> bool
+" Returns whether or not the given {line} is empty. {line} can be either a line
+" number or a string.
+func! objects#emptyline(line)
+	let line = type(a:line) == v:t_number ? getline(a:line) : a:line
+	return line =~ '\v^\s*$'
+endf

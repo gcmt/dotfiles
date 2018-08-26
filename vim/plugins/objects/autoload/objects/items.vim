@@ -17,7 +17,7 @@ func! s:select(type, inner, count) abort
 
 	let list_start = [0, 0]
 	let list_end = [0, 0]
-	let skip = "objects#cursyn() =~ '\\v^(String|Comment)$'"
+	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
 	let pairs = {'(': ')', '[': ']', '{': '}'}
 
 	for i in range(1, a:count)

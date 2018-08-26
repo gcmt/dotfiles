@@ -7,7 +7,7 @@ let g:objects_javascript_exclude_braces =
 func! objects#javascript#function(only_body, include_assignment)
 
 	let curpos = getcurpos()[1:2]
-	let skip = "objects#cursyn() =~ '\\v^(String|Comment)$'"
+	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
 	let match = {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
 
 	for i in range(1, v:count1)
@@ -213,7 +213,7 @@ func! s:detect_inline_arrow_function()
 		call cursor(candidate.body_start)
 		if search('\V\(\w\+\|)\)\s\*=>', 'Wb', line('.'))
 			if getline('.')[col('.')-1] == ')'
-				let skip = "objects#cursyn() =~ 'String'"
+				let skip = "objects#synat('.') =~ 'String'"
 				call searchpair('(', '', ')', 'Wb', skip)
 			end
 			let candidate.sign_start = getcurpos()[1:2]

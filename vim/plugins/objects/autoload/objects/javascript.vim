@@ -83,7 +83,7 @@ func! s:select(wanted, only_body, include_assignment)
 				" Find the class start
 				call cursor(candidate.body_start)
 				if search('\v(<export\s+(default\s+)?)?<class>', 'Wb', line('.'))
-					\ && objects#synat('.') !~ 'String'
+					\ && objects#synat('.') != 'String'
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 					let candidate.sign_start = getcurpos()[1:2]
 					break
@@ -225,7 +225,7 @@ func! s:detect_inline_arrow_function()
 	norm! 0
 	while search('\V=>\s\*\S', 'e', line('.'))
 
-		if objects#synat('.') =~ 'String'
+		if objects#synat('.') == 'String'
 			continue
 		end
 
@@ -238,7 +238,7 @@ func! s:detect_inline_arrow_function()
 
 		for i in range(col('.'), col('$')-1)
 			let char = line[i-1]
-			if objects#synat(line('.'), i) =~ 'String'
+			if objects#synat(line('.'), i) == 'String'
 				if i == len(line) && empty(stack)
 					let candidate.body_end = [line('.'), i]
 					break
@@ -267,7 +267,7 @@ func! s:detect_inline_arrow_function()
 		call cursor(candidate.body_start)
 		if search('\V\(\w\+\|)\)\s\*=>', 'Wb', line('.'))
 			if getline('.')[col('.')-1] == ')'
-				let skip = "objects#synat('.') =~ 'String'"
+				let skip = "objects#synat('.') == 'String'"
 				call searchpair('(', '', ')', 'Wb', skip)
 			end
 			let candidate.sign_start = getcurpos()[1:2]

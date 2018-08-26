@@ -46,7 +46,7 @@ func! s:select(wanted, only_body, include_assignment)
 				" Search the start of the function body when the cursor is inside
 				" the function signature
 				if a:wanted == 'function'
-					\ && search('\v(async\s+)?<function>', 'Wbc')
+					\ && search('\v(<export\s+(default\s+)?)?(<async\s+)?<function>', 'Wbc')
 					\ && (curpos[0] >= line('.') || (curpos[0] == line('.') && curpos[1] >= col('.')))
 					\ && search('\V(', 'W')
 					\ && searchpair('(', '', ')', 'W', skip)
@@ -79,7 +79,7 @@ func! s:select(wanted, only_body, include_assignment)
 
 				" Find the class start
 				call cursor(candidate.body_start)
-				if search('\v<class>', 'Wb', line('.'))
+				if search('\v(<export\s+(default\s+)?)?<class>', 'Wb', line('.'))
 					\ && objects#synat('.') !~ 'String'
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 					let candidate.sign_start = getcurpos()[1:2]
@@ -101,7 +101,7 @@ func! s:select(wanted, only_body, include_assignment)
 				call cursor(candidate.body_start)
 				if search('\V)', 'Wb', line('.'))
 					\ && searchpair('(', '', ')', 'Wb', skip)
-					\ && search('\v(async\s+)?<function>', 'Wb', line('.'))
+					\ && search('\v(<export\s+(default\s+)?)?(<async\s+)?<function>', 'Wb', line('.'))
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 					let candidate.sign_start = getcurpos()[1:2]
 					break

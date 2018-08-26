@@ -3,6 +3,9 @@
 let g:objects_javascript_exclude_braces =
 	\ get(g:, 'objects_javascript_exclude_braces', 1)
 
+let g:objects_javascript_include_comments =
+	\ get(g:, 'objects_javascript_include_comments', 1)
+
 
 func! objects#javascript#class(only_body, include_assignment)
 	call s:select('class', a:only_body, a:include_assignment)
@@ -183,6 +186,16 @@ func! s:do_selection(match, only_body, include_assignment)
 			" function is assigned to something and a:include_assignment is 1. All
 			" empty lines after the function are also selected.
 			call cursor(a:match.sign_start)
+			if g:objects_javascript_include_comments
+				" Include in the selection all comment lines just above the
+				" function/class definition
+				for i in range(line('.')-1, 1, -1)
+					if objects#synat(i, col('.')) != "Comment"
+						break
+					end
+					call cursor(i, col('.'))
+				endfo
+			end
 			norm! 0
 			norm! V
 			call cursor(a:match.body_end)

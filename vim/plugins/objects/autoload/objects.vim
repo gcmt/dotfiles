@@ -4,8 +4,10 @@
 " When the only argument is the '.' expression, the syntax at the current cursor
 " position is returned.
 func! objects#synat(...)
-	if a:0 == 1 && a:1 == '.'
+	if a:0 == 1 && type(a:1) == v:t_string && a:1 == '.'
 		let [line, col] = [line('.'), col('.')]
+	elseif a:0 == 1 && type(a:1) == v:t_list
+		let [line, col] = a:1
 	elseif a:0 == 2 && type(a:1) == v:t_number && type(a:2) == v:t_number
 		let [line, col] = [a:1, a:2]
 	else

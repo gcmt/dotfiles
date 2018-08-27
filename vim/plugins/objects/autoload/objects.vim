@@ -49,11 +49,9 @@ endf
 "   text object (but not the other javascript text objects).
 "
 func! objects#enabled(object)
-	let object = split(a:object, '#')
 	return type(g:objects_enabled) == v:t_number && g:objects_enabled
 	\ || type(g:objects_enabled) == v:t_list
-	\ && (index(g:objects_enabled, a:object) != -1
-			\ || len(object) == 2 && index(g:objects_enabled, object[0]) != -1)
+	\ && !empty(filter(copy(g:objects_enabled), {-> a:object =~ '\v^'.v:val.'(#|$)'}))
 endf
 
 

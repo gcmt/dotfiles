@@ -1,17 +1,37 @@
 
-func! objects#items#args(inner)
-	call s:select('(', a:inner, v:count1)
+
+let s:default_options = {
+	\ 'inner': 0,
+\ }
+
+
+func! s:options(options)
+	let merged = copy(s:default_options)
+	call extend(merged, get(g:objects_options, 'items', {}))
+	call extend(merged, a:options)
+	return merged
 endf
 
-func! objects#items#list(inner)
-	call s:select('[', a:inner, v:count1)
+
+func! objects#items#args(...)
+	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
+	call s:select('(', options)
 endf
 
-func! objects#items#dict(inner)
-	call s:select('{', a:inner, v:count1)
+
+func! objects#items#list(...)
+	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
+	call s:select('[', options)
 endf
 
-func! s:select(type, inner, count) abort
+
+func! objects#items#dict(...)
+	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
+	call s:select('{', options)
+endf
+
+
+func! s:select(type, options) abort
 
 	let curpos = getcurpos()[1:2]
 
@@ -20,7 +40,7 @@ func! s:select(type, inner, count) abort
 	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
 	let pairs = {'(': ')', '[': ']', '{': '}'}
 
-	for i in range(1, a:count)
+	for i in range(1, v:count1)
 		if searchpair('\V'.a:type, '', '\V'.pairs[a:type], 'Wb', skip, line('w0'))
 			let list_start = getcurpos()[1:2]
 			norm! %
@@ -116,7 +136,7 @@ func! s:select(type, inner, count) abort
 		call search('\S', 'Wb')
 		norm! v
 		call cursor(item_start[0], item_start[1])
-		if a:inner
+		if a:options.inner
 			call search('\S', 'W')
 		end
 		return
@@ -126,7 +146,7 @@ func! s:select(type, inner, count) abort
 	call search('\S', 'W')
 	norm! v
 	call cursor(item_end[0], item_end[1])
-	if a:inner
+	if a:options.inner
 		call search('\S', 'Wb')
 	else
 		call search('\v(,|\s)\S', 'Wc')

@@ -26,14 +26,6 @@ func! objects#emptyline(line)
 endf
 
 
-" objects#load_options({target:string}, {defaults:dict}) -> 0
-" Used to merge options defined by the user with predefined defaults.
-func! objects#load_options(target, defaults)
-	let options = get(g:objects_options, a:target, {})
-	let g:objects_options[a:target] = extend(options, a:defaults, 'keep')
-endf
-
-
 " objects#enabled({object:string}) -> bool
 " Returns wheter or not the user has enabled the given text object via the
 " 'g:objects_enabled' option.
@@ -73,14 +65,13 @@ endf
 "
 " Example:
 "
-" - call objects#map('af', 'objects#python#function', 0, 0)
+" - call objects#map('af', 'objects#python#function', {'inner': 1})
 "   This will setup a mapping 'af' for visual and operator-pending modes that
 "   will call the predefined function 'objects#python#function' to select the
 "   current python function. All these functions are defined at the top of each
 "   autoload/objects/* file.
 "   The remaining arguments will be passed to the function. The amount and type
-"   of arguments will depend on the specific function implementation. (See
-"   autoload/objects/*)
+"   of arguments will depend on the specific function implementation.
 "
 func! objects#map(lhs, fn, ...)
 	call s:map(0, a:lhs, function(a:fn, a:000))
@@ -100,6 +91,6 @@ endf
 " When {local} is true, the map will be local to the current buffer.
 func! s:map(local, object, fn)
 	let buffer = a:local ? "<buffer>" : ""
-	exec "vnoremap <silent>" buffer a:object printf(":<c-u>call call(%s, [])<cr>", a:fn)
+	exec "vnoremap <silent>" buffer a:object printf(":<c-u>call %s()<cr>", a:fn)
 	exec "onoremap <silent>" buffer a:object printf(":<c-u>exec 'norm v'.v:count1.'%s'<cr>", a:object)
 endf

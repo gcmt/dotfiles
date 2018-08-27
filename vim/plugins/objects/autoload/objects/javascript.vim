@@ -1,17 +1,30 @@
 
 
-func! objects#javascript#class(only_body, include_assignment)
-	call s:select('class', a:only_body, a:include_assignment)
+let s:default_options = {
+	\ 'only_body': 0,
+	\ 'exclude_braces': 1,
+	\ 'include_assignment': 0,
+	\ 'include_comments': 1,
+\ }
+
+
+func! s:options(options)
+	let merged = copy(s:default_options)
+	call extend(merged, get(g:objects_options, 'javascript', {}))
+	call extend(merged, a:options)
+	return merged
 endf
 
 
-func! objects#javascript#function(only_body, include_assignment)
-	call s:select('function', a:only_body, a:include_assignment)
+func! objects#javascript#class(...)
+	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
+	call s:select('class', options)
 endf
 
 
-func! s:option(name)
-	return g:objects_options['javascript'][a:name]
+func! objects#javascript#function(...)
+	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
+	call s:select('function', options)
 endf
 
 
@@ -20,7 +33,7 @@ func! s:empty_match()
 endf
 
 
-func! s:select(wanted, only_body, include_assignment)
+func! s:select(wanted, options)
 
 	let curpos = getcurpos()[1:2]
 	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
@@ -147,42 +160,41 @@ func! s:select(wanted, only_body, include_assignment)
 	endfo
 
 	call cursor(curpos)
-	call s:do_selection(match, a:only_body, a:include_assignment)
+	call s:do_selection(match, a:options)
 
 endf
 
 
-func! s:do_selection(match, only_body, include_assignment)
+func! s:do_selection(match, options)
 
 	if a:match.func_start == [0, 0]
 		return
 	end
 
-	if a:only_body
+	if a:options.only_body
 
 		call cursor(a:match.body_start)
-		if getline('.')[col('.')-1] == '{' && s:option('exclude_braces')
+		if getline('.')[col('.')-1] == '{' && a:options.exclude_braces
 			call search('\S', 'W')
 		end
 
 		norm! v
 
 		call cursor(a:match.body_end)
-		if getline('.')[col('.')-1] == '}' && s:option('exclude_braces')
+		if getline('.')[col('.')-1] == '}' && a:options.exclude_braces
 			call search('\S', 'Wb')
 		end
 
 	else
 
-		let before = strpart(getline(a:match.func_start[0]), 0, a:match.func_start[1]-1)
-		let after = strpart(getline(a:match.body_end[0]), a:match.body_end[1])
-		if before =~ '\v^\s*$' && after =~ '\v^\s*$'
-			\ || a:include_assignment && before =~ '\v(:|\=)\s*$'
+		if a:options.include_assignment && before =~ '\v(:|\=)\s*$'
+			\ || strpart(getline(a:match.func_start[0]), 0, a:match.func_start[1]-1) =~ '\v^\s*$'
+			\ && strpart(getline(a:match.body_end[0]), a:match.body_end[1]) =~ '\v^\s*$'
 			" Do linewise selection when the function is not an expression or the
 			" function is assigned to something and a:include_assignment is 1. All
 			" empty lines after the function are also selected.
 			call cursor(a:match.func_start)
-			if s:option('include_comments')
+			if a:options.include_comments
 				" Include in the selection all comment lines just above the
 				" function/class definition
 				for i in range(line('.')-1, 1, -1)

@@ -1,13 +1,31 @@
 
-func! objects#python#function(inner)
-	call s:select('def', a:inner, v:count1)
+
+let s:default_options = {
+	\ 'inner': 0,
+\ }
+
+
+func! s:options(options)
+	let merged = copy(s:default_options)
+	call extend(merged, get(g:objects_options, 'python', {}))
+	call extend(merged, a:options)
+	return merged
 endf
 
-func! objects#python#class(inner)
-	call s:select('class', a:inner, v:count1)
+
+func! objects#python#function(...)
+	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
+	call s:select('def', options, v:count1)
 endf
 
-func! s:select(kw, inner, count)
+
+func! objects#python#class(...)
+	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
+	call s:select('class', options, v:count1)
+endf
+
+
+func! s:select(kw, options, count)
 
 	let curpos = getcurpos()[1:2]
 	let wanted = a:kw == 'class' ? 'class>' : 'def>|async def>'
@@ -105,7 +123,7 @@ func! s:select(kw, inner, count)
 	" Do selection
 	" --------------------------------------------------------------------
 
-	if a:inner
+	if a:options.inner
 		if extend_selection
 			call cursor(sel_start, 1)
 		else
@@ -130,7 +148,7 @@ func! s:select(kw, inner, count)
 	" --------------------------------------------------------------------
 
 	if end != line('$') && a:count-1 > 0
-		call s:select(a:kw, a:inner, a:count-1)
+		call s:select(a:kw, a:options, a:count-1)
 	else
 		" Move cursor at the start of the selection
 		call feedkeys("o")

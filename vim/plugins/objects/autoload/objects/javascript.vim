@@ -16,7 +16,7 @@ endf
 
 
 func! s:empty_match()
-	return {"sign_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
+	return {"func_start": [0, 0], "body_start": [0, 0], "body_end": [0, 0]}
 endf
 
 
@@ -39,7 +39,7 @@ func! s:select(wanted, only_body, include_assignment)
 
 				if a:wanted == 'function'
 					let candidate = s:detect_inline_arrow_function()
-					if candidate.sign_start != [0, 0]
+					if candidate.func_start != [0, 0]
 						break
 					end
 				end
@@ -83,7 +83,7 @@ func! s:select(wanted, only_body, include_assignment)
 				if search('\v(<export\s+(default\s+)?)?<class>', 'Wb', line('.'))
 					\ && objects#synat('.') != 'String'
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-					let candidate.sign_start = getcurpos()[1:2]
+					let candidate.func_start = getcurpos()[1:2]
 					break
 				end
 
@@ -94,7 +94,7 @@ func! s:select(wanted, only_body, include_assignment)
 				if (search('\V\w\+\s\*=>', 'Wb', line('.'))
 					\ || search('\V)\s\*=>', 'Wb', line('.')) && searchpair('(', '', ')', 'Wb', skip))
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-					let candidate.sign_start = getcurpos()[1:2]
+					let candidate.func_start = getcurpos()[1:2]
 					break
 				end
 
@@ -104,7 +104,7 @@ func! s:select(wanted, only_body, include_assignment)
 					\ && searchpair('(', '', ')', 'Wb', skip)
 					\ && search('\v(<export\s+(default\s+)?)?(<async\s+)?<function>', 'Wb', line('.'))
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-					let candidate.sign_start = getcurpos()[1:2]
+					let candidate.func_start = getcurpos()[1:2]
 					break
 				end
 
@@ -115,7 +115,7 @@ func! s:select(wanted, only_body, include_assignment)
 					\ && search('\v^\s*\zs((get|set|static)\s+)?[*A-Za-z$_][0-9A-Za-z$_]+\s*%'.(col('.')).'c\(', 'Wb', line('.'))
 					\ && getline('.') !~ '\v^\s*(for|while|if|switch|return)>'
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-					let candidate.sign_start = getcurpos()[1:2]
+					let candidate.func_start = getcurpos()[1:2]
 					break
 				end
 
@@ -125,7 +125,7 @@ func! s:select(wanted, only_body, include_assignment)
 					\ && searchpair('(', '', ')', 'Wb', skip)
 					\ && search('\v^\s*\zs((get|set|static)\s+)?\[.*\]\s*%'.(col('.')).'c\(', 'Wb', line('.'))
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
-					let candidate.sign_start = getcurpos()[1:2]
+					let candidate.func_start = getcurpos()[1:2]
 					break
 				end
 
@@ -137,12 +137,12 @@ func! s:select(wanted, only_body, include_assignment)
 
 		endw
 
-		if candidate.sign_start == [0, 0]
+		if candidate.func_start == [0, 0]
 			break
 		end
 
 		let match = candidate
-		call cursor(match.sign_start)
+		call cursor(match.func_start)
 
 	endfo
 
@@ -154,7 +154,7 @@ endf
 
 func! s:do_selection(match, only_body, include_assignment)
 
-	if a:match.sign_start == [0, 0]
+	if a:match.func_start == [0, 0]
 		return
 	end
 
@@ -174,14 +174,14 @@ func! s:do_selection(match, only_body, include_assignment)
 
 	else
 
-		let before = strpart(getline(a:match.sign_start[0]), 0, a:match.sign_start[1]-1)
+		let before = strpart(getline(a:match.func_start[0]), 0, a:match.func_start[1]-1)
 		let after = strpart(getline(a:match.body_end[0]), a:match.body_end[1])
 		if before =~ '\v^\s*$' && after =~ '\v^\s*$'
 			\ || a:include_assignment && before =~ '\v(:|\=)\s*$'
 			" Do linewise selection when the function is not an expression or the
 			" function is assigned to something and a:include_assignment is 1. All
 			" empty lines after the function are also selected.
-			call cursor(a:match.sign_start)
+			call cursor(a:match.func_start)
 			if s:option('include_comments')
 				" Include in the selection all comment lines just above the
 				" function/class definition
@@ -200,7 +200,7 @@ func! s:do_selection(match, only_body, include_assignment)
 				call cursor(next-1, 1)
 			end
 		else
-			call cursor(a:match.sign_start)
+			call cursor(a:match.func_start)
 			norm! v
 			call cursor(a:match.body_end)
 		end
@@ -269,10 +269,10 @@ func! s:detect_inline_arrow_function()
 				let skip = "objects#synat('.') == 'String'"
 				call searchpair('(', '', ')', 'Wb', skip)
 			end
-			let candidate.sign_start = getcurpos()[1:2]
+			let candidate.func_start = getcurpos()[1:2]
 		end
 
-		if pos[1] >= candidate.sign_start[1] && pos[1] <= candidate.body_end[1]
+		if pos[1] >= candidate.func_start[1] && pos[1] <= candidate.body_end[1]
 			let match = candidate
 			break
 		end

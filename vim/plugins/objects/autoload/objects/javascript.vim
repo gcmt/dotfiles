@@ -223,11 +223,14 @@ func! s:detect_inline_arrow_function()
 	let match = s:empty_match()
 
 	norm! 0
-	while search('\V=>\s\*\S', 'e', line('.'))
+	while search('\V=>', '', line('.'))
 
 		if objects#synat('.') == 'String'
 			continue
 		end
+
+		" move cursor to the start of the function body
+		call search('\V=>\s\*\S', 'ce', line('.'))
 
 		let candidate = s:empty_match()
 		let candidate.body_start = getcurpos()[1:2]

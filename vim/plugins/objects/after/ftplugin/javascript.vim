@@ -1,14 +1,17 @@
 
-vnoremap <silent> <buffer> af :<c-u>call objects#javascript#function(0, 0)<cr>
-onoremap <silent> <buffer> af :<c-u>exec 'norm v'.v:count1.'af'<cr>
-vnoremap <silent> <buffer> aF :<c-u>call objects#javascript#function(0, 1)<cr>
-onoremap <silent> <buffer> aF :<c-u>exec 'norm v'.v:count1.'aF'<cr>
-vnoremap <silent> <buffer> if :<c-u>call objects#javascript#function(1, 0)<cr>
-onoremap <silent> <buffer> if :<c-u>exec 'norm v'.v:count1.'if'<cr>
+call objects#load_options('javascript', {
+	\ 'exclude_braces': 1,
+	\ 'include_comments': 1,
+\ })
 
-vnoremap <silent> <buffer> ac :<c-u>call objects#javascript#class(0, 0)<cr>
-onoremap <silent> <buffer> ac :<c-u>exec 'norm v'.v:count1.'ac'<cr>
-vnoremap <silent> <buffer> aC :<c-u>call objects#javascript#class(0, 1)<cr>
-onoremap <silent> <buffer> aC :<c-u>exec 'norm v'.v:count1.'aC'<cr>
-vnoremap <silent> <buffer> ic :<c-u>call objects#javascript#class(1, 0)<cr>
-onoremap <silent> <buffer> ic :<c-u>exec 'norm v'.v:count1.'ic'<cr>
+if objects#enabled('javascript#function')
+	call objects#mapl('af', 'objects#javascript#function', 0, 0)
+	call objects#mapl('aF', 'objects#javascript#function', 0, 1)
+	call objects#mapl('if', 'objects#javascript#function', 1, 0)
+end
+
+if objects#enabled('javascript#class')
+	call objects#mapl('ac', 'objects#javascript#class', 0, 0)
+	call objects#mapl('aC', 'objects#javascript#class', 0, 1)
+	call objects#mapl('ic', 'objects#javascript#class', 1, 0)
+end

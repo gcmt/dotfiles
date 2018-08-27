@@ -1,12 +1,5 @@
 
 
-let g:objects_javascript_exclude_braces =
-	\ get(g:, 'objects_javascript_exclude_braces', 1)
-
-let g:objects_javascript_include_comments =
-	\ get(g:, 'objects_javascript_include_comments', 1)
-
-
 func! objects#javascript#class(only_body, include_assignment)
 	call s:select('class', a:only_body, a:include_assignment)
 endf
@@ -14,6 +7,11 @@ endf
 
 func! objects#javascript#function(only_body, include_assignment)
 	call s:select('function', a:only_body, a:include_assignment)
+endf
+
+
+func! s:option(name)
+	return g:objects_options['javascript'][a:name]
 endf
 
 
@@ -163,16 +161,14 @@ func! s:do_selection(match, only_body, include_assignment)
 	if a:only_body
 
 		call cursor(a:match.body_start)
-		if getline('.')[col('.')-1] == '{'
-			\ && g:objects_javascript_exclude_braces
+		if getline('.')[col('.')-1] == '{' && s:option('exclude_braces')
 			call search('\S', 'W')
 		end
 
 		norm! v
 
 		call cursor(a:match.body_end)
-		if getline('.')[col('.')-1] == '}'
-			\ && g:objects_javascript_exclude_braces
+		if getline('.')[col('.')-1] == '}' && s:option('exclude_braces')
 			call search('\S', 'Wb')
 		end
 
@@ -186,7 +182,7 @@ func! s:do_selection(match, only_body, include_assignment)
 			" function is assigned to something and a:include_assignment is 1. All
 			" empty lines after the function are also selected.
 			call cursor(a:match.sign_start)
-			if g:objects_javascript_include_comments
+			if s:option('include_comments')
 				" Include in the selection all comment lines just above the
 				" function/class definition
 				for i in range(line('.')-1, 1, -1)

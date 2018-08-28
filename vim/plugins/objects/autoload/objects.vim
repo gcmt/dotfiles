@@ -27,6 +27,19 @@ func! objects#emptyline(line)
 endf
 
 
+" objects#adjust_view({start:number}, {end:number}) -> 0
+" Makes sure that when not all lines between {start} and {end} are visible, to
+" move the line {start} to the top of the screen to maximize screen usage.
+func! objects#adjust_view(start, end)
+	let max_scroll = a:start - line('w0')
+	let hidden_lines = max([a:end - line('w$'), 0])
+	let scroll = min([hidden_lines, max_scroll])
+	if scroll
+		call feedkeys(scroll."\<c-e>", 'n')
+	end
+endf
+
+
 " objects#enabled({object:string}) -> bool
 " Returns wheter or not the user has enabled the given text object via the
 " 'g:objects_enabled' option.

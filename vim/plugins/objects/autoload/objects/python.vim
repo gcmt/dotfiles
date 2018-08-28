@@ -142,4 +142,8 @@ func! s:do_selection(match, options, visual)
 		end
 	end
 
+	if a:visual
+		call objects#adjust_view(a:match.start, a:match.end)
+	end
+
 endf

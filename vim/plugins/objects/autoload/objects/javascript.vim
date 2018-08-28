@@ -217,6 +217,10 @@ func! s:do_selection(match, options, visual)
 
 	end
 
+	if a:visual
+		call objects#adjust_view(a:match.func_start[0], a:match.body_end[0])
+	end
+
 endf
 
 

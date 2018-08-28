@@ -27,6 +27,17 @@ func! objects#emptyline(line)
 endf
 
 
+" objects#merge_dicts([{dict1:dictionary}, ...])
+" Merge the given dictionaries.
+func! objects#merge_dicts(...)
+	let merged = {}
+	for dict in a:000
+		call extend(merged, dict, 'force')
+	endfo
+	return merged
+endf
+
+
 " objects#adjust_view({start:number}, {end:number}) -> 0
 " Makes sure that when not all lines between {start} and {end} are visible, to
 " move the line {start} to the top of the screen to maximize screen usage.

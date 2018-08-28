@@ -6,14 +6,6 @@ let s:default_options = {
 \ }
 
 
-func! s:options(options)
-	let merged = copy(s:default_options)
-	call extend(merged, get(g:objects_options, 'python', {}))
-	call extend(merged, a:options)
-	return merged
-endf
-
-
 func! objects#python#function(options, visual, count)
 	call s:select('def', s:options(a:options), a:visual, a:count)
 endf
@@ -21,6 +13,12 @@ endf
 
 func! objects#python#class(options, visual, count)
 	call s:select('class', s:options(a:options), a:visual, a:count)
+endf
+
+
+func! s:options(options)
+	let globals = get(g:objects_options, 'python', {})
+	return objects#merge_dicts(s:default_options, globals, a:options)
 endf
 
 

@@ -5,14 +5,6 @@ let s:default_options = {
 \ }
 
 
-func! s:options(options)
-	let merged = copy(s:default_options)
-	call extend(merged, get(g:objects_options, 'items', {}))
-	call extend(merged, a:options)
-	return merged
-endf
-
-
 func! objects#items#args(options, visual, count)
 	call s:select('(', s:options(a:options), a:visual, a:count)
 endf
@@ -25,6 +17,12 @@ endf
 
 func! objects#items#dict(options, visual, count)
 	call s:select('{', s:options(a:options), a:visual, a:count)
+endf
+
+
+func! s:options(options)
+	let globals = get(g:objects_options, 'javascript', {})
+	return objects#merge_dicts(s:default_options, globals, a:options)
 endf
 
 

@@ -16,13 +16,13 @@ func! s:options(options)
 endf
 
 
-func! objects#javascript#class(options, visual)
-	call s:select('class', s:options(a:options), a:visual)
+func! objects#javascript#class(options, visual, count)
+	call s:select('class', s:options(a:options), a:visual, a:count)
 endf
 
 
-func! objects#javascript#function(options, visual)
-	call s:select('function', s:options(a:options), a:visual)
+func! objects#javascript#function(options, visual, count)
+	call s:select('function', s:options(a:options), a:visual, a:count)
 endf
 
 
@@ -31,13 +31,13 @@ func! s:empty_match()
 endf
 
 
-func! s:select(wanted, options, visual)
+func! s:select(wanted, options, visual, count)
 
 	let curpos = getcurpos()[1:2]
 	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
 	let match = s:empty_match()
 
-	for i in range(1, v:count1)
+	for i in range(1, a:count)
 
 		let k = 0
 		let candidate = s:empty_match()

@@ -13,22 +13,22 @@ func! s:options(options)
 endf
 
 
-func! objects#items#args(options, visual)
-	call s:select('(', s:options(a:options), a:visual)
+func! objects#items#args(options, visual, count)
+	call s:select('(', s:options(a:options), a:visual, a:count)
 endf
 
 
-func! objects#items#list(options, visual)
-	call s:select('[', s:options(a:options), a:visual)
+func! objects#items#list(options, visual, count)
+	call s:select('[', s:options(a:options), a:visual, a:count)
 endf
 
 
-func! objects#items#dict(options, visual)
-	call s:select('{', s:options(a:options), a:visual)
+func! objects#items#dict(options, visual, count)
+	call s:select('{', s:options(a:options), a:visual, a:count)
 endf
 
 
-func! s:select(type, options, visual) abort
+func! s:select(type, options, visual, count) abort
 
 	let curpos = getcurpos()[1:2]
 
@@ -37,7 +37,7 @@ func! s:select(type, options, visual) abort
 	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
 	let pairs = {'(': ')', '[': ']', '{': '}'}
 
-	for i in range(1, v:count1)
+	for i in range(1, a:count)
 		if searchpair('\V'.a:type, '', '\V'.pairs[a:type], 'Wb', skip, line('w0'))
 			let list_start = getcurpos()[1:2]
 			norm! %

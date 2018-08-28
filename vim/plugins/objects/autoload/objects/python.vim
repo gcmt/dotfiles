@@ -14,13 +14,13 @@ func! s:options(options)
 endf
 
 
-func! objects#python#function(options, visual)
-	call s:select('def', s:options(a:options), a:visual)
+func! objects#python#function(options, visual, count)
+	call s:select('def', s:options(a:options), a:visual, a:count)
 endf
 
 
-func! objects#python#class(options, visual)
-	call s:select('class', s:options(a:options), a:visual)
+func! objects#python#class(options, visual, count)
+	call s:select('class', s:options(a:options), a:visual, a:count)
 endf
 
 
@@ -29,34 +29,57 @@ func! s:empty_match()
 endf
 
 
-func! s:select(kw, options, visual)
+func! s:get_selection()
+	return { 'start': line("'<'"), 'end': line("'>") }
+endf
+
+
+func! s:select(kw, options, visual, count)
 
 	let curpos = getcurpos()[1:2]
 	let wanted = a:kw == 'class' ? 'class>' : 'def>|async def>'
 	let match = s:empty_match()
+	let sel = s:get_selection()
 
-	for i in range(1, v:count1)
+	" Based on the direction we keep either match.start or match.end pinned.
+	let direction = 'down'
+	if a:visual && sel.start != sel.end
+		let match.start = sel.start
+		let match.end = sel.end
+		if curpos[0] == sel.end
+			let direction = 'down'
+		end
+		if curpos[0] == sel.start
+			let direction = 'up'
+		end
+	end
+
+	for i in range(1, a:count)
 
 		let candidate = s:empty_match()
 
 		" Search for the definition start
 		" --------------------------------------------------------------------
 
-		" Check for a definition in the current indent block
-		let linenr = line('.')
-		if objects#emptyline(linenr) && !objects#emptyline(linenr+1)
-			let linenr += 1
-		end
-		if getline(linenr) =~ '\v^\s*(\@|#|'.wanted.')'
-			for i in range(linenr, line('$'))
-				if objects#emptyline(i) || indent(i) != indent(linenr)
-					break
-				end
-				if getline(i) =~ '\v^\s*('.wanted.')'
-					let candidate.start = i
-					break
-				end
-			endfo
+		if direction == 'down'
+
+			" Check for a definition in the current indent block
+			let linenr = line('.')
+			if objects#emptyline(linenr) && !objects#emptyline(linenr+1)
+				let linenr += 1
+			end
+			if getline(linenr) =~ '\v^\s*(\@|#|'.wanted.')'
+				for i in range(linenr, line('$'))
+					if objects#emptyline(i) || indent(i) != indent(linenr)
+						break
+					end
+					if getline(i) =~ '\v^\s*('.wanted.')'
+						let candidate.start = i
+						break
+					end
+				endfo
+			end
+
 		end
 
 		" Search for a definition on the current line and backwards
@@ -85,65 +108,85 @@ func! s:select(kw, options, visual)
 		" Search for the definition end
 		" --------------------------------------------------------------------
 
-		let indent = indent(candidate.start)
-		for i in range(candidate.start, line('$'))
-			if objects#emptyline(i) || indent(i) != indent
-				for k in range(i, line('$'))
-					if k == line('$')
-						let candidate.end = k
-						break
-					end
-					if !objects#emptyline(k) && indent(k) <= indent
-						let candidate.end = k-1
-						break
-					end
-				endfo
-				break
-			end
-		endfo
+		if direction == 'down'
 
+			let indent = indent(candidate.start)
+			for i in range(candidate.start, line('$'))
+				if objects#emptyline(i) || indent(i) != indent
+					for k in range(i, line('$'))
+						if k == line('$')
+							let candidate.end = k
+							break
+						end
+						if !objects#emptyline(k) && indent(k) <= indent
+							let candidate.end = k-1
+							break
+						end
+					endfo
+					break
+				end
+			endfo
+
+		end
+
+		" Find the first non-blank line so that we can reliably compare indent
+		" levels. match.start can be an empty line when, for example, we are
+		" extending a selection in the upper direction.
+		let real_match_start = match.start
+		if match.start != 0
+			for k in range(match.start, line('$'))
+				if !objects#emptyline(k)
+					let real_match_start = k
+					break
+				end
+			endfo
+		end
 		if !candidate.start && !candidate.end
-			\ || match.start != 0 && indent(candidate.start) != indent(match.start)
+			\ || match.start != 0 && indent(candidate.start) != indent(real_match_start)
 			" The inendtation check makes sure we only select consecutive
 			" definitions with the same indentation level.
 			break
 		end
 
-		let match.start = match.start ? match.start : candidate.start
-		let match.end = candidate.end
-
-		call cursor(match.end, 1)
+		if direction == 'down'
+			let match.start = match.start ? match.start : candidate.start
+			let match.end = candidate.end
+			call cursor(match.end, 1)
+		else
+			let match.start = candidate.start
+			let match.end = match.end ? match.end : candidate.end
+			call cursor(match.start, 1)
+		end
 
 	endfo
 
 	call cursor(curpos)
-	call s:do_selection(match, a:options, a:visual)
+	call s:do_selection(match, a:options, a:visual, direction)
 
 endf
 
 
-func! s:do_selection(match, options, visual)
+func! s:do_selection(match, options, visual, direction)
 
 	if !a:match.start && !a:match.end
 		return
 	end
 
 	if a:options.inner
+		call cursor(a:match.start, 1)
+		norm! V
 		call cursor(a:match.end, len(getline(a:match.end)))
 		call search('\v\S', 'Wbc')
-		norm! V
-		call cursor(a:match.start, 1)
 	else
-		call cursor(a:match.end, len(getline(a:match.end)))
-		norm! V
 		call cursor(a:match.start, 1)
-		if a:match.end == line('$') && a:options.bounce
+		if a:direction == 'up' || a:match.end == line('$') && a:options.bounce
 			call cursor(prevnonblank(line('.')-1)+1, 1)
 		end
+		norm! V
+		call cursor(a:match.end, len(getline(a:match.end)))
 	end
 
-	if a:visual
-		call objects#adjust_view(a:match.start, a:match.end)
+	if a:visual && a:direction == 'up' || a:match.end == line('$') && a:options.bounce
 		call feedkeys('o')
 	end
 

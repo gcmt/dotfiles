@@ -101,8 +101,16 @@ endf
 " s:map({local:bool}, {lhs:string}, {fn:funcref}) -> 0
 " Function used to actually setup mappings for the text objects.
 " When {local} is true, the map will be local to the current buffer.
+"
+" In visual mode, we abort the selection with an initial <esc> to make sure the
+" cursor position remains in the current position instead of being moved to the
+" top of the selection.
+"
+" We also use <expr> in visual mode to reliably grab the correct v:count1 value,
+" otherwise it would always be 1.
+"
 func! s:map(local, lhs, fn)
 	let buffer = a:local ? "<buffer>" : ""
-	exec "vnoremap <silent>" buffer a:lhs printf(":<c-u>call %s(1)<cr>", a:fn)
-	exec "onoremap <silent>" buffer a:lhs printf(":call %s(0)<cr>", a:fn)
+	exec "vnoremap <expr> <silent>" buffer a:lhs printf('"<esc>:<c-u>call %s(1, ".v:count1.")<cr>"', a:fn)
+	exec "onoremap <silent>" buffer a:lhs printf(":call %s(0, v:count1)<cr>", a:fn)
 endf

@@ -23,134 +23,125 @@ func! objects#python#class(options, visual)
 endf
 
 
-func! s:select(kw, options, count)
+func! s:empty_match()
+	return {'start': 0, 'end': 0}
+endf
+
+
 func! s:select(kw, options, visual)
 
 	let curpos = getcurpos()[1:2]
 	let wanted = a:kw == 'class' ? 'class>' : 'def>|async def>'
+	let match = s:empty_match()
 
-	" Check whether or not we need to extend the current selection
-	" This makes sure we can use counts to select consecutive definition blocks,
-	" just like with paragraphs. Eg. v2af
-	" --------------------------------------------------------------------
+	for i in range(1, v:count1)
 
-	norm! gv
+		" Search for the definition start
+		" --------------------------------------------------------------------
 
-	let extend_selection = 0
-	let sel_start = getpos("'<")[1]
-	let sel_end = getpos("'>")[1]
+		let indent = -1
+		let candidate = s:empty_match()
 
-	if sel_start != sel_end
-		let curpos = [sel_end, 1]
-		let extend_selection = 1
-	end
+		" Check for a definition in the current indent block
+		let linenr = line('.')
+		if objects#emptyline(linenr) && !objects#emptyline(linenr+1)
+			let linenr += 1
+		end
+		if getline(linenr) =~ '\v^\s*(\@|#|'.wanted.')'
+			for i in range(linenr, line('$'))
+				if objects#emptyline(i) || indent(i) != indent(linenr)
+					break
+				end
+				if getline(i) =~ '\v^\s*('.wanted.')'
+					let candidate.start = i
+					break
+				end
+			endfo
+		end
 
-	exec "norm! \<esc>"
-
-	" Search for the definition start
-	" --------------------------------------------------------------------
-
-	let start = 0
-	let indent = -1
-
-	" Check for a definition in the current indent block
-	let linenr = curpos[0]
-	if objects#emptyline(linenr) && !objects#emptyline(linenr+1)
-		let linenr += 1
-	end
-	if getline(linenr) =~ '\v^\s*(\@|#|'.wanted.')'
-		for i in range(linenr, line('$'))
-			if objects#emptyline(i) || indent(i) != indent(linenr)
+		" Search for a definition on the current line and backwards
+		let start = candidate.start ? candidate.start : prevnonblank(line('.'))
+		let indent = indent(start)
+		while indent >= 0
+			if getline(start) =~ '\v^\s*('.wanted.')'
+				" Check for decorators or comments to include in the selection
+				for i in range(start, 0, -1)
+					if i == 0 || getline(i-1) !~ '\v^\s{'.indent.'}(\@|#)'
+						let candidate.start = i
+						break
+					end
+				endfo
 				break
 			end
-			if getline(i) =~ '\v^\s*('.wanted.')'
-				let start = i
+			let indent -= &shiftwidth
+			let start = searchpos('\v^\s{'.indent.'}\S', 'Wb')[0]
+		endw
+
+		if candidate.start == 0
+			call cursor(curpos)
+			return
+		end
+
+		" Search for the definition end
+		" --------------------------------------------------------------------
+
+		let indent = indent(candidate.start)
+		for i in range(candidate.start, line('$'))
+			if objects#emptyline(i) || indent(i) != indent
+				for k in range(i, line('$'))
+					if k == line('$')
+						let candidate.end = k
+						break
+					end
+					if !objects#emptyline(k) && indent(k) <= indent
+						let candidate.end = k-1
+						break
+					end
+				endfo
 				break
 			end
 		endfo
-	end
 
-	" Search for a definition on the current line and backwards
-	let candidate = start ? start : prevnonblank(curpos[0])
-	let indent = indent(candidate)
-	while indent >= 0
-		if getline(candidate) =~ '\v^\s*('.wanted.')'
-			" Check for decorators or comments to include in the selection
-			for i in range(candidate, 0, -1)
-				if i == 0 || getline(i-1) !~ '\v^\s{'.indent.'}(\@|#)'
-					let start = i
-					break
-				end
-			endfo
+		if !candidate.start && !candidate.end
 			break
 		end
-		let indent -= &shiftwidth
-		let candidate = searchpos('\v^\s{'.indent.'}\w', 'Wb')[0]
-	endw
 
-	if start == 0
-		call cursor(curpos)
-		return
-	end
+		let match.start = match.start ? match.start : candidate.start
+		let match.end = candidate.end
 
-	" Search for the definition end
-	" --------------------------------------------------------------------
+		call cursor(match.end, 1)
 
-	let end = 0
-	let indent = indent(start)
-	for i in range(start, line('$'))
-		if objects#emptyline(i) || indent(i) != indent
-			for k in range(i, line('$'))
-				if k == line('$')
-					let end = k
-					break
-				end
-				if !objects#emptyline(k) && indent(k) <= indent
-					let end = k-1
-					break
-				end
-			endfo
-			break
-		end
 	endfo
 
-	if end == 0
-		call cursor(curpos)
+	call cursor(curpos)
+	call s:do_selection(match, a:options, a:visual)
+
+endf
+
+
+func! s:do_selection(match, options, visual)
+
+	if !a:match.start && !a:match.end
 		return
 	end
 
-	" Do selection
-	" --------------------------------------------------------------------
-
 	if a:options.inner
-		if extend_selection
-			call cursor(sel_start, 1)
-		else
-			call cursor(start, 1)
-		end
+		call cursor(a:match.start, 1)
 		norm! V
-		call cursor(end, len(getline(end)))
+		call cursor(a:match.end, len(getline(a:match.end)))
 		call search('\v\S', 'Wbc')
 	else
-		if extend_selection
-			call cursor(sel_start, 1)
-		else
-			call cursor(start, 1)
-		end
-		if end == line('$')
+		call cursor(a:match.start, 1)
+		if a:match.end == line('$')
 			call cursor(prevnonblank(line('.')-1)+1, 1)
 		end
 		norm! V
-		call cursor(end, len(getline(end)))
+		call cursor(a:match.end, len(getline(a:match.end)))
 	end
 
-	" --------------------------------------------------------------------
-
-	if end != line('$') && a:count-1 > 0
-		call s:select(a:kw, a:options, a:count-1)
-	else
-		" Move cursor at the start of the selection
-		call feedkeys("o")
+	" Move cursor at the start of the selection
+	if a:visual
+		call feedkeys('o')
 	end
 
 endf

@@ -186,7 +186,7 @@ func! s:do_selection(match, options, visual, direction)
 		call cursor(a:match.end, len(getline(a:match.end)))
 	end
 
-	if a:visual && a:direction == 'up' || a:match.end == line('$') && a:options.bounce
+	if a:visual && (a:direction == 'up' || a:match.end == line('$') && a:options.bounce)
 		call feedkeys('o')
 	end
 

@@ -102,6 +102,9 @@ func! s:select(kw, options, visual)
 		endfo
 
 		if !candidate.start && !candidate.end
+			\ || match.start != 0 && indent(candidate.start) != indent(match.start)
+			" The inendtation check makes sure we only select consecutive
+			" definitions with the same indentation level.
 			break
 		end
 

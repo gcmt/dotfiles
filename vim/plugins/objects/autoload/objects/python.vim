@@ -36,11 +36,10 @@ func! s:select(kw, options, visual)
 
 	for i in range(1, v:count1)
 
+		let candidate = s:empty_match()
+
 		" Search for the definition start
 		" --------------------------------------------------------------------
-
-		let indent = -1
-		let candidate = s:empty_match()
 
 		" Check for a definition in the current indent block
 		let linenr = line('.')

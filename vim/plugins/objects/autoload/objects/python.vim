@@ -129,22 +129,17 @@ func! s:do_selection(match, options, visual)
 	end
 
 	if a:options.inner
-		call cursor(a:match.start, 1)
-		norm! V
 		call cursor(a:match.end, len(getline(a:match.end)))
 		call search('\v\S', 'Wbc')
+		norm! V
+		call cursor(a:match.start, 1)
 	else
+		call cursor(a:match.end, len(getline(a:match.end)))
+		norm! V
 		call cursor(a:match.start, 1)
 		if a:match.end == line('$') && a:options.bounce
 			call cursor(prevnonblank(line('.')-1)+1, 1)
 		end
-		norm! V
-		call cursor(a:match.end, len(getline(a:match.end)))
-	end
-
-	" Move cursor at the start of the selection
-	if a:visual
-		call feedkeys('o')
 	end
 
 endf

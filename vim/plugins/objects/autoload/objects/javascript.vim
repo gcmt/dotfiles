@@ -171,16 +171,16 @@ func! s:do_selection(match, options, visual)
 
 	if a:options.only_body
 
-		call cursor(a:match.body_start)
-		if getline('.')[col('.')-1] == '{' && a:options.exclude_braces
-			call search('\S', 'W')
+		call cursor(a:match.body_end)
+		if getline('.')[col('.')-1] == '}' && a:options.exclude_braces
+			call search('\S', 'Wb')
 		end
 
 		norm! v
 
-		call cursor(a:match.body_end)
-		if getline('.')[col('.')-1] == '}' && a:options.exclude_braces
-			call search('\S', 'Wb')
+		call cursor(a:match.body_start)
+		if getline('.')[col('.')-1] == '{' && a:options.exclude_braces
+			call search('\S', 'W')
 		end
 
 	else
@@ -191,6 +191,12 @@ func! s:do_selection(match, options, visual)
 			" Do linewise selection when the function is not an expression or the
 			" function is assigned to something and a:include_assignment is 1. All
 			" empty lines after the function are also selected.
+			call cursor(a:match.body_end)
+			let next = nextnonblank(line('.')+1)
+			if next
+				call cursor(next-1, 1)
+			end
+			norm! V
 			call cursor(a:match.func_start)
 			if a:options.include_comments
 				" Include in the selection all comment lines just above the
@@ -202,24 +208,13 @@ func! s:do_selection(match, options, visual)
 					call cursor(i, col('.'))
 				endfo
 			end
-			norm! 0
-			norm! V
-			call cursor(a:match.body_end)
-			let next = nextnonblank(line('.')+1)
-			if next
-				call cursor(next-1, 1)
-			end
+			" norm! 0
 		else
-			call cursor(a:match.func_start)
-			norm! v
 			call cursor(a:match.body_end)
+			norm! v
+			call cursor(a:match.func_start)
 		end
 
-	end
-
-	" move the cursor to the start of the selection
-	if a:visual
-		call feedkeys('o')
 	end
 
 endf

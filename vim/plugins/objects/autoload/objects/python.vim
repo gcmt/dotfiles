@@ -2,6 +2,7 @@
 
 let s:default_options = {
 	\ 'inner': 0,
+	\ 'bounce': 1,
 \ }
 
 
@@ -134,7 +135,7 @@ func! s:do_selection(match, options, visual)
 		call search('\v\S', 'Wbc')
 	else
 		call cursor(a:match.start, 1)
-		if a:match.end == line('$')
+		if a:match.end == line('$') && a:options.bounce
 			call cursor(prevnonblank(line('.')-1)+1, 1)
 		end
 		norm! V

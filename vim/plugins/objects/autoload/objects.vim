@@ -115,10 +115,8 @@ endf
 "
 " In visual mode, we abort the selection with an initial <esc> to make sure the
 " cursor position remains in the current position instead of being moved to the
-" top of the selection.
-"
-" We also use <expr> in visual mode to reliably grab the correct v:count1 value,
-" otherwise it would always be 1.
+" top of the selection. For this reason we also need to use <expr> to grab the
+" correct v:count1 value, otherwise it would always be 1.
 "
 func! s:map(local, lhs, fn)
 	let buffer = a:local ? "<buffer>" : ""

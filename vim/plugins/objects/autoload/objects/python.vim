@@ -13,19 +13,18 @@ func! s:options(options)
 endf
 
 
-func! objects#python#function(...)
-	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
-	call s:select('def', options, v:count1)
+func! objects#python#function(options, visual)
+	call s:select('def', s:options(a:options), a:visual)
 endf
 
 
-func! objects#python#class(...)
-	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
-	call s:select('class', options, v:count1)
+func! objects#python#class(options, visual)
+	call s:select('class', s:options(a:options), a:visual)
 endf
 
 
 func! s:select(kw, options, count)
+func! s:select(kw, options, visual)
 
 	let curpos = getcurpos()[1:2]
 	let wanted = a:kw == 'class' ? 'class>' : 'def>|async def>'

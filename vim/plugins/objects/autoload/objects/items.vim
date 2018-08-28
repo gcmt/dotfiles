@@ -13,25 +13,22 @@ func! s:options(options)
 endf
 
 
-func! objects#items#args(...)
-	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
-	call s:select('(', options)
+func! objects#items#args(options, visual)
+	call s:select('(', s:options(a:options), a:visual)
 endf
 
 
-func! objects#items#list(...)
-	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
-	call s:select('[', options)
+func! objects#items#list(options, visual)
+	call s:select('[', s:options(a:options), a:visual)
 endf
 
 
-func! objects#items#dict(...)
-	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
-	call s:select('{', options)
+func! objects#items#dict(options, visual)
+	call s:select('{', s:options(a:options), a:visual)
 endf
 
 
-func! s:select(type, options) abort
+func! s:select(type, options, visual) abort
 
 	let curpos = getcurpos()[1:2]
 

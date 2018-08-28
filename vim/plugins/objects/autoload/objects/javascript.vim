@@ -16,15 +16,13 @@ func! s:options(options)
 endf
 
 
-func! objects#javascript#class(...)
-	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
-	call s:select('class', options)
+func! objects#javascript#class(options, visual)
+	call s:select('class', s:options(a:options), a:visual)
 endf
 
 
-func! objects#javascript#function(...)
-	let options = s:options(a:0 && type(a:1) == v:t_dict ? a:1 : {})
-	call s:select('function', options)
+func! objects#javascript#function(options, visual)
+	call s:select('function', s:options(a:options), a:visual)
 endf
 
 
@@ -33,7 +31,7 @@ func! s:empty_match()
 endf
 
 
-func! s:select(wanted, options)
+func! s:select(wanted, options, visual)
 
 	let curpos = getcurpos()[1:2]
 	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
@@ -160,12 +158,12 @@ func! s:select(wanted, options)
 	endfo
 
 	call cursor(curpos)
-	call s:do_selection(match, a:options)
+	call s:do_selection(match, a:options, a:visual)
 
 endf
 
 
-func! s:do_selection(match, options)
+func! s:do_selection(match, options, visual)
 
 	if a:match.func_start == [0, 0]
 		return
@@ -220,7 +218,9 @@ func! s:do_selection(match, options)
 	end
 
 	" move the cursor to the start of the selection
-	call feedkeys('o')
+	if a:visual
+		call feedkeys('o')
+	end
 
 endf
 

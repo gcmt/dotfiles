@@ -1,4 +1,5 @@
 
+
 " objects#synat(['.' | [{line:number}, {col:number}]]) -> string
 " Returns the syntax group at the given position.
 " When the only argument is the '.' expression, the syntax at the current cursor
@@ -55,7 +56,7 @@ func! objects#enabled(object)
 endf
 
 
-" objects#map({lhs:string}, {fn:string}[, args]) -> 0
+" objects#map({lhs:string}, {fn:string}[, {options:dict}]) -> 0
 " Shortcut used to setup a mappings for the text objects.
 "
 " This function can be used inside .vimrc by users that want to use different
@@ -65,30 +66,30 @@ endf
 "
 " - call objects#map('af', 'objects#python#function', {'inner': 1})
 "   This will setup a mapping 'af' for visual and operator-pending modes that
-"   will call the predefined function 'objects#python#function' to select the
-"   current python function. All these functions are defined at the top of each
-"   autoload/objects/* file.
-"   The remaining arguments will be passed to the function. The amount and type
-"   of arguments will depend on the specific function implementation.
+"   will call the predefined function 'objects#python#function' with the given
+"   {options} to select the current python function.
 "
 func! objects#map(lhs, fn, ...)
-	call s:map(0, a:lhs, function(a:fn, a:000))
+	let options = a:0 && type(a:1) == v:t_dict ? a:1 : {}
+	call s:map(0, a:lhs, function(a:fn, [options]))
 endf
 
 
 " objects#mapl({lhs:string}, {fn:string}[, args]) -> 0
 " Like objects#map(..) but setup a mapping only locally to the current buffer.
-" For this reason it is expected to only be called in filetype plugins.
+" For this reason it is expected to only be called in filetype plugins or with
+" `autocmd FileType <x> call objects#mapl(..)`
 func! objects#mapl(lhs, fn, ...)
-	call s:map(1, a:lhs, function(a:fn, a:000))
+	let options = a:0 && type(a:1) == v:t_dict ? a:1 : {}
+	call s:map(1, a:lhs, function(a:fn, [options]))
 endf
 
 
 " s:map({local:bool}, {lhs:string}, {fn:funcref}) -> 0
 " Function used to actually setup mappings for the text objects.
 " When {local} is true, the map will be local to the current buffer.
-func! s:map(local, object, fn)
+func! s:map(local, lhs, fn)
 	let buffer = a:local ? "<buffer>" : ""
-	exec "vnoremap <silent>" buffer a:object printf(":<c-u>call %s()<cr>", a:fn)
-	exec "onoremap <silent>" buffer a:object printf(":<c-u>exec 'norm v'.v:count1.'%s'<cr>", a:object)
+	exec "vnoremap <silent>" buffer a:lhs printf(":<c-u>call %s(1)<cr>", a:fn)
+	exec "onoremap <silent>" buffer a:lhs printf(":call %s(0)<cr>", a:fn)
 endf

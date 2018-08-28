@@ -21,7 +21,7 @@ endf
 
 
 func! s:options(options)
-	let globals = get(g:objects_options, 'javascript', {})
+	let globals = get(g:objects_options, 'items', {})
 	return objects#merge_dicts(s:default_options, globals, a:options)
 endf
 

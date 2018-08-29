@@ -197,7 +197,6 @@ func! s:do_selection(match, options, visual, direction)
 		call cursor(a:match.start, 1)
 		norm! V
 		call cursor(a:match.end, len(getline(a:match.end)))
-		call search('\v\S', 'Wbc')
 	else
 		call cursor(a:match.start, 1)
 		if a:direction == 'up' || a:match.end == line('$') && a:options.bounce

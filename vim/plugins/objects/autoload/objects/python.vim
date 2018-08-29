@@ -3,6 +3,7 @@
 let s:default_options = {
 	\ 'inner': 0,
 	\ 'bounce': 1,
+	\ 'comments': 1,
 \ }
 
 
@@ -61,7 +62,14 @@ endf
 
 func! s:select(kw, options, visual, count)
 
+	" Regex pattern for matching comments and/or decorators just above
+	" the target construct
+	let include = a:kw =~ '\v^(class|def)$' ? ['\@'] : []
+	let include += a:options.comments ? ['#'] : []
+	let include = join(include, '|')
+
 	let kw = a:kw == 'def' ? '(async\s+)?def>' : a:kw.'>'
+
 	let curpos = getcurpos()[1:2]
 	let match = s:empty_match()
 	let sel = s:get_selection()
@@ -90,8 +98,7 @@ func! s:select(kw, options, visual, count)
 			if objects#emptyline(linenr) && !objects#emptyline(linenr+1)
 				let linenr += 1
 			end
-			let chars = kw =~ '\v<def>' ? '\@|#' : '#'
-			if getline(linenr) =~ '\v^\s*('.chars.'|'.kw.')'
+			if !empty(include) && getline(linenr) =~ '\v^\s*('.include.'|'.kw.')'
 				for k in range(linenr, line('$'))
 					if objects#emptyline(k) || indent(k) != indent(linenr)
 						break
@@ -100,7 +107,7 @@ func! s:select(kw, options, visual, count)
 						let candidate.start = k
 						break
 					end
-					if getline(k) !~ '\v^\s*('.chars.')'
+					if getline(k) !~ '\v^\s*('.include.')'
 						break
 					end
 				endfo
@@ -120,8 +127,7 @@ func! s:select(kw, options, visual, count)
 			if getline(start) =~ '\v^\s*'.kw
 				" Check for decorators or comments to include in the selection
 				for k in range(start, 0, -1)
-					let chars = kw =~ '\v<def>' ? '\@|#' : '#'
-					if k == 0 || getline(k-1) !~ '\v^\s{'.indent.'}('.chars.')'
+					if k == 0 || empty(include) || getline(k-1) !~ '\v^\s{'.indent.'}('.include.')'
 						let candidate.start = k
 						break
 					end

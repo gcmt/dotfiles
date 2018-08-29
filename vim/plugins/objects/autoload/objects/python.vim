@@ -6,6 +6,13 @@ let s:default_options = {
 \ }
 
 
+let s:groups = {
+	\ 'if': ['else', 'elif'],
+	\ 'try': ['except', 'else', 'finally'],
+	\ 'for': ['else'],
+\ }
+
+
 func! objects#python#function(options, visual, count)
 	call s:select('def', s:options(a:options), a:visual, a:count)
 endf
@@ -34,8 +41,8 @@ endf
 
 func! s:select(kw, options, visual, count)
 
+	let kw = a:kw == 'def' ? '(async\s+)?def>' : a:kw.'>'
 	let curpos = getcurpos()[1:2]
-	let wanted = a:kw == 'class' ? 'class>' : 'def>|async def>'
 	let match = s:empty_match()
 	let sel = s:get_selection()
 
@@ -66,12 +73,13 @@ func! s:select(kw, options, visual, count)
 			if objects#emptyline(linenr) && !objects#emptyline(linenr+1)
 				let linenr += 1
 			end
-			if getline(linenr) =~ '\v^\s*(\@|#|'.wanted.')'
+			let chars = kw =~ '\v<def>' ? '\@|#' : '#'
+			if getline(linenr) =~ '\v^\s*('.chars.'|'.kw.')'
 				for i in range(linenr, line('$'))
 					if objects#emptyline(i) || indent(i) != indent(linenr)
 						break
 					end
-					if getline(i) =~ '\v^\s*('.wanted.')'
+					if getline(i) =~ '\v^\s*'.kw
 						let candidate.start = i
 						break
 					end
@@ -84,10 +92,11 @@ func! s:select(kw, options, visual, count)
 		let start = candidate.start ? candidate.start : prevnonblank(line('.'))
 		let indent = indent(start)
 		while indent >= 0
-			if getline(start) =~ '\v^\s*('.wanted.')'
+			if getline(start) =~ '\v^\s*'.kw
 				" Check for decorators or comments to include in the selection
 				for i in range(start, 0, -1)
-					if i == 0 || getline(i-1) !~ '\v^\s{'.indent.'}(\@|#)'
+					let chars = kw =~ '\v<def>' ? '\@|#' : '#'
+					if i == 0 || getline(i-1) !~ '\v^\s{'.indent.'}('.chars.')'
 						let candidate.start = i
 						break
 					end
@@ -104,7 +113,8 @@ func! s:select(kw, options, visual, count)
 		end
 
 		if direction == 'down'
-			let candidate.end = s:find_block_end(candidate.start)
+			let whitelist = get(s:groups, a:kw, [])
+			let candidate.end = s:find_block_end(candidate.start, whitelist)
 		end
 
 		" Find the first non-blank line so that we can reliably compare indent

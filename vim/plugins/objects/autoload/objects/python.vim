@@ -6,21 +6,41 @@ let s:default_options = {
 \ }
 
 
+" API
+" ----------------------------------------------------------------------------
+
+func! objects#python#def(options, visual, count)
+	call s:select('def', s:options(a:options), a:visual, a:count)
+endf
+
+func! objects#python#class(options, visual, count)
+	call s:select('class', s:options(a:options), a:visual, a:count)
+endf
+
+func! objects#python#if(options, visual, count)
+	call s:select('if', s:options(a:options), a:visual, a:count)
+endf
+
+func! objects#python#for(options, visual, count)
+	call s:select('for', s:options(a:options), a:visual, a:count)
+endf
+
+func! objects#python#with(options, visual, count)
+	call s:select('with', s:options(a:options), a:visual, a:count)
+endf
+
+func! objects#python#try(options, visual, count)
+	call s:select('try', s:options(a:options), a:visual, a:count)
+endf
+
+" ----
+
+
 let s:groups = {
 	\ 'if': ['else', 'elif'],
 	\ 'try': ['except', 'else', 'finally'],
 	\ 'for': ['else'],
 \ }
-
-
-func! objects#python#function(options, visual, count)
-	call s:select('def', s:options(a:options), a:visual, a:count)
-endf
-
-
-func! objects#python#class(options, visual, count)
-	call s:select('class', s:options(a:options), a:visual, a:count)
-endf
 
 
 func! s:options(options)

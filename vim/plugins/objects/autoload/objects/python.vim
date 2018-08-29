@@ -144,8 +144,7 @@ func! s:select(kw, options, visual, count)
 		end
 
 		if direction == 'down'
-			let whitelist = get(s:groups, a:kw, [])
-			let candidate.end = s:find_block_end(candidate.start, whitelist)
+			let candidate.end = s:find_block_end(a:kw, candidate.start)
 		end
 
 		" Find the first non-blank line so that we can reliably compare indent
@@ -231,26 +230,57 @@ endf
 " {whitelist} contains a list of keywords to be ignored (that is, they don't set
 " the end of the block) when encountered at the same indent level of the line
 " {start}.
-func! s:find_block_end(start, ...)
-	let whitelist = a:0 && type(a:1) == v:t_list ? '('.join(a:1, '|').')>' : ''
+func! s:find_block_end(kw, start)
+
+	let whitelist = get(s:groups, a:kw, [])
 	let indent = indent(a:start)
-	for i in range(a:start, line('$'))
+
+	let i = a:start
+	while i <= line('$')
+
+		let i += 1
+
 		if !objects#emptyline(i) && indent(i) == indent
 			continue
 		end
-		for k in range(i, line('$'))
+
+		let k = i
+		while k <= line('$')
+
 			if k == line('$')
 				return k
 			end
+
 			if objects#emptyline(k)
+				let k += 1
 				continue
 			end
+
+			if getline(k) =~ '\v^\s{'.indent.'}#'
+				let j = k
+				while j <= line('$')
+					if getline(j) =~ '\v^\s{'.indent.'}#'
+						let j += 1
+						continue
+					end
+					if getline(j) =~ '\v^\s{'.indent.'}('.join(whitelist, '|').')>'
+						let k = j
+						break
+					end
+					break
+				endw
+			end
+
 			if indent(k) < indent
 				\ || indent(k) == indent
-				\ && (empty(whitelist) || getline(k) !~ '\v^\s{'.indent.'}'.whitelist)
+				\ && (empty(whitelist) || getline(k) !~ '\v^\s{'.indent.'}('.join(whitelist, '|').')>')
 				return prevnonblank(k-1)
 			end
-		endfo
-	endfo
+
+			let k += 1
+		endw
+
+	endw
+
 	return 0
 endf

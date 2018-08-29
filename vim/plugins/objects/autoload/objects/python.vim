@@ -173,12 +173,9 @@ func! s:do_selection(match, options, visual, direction)
 			call cursor(prevnonblank(line('.')-1)+1, 1)
 		end
 		norm! V
-		if a:match.end == line('$')
-			call cursor(a:match.end, len(getline(a:match.end)))
-		else
-			let end = nextnonblank(a:match.end+1)
-			call cursor(end-1, len(getline(end-1)))
-		end
+		let end = nextnonblank(a:match.end+1)
+		let end = end ? end-1 : a:match.end
+		call cursor(end, len(getline(end)))
 	end
 
 	if a:visual && (a:direction == 'up' || a:match.end == line('$') && a:options.bounce)

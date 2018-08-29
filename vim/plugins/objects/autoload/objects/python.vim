@@ -83,9 +83,6 @@ func! s:select(kw, options, visual, count)
 
 		let candidate = s:empty_match()
 
-		" Search for the definition start
-		" --------------------------------------------------------------------
-
 		if direction == 'down'
 
 			" Check for a definition in the current indent block
@@ -101,6 +98,9 @@ func! s:select(kw, options, visual, count)
 					end
 					if getline(k) =~ '\v^\s*'.kw
 						let candidate.start = k
+						break
+					end
+					if getline(k) !~ '\v^\s*('.chars.')'
 						break
 					end
 				endfo

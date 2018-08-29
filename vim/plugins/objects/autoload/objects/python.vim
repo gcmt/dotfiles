@@ -103,28 +103,8 @@ func! s:select(kw, options, visual, count)
 			return
 		end
 
-		" Search for the definition end
-		" --------------------------------------------------------------------
-
 		if direction == 'down'
-
-			let indent = indent(candidate.start)
-			for i in range(candidate.start, line('$'))
-				if objects#emptyline(i) || indent(i) != indent
-					for k in range(i, line('$'))
-						if k == line('$')
-							let candidate.end = k
-							break
-						end
-						if !objects#emptyline(k) && indent(k) <= indent
-							let candidate.end = k-1
-							break
-						end
-					endfo
-					break
-				end
-			endfo
-
+			let candidate.end = s:find_block_end(candidate.start)
 		end
 
 		" Find the first non-blank line so that we can reliably compare indent
@@ -181,11 +161,46 @@ func! s:do_selection(match, options, visual, direction)
 			call cursor(prevnonblank(line('.')-1)+1, 1)
 		end
 		norm! V
-		call cursor(a:match.end, len(getline(a:match.end)))
+		if a:match.end == line('$')
+			call cursor(a:match.end, len(getline(a:match.end)))
+		else
+			let end = nextnonblank(a:match.end+1)
+			call cursor(end-1, len(getline(end-1)))
+		end
 	end
 
 	if a:visual && (a:direction == 'up' || a:match.end == line('$') && a:options.bounce)
 		call feedkeys('o')
 	end
 
+endf
+
+
+" s:find_block_end({start:number}[, {whitelist:list}]) -> number
+" Find the block end of the block starting at line {start}.
+" {whitelist} contains a list of keywords to be ignored (that is, they don't set
+" the end of the block) when encountered at the same indent level of the line
+" {start}.
+func! s:find_block_end(start, ...)
+	let whitelist = a:0 && type(a:1) == v:t_list ? '('.join(a:1, '|').')>' : ''
+	let indent = indent(a:start)
+	for i in range(a:start, line('$'))
+		if !objects#emptyline(i) && indent(i) == indent
+			continue
+		end
+		for k in range(i, line('$'))
+			if k == line('$')
+				return k
+			end
+			if objects#emptyline(k)
+				continue
+			end
+			if indent(k) < indent
+				\ || indent(k) == indent
+				\ && (empty(whitelist) || getline(k) !~ '\v^\s{'.indent.'}'.whitelist)
+				return prevnonblank(k-1)
+			end
+		endfo
+	endfo
+	return 0
 endf

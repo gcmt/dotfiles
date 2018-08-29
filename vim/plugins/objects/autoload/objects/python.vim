@@ -112,6 +112,11 @@ func! s:select(kw, options, visual, count)
 		let start = candidate.start ? candidate.start : prevnonblank(line('.'))
 		let indent = indent(start)
 		while indent >= 0
+			let related = get(s:groups, a:kw, [])
+			if !empty(related) && getline(start) =~ '\v^\s*('.join(related, '|').')>'
+				let start = searchpos('\v^\s{'.indent.'}\S', 'Wb')[0]
+				continue
+			end
 			if getline(start) =~ '\v^\s*'.kw
 				" Check for decorators or comments to include in the selection
 				for k in range(start, 0, -1)

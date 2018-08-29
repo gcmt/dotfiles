@@ -75,12 +75,12 @@ func! s:select(kw, options, visual, count)
 			end
 			let chars = kw =~ '\v<def>' ? '\@|#' : '#'
 			if getline(linenr) =~ '\v^\s*('.chars.'|'.kw.')'
-				for i in range(linenr, line('$'))
-					if objects#emptyline(i) || indent(i) != indent(linenr)
+				for k in range(linenr, line('$'))
+					if objects#emptyline(k) || indent(k) != indent(linenr)
 						break
 					end
-					if getline(i) =~ '\v^\s*'.kw
-						let candidate.start = i
+					if getline(k) =~ '\v^\s*'.kw
+						let candidate.start = k
 						break
 					end
 				endfo
@@ -94,10 +94,10 @@ func! s:select(kw, options, visual, count)
 		while indent >= 0
 			if getline(start) =~ '\v^\s*'.kw
 				" Check for decorators or comments to include in the selection
-				for i in range(start, 0, -1)
+				for k in range(start, 0, -1)
 					let chars = kw =~ '\v<def>' ? '\@|#' : '#'
-					if i == 0 || getline(i-1) !~ '\v^\s{'.indent.'}('.chars.')'
-						let candidate.start = i
+					if k == 0 || getline(k-1) !~ '\v^\s{'.indent.'}('.chars.')'
+						let candidate.start = k
 						break
 					end
 				endfo

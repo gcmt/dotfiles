@@ -139,11 +139,13 @@ func! s:select(kw, options, visual, count)
 		if direction == 'down'
 			let match.start = match.start ? match.start : candidate.start
 			let match.end = candidate.end
-			call cursor(match.end, 1)
+			let end = nextnonblank(match.end+1)
+			call cursor(end ? end-1 : match.end, 1)
 		else
 			let match.start = candidate.start
 			let match.end = match.end ? match.end : candidate.end
-			call cursor(match.start, 1)
+			let start = prevnonblank(match.start-1)
+			call cursor(start ? start+1 : match.start, 1)
 		end
 
 	endfo

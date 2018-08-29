@@ -182,12 +182,12 @@ func! s:select(kw, options, visual, count)
 	endfo
 
 	call cursor(curpos)
-	call s:do_selection(match, a:options, a:visual, direction)
+	call s:do_selection(match, a:kw, a:options, a:visual, direction)
 
 endf
 
 
-func! s:do_selection(match, options, visual, direction)
+func! s:do_selection(match, kw, options, visual, direction)
 
 	if !a:match.start && !a:match.end
 		return
@@ -205,8 +205,15 @@ func! s:do_selection(match, options, visual, direction)
 		norm! V
 		if a:direction == 'down'
 			let end = nextnonblank(a:match.end+1)
-			let end = end ? end-1 : a:match.end
-			call cursor(end, len(getline(end)))
+			if a:kw !~ '\v^(def|class)$'
+				\ && getline(end) =~ '\v^\s*((async\s+)?def|class|\@\w+)>'
+				" I the next line after the match is a class or function definition,
+				" don't select trailing empty lines (even if a:options.inner == 0)
+				call cursor(a:match.end, len(getline(a:match.end)))
+			else
+				let end = end ? end-1 : a:match.end
+				call cursor(end, len(getline(end)))
+			end
 		else
 			call cursor(a:match.end, len(getline(a:match.end)))
 		end

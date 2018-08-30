@@ -93,21 +93,24 @@ func! s:select(kw, options, visual, count)
 
 		if direction == 'down'
 
-			" Check for a definition in the current indent block
+			" If we are on a commented line (when options.comment == 1) or on
+			" a decorator (for functions and classes), search the block start at
+			" the current indent level
 			let linenr = line('.')
 			if objects#emptyline(linenr) && !objects#emptyline(linenr+1)
 				let linenr += 1
 			end
-			if !empty(include) && getline(linenr) =~ '\v^\s*('.include.'|'.kw.')'
+			if getline(linenr) =~ '\v^\s*(\@|#|'.kw.')'
 				for k in range(linenr, line('$'))
 					if objects#emptyline(k) || indent(k) != indent(linenr)
 						break
 					end
+					let related = get(s:groups, a:kw, [])
 					if getline(k) =~ '\v^\s*'.kw
 						let candidate.start = k
 						break
 					end
-					if getline(k) !~ '\v^\s*('.include.')'
+					if getline(k) !~ '\v^\s*(\@|#)'
 						break
 					end
 				endfo
@@ -115,13 +118,18 @@ func! s:select(kw, options, visual, count)
 
 		end
 
-		" Search for a definition on the current line and backwards
+		" Search for the block start backwards
 		let start = candidate.start ? candidate.start : prevnonblank(line('.'))
 		let indent = indent(start)
 		while indent >= 0
 			let related = get(s:groups, a:kw, [])
-			if !empty(related) && getline(start) =~ '\v^\s*('.join(related, '|').')>'
-				let start = searchpos('\v^\s{'.indent.'}\S', 'Wb')[0]
+			if getline(start) =~ '\v^\s*#'
+				\ || !empty(related) && getline(start) =~ '\v^\s*('.join(related, '|').')>'
+				let start = searchpos('\v^\s{'.indent.'}[^# ]', 'Wb')[0]
+				continue
+			end
+			if getline(start) =~ '\v^\s*#'
+				let start = searchpos('\v^\s{'.indent.'}[^# ]', 'Wb')[0]
 				continue
 			end
 			if getline(start) =~ '\v^\s*'.kw
@@ -235,52 +243,47 @@ func! s:find_block_end(kw, start)
 	let whitelist = get(s:groups, a:kw, [])
 	let indent = indent(a:start)
 
-	let i = a:start
-	while i <= line('$')
-
-		let i += 1
-
+	" Skip lines on the same indent level as {a:start}
+	let pos = a:start
+	for i in range(pos, line('$'))
 		if !objects#emptyline(i) && indent(i) == indent
 			continue
 		end
+		let pos = i
+		break
+	endfo
 
-		let k = i
-		while k <= line('$')
-
-			if k == line('$')
-				return k
+	let skip = {}
+	for i in range(pos, line('$'))
+		if has_key(skip, i)
+			continue
+		end
+		if i == line('$')
+			return i
+		end
+		if objects#emptyline(i)
+			continue
+		end
+		if getline(i) =~ '\v^\s{'.indent.'}#'
+			let skip = {}
+			for k in range(i, line('$'))
+				if getline(k) =~ '\v^\s{'.indent.'}#' || objects#emptyline(k)
+					let skip[k] = 1
+					continue
+				end
+				if getline(k) !~ '\v^\s{'.indent.'}('.join(whitelist, '|').')>'
+					return i-1
+				end
+				break
+			endfo
+		else
+			if indent(i) < indent
+				\ || indent(i) == indent
+				\ && (empty(whitelist) || getline(i) !~ '\v^\s{'.indent.'}('.join(whitelist, '|').')>')
+				return prevnonblank(i-1)
 			end
-
-			if objects#emptyline(k)
-				let k += 1
-				continue
-			end
-
-			if getline(k) =~ '\v^\s{'.indent.'}#'
-				let j = k
-				while j <= line('$')
-					if getline(j) =~ '\v^\s{'.indent.'}#'
-						let j += 1
-						continue
-					end
-					if getline(j) =~ '\v^\s{'.indent.'}('.join(whitelist, '|').')>'
-						let k = j
-						break
-					end
-					break
-				endw
-			end
-
-			if indent(k) < indent
-				\ || indent(k) == indent
-				\ && (empty(whitelist) || getline(k) !~ '\v^\s{'.indent.'}('.join(whitelist, '|').')>')
-				return prevnonblank(k-1)
-			end
-
-			let k += 1
-		endw
-
-	endw
+		end
+	endfo
 
 	return 0
 endf

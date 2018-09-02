@@ -1,0 +1,25 @@
+#!/bin/bash
+
+basedir="$HOME/.run/i3"
+out="$basedir/last-window"
+
+cleanup() {
+	rm -f "$out"
+}
+trap cleanup INT TERM EXIT
+
+mkdir -p "$basedir"
+echo "" > "$out"
+
+last=
+xprop -root -spy _NET_ACTIVE_WINDOW | while read -r line; do
+	current="$(echo "$line" | grep -io "0x[a-f0-9]\\+")"
+	if ! xprop -id "$last" >/dev/null 2>&1; then
+		last=
+	fi
+	if [[ "$current" == "$last" ]]; then
+		last=
+	fi
+	echo "$last" > "$out"
+	last="$current"
+done

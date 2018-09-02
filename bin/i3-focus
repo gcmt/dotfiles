@@ -31,36 +31,56 @@ def parse_args():
     return args
 
 
+def match(args, win):
+    if args.m == "-" and win.marks:
+        return False
+    if isinstance(args.m, set) and args.m and not args.m & set(win.marks):
+        return False
+    if args.t and not re.search(args.t, win.name):
+        return False
+    if args.c and not re.match(args.c, win.window_class):
+        return False
+    if args.n and not re.match(args.n, win.window_instance):
+        return False
+    return True
+
+
+def get_last_window():
+    try:
+        with open(os.path.expanduser('~/.run/i3/last-window'), 'r') as f:
+            return f.read().strip()
+    except FileNotFoundError:
+        return ''
+
+
 def main():
 
     args = parse_args()
 
+    if args.m != "-":
+        args.m = set(args.m.split(',')) if args.m else set()
+
     i3 = i3ipc.Connection()
-    windows = i3.get_tree().leaves()
+    tree = i3.get_tree()
 
-    fallback = shlex.split(args.fallback)
-
-    if args.m == "-":
-        wanted_marks = "-"
-    else:
-        wanted_marks = set(args.m.split(',')) if args.m else set()
+    # If the target window is already focused, change the focus to the
+    # previously focused window
+    focused = tree.find_focused()
+    if match(args, focused):
+        id = get_last_window()
+        if not id:
+            sys.exit(1)
+        i3.command(f'[id="{id}"] focus')
+        sys.exit(0)
 
     success = False
-    for w in windows:
-        marks = set(w.marks)
-        if wanted_marks == "-" and marks:
-            continue
-        if isinstance(wanted_marks, set) and wanted_marks and not wanted_marks & marks:
-            continue
-        if args.t and not re.search(args.t, w.name):
-            continue
-        if args.c and not re.match(args.c, w.window_class):
-            continue
-        if args.n and not re.match(args.n, w.window_instance):
-            continue
-        res = w.command('focus')
-        success = "True" in str(res)
+    for win in tree.leaves():
+        if match(args, win):
+            res = win.command('focus')
+            success = "True" in str(res)
+            break
 
+    fallback = shlex.split(args.fallback)
     if fallback and not success:
         try:
             os.execvp(fallback[0], fallback)

@@ -1,14 +1,22 @@
 #!/bin/bash
 
 basedir="$HOME/.run/i3"
+lock="$basedir/i3-watch-last-window.pid"
 out="$basedir/last-window"
 
+if [[ -e "$lock" ]]; then
+	echo "i3-watch-last-window: already running"
+	exit 1
+fi
+
 cleanup() {
-	rm -f "$out"
+	rm -f "$out" "$lock"
 }
 trap cleanup INT TERM EXIT
 
 mkdir -p "$basedir"
+echo $$ > "$lock"
+
 echo "" > "$out"
 
 last=

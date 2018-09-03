@@ -214,8 +214,8 @@ bindsym $mod+p workspace prev
 bindsym $mod+z focus mode_toggle
 
 # Scratchpad bindings
-bindsym $mod+Control+minus scratchpad show
-bindsym $mod+minus scratchpad show; floating disable
+bindsym $mod+minus scratchpad show
+bindsym $mod+Control+minus scratchpad show; floating disable
 bindsym $mod+Shift+minus move scratchpad
 
 # Toggle tiling / floating

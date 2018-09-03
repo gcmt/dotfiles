@@ -1,0 +1,6 @@
+#!/bin/bash
+
+file="$HOME/.run/i3/last-window"
+if [[ -s "$file" ]]; then
+	i3-msg "[id=\"$(cat $file)\"] focus" >/dev/null
+fi

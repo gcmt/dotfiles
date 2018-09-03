@@ -118,12 +118,9 @@ bindsym $mod+Shift+comma exec --no-startup-id i3-rename-workspace -r
 bindsym $mod+w exec --no-startup-id i3-new-workspace
 
 # Rofi bindings
-bindsym $mod+Tab exec --no-startup-id i3-choose-window -no-inputbar
 bindsym $mod+space exec --no-startup-id rofi -show drun
 bindsym $alt+space exec --no-startup-id "rofi -show run -kb-accept-entry Control+d -kb-accept-custom Return,Control+m,Control+f"
-
-# Choose workspace with rofi
-bindsym $mod+g exec --no-startup-id i3-choose-workspace
+bindsym Control+space exec --no-startup-id i3-choose-window -no-inputbar
 
 # Toggle Polybar visibility
 bindsym $mod+Return exec --no-startup-id polybar-toggle
@@ -203,8 +200,9 @@ bindsym $mod+0 exec --no-startup-id i3-move-container-to-new-workspace -f
 bindsym $mod+Shift+0 exec --no-startup-id i3-move-container-to-new-workspace
 bindsym $mod+Shift+a move container to workspace back_and_forth; workspace back_and_forth
 
-# Move to last focused workspace
+# Move to last focused workspace/window
 bindsym $mod+a workspace back_and_forth
+bindsym $mod+Tab exec --no-startup-id i3-focus-last-window
 
 # Cycle through workspaces
 bindsym $mod+n workspace next

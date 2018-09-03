@@ -145,7 +145,7 @@ bindsym $mod+b split vertical
 bindsym $mod+r split horizontal
 
 # Reset workspace layout
-bindsym $mod+Shift+w [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
+bindsym $mod+Shift+0 [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 
 # Change window layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
@@ -196,8 +196,8 @@ bindsym $mod+Shift+8 move container to workspace number 8; workspace number 8
 bindsym $mod+Shift+9 move container to workspace number 9; workspace number 9
 
 # Move window to new workspace and back
-bindsym $mod+0 exec --no-startup-id i3-move-container-to-new-workspace -f
-bindsym $mod+Shift+0 exec --no-startup-id i3-move-container-to-new-workspace
+bindsym $mod+less exec --no-startup-id i3-move-container-to-new-workspace
+bindsym $mod+Shift+w exec --no-startup-id i3-move-container-to-new-workspace -f
 bindsym $mod+Shift+a move container to workspace back_and_forth; workspace back_and_forth
 
 # Move to last focused workspace/window

@@ -1,33 +1,37 @@
 #!/usr/bin/env python
 
 import os
-import sys
 import time
+import argparse
 from datetime import datetime
 from subprocess import run
 
-DEFAULT_DELAY = 4
 
 def notify(title, msg):
     run(['notify-send', title, msg])
 
-now = datetime.utcnow()
-fname = f"Screenshot_{now.strftime('%Y-%m-%d-%T')}.png"
-dest = os.path.join(os.environ['HOME'], 'Downloads', fname)
 
-wait = '-wait' in sys.argv
-if wait:
-    i = sys.argv.index('-wait')
-    try:
-        seconds = int(sys.argv[i+1])
-        sys.argv.pop(i+1)
-    except (ValueError, IndexError):
-        seconds = DEFAULT_DELAY
-    sys.argv.pop(i)
-    time.sleep(seconds)
+def parse_args():
+    parser = argparse.ArgumentParser(allow_abbrev=False)
+    parser.add_argument('-wait', type=int, nargs='?', const=4)
+    return parser.parse_known_args()
 
-sys.argv.pop(0)
-run(['import'] + sys.argv + [dest])
 
-if wait and '-window' in sys.argv:
-    notify('Screenshot taken', dest)
+def main():
+
+    args, import_args = parse_args()
+    if args.wait:
+        time.sleep(args.wait)
+
+    now = datetime.utcnow()
+    home = os.environ['HOME']
+    dest = f"{home}/Downloads/Screenshot_{now.strftime('%Y-%m-%d-%T')}.png"
+
+    run(['import'] + import_args + [dest])
+
+    if args.wait:
+        notify('Screenshot taken', dest.replace(home, '~', 1))
+
+
+if __name__ == '__main__':
+    main()

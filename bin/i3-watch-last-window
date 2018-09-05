@@ -22,10 +22,10 @@ echo "" > "$out"
 last=
 xprop -root -spy _NET_ACTIVE_WINDOW | while read -r line; do
 	current="$(echo "$line" | grep -io "0x[a-f0-9]\\+")"
-	if ! xprop -id "$last" >/dev/null 2>&1; then
-		last=
-	fi
 	if [[ "$current" == "$last" ]]; then
+		continue
+	fi
+	if ! xprop -id "$last" >/dev/null 2>&1; then
 		last=
 	fi
 	echo "$last" > "$out"

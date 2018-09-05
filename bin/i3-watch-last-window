@@ -5,7 +5,7 @@ lock="$basedir/i3-watch-last-window.pid"
 out="$basedir/last-window"
 
 if [[ -e "$lock" ]]; then
-	echo "i3-watch-last-window: already running"
+	echo "i3-watch-last-window: already running" 2>&1
 	exit 1
 fi
 

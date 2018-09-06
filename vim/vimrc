@@ -686,6 +686,7 @@
 		au CmdWinEnter * noremap <buffer> <c-j> <cr>
 		au CmdWinEnter * noremap <buffer> q <c-w>c
 		au CmdWinEnter * setl nonumber norelativenumber
+		au CmdWinEnter * resize 20 | keepj norm! ggG
 
 		" Keep clipboard content
 		au VimLeave * call system("xclip -sel clip -i", getreg('+'))

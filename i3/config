@@ -246,6 +246,7 @@ mode "i3" {
 
 	bindsym Shift+l exec --no-startup-id lock -mfb, mode "default"
 	bindsym Shift+s exec --no-startup-id lock -f && sleep 1 && systemctl suspend, mode "default"
+	bindsym Shift+h exec --no-startup-id systemctl hibernate, mode "default"
 
 	bindsym c exec --no-startup-id urxvt -name floating -e vim .config/i3/config; mode "default"
 	bindsym t exec --no-startup-id urxvt -name floating -e vim .config/redshift/redshift.conf; mode "default"

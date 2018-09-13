@@ -101,7 +101,7 @@ runfile="$borgdir/running"
 errfile="$borgdir/error"
 
 statedir="$HOME/.run/polybar"
-state="$statedir/borg-backup"
+state="$statedir/backup"
 
 mkdir -p "$statedir"
 touch "$state"

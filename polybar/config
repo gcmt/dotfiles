@@ -77,7 +77,7 @@ font-1 = "Ionicons:size=12;3"
 
 modules-left = i3
 modules-center = datetime
-modules-right = borg-backup wlan eth volume battery timer
+modules-right = backup wlan eth volume battery timer
 
 ; i3 workspaces
 ; ----------------------------------------------------------------------------
@@ -134,17 +134,17 @@ click-right = ~/.config/polybar/modules/datetime -menu
 
 label = %output%
 
-; Borg-backup
+; backup
 ; ----------------------------------------------------------------------------
 
-[module/borg-backup]
+[module/backup]
 
 type = custom/script
-exec = ~/.config/polybar/modules/borg-backup
+exec = ~/.config/polybar/modules/backup
 interval = 1
 
-click-left = ~/.config/polybar/modules/borg-backup click-left
-click-right = ~/.config/polybar/modules/borg-backup click-right
+click-left = ~/.config/polybar/modules/backup click-left
+click-right = ~/.config/polybar/modules/backup click-right
 
 label = %output%
 

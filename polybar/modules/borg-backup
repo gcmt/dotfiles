@@ -3,12 +3,15 @@
 borgdir="/run/borg-backup"
 statedir="$HOME/.run/polybar"
 state="$statedir/borg-backup"
+quiet=1
 
 mkdir -p "$statedir"
 touch "$state"
 
 _notify() {
-	notify-send -t 3000 "$@"
+	if ! _polybar_visible && (( quiet == 0 )); then
+		notify-send -t 3000 "$@"
+	fi
 }
 
 _notify_err() {
@@ -37,9 +40,7 @@ _polybar_visible() {
 if [[ -e "$borgdir/error" ]]; then
 
 	if (( "$(_get_prop running)" == 1 )); then
-		if ! _polybar_visible; then
-			_notify_err "Backup Failed" "$(_get_prop archive '')"
-		fi
+		_notify_err "Backup Failed" "$(_get_prop archive '')"
 	fi
 
 	_set_prop running 0
@@ -52,9 +53,7 @@ elif [[ -e "$borgdir/running" ]]; then
 	if (( "$(_get_prop running)" == 0 )); then
 		_set_prop running 1
 		_set_prop archive "$archive"
-		if ! _polybar_visible; then
-			_notify "Backup Started" "$archive"
-		fi
+		_notify "Backup Started" "$archive"
 	fi
 
 	echo " Backup"
@@ -62,9 +61,7 @@ elif [[ -e "$borgdir/running" ]]; then
 else
 
 	if (( "$(_get_prop running)" == 1 )); then
-		if ! _polybar_visible; then
-			_notify "Backup Finished" "$(_get_prop archive '')"
-		fi
+		_notify "Backup Finished" "$(_get_prop archive '')"
 	fi
 
 	_set_prop running 0

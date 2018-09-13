@@ -1,14 +1,17 @@
 #!/bin/bash
 
+
 errfile="/run/borg-backup/error"
+
 
 _view_log() {
 	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1"
 }
 
-case $1 in
 
-	left)
+_main() {
+
+	if [[ "$1" == left ]]; then
 
 		if [[ ! -e "$errfile" ]]; then
 			exit 1
@@ -23,11 +26,18 @@ case $1 in
 			_view_log borg-backup-hdd
 		fi
 
-		;;
+		exit 0
 
-	right)
+	fi
+
+	if [[ "$1" == right ]]; then
 
 		rm -rf "$errfile"
-		;;
+		exit 0
 
-esac
+	fi
+
+}
+
+
+_main "$@"

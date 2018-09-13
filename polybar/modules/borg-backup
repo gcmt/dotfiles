@@ -1,12 +1,15 @@
 #!/bin/bash
 
+
 borgdir="/run/borg-backup"
 statedir="$HOME/.run/polybar"
 state="$statedir/borg-backup"
 quiet=1
 
+
 mkdir -p "$statedir"
 touch "$state"
+
 
 _notify() {
 	if ! _polybar_visible && (( quiet == 0 )); then
@@ -14,9 +17,16 @@ _notify() {
 	fi
 }
 
+
 _notify_err() {
 	_notify -u critical "$@"
 }
+
+
+_polybar_visible() {
+	xprop -id $(xdo id -N Polybar) | grep -q "window state: Normal"
+}
+
 
 _set_prop() {
 	local prop=$1 value=$2
@@ -27,45 +37,50 @@ _set_prop() {
 	fi
 }
 
+
 _get_prop() {
 	local value= prop=$1 default=${2:-0}
 	value="$(grep -Po "(?<=^$prop=).*" "$state")"
 	echo "${value:-$default}"
 }
 
-_polybar_visible() {
-	xprop -id $(xdo id -N Polybar) | grep -q "window state: Normal"
+
+_main() {
+
+	if [[ -e "$borgdir/error" ]]; then
+
+		if (( "$(_get_prop running)" == 1 )); then
+			_notify_err "Backup Failed" "$(_get_prop archive '')"
+		fi
+
+		_set_prop running 0
+
+		echo '%{F#ce7d86} Backup%{F-}'
+
+	elif [[ -e "$borgdir/running" ]]; then
+
+		archive="$(cat "$borgdir/running")"
+		if (( "$(_get_prop running)" == 0 )); then
+			_set_prop running 1
+			_set_prop archive "$archive"
+			_notify "Backup Started" "$archive"
+		fi
+
+		echo " Backup"
+
+	else
+
+		if (( "$(_get_prop running)" == 1 )); then
+			_notify "Backup Finished" "$(_get_prop archive '')"
+		fi
+
+		_set_prop running 0
+
+		echo ""
+
+	fi
+
 }
 
-if [[ -e "$borgdir/error" ]]; then
 
-	if (( "$(_get_prop running)" == 1 )); then
-		_notify_err "Backup Failed" "$(_get_prop archive '')"
-	fi
-
-	_set_prop running 0
-
-	echo '%{F#ce7d86} Backup%{F-}'
-
-elif [[ -e "$borgdir/running" ]]; then
-
-	archive="$(cat "$borgdir/running")"
-	if (( "$(_get_prop running)" == 0 )); then
-		_set_prop running 1
-		_set_prop archive "$archive"
-		_notify "Backup Started" "$archive"
-	fi
-
-	echo " Backup"
-
-else
-
-	if (( "$(_get_prop running)" == 1 )); then
-		_notify "Backup Finished" "$(_get_prop archive '')"
-	fi
-
-	_set_prop running 0
-
-	echo ""
-
-fi
+_main "$@"

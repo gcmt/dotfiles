@@ -1,0 +1,23 @@
+#!/bin/bash
+
+
+utils::polybar_visible() {
+	xprop -id $(xdo id -N Polybar) | grep -q "window state: Normal"
+}
+
+
+utils::state_set() {
+	local state="$1" prop="$2" value="$3"
+	if grep -q "^$prop=" "$state"; then
+		sed -i "s:^$prop=.*:$prop=${value//:/\\:}:" "$state"
+	else
+		echo "$prop=$value" >> "$state"
+	fi
+}
+
+
+utils::state_get() {
+	local value= state="$1" prop="$2" default="${3:-0}"
+	value="$(grep -Po "(?<=^$prop=).*" "$state")"
+	echo "${value:-$default}"
+}

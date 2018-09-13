@@ -1,79 +1,69 @@
 #!/bin/bash
 
+current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$current_dir" || exit 1
+source utils
 
-_notify() {
-	if ! _polybar_visible && (( quiet == 0 )); then
+
+notify() {
+	if ! utils::polybar_visible && (( quiet == 0 )); then
 		notify-send -t 3000 "$@"
 	fi
 }
 
 
-_notify_err() {
-	_notify -u critical "$@"
+notify_err() {
+	notify -u critical "$@"
 }
 
 
-_polybar_visible() {
-	xprop -id $(xdo id -N Polybar) | grep -q "window state: Normal"
+state_get() {
+	utils::state_get "$state" "$@"
 }
 
 
-_set_prop() {
-	local prop=$1 value=$2
-	if grep -q "^$prop=" "$state"; then
-		sed -i "s:^$prop=.*:$prop=${value//:/\\:}:" "$state"
-	else
-		echo "$prop=$value" >> "$state"
-	fi
+state_set() {
+	utils::state_set "$state" "$@"
 }
 
 
-_get_prop() {
-	local value= prop=$1 default=${2:-0}
-	value="$(grep -Po "(?<=^$prop=).*" "$state")"
-	echo "${value:-$default}"
-}
-
-
-_main() {
+main() {
 
 	if [[ -e "$errfile" ]]; then
 
-		if (( "$(_get_prop running)" == 1 )); then
-			_notify_err "Backup Failed" "$(_get_prop archive '')"
+		if (( "$(state_get running)" == 1 )); then
+			notify_err "Backup Failed" "$(state_get archive '')"
 		fi
 
-		_set_prop running 0
-
 		echo '%{F#ce7d86} Backup%{F-}'
+		state_set running 0
 
 	elif [[ -e "$runfile" ]]; then
 
 		archive="$(cat "$runfile")"
-		if (( "$(_get_prop running)" == 0 )); then
-			_set_prop running 1
-			_set_prop archive "$archive"
-			_notify "Backup Started" "$archive"
+		if (( "$(state_get running)" == 0 )); then
+			state_set running 1
+			state_set archive "$archive"
+			notify "Backup Started" "$archive"
 		fi
 
 		echo " Backup"
 
 	else
 
-		if (( "$(_get_prop running)" == 1 )); then
-			_notify "Backup Finished" "$(_get_prop archive '')"
+		if (( "$(state_get running)" == 1 )); then
+			notify "Backup Finished" "$(state_get archive '')"
 		fi
 
-		_set_prop running 0
-
 		echo ""
+		state_set running 0
 
 	fi
 
 }
 
 
-_handle_left_click() {
+handle_left_click() {
 
 	local archive
 	if [[ -e "$errfile" ]]; then
@@ -86,20 +76,20 @@ _handle_left_click() {
 	fi
 
 	if [[ "$archive" =~ ^rsync\.net ]]; then
-		_view_log borg-backup-rsync
+		view_log borg-backup-rsync
 	elif [[ "$archive" =~ MyPassport ]]; then
-		_view_log borg-backup-hdd
+		view_log borg-backup-hdd
 	fi
 
 }
 
 
-_handle_right_click() {
+handle_right_click() {
 	rm -rf "$errfile"
 }
 
 
-_view_log() {
+view_log() {
 	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1"
 }
 
@@ -118,12 +108,12 @@ touch "$state"
 
 case "$1" in
 	click-left)
-		_handle_left_click
+		handle_left_click
 		;;
 	click-right)
-		_handle_right_click
+		handle_right_click
 		;;
 	*)
-		_main "$@"
+		main "$@"
 		;;
 esac

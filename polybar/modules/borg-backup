@@ -37,7 +37,10 @@ _get_prop() {
 
 _main() {
 
-	if [[ -e "$borgdir/error" ]]; then
+	mkdir -p "$statedir"
+	touch "$state"
+
+	if [[ -e "$errfile" ]]; then
 
 		if (( "$(_get_prop running)" == 1 )); then
 			_notify_err "Backup Failed" "$(_get_prop archive '')"
@@ -47,9 +50,9 @@ _main() {
 
 		echo '%{F#ce7d86} Backup%{F-}'
 
-	elif [[ -e "$borgdir/running" ]]; then
+	elif [[ -e "$runfile" ]]; then
 
-		archive="$(cat "$borgdir/running")"
+		archive="$(cat "$runfile")"
 		if (( "$(_get_prop running)" == 0 )); then
 			_set_prop running 1
 			_set_prop archive "$archive"
@@ -73,13 +76,51 @@ _main() {
 }
 
 
-borgdir="/run/borg-backup"
-statedir="$HOME/.run/polybar"
-state="$statedir/borg-backup"
+_handle_left_click() {
+
+	if [[ ! -e "$errfile" ]]; then
+		exit 1
+	fi
+
+	local archive="$(cat "$errfile")"
+	rm -rf "$errfile"
+
+	if [[ "$archive" =~ ^rsync\.net ]]; then
+		_view_log borg-backup-rsync
+	elif [[ "$archive" =~ MyPassport ]]; then
+		_view_log borg-backup-hdd
+	fi
+
+}
+
+
+_handle_right_click() {
+	rm -rf "$errfile"
+}
+
+
+_view_log() {
+	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1"
+}
+
 
 quiet=0
 
-mkdir -p "$statedir"
-touch "$state"
+borgdir="/run/borg-backup"
+runfile="$borgdir/running"
+errfile="$borgdir/error"
 
-_main "$@"
+statedir="$HOME/.run/polybar"
+state="$statedir/borg-backup"
+
+case "$1" in
+	click-left)
+		_handle_left_click
+		;;
+	click-right)
+		_handle_right_click
+		;;
+	*)
+		_main "$@"
+		;;
+esac

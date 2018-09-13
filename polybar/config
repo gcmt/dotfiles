@@ -141,8 +141,8 @@ label = %output%
 
 type = custom/script
 exec = ~/.config/polybar/modules/borg-backup
-click-left = ~/.config/polybar/modules/borg-backup-click left
-click-right = ~/.config/polybar/modules/borg-backup-click right
+click-left = ~/.config/polybar/modules/borg-backup click-left
+click-right = ~/.config/polybar/modules/borg-backup click-right
 interval = 1
 
 label = %output%

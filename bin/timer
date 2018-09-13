@@ -1,6 +1,5 @@
 #!/bin/bash
 
-timer="/tmp/timer"
 
 get_duration() {
 	local n mod total=0
@@ -18,37 +17,42 @@ get_duration() {
 	echo "$total"
 }
 
+
 start_timer() {
 	local seconds="$(get_duration "$@")"
 	[[ -z "$seconds" ]] && return 1
 	expr $(date +'%s') + "$seconds" > "$timer"
 }
 
+
 stop_timer() {
 	rm -f "$timer"
 }
 
-case "$1" in
 
-	start)
-		start_timer "$@" || exit 1
-		;;
+timer="$HOME/.run/timer"
 
-	toggle)
-		if [[ -e "$timer" ]]; then
-			stop_timer
-		else
-			start_timer "$@" || exit 1
-		fi
-		;;
+mkdir -p "$HOME/.run"
 
-	stop)
+if [[ "$1" == start || "$1" =~ [0-9]+ ]]; then
+
+	start_timer "$@" || exit 1
+
+elif [[ "$1" == toggle ]]; then
+
+	if [[ -e "$timer" ]]; then
 		stop_timer
-		;;
+	else
+		start_timer "$@" || exit 1
+	fi
 
-	*)
-		echo 2>&1 "Usage: timer [start|stop|toggle] [durations]"
-		exit 1
-		;;
+elif [[ "$1" == stop ]]; then
 
-esac
+	stop_timer
+
+else
+
+	echo 2>&1 "Usage: timer [start|stop|toggle] [durations]"
+	exit 1
+
+fi

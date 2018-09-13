@@ -37,9 +37,6 @@ _get_prop() {
 
 _main() {
 
-	mkdir -p "$statedir"
-	touch "$state"
-
 	if [[ -e "$errfile" ]]; then
 
 		if (( "$(_get_prop running)" == 1 )); then
@@ -115,6 +112,9 @@ errfile="$borgdir/error"
 
 statedir="$HOME/.run/polybar"
 state="$statedir/borg-backup"
+
+mkdir -p "$statedir"
+touch "$state"
 
 case "$1" in
 	click-left)

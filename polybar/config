@@ -118,7 +118,7 @@ label-urgent-padding = 2
 [module/battery]
 
 type = custom/script
-exec = ~/.config/polybar/modules/battery.sh
+exec = ~/.config/polybar/modules/battery
 interval = 30
 
 ; Date & time
@@ -127,10 +127,10 @@ interval = 30
 [module/datetime]
 
 type = custom/script
-exec = ~/.config/polybar/modules/datetime.sh
+exec = ~/.config/polybar/modules/datetime
 interval = 1
 
-click-right = ~/.config/polybar/modules/datetime.sh -menu
+click-right = ~/.config/polybar/modules/datetime -menu
 
 label = %output%
 
@@ -153,7 +153,7 @@ label = %output%
 [module/timer]
 
 type = custom/script
-exec = ~/.config/polybar/modules/timer.sh
+exec = ~/.config/polybar/modules/timer
 tail = true
 
 click-left = bash -c "kill -SIGUSR1 %pid%"
@@ -166,7 +166,7 @@ label = "%{B#00e7e8eb} %{B-}  %output%"
 [module/mail]
 
 type = custom/script
-exec = ~/.config/polybar/modules/mail.sh
+exec = ~/.config/polybar/modules/mail
 tail = true
 
 click-left = bash -c "kill -SIGUSR1 %pid%"

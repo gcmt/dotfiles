@@ -1,38 +1,59 @@
 #!/bin/bash
 
-state_file="$HOME/.local/share/polybar/datetime"
+current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$current_dir" || exit 1
+source utils
 
-if [[ ! -e "$state_file" ]]; then
-	mkdir -p "$(dirname "$state_file")"
-	echo "style=default" > "$state_file"
-fi
 
-style=$(grep -Po '(?<=style=).*' "$state_file" 2>/dev/null)
-style=${style:-default}
+state_get() {
+	utils::state_get "$state" "$@"
+}
 
-if [[ "$*" =~ -menu($| ) ]]; then
 
-	styles=(default seconds utc)
-	entries="default\\nshow seconds\\nutc time"
+state_set() {
+	utils::state_set "$state" "$@"
+}
 
-	choice="$(echo -e "$entries" | i3-tiny-menu -format i -select "$style")"
+
+open_menu() {
+	local styles=(default seconds utc)
+	local entries="default\\nshow seconds\\nutc time"
+	local style="$(state_get style)"
+	local choice="$(echo -e "$entries" | i3-tiny-menu -format i -select "$style")"
 	if [[ -z "$choice" ]]; then
-		exit 1
+		return 1
 	fi
+	state_set style "${styles[$choice]}"
+}
 
-	style="${styles[$choice]}"
-	sed -i "s/^style=.*/style=$style/" "$state_file"
 
-fi
+main() {
+	local style="$(state_get style)"
+	case "$style" in
+		utc)
+			echo "$(date --utc '+%a %d %H:%M') UTC"
+			;;
+		seconds)
+			date '+%a %d %H:%M:%S'
+			;;
+		*)
+			date '+%a %d %H:%M'
+			;;
+	esac
+}
 
-case "$style" in
-	utc)
-		echo "$(date --utc '+%a %d %H:%M') UTC"
-		;;
-	seconds)
-		date '+%a %d %H:%M:%S'
+
+statedir="$HOME/.local/share/polybar"
+state="$statedir/datetime"
+
+mkdir -p "$statedir"
+touch "$state"
+
+case "$1" in
+	-menu)
+		open_menu
 		;;
 	*)
-		date '+%a %d %H:%M'
+		main "$@"
 		;;
 esac

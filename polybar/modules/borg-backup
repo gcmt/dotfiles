@@ -78,12 +78,15 @@ _main() {
 
 _handle_left_click() {
 
-	if [[ ! -e "$errfile" ]]; then
-		exit 1
+	local archive
+	if [[ -e "$errfile" ]]; then
+		archive="$(cat "$errfile")"
+		rm -rf "$errfile"
+	elif [[ -e "$runfile" ]]; then
+		archive="$(cat "$runfile")"
+	else
+		return 1
 	fi
-
-	local archive="$(cat "$errfile")"
-	rm -rf "$errfile"
 
 	if [[ "$archive" =~ ^rsync\.net ]]; then
 		_view_log borg-backup-rsync

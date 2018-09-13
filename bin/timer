@@ -20,8 +20,11 @@ get_duration() {
 
 start_timer() {
 	local seconds="$(get_duration "$@")"
-	[[ -z "$seconds" ]] && return 1
-	expr $(date +'%s') + "$seconds" > "$timer"
+	if [[ -z "$seconds" ]]; then
+		return 1
+	fi
+	local end="$(expr $(date +'%s') + "$seconds")"
+	echo "timer_end=$end" > "$timer"
 }
 
 

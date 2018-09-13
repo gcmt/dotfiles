@@ -1,32 +1,47 @@
 #!/bin/bash
 
-timer="/tmp/timer"
+current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$current_dir" || exit 1
+source utils
 
-stop_timer() {
-	rm -f "$timer"
+
+state_get() {
+	utils::state_get "$timer" "$@"
 }
 
-trap "stop_timer" SIGUSR1
 
-while true; do
+print_remaining_time() {
+	local t=$1
+	local d=$(( t / 60 / 60 / 24 ))
+	local h=$(( t / 60 / 60 % 24 ))
+	local m=$(( t / 60 % 60 ))
+	local s=$(( t % 60 ))
+	local out="$(printf "%02d" $s)"
+	(( m > 0 )) && out="$(printf "%02d" $m):$out"
+	(( h > 0 )) && out="$h:$out"
+	(( d > 0 )) && out="$d:$out"
+	echo "$out"
+}
 
-	if [[ -f "$timer" ]]; then
-		seconds=$(expr $(cat "$timer") - $(date +'%s'))
-		if (( $seconds < 0 )); then
-			notify-send 'Timer' 'Timer finished!'
-			stop_timer
-		else
-			if (( $seconds > 60 * 60 )); then
-				date -u -d @${seconds} +'%H:%M:%S'
-			else
-				date -u -d @${seconds} +'%M:%S'
-			fi
-		fi
-	else
+
+main() {
+
+	if [[ ! -f "$timer" ]]; then
 		echo
+		return 0
 	fi
 
-	sleep 1 &
-	wait
+	local seconds=$(( $(state_get timer_end) - $(date +'%s')))
+	if (( seconds < 0 )); then
+		notify-send 'Timer' 'Timer finished!'
+		timer stop
+	else
+		print_remaining_time $seconds
+	fi
 
-done
+}
+
+
+timer="$HOME/.run/timer"
+
+main "$@"

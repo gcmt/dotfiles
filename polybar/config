@@ -141,9 +141,10 @@ label = %output%
 
 type = custom/script
 exec = ~/.config/polybar/modules/borg-backup
+interval = 1
+
 click-left = ~/.config/polybar/modules/borg-backup click-left
 click-right = ~/.config/polybar/modules/borg-backup click-right
-interval = 1
 
 label = %output%
 
@@ -154,9 +155,9 @@ label = %output%
 
 type = custom/script
 exec = ~/.config/polybar/modules/timer
-tail = true
+interval = 1
 
-click-left = bash -c "kill -SIGUSR1 %pid%"
+click-left = timer stop
 
 label = "%{B#00e7e8eb} %{B-}  %output%"
 

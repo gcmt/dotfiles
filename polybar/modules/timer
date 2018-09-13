@@ -26,17 +26,17 @@ print_remaining_time() {
 
 main() {
 
-	if [[ ! -f "$timer" ]]; then
-		echo
-		return 0
-	fi
-
-	local seconds=$(( $(state_get timer_end) - $(date +'%s')))
-	if (( seconds < 0 )); then
-		notify-send 'Timer' 'Timer finished!'
-		timer stop
+	if [[ -f "$timer" ]]; then
+		local seconds=$(( $(state_get timer_end) - $(date +'%s')))
+		if (( seconds < 0 )); then
+			notify-send 'Timer' 'Timer finished!'
+			timer stop
+			echo
+		else
+			print_remaining_time $seconds
+		fi
 	else
-		print_remaining_time $seconds
+		echo
 	fi
 
 }

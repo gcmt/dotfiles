@@ -1,16 +1,6 @@
 #!/bin/bash
 
 
-borgdir="/run/borg-backup"
-statedir="$HOME/.run/polybar"
-state="$statedir/borg-backup"
-quiet=1
-
-
-mkdir -p "$statedir"
-touch "$state"
-
-
 _notify() {
 	if ! _polybar_visible && (( quiet == 0 )); then
 		notify-send -t 3000 "$@"
@@ -82,5 +72,14 @@ _main() {
 
 }
 
+
+borgdir="/run/borg-backup"
+statedir="$HOME/.run/polybar"
+state="$statedir/borg-backup"
+
+quiet=0
+
+mkdir -p "$statedir"
+touch "$state"
 
 _main "$@"

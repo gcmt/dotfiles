@@ -1,9 +1,6 @@
 #!/bin/bash
 
 
-errfile="/run/borg-backup/error"
-
-
 _view_log() {
 	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1"
 }
@@ -39,5 +36,7 @@ _main() {
 
 }
 
+
+errfile="/run/borg-backup/error"
 
 _main "$@"

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+errfile="/run/borg-backup/error"
+
+_view_log() {
+	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1"
+}
+
+case $1 in
+
+	left)
+
+		if [[ ! -e "$errfile" ]]; then
+			exit 1
+		fi
+
+		archive="$(cat "$errfile")"
+		rm -rf "$errfile"
+
+		if [[ "$archive" =~ ^rsync\.net ]]; then
+			_view_log borg-backup-rsync
+		elif [[ "$archive" =~ MyPassport ]]; then
+			_view_log borg-backup-hdd
+		fi
+
+		;;
+
+	right)
+
+		rm -rf "$errfile"
+		;;
+
+esac

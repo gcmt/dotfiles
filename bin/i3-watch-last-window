@@ -1,22 +1,26 @@
 #!/bin/bash
 
+scriptname="$(basename "$0")"
+pidfile="/run/user/$UID/$scriptname.pid"
+
 basedir="$HOME/.run/i3"
-lock="$basedir/i3-watch-last-window.pid"
 out="$basedir/last-window"
 
-if [[ -e "$lock" ]]; then
-	echo "i3-watch-last-window: already running" 2>&1
+exec 200>"$pidfile"
+if ! flock -n 200; then
+	echo "$scriptname: already running" 2>&1
 	exit 1
+else
+	echo $$ >&200
 fi
 
 cleanup() {
-	rm -f "$out" "$lock"
+	rm -f "$out" "$pidfile"
 }
-trap cleanup INT TERM EXIT
+
+trap cleanup 0
 
 mkdir -p "$basedir"
-echo $$ > "$lock"
-
 echo "" > "$out"
 
 last=

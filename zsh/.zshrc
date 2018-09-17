@@ -375,12 +375,9 @@ if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
 fi
 
 if [[ -e "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && "$TERM" != "linux" ]]; then
-
 	source "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
-
-	bindkey '^y' autosuggest-accept
+	bindkey '^g' autosuggest-accept
 	bindkey '^d' autosuggest-execute
-
 fi
 
 # LOCAL RC

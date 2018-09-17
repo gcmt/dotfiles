@@ -100,7 +100,7 @@ borgdir="/run/borg-backup"
 runfile="$borgdir/running"
 errfile="$borgdir/error"
 
-statedir="$HOME/.run/polybar"
+statedir="$HOME/.local/share/polybar"
 state="$statedir/backup"
 
 mkdir -p "$statedir"

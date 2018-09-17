@@ -285,6 +285,44 @@ alias open='xdg-open'
 alias rg="rg --color=never -S"
 alias http="http --style=algol"
 
+# WIDGETS
+# ----------------------------------------------------------------------------
+
+toggle-sudo() {
+	local pos=$CURSOR
+	if [[ "$BUFFER" =~ "^sudo\>" ]]; then
+		BUFFER=$(echo "$BUFFER" | cut -b 6-)
+		CURSOR=$(($pos-5))
+	else
+		BUFFER="sudo $BUFFER"
+		CURSOR=$(($pos+5))
+	fi
+}
+zle -N toggle-sudo
+
+trim-prompt-cwd() {
+	DIRTRIM=$((1 - DIRTRIM))
+	zle reset-prompt
+}
+zle -N trim-prompt-cwd
+
+# delete Nth command line argument
+delete-argument() {
+	local words=(${(z)BUFFER})
+	local target="${NUMERIC:-1}"
+	if [[ "${words[1]}" == "sudo" ]]; then
+		(( target += 1 ))
+	fi
+	local pos=0 out=()
+	for i in {1..${#words[@]}}; do
+		(( i < target ))  && pos=$(( pos + ${#${words[i]}} + 1 ))
+		(( i != target )) && out[$i]="${words[i]}"
+	done
+	BUFFER="$out[*]"
+	CURSOR="$pos"
+}
+zle -N delete-argument
+
 # BINDINGS
 # ----------------------------------------------------------------------------
 
@@ -312,46 +350,11 @@ bindkey -M vicmd 'H' vi-beginning-of-line
 bindkey -M vicmd 'L' vi-end-of-line
 bindkey -M vicmd 'Y' vi-yank-eol
 
-toggle-sudo() {
-	local pos=$CURSOR
-	if [[ "$BUFFER" =~ "^sudo\>" ]]; then
-		BUFFER=$(echo "$BUFFER" | cut -b 6-)
-		CURSOR=$(($pos-5))
-	else
-		BUFFER="sudo $BUFFER"
-		CURSOR=$(($pos+5))
-	fi
-}
-zle -N toggle-sudo
-
 bindkey '^s' toggle-sudo
 bindkey -M vicmd '^s' toggle-sudo
 
-trim-prompt-cwd() {
-	DIRTRIM=$((1 - DIRTRIM))
-	zle reset-prompt
-}
-zle -N trim-prompt-cwd
-
 bindkey '^t' trim-prompt-cwd
 bindkey -M vicmd '^t' trim-prompt-cwd
-
-# delete Nth command line argument
-delete-argument() {
-	local words=(${(z)BUFFER})
-	local target="${NUMERIC:-1}"
-	if [[ "${words[1]}" == "sudo" ]]; then
-		(( target += 1 ))
-	fi
-	local pos=0 out=()
-	for i in {1..${#words[@]}}; do
-		(( i < target ))  && pos=$(( pos + ${#${words[i]}} + 1 ))
-		(( i != target )) && out[$i]="${words[i]}"
-	done
-	BUFFER="$out[*]"
-	CURSOR="$pos"
-}
-zle -N delete-argument
 
 for i in {1..4}; do
 	eval "delete-argument-$i() { NUMERIC=$i zle delete-argument }"

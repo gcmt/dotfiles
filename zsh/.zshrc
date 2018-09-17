@@ -323,24 +323,46 @@ toggle-sudo() {
 	fi
 }
 zle -N toggle-sudo
+
 bindkey '^s' toggle-sudo
 bindkey -M vicmd '^s' toggle-sudo
-
-fix-command() {
-	zle vi-first-non-blank
-	zle kill-word
-	zle vi-insert
-}
-zle -N fix-command
-bindkey '^f' fix-command
-bindkey -M vicmd '^f' fix-command
 
 trim-prompt-cwd() {
 	DIRTRIM=$((1 - DIRTRIM))
 	zle reset-prompt
 }
 zle -N trim-prompt-cwd
+
 bindkey '^t' trim-prompt-cwd
+bindkey -M vicmd '^t' trim-prompt-cwd
+
+# delete Nth command line argument
+delete-argument() {
+	local words=(${(z)BUFFER})
+	local target="${NUMERIC:-1}"
+	if [[ "${words[1]}" == "sudo" ]]; then
+		(( target += 1 ))
+	fi
+	local pos=0 out=()
+	for i in {1..${#words[@]}}; do
+		(( i < target ))  && pos=$(( pos + ${#${words[i]}} + 1 ))
+		(( i != target )) && out[$i]="${words[i]}"
+	done
+	BUFFER="$out[*]"
+	CURSOR="$pos"
+}
+zle -N delete-argument
+
+for i in {1..4}; do
+	eval "delete-argument-$i() { NUMERIC=$i zle delete-argument }"
+	zle -N delete-argument-$i
+	bindkey "\\e$i" delete-argument-$i
+done
+
+bindkey '^f' delete-argument-1
+bindkey -M vicmd '^t' delete-argument-1
+bindkey '^F' delete-argument-2
+bindkey -M vicmd '^F' delete-argument-2
 
 # PLUGINS
 # ----------------------------------------------------------------------------

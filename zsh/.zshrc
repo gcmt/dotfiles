@@ -270,7 +270,7 @@ alias mv='mv -iv'
 alias cp='cp -iv'
 alias mkdir='mkdir -pv'
 
-alias ls='ls --color=auto --group-directories-first'
+alias ls='ls --color=auto --group-directories-first --quoting-style=literal'
 alias l='ls'
 alias la='ls -A'
 alias ll='ls -lh'
@@ -309,6 +309,7 @@ zle -N trim-prompt-cwd
 # delete Nth command line argument
 delete-argument() {
 	local words=(${(z)BUFFER})
+	[[ -z "$words" ]] && return 1
 	local target="${NUMERIC:-1}"
 	if [[ "${words[1]}" == "sudo" ]]; then
 		(( target += 1 ))

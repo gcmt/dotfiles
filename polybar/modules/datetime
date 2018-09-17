@@ -16,12 +16,10 @@ state_set() {
 
 
 open_menu() {
-	local pid="$(echo "$@" | grep -Po '(?<=-)\d+')"
-	local pipe="/tmp/polybar_datetime.$pid.fifo"
 	local styles=(default seconds utc)
 	local entries="default\\nshow seconds\\nutc time"
 	local idx="$(echo -e "$entries" | i3-tiny-menu -format i -select "$(state_get style)")"
-	if [[ -n "$idx" && -p "$pipe" ]]; then
+	if [[ -n "$idx" ]]; then
 		echo "${styles[$idx]}" > "$pipe"
 	fi
 }
@@ -37,14 +35,7 @@ print_date() {
 
 
 main() {
-
-	local pipe="/tmp/polybar_datetime.$$.fifo"
 	trap "rm -f $pipe" 0
-
-	if [[ ! -p "$pipe" ]]; then
-		mkfifo "$pipe"
-	fi
-
 	(
 		while true; do
 			if read -r style < "$pipe"; then
@@ -53,12 +44,10 @@ main() {
 			fi
 		done
 	) &
-
 	while true; do
 		print_date "$(state_get style)"
 		sleep 1
 	done
-
 }
 
 
@@ -68,7 +57,12 @@ mkdir -p "$statedir"
 state="$statedir/datetime"
 touch "$state"
 
+pipe="/tmp/polybar_datetime.fifo"
+if [[ ! -p "$pipe" ]]; then
+	mkfifo "$pipe"
+fi
+
 case "$1" in
-	-menu) open_menu "$@" ;;
+	-menu) open_menu;;
 	*) main "$@" ;;
 esac

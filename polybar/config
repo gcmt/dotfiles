@@ -130,7 +130,7 @@ type = custom/script
 exec = ~/.config/polybar/modules/datetime
 tail = true
 
-click-right = ~/.config/polybar/modules/datetime -menu -%pid%
+click-right = ~/.config/polybar/modules/datetime -menu
 
 label = %output%
 

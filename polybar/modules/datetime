@@ -16,44 +16,60 @@ state_set() {
 
 
 open_menu() {
+	local pid="$(echo "$@" | grep -Po '(?<=-)\d+')"
+	local pipe="/tmp/polybar_datetime.$pid.fifo"
 	local styles=(default seconds utc)
 	local entries="default\\nshow seconds\\nutc time"
 	local style="$(state_get style)"
 	local choice="$(echo -e "$entries" | i3-tiny-menu -format i -select "$style")"
-	if [[ -z "$choice" ]]; then
-		return 1
+	if [[ -n "$choice" && -p "$pipe" ]]; then
+		echo "${styles[$choice]}" > "$pipe"
 	fi
-	state_set style "${styles[$choice]}"
 }
 
 
-main() {
-	local style="$(state_get style)"
-	case "$style" in
-		utc)
-			echo "$(date --utc '+%a %d %H:%M') UTC"
-			;;
-		seconds)
-			date '+%a %d %H:%M:%S'
-			;;
-		*)
-			date '+%a %d %H:%M'
-			;;
+print_date() {
+	case "$1" in
+		utc) echo "$(date --utc '+%a %d %H:%M') UTC" ;;
+		seconds) date '+%a %d %H:%M:%S' ;;
+		*) date '+%a %d %H:%M' ;;
 	esac
 }
 
 
-statedir="$HOME/.local/share/polybar"
-state="$statedir/datetime"
+main() {
 
+	local pipe="/tmp/polybar_datetime.$$.fifo"
+	trap "rm -f $pipe" 0
+
+	if [[ ! -p "$pipe" ]]; then
+		mkfifo "$pipe"
+	fi
+
+	(
+		while true; do
+			if read -r style < "$pipe"; then
+				state_set style "$style"
+				print_date "$style"
+			fi
+		done
+	) &
+
+	while true; do
+		print_date "$(state_get style)"
+		sleep 1
+	done
+
+}
+
+
+statedir="$HOME/.local/share/polybar"
 mkdir -p "$statedir"
+
+state="$statedir/datetime"
 touch "$state"
 
 case "$1" in
-	-menu)
-		open_menu
-		;;
-	*)
-		main "$@"
-		;;
+	-menu) open_menu "$@" ;;
+	*) main "$@" ;;
 esac

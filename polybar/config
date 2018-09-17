@@ -128,9 +128,9 @@ interval = 30
 
 type = custom/script
 exec = ~/.config/polybar/modules/datetime
-interval = 1
+tail = true
 
-click-right = ~/.config/polybar/modules/datetime -menu
+click-right = ~/.config/polybar/modules/datetime -menu -%pid%
 
 label = %output%
 

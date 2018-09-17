@@ -20,10 +20,9 @@ open_menu() {
 	local pipe="/tmp/polybar_datetime.$pid.fifo"
 	local styles=(default seconds utc)
 	local entries="default\\nshow seconds\\nutc time"
-	local style="$(state_get style)"
-	local choice="$(echo -e "$entries" | i3-tiny-menu -format i -select "$style")"
-	if [[ -n "$choice" && -p "$pipe" ]]; then
-		echo "${styles[$choice]}" > "$pipe"
+	local idx="$(echo -e "$entries" | i3-tiny-menu -format i -select "$(state_get style)")"
+	if [[ -n "$idx" && -p "$pipe" ]]; then
+		echo "${styles[$idx]}" > "$pipe"
 	fi
 }
 

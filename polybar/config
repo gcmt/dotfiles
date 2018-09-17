@@ -200,7 +200,7 @@ interface = enp3s0
 interval = 3.0
 
 format-connected = <label-connected>
-label-connected = %local_ip%
+label-connected =  %local_ip%
 
 format-disconnected = <label-disconnected>
 label-disconnected =

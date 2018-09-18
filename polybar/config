@@ -161,20 +161,6 @@ click-left = timer stop
 
 label = "%{B#00e7e8eb} %{B-}  %output%"
 
-; Mail
-; ----------------------------------------------------------------------------
-
-[module/mail]
-
-type = custom/script
-exec = ~/.config/polybar/modules/mail
-tail = true
-
-click-left = bash -c "kill -SIGUSR1 %pid%"
-click-right = bash -c "kill -SIGUSR2 %pid%"
-
-label = " (%output%)"
-
 ; Wifi
 ; ----------------------------------------------------------------------------
 

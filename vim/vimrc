@@ -683,6 +683,7 @@
 		au BufWritePost */colors/* nested exec 'colorscheme' g:colors_name
 
 		au CmdWinEnter * set ft=
+		au CmdWinEnter * nnoremap <buffer> l <cr>
 		au CmdWinEnter * noremap <buffer> <c-j> <cr>
 		au CmdWinEnter * noremap <buffer> q <c-w>c
 		au CmdWinEnter * setl nonumber norelativenumber

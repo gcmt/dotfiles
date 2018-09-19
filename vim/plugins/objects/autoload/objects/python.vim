@@ -26,6 +26,10 @@ func! objects#python#for(options, visual, count)
 	call s:select('for', s:options(a:options), a:visual, a:count)
 endf
 
+func! objects#python#while(options, visual, count)
+	call s:select('while', s:options(a:options), a:visual, a:count)
+endf
+
 func! objects#python#with(options, visual, count)
 	call s:select('with', s:options(a:options), a:visual, a:count)
 endf

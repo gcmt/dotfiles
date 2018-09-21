@@ -168,10 +168,10 @@ label = "%{B#00e7e8eb} %{B-}  %output%"
 
 type = internal/network
 interface = wlp2s0
-interval = 3.0
+interval = 2
 
-format-connected = <label-connected>
-label-connected =  %essid%
+format-connected =  <label-connected>
+label-connected = %essid%
 
 format-disconnected = <label-disconnected>
 label-disconnected =
@@ -182,11 +182,11 @@ label-disconnected =
 [module/eth]
 
 type = internal/network
-interface = enp3s0
-interval = 3.0
+interface = enp4s0
+interval = 2
 
-format-connected = <label-connected>
-label-connected =  %local_ip%
+format-connected =  <label-connected>
+label-connected = %local_ip%
 
 format-disconnected = <label-disconnected>
 label-disconnected =

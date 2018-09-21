@@ -57,9 +57,6 @@ radius = 0.0
 background = ${colors.background}
 foreground = ${colors.foreground}
 
-line-size = 0
-line-color = #f00
-
 border-left-size = 5
 border-right-size = 5
 border-top-size = 6

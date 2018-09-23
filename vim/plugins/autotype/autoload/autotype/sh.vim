@@ -7,14 +7,17 @@ func! autotype#sh#outward_parenthesis()
 		return Paren()
 	end
 
-	let before = autotype#before()
+	let line = getline('.')
+	let next = getline(nextnonblank(line('.')+1))
+	let indent = autotype#indent('.')
+	let next_indented = next =~ '\v^\s{'.(indent+1).',}\w+'
 
-	if autotype#after() !~ '\v^\s*$'
-		return Paren()
-	end
-
-	if before =~ '\v\c^\s*[a-z0-9:_-]+$'
-		return "(\<esc>m`a) {\<cr>}\<esc>O"
+	if line =~ '\v\c^\s*[a-z0-9:_-]+$'
+		let seq = "() {\<esc>F)i"
+		if next !~ '\v^\s{'.indent.'}\}$' && !next_indented
+			return seq . "\<esc>o}\<esc>O"
+		end
+		return seq
 	end
 
 	return Paren()

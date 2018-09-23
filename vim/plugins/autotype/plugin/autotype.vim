@@ -52,6 +52,9 @@ aug _autotype
 
 	au FileType python inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#python#newline()<cr>
 
+	au FileType sh inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#sh#space()<cr>
+	au FileType sh inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#sh#outward_parenthesis()<cr>
+
 	au BufEnter *.ex,*.exs inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#elixir#space()<cr>
 	au BufEnter *.ex,*.exs inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#elixir#newline()<cr>
 

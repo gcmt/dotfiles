@@ -10,7 +10,7 @@ func! autotype#sh#outward_parenthesis()
 	let line = getline('.')
 	let next = getline(nextnonblank(line('.')+1))
 	let indent = autotype#indent('.')
-	let next_indented = next =~ '\v^\s{'.(indent+1).',}\w+'
+	let next_indented = indent < autotype#indent(next)
 
 	if line =~ '\v\c^\s*[a-z0-9:_-]+$'
 		let seq = "() {\<esc>F)i"

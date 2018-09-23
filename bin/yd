@@ -1,0 +1,46 @@
+#!/bin/bash
+
+use_selection=0
+extract_audio=0
+
+while getopts "sx" OPT; do
+	case $OPT in
+		s) use_selection=1 ;;
+		x) extract_audio=1 ;;
+	esac
+done
+shift $((OPTIND -1))
+
+if (( use_selection == 1 )); then
+	url="$(xclip -o -sel primary)"
+else
+	url="$1"
+fi
+
+if [[ -z "$url" ]]; then
+	exit 1
+fi
+
+title=$(youtube-dl -qe "$url")
+if (( $? != 0 )); then
+	notify-send "Youtube-dl error" "Downlaod failed with error code $?"
+	exit 1
+fi
+
+(( extract_audio == 1 )) && what="Song" || what="Video"
+notify-send -t 3000 "Downloading $what" "$title"
+
+cd ~/Downloads
+
+format="%(title)s.%(ext)s"
+if (( extract_audio == 1 )); then
+	youtube-dl -q -x --audio-format mp3 -o "$format" "$url"
+else
+	youtube-dl -q -o "$format" "$url"
+fi
+
+if (( $? == 0 )); then
+	notify-send -t 3000 "Download Finished" "$title"
+else
+	notify-send "Download error" "Youtube-dl failed with error code $?"
+fi

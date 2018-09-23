@@ -16,6 +16,7 @@ func! autotype#inside(...)
 endf
 
 " Returns the indent level for the given line
-func! autotype#indent(linenr)
-	return strlen(matchstr(getline(a:linenr), '\v^\s*'))
+func! autotype#indent(line)
+	let line = type(a:line) == v:t_number ? getline(a:line) : a:line
+	return strlen(matchstr(line, '\v^\s*'))
 endf

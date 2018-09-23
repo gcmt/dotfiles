@@ -28,20 +28,16 @@ func! autotype#sh#space()
 		return Space()
 	end
 
-	let before = autotype#before()
-	let indent = autotype#indent('.')
+	let line = getline('.')
 	let next = getline(nextnonblank(line('.')+1))
+	let indent = autotype#indent('.')
 	let next_indented = next =~ '\v^\s{'.(indent+1).',}\w+'
 
-	if autotype#after() !~ '\v^\s*$'
-		return Space()
-	end
-
-	if before =~ '\v^\s*elif$'
+	if line =~ '\v^\s*elif$'
 		return " ; then\<esc>F;i"
 	end
 
-	if before =~ '\v^\s*if$'
+	if line =~ '\v^\s*if$'
 		let seq = " ; then\<esc>F;i"
 		if next !~ '\v^\s{'.indent.'}(fi|else|elif)$' && !next_indented
 			return seq . "\<esc>ofi\<esc>k$F;i"
@@ -49,7 +45,7 @@ func! autotype#sh#space()
 		return seq
 	end
 
-	if before =~ '\v^\s*case$'
+	if line =~ '\v^\s*case$'
 		let seq = "  in\<esc>bhi"
 		if next !~ '\v^\s{'.indent.'}esac$' && !next_indented
 			return seq."\<esc>oesac\<esc>k$bhi"
@@ -57,7 +53,7 @@ func! autotype#sh#space()
 		return seq
 	end
 
-	if before =~ '\v^\s*(while|for)$'
+	if line =~ '\v^\s*(while|for)$'
 		let seq = " ; do\<esc>F;i"
 		if next !~ '\v^\s{'.indent.'}done$' && !next_indented
 			return seq."\<esc>odone\<esc>k$F;i"

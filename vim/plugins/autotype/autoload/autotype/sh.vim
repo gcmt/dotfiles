@@ -8,9 +8,12 @@ func! autotype#sh#outward_parenthesis()
 	end
 
 	let before = autotype#before()
-	let empty_after = autotype#after() =~ '\v^\s*$'
 
-	if before =~ '\v\c^\s*[a-z0-9:_-]+$' && empty_after
+	if autotype#after() !~ '\v^\s*$'
+		return Paren()
+	end
+
+	if before =~ '\v\c^\s*[a-z0-9:_-]+$'
 		return "(\<esc>m`a) {\<cr>}\<esc>O"
 	end
 
@@ -29,13 +32,16 @@ func! autotype#sh#space()
 	let indent = autotype#indent('.')
 	let next = getline(nextnonblank(line('.')+1))
 	let next_indented = next =~ '\v^\s{'.(indent+1).',}\w+'
-	let empty_after = autotype#after() =~ '\v^\s*$'
 
-	if before =~ '\v^\s*elif$' && empty_after
+	if autotype#after() !~ '\v^\s*$'
+		return Space()
+	end
+
+	if before =~ '\v^\s*elif$'
 		return " ; then\<esc>F;i"
 	end
 
-	if before =~ '\v^\s*if$' && empty_after
+	if before =~ '\v^\s*if$'
 		let seq = " ; then\<esc>F;i"
 		if next !~ '\v^\s{'.indent.'}(fi|else|elif)$' && !next_indented
 			return seq . "\<esc>ofi\<esc>k$F;i"
@@ -43,7 +49,7 @@ func! autotype#sh#space()
 		return seq
 	end
 
-	if before =~ '\v^\s*case$' && empty_after
+	if before =~ '\v^\s*case$'
 		let seq = "  in\<esc>bhi"
 		if next !~ '\v^\s{'.indent.'}esac$' && !next_indented
 			return seq."\<esc>oesac\<esc>k$bhi"
@@ -51,7 +57,7 @@ func! autotype#sh#space()
 		return seq
 	end
 
-	if before =~ '\v^\s*(while|for)$' && empty_after
+	if before =~ '\v^\s*(while|for)$'
 		let seq = " ; do\<esc>F;i"
 		if next !~ '\v^\s{'.indent.'}done$' && !next_indented
 			return seq."\<esc>odone\<esc>k$F;i"

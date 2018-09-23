@@ -33,9 +33,8 @@ func! autotype#sh#space()
 
 	let line = getline('.')
 	let next = getline(nextnonblank(line('.')+1))
-	let indent = autotype#indent('.')
+	let indent = autotype#indent(line)
 	let next_indented = indent < autotype#indent(next)
-
 
 	if line =~ '\v^\s*elif$'
 		return " ; then\<esc>F;i"

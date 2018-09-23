@@ -26,33 +26,38 @@ func! autotype#sh#space()
 	end
 
 	let before = autotype#before()
+	let indent = autotype#indent('.')
+	let next = getline(nextnonblank(line('.')+1))
+	let next_indented = next =~ '\v^\s{'.(indent+1).',}\w+'
 	let empty_after = autotype#after() =~ '\v^\s*$'
-
-	if before =~ '\v^\s*if$' && empty_after
-		let seq = " ; then\<esc>F;i"
-		return s:should_close_with('fi') ? seq."\<esc>ofi\<esc>k$F;i" : seq
-	end
 
 	if before =~ '\v^\s*elif$' && empty_after
 		return " ; then\<esc>F;i"
 	end
 
+	if before =~ '\v^\s*if$' && empty_after
+		let seq = " ; then\<esc>F;i"
+		if next !~ '\v^\s{'.indent.'}(fi|else|elif)$' && !next_indented
+			return seq . "\<esc>ofi\<esc>k$F;i"
+		end
+		return seq
+	end
+
 	if before =~ '\v^\s*case$' && empty_after
 		let seq = "  in\<esc>bhi"
-		return s:should_close_with('esac') ? seq."\<esc>oesac\<esc>k$bhi" : seq
+		if next !~ '\v^\s{'.indent.'}esac$' && !next_indented
+			return seq."\<esc>oesac\<esc>k$bhi"
+		end
+		return seq
 	end
 
 	if before =~ '\v^\s*(while|for)$' && empty_after
 		let seq = " ; do\<esc>F;i"
-		return s:should_close_with('done') ? seq."\<esc>odone\<esc>k$F;i" : seq
+		if next !~ '\v^\s{'.indent.'}done$' && !next_indented
+			return seq."\<esc>odone\<esc>k$F;i"
+		end
+		return seq
 	end
 
 	return Space()
-endf
-
-
-func! s:should_close_with(end)
-	let indent = autotype#indent('.')
-	let next = getline(nextnonblank(line('.')+1))
-	return next !~ '\v^\s{'.indent.'}'.a:end.'$' && next !~ '\v^\s{'.(indent+1).',}\w+'
 endf

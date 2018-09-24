@@ -44,7 +44,7 @@ fun! autotype#php#dot()
 	return '.'
 endf
 
-fun! autotype#php#newline()
+fun! autotype#php#esc_o()
 	if g:autotype_disabled || autotype#inside('Comment')
 		return "\<esc>o"
 	end

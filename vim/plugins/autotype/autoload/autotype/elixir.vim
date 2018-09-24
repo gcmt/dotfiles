@@ -12,7 +12,7 @@ func! autotype#elixir#space()
 	return Space()
 endf
 
-fun! autotype#elixir#newline()
+fun! autotype#elixir#esc_o()
 	let line = getline('.')
 	if line =~ '\v^\s*def' && line !~ '\v<do$' && !s:is_inline_function()
 		call setline(line('.'), substitute(line, '\v\s*$', ' do', ''))

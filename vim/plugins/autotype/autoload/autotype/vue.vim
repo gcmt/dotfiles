@@ -25,16 +25,16 @@ func! autotype#vue#space()
 	return Space()
 endf
 
-func! autotype#vue#newline()
+func! autotype#vue#esc_o()
 	let linenr = line('.')
 	if linenr > s:template[0] && linenr <= s:template[1]
 		return autotype#html#newline()
 	end
 	if linenr > s:script[0] && linenr <= s:script[1]
-		return autotype#javascript#newline()
+		return autotype#javascript#esc_o()
 	end
 	if linenr > s:style[0] && linenr <= s:style[1]
-		return autotype#css#newline()
+		return autotype#css#esc_o()
 	end
 	return "\<esc>o"
 endf

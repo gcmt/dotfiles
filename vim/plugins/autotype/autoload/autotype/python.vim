@@ -1,5 +1,5 @@
 
-func! autotype#python#newline()
+func! autotype#python#esc_o()
 	if g:autotype_disabled || autotype#inside('Comment')
 		return "\<esc>o"
 	end

@@ -1,5 +1,5 @@
 
-func! autotype#css#newline()
+func! autotype#css#esc_o()
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
 		return "\<esc>o"
 	end

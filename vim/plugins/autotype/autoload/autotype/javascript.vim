@@ -66,7 +66,7 @@ func! autotype#javascript#colon()
 	return ':'
 endf
 
-func! autotype#javascript#newline()
+func! autotype#javascript#esc_o()
 	if g:autotype_disabled || autotype#inside('Comment')
 		return "\<esc>o"
 	end

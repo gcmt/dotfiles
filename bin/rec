@@ -13,7 +13,7 @@ if [[ -f "$pidfile" ]]; then
 else
 	read -r X Y W H < <(slop -f "%x %y %w %h")
 	out="$HOME/Downloads/Recording_$(date +%Y-%m-%d-%T).mp4"
-	ffmpeg -f x11grab -framerate 30 -show_region 1 -video_size "$W"x"$H" -i "$DISPLAY+$X,$Y" "$out" &
+	ffmpeg -f x11grab -framerate 30 -show_region 1 -video_size "$W"x"$H" -i "$DISPLAY+$X,$Y" -c:v libx264 -preset medium -crf 17 "$out" &
 	pid="$!"
 	echo "$pid" > "$pidfile"
 	echo "Starting recording to $out..."

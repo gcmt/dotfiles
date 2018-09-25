@@ -1,21 +1,142 @@
-#!/bin/bash
+#!/usr/bin/env python
 
-cleanup() {
-	rm -f "$pidfile"
-}
-trap "cleanup" 0
+import os
+import re
+import sys
+import atexit
+import argparse
+from pathlib import Path
+from datetime import datetime
+from subprocess import run, Popen, PIPE
 
-pidfile="/run/user/$UID/rec.pid"
 
-if [[ -f "$pidfile" ]]; then
-	echo "Stopping current recording..."
-	kill "$(cat "$pidfile")"
-else
-	read -r X Y W H < <(slop -f "%x %y %w %h")
-	out="$HOME/Downloads/Recording_$(date +%Y-%m-%d-%T).mp4"
-	ffmpeg -f x11grab -framerate 30 -show_region 1 -video_size "$W"x"$H" -i "$DISPLAY+$X,$Y" -c:v libx264 -preset medium -crf 17 "$out" &
-	pid="$!"
-	echo "$pid" > "$pidfile"
-	echo "Starting recording to $out..."
-	wait "$pid"
-fi
+UID = os.getuid()
+HOME = os.environ['HOME']
+DISPLAY = os.environ['DISPLAY']
+
+PIDFILE = Path(f"/run/user/{UID}/rec.pid")
+METAFILE = Path(f"/run/user/{UID}/rec.out")
+
+
+def cleanup():
+    try:
+        os.remove(PIDFILE)
+        os.remove(METAFILE)
+    except FileNotFoundError:
+        pass
+
+
+def error(msg):
+    script = os.path.basename(__file__)
+    print(f"{script}: {msg}", file=sys.stderr)
+
+
+def notify(title, msg):
+    run(['notify-send', title, msg])
+
+
+def get_screen_size(display):
+
+    try:
+        cmd = ['xrandr', '-d', display]
+        stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout
+    except FileNotFoundError as e:
+        error('xrandr not found')
+        sys.exit(1)
+
+    for line in stdout.split('\n'):
+        if 'connected' in line:
+            match = re.search('(\d+)x(\d+)', line)
+            if match:
+                return int(match.group(1)), int(match.group(2))
+
+    return None, None
+
+
+def get_selection():
+
+    try:
+        cmd = ['slop', '-f', '%x %y %w %h']
+        proc = run(cmd, stdout=PIPE, encoding='utf8')
+    except FileNotFoundError:
+        error('slop not found')
+        sys.exit(1)
+
+    if proc.returncode:
+        sys.exit(1)
+
+    return proc.stdout.split()
+
+
+def ffmpeg(dest, args):
+
+    if args.root:
+        x, y, w, h = 0, 0, *get_screen_size(args.display)
+    else:
+        x, y, w, h = get_selection()
+
+    cmd  = ['ffmpeg']
+    cmd += ['-f', 'x11grab']
+    cmd += ['-show_region', args.show_region]
+    cmd += ['-region_border', args.region_border]
+    cmd += ['-draw_mouse', args.draw_mouse]
+    cmd += ['-framerate', args.framerate]
+    cmd += ['-video_size', f"{w}x{h}"]
+    cmd += ['-i', f"{args.display}+{x},{y}"]
+    cmd += ['-vcodec', args.vcodec]
+    cmd += ['-preset', args.preset]
+    cmd += ['-crf', args.crf]
+    cmd += [dest]
+
+    try:
+        return Popen(cmd)
+    except FileNotFoundError:
+        error('ffmpeg not found')
+        sys.exit(1)
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(allow_abbrev=False)
+    parser.add_argument('-root', action="store_true", default=False)
+    parser.add_argument('-display', default=DISPLAY)
+    parser.add_argument('-show_region', default="1")
+    parser.add_argument('-region_border', default="3")
+    parser.add_argument('-draw_mouse', default="1")
+    parser.add_argument('-framerate', default="25")
+    parser.add_argument('-vcodec', default="libx264")
+    parser.add_argument('-preset', default="medium")
+    parser.add_argument('-crf', default="17")
+    return parser.parse_args()
+
+
+def main():
+
+    args = parse_args()
+
+    if PIDFILE.exists() and METAFILE.exists():
+
+        dest = METAFILE.read_text()
+        pid = PIDFILE.read_text()
+
+        print(f"Stopped recording {dest}")
+        notify("Stop Recording", dest.replace(HOME, '~', 1))
+
+        run(['kill', pid])
+
+    else:
+
+        now = datetime.utcnow()
+        dest = f"{HOME}/Downloads/Recording_{now.strftime('%Y-%m-%d-%T')}.mp4"
+
+        proc = ffmpeg(dest, args)
+        print(f"Started recording to {dest}...")
+
+        METAFILE.write_text(dest)
+        PIDFILE.write_text(str(proc.pid))
+
+        proc.wait()
+
+
+if __name__ == '__main__':
+    atexit.register(cleanup)
+    main()

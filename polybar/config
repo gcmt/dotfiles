@@ -74,7 +74,7 @@ font-1 = "Ionicons:size=12;3"
 
 modules-left = i3
 modules-center = datetime
-modules-right = backup wlan eth volume battery timer
+modules-right = rec backup wlan eth volume battery timer
 
 ; i3 workspaces
 ; ----------------------------------------------------------------------------
@@ -157,6 +157,19 @@ interval = 1
 click-left = timer stop
 
 label = "%{B#00e7e8eb} %{B-}  %output%"
+
+; Screen Recording
+; ----------------------------------------------------------------------------
+
+[module/rec]
+
+type = custom/script
+exec = ~/.config/polybar/modules/recording
+tail = true
+
+click-left = ~/.config/polybar/modules/recording -stop
+
+label = " %output%"
 
 ; Wifi
 ; ----------------------------------------------------------------------------

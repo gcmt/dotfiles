@@ -16,9 +16,11 @@ DISPLAY = os.environ['DISPLAY']
 
 PIDFILE = Path(f"/run/user/{UID}/rec.pid")
 METAFILE = Path(f"/run/user/{UID}/rec.out")
+POLYBAR_FIFO = Path("/tmp/polybar_recording.fifo")
 
 
 def cleanup():
+    POLYBAR_FIFO.write_text('stop\n')
     try:
         os.remove(PIDFILE)
         os.remove(METAFILE)
@@ -29,10 +31,6 @@ def cleanup():
 def error(msg):
     script = os.path.basename(__file__)
     print(f"{script}: {msg}", file=sys.stderr)
-
-
-def notify(title, msg):
-    run(['notify-send', title, msg])
 
 
 def get_screen_size(display):
@@ -118,10 +116,8 @@ def main():
         dest = METAFILE.read_text()
         pid = PIDFILE.read_text()
 
-        print(f"Stopped recording {dest}")
-        notify("Stop Recording", dest.replace(HOME, '~', 1))
-
         run(['kill', pid])
+        print(f"Stopped recording to {dest}")
 
     else:
 
@@ -130,6 +126,7 @@ def main():
 
         proc = ffmpeg(dest, args)
         print(f"Started recording to {dest}...")
+        POLYBAR_FIFO.write_text('start\n')
 
         METAFILE.write_text(dest)
         PIDFILE.write_text(str(proc.pid))

@@ -278,9 +278,9 @@ bindsym $mod+XF86LaunchA exec --no-startup-id capture
 bindsym $alt+XF86LaunchA exec --no-startup-id capture -wait -window root
 bindsym $alt+$mod+XF86LaunchA exec --no-startup-id capture -wait
 bindsym $mod+F1 exec --no-startup-id capture -window root
+bindsym $mod+Shift+F1 exec --no-startup-id capture -wait -window root
 bindsym $mod+F2 exec --no-startup-id capture
-bindsym $mod+F3 exec --no-startup-id capture -wait -window root
-bindsym $mod+F4 exec --no-startup-id capture -wait
+bindsym $mod+F4 exec --no-startup-id rec
 
 # Volume controls
 bindsym XF86AudioRaiseVolume exec --no-startup-id volume up

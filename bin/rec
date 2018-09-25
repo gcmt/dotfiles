@@ -1,0 +1,21 @@
+#!/bin/bash
+
+cleanup() {
+	rm -f "$pidfile"
+}
+trap "cleanup" 0
+
+pidfile="/run/user/$UID/rec.pid"
+
+if [[ -f "$pidfile" ]]; then
+	echo "Stopping current recording..."
+	kill "$(cat "$pidfile")"
+else
+	read -r X Y W H < <(slop -f "%x %y %w %h")
+	out="$HOME/Downloads/Recording_$(date +%Y-%m-%d-%T).mp4"
+	ffmpeg -f x11grab -framerate 30 -show_region 1 -video_size "$W"x"$H" -i "$DISPLAY+$X,$Y" "$out" &
+	pid="$!"
+	echo "$pid" > "$pidfile"
+	echo "Starting recording to $out..."
+	wait "$pid"
+fi

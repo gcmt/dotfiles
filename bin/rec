@@ -19,8 +19,13 @@ METAFILE = Path(f"/run/user/{UID}/rec.out")
 POLYBAR_FIFO = Path("/tmp/polybar_recording.fifo")
 
 
+def polybar_send(cmd):
+    if POLYBAR_FIFO.exists():
+        POLYBAR_FIFO.write_text(f'{cmd}\n')
+
+
 def cleanup():
-    POLYBAR_FIFO.write_text('stop\n')
+    polybar_send('stop')
     try:
         os.remove(PIDFILE)
         os.remove(METAFILE)
@@ -126,7 +131,7 @@ def main():
 
         proc = ffmpeg(dest, args)
         print(f"Started recording to {dest}...")
-        POLYBAR_FIFO.write_text('start\n')
+        polybar_send('start')
 
         METAFILE.write_text(dest)
         PIDFILE.write_text(str(proc.pid))

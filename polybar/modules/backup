@@ -17,103 +17,71 @@ notify_err() {
 }
 
 
-state_get() {
-	utils::state_get "$state" "$@"
-}
-
-
-state_set() {
-	utils::state_set "$state" "$@"
-}
-
-
-main() {
-
-	if [[ -e "$errfile" ]]; then
-
-		if (( "$(state_get running)" == 1 )); then
-			notify_err "Backup Failed" "$(state_get archive '')"
-		fi
-
-		echo '%{F#ce7d86} Backup%{F-}'
-		state_set running 0
-
-	elif [[ -e "$runfile" ]]; then
-
-		archive="$(cat "$runfile")"
-		if (( "$(state_get running)" == 0 )); then
-			state_set running 1
-			state_set archive "$archive"
-			notify "Backup Started" "$archive"
-		fi
-
-		echo " Backup"
-
-	else
-
-		if (( "$(state_get running)" == 1 )); then
-			notify "Backup Finished" "$(state_get archive '')"
-		fi
-
-		echo ""
-		state_set running 0
-
-	fi
-
-}
-
-
-handle_left_click() {
-
-	local archive
-	if [[ -e "$errfile" ]]; then
-		archive="$(cat "$errfile")"
-		rm -rf "$errfile"
-	elif [[ -e "$runfile" ]]; then
-		archive="$(cat "$runfile")"
-	else
-		return 1
-	fi
-
-	if [[ "$archive" =~ ^rsync\.net ]]; then
-		view_log borg-backup-rsync
-	elif [[ "$archive" =~ MyPassport ]]; then
-		view_log borg-backup-hdd
-	fi
-
-}
-
-
-handle_right_click() {
-	rm -rf "$errfile"
-}
-
-
 view_log() {
 	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1"
 }
 
 
+main() {
+	while read -r event archive; do
+		case $event in
+			started)
+				notify "Backup Started" "$archive"
+				echo " Backup"
+				;;
+			completed)
+				notify "Backup Finished" "$archive"
+				echo
+				;;
+			error)
+				notify_err "Backup Failed" "$archive"
+				echo '%{F#ce7d86} Backup%{F-}'
+				;;
+			clean)
+				echo
+				;;
+		esac
+	done < "$pipe"
+}
+
+
+handle_left_click() {
+	local archive
+	if [[ -e "$err_file" ]]; then
+		archive="$(cat "$err_file")"
+	elif [[ -e "$arch_file" ]]; then
+		archive="$(cat "$arch_file")"
+	else
+		return 1
+	fi
+	if [[ "$archive" =~ ^rsync\.net ]]; then
+		view_log borg-backup-rsync
+	elif [[ "$archive" =~ MyPassport ]]; then
+		view_log borg-backup-hdd
+	fi
+}
+
+
+handle_right_click() {
+	if [[ -e "$err_file" ]]; then
+		echo clean > "$pipe"
+	fi
+}
+
+
 quiet=0
 
-borgdir="/run/borg-backup"
-runfile="$borgdir/running"
-errfile="$borgdir/error"
+borg_dir="/run/borg-backup"
+arch_file="$borg_dir/archive"
+err_file="$borg_dir/error"
 
-statedir="$HOME/.local/share/polybar"
-state="$statedir/backup"
-
-mkdir -p "$statedir"
-touch "$state"
+pipe="/tmp/polybar_backup.fifo"
+if [[ ! -p "$pipe" ]]; then
+	mkfifo "$pipe"
+fi
 
 case "$1" in
-	click-left)
-		handle_left_click
-		;;
-	click-right)
-		handle_right_click
-		;;
-	*)
-		main "$@"
-		;;
+	click-left) handle_left_click ;;
+	click-right) handle_right_click ;;
+	*) main ;;
 esac

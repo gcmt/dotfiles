@@ -138,7 +138,7 @@ label = %output%
 
 type = custom/script
 exec = ~/.config/polybar/modules/backup
-interval = 1
+tail = true
 
 click-left = ~/.config/polybar/modules/backup click-left
 click-right = ~/.config/polybar/modules/backup click-right

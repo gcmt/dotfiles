@@ -152,7 +152,7 @@ label = %output%
 
 type = custom/script
 exec = ~/.config/polybar/modules/timer
-interval = 1
+tail = true
 
 click-left = timer stop
 

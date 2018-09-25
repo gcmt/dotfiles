@@ -1,68 +1,93 @@
-#!/bin/bash
+#!/usr/bin/python -u
 
-current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$current_dir" || exit 1
-source utils
+import os
+import sys
+import time
+from pathlib import Path
+from datetime import datetime
+from subprocess import run, PIPE
+from threading import Thread, Event
 
 
-state_get() {
-	utils::state_get "$state" "$@"
+FIFO = Path("/tmp/polybar_datetime.fifo")
+STATE = Path(f"/run/user/{os.getuid()}/polybar_datetime_style")
+
+FORMATS = {
+    'default': '%a %d %H:%M',
+    'utc': '%a %d %H:%M',
+    'seconds': '%a %d %H:%M:%S'
 }
 
 
-state_set() {
-	utils::state_set "$state" "$@"
-}
+def print_date(style):
+    now = datetime.utcnow() if style == 'utc' else datetime.now()
+    print(now.strftime(FORMATS.get(style)))
 
 
-open_menu() {
-	local styles=(default seconds utc)
-	local entries="default\\nshow seconds\\nutc time"
-	local idx="$(echo -e "$entries" | i3-tiny-menu -format i -select "$(state_get style)")"
-	if [[ -n "$idx" ]]; then
-		echo "${styles[$idx]}" > "$pipe"
-	fi
-}
+def clock(style, stop):
+    while not stop.is_set():
+        print_date(style)
+        time.sleep(1)
 
 
-print_date() {
-	case "$1" in
-		utc) echo "$(date --utc '+%a %d %H:%M') UTC" ;;
-		seconds) date '+%a %d %H:%M:%S' ;;
-		*) date '+%a %d %H:%M' ;;
-	esac
-}
+def start_clock(style, stop):
+    thread = Thread(target=clock, daemon=True, args=(style, stop))
+    thread.start()
+    return thread
 
 
-main() {
-	trap "rm -f $pipe" 0
-	(
-		while true; do
-			if read -r style < "$pipe"; then
-				state_set style "$style"
-				print_date "$style"
-			fi
-		done
-	) &
-	while true; do
-		print_date "$(state_get style)"
-		sleep 1
-	done
-}
+def main():
+
+    current = STATE.read_text()
+    current = current if current else 'default'
+
+    stop = Event()
+    thread = start_clock(current, stop)
+
+    while True:
+        style = FIFO.read_text().strip()
+        if style in FORMATS:
+            STATE.write_text(style)
+            stop.set()
+            print_date(style)
+            thread.join()
+            stop.clear()
+            thread = start_clock(style, stop)
 
 
-statedir="$HOME/.local/share/polybar"
-mkdir -p "$statedir"
+def menu():
 
-state="$statedir/datetime"
-touch "$state"
+    styles = ["default", "seconds", "utc"]
+    entries = "default\nshow seconds\nutc time"
 
-pipe="/tmp/polybar_datetime.fifo"
-if [[ ! -p "$pipe" ]]; then
-	mkfifo "$pipe"
-fi
+    current = STATE.read_text()
+    selected = styles.index(current) if current in styles else 0
 
-case "$1" in
-	-menu) open_menu;;
-	*) main "$@" ;;
-esac
+    cmd = ['i3-tiny-menu', '-format', 'i', '-selected-row', str(selected)]
+
+    try:
+        stdout = run(cmd, input=entries, stdout=PIPE, encoding='utf8').stdout.strip()
+    except FileNotFoundError:
+        error('i3-tiny-menu not found')
+        sys.exit(1)
+
+    if not stdout:
+        return
+
+    style = styles[int(stdout)]
+    FIFO.write_text(style + '\n')
+
+
+if __name__ == '__main__':
+
+    try:
+        os.mkfifo(FIFO)
+    except FileExistsError:
+        pass
+
+    STATE.touch()
+
+    if '-menu' in sys.argv:
+        menu()
+    else:
+        main()

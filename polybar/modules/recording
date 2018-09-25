@@ -1,0 +1,35 @@
+#!/bin/bash
+
+
+stop_recording() {
+	if [[ -f "$pidfile" ]]; then
+		echo stop > "$pipe"
+		local file="$(cat "$metafile")"
+		kill "$(cat "$pidfile")"
+		nemo "$file"
+	fi
+}
+
+
+main() {
+	while read -r cmd; do
+		case $cmd in
+			start) echo "Recording" ;;
+			stop) echo ;;
+		esac
+	done < "$pipe"
+}
+
+
+pidfile="/run/user/$UID/rec.pid"
+metafile="/run/user/$UID/rec.out"
+
+pipe="/tmp/polybar_recording.fifo"
+if [[ ! -p "$pipe" ]]; then
+	mkfifo "$pipe"
+fi
+
+case "$1" in
+	-stop) stop_recording ;;
+	*) main ;;
+esac

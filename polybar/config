@@ -51,7 +51,7 @@ margin-bottom = 5
 monitor = LVDS-1
 
 width = 100%
-height = 30
+height = 32
 radius = 0.0
 
 background = ${colors.background}
@@ -70,7 +70,8 @@ module-margin-left = 3
 module-margin-right = 0
 
 font-0 = "Noto Mono:style=Medium:size=10;3"
-font-1 = "Ionicons:size=12;3"
+font-1 = "Font Awesome 5 Free:style=Solid:size=10;3"
+font-2 = "Font Awesome 5 Free:style=Regular:size=10;3"
 
 modules-left = i3
 modules-center = datetime
@@ -169,7 +170,7 @@ tail = true
 
 click-left = ~/.config/polybar/modules/recording -stop
 
-label = " %output%"
+label = %output%
 
 ; Wifi
 ; ----------------------------------------------------------------------------
@@ -180,7 +181,7 @@ type = internal/network
 interface = wlp2s0
 interval = 2
 
-format-connected =  <label-connected>
+format-connected =  <label-connected>
 label-connected = %essid%
 
 format-disconnected = <label-disconnected>
@@ -195,7 +196,7 @@ type = internal/network
 interface = enp4s0
 interval = 2
 
-format-connected =  <label-connected>
+format-connected =  <label-connected>
 label-connected = %local_ip%
 
 format-disconnected = <label-disconnected>
@@ -211,14 +212,12 @@ type = internal/alsa
 format-volume = <ramp-volume> <label-volume>
 label-volume = %percentage%%
 
-ramp-volume-0 = 
-ramp-volume-1 = 
-ramp-volume-2 = 
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
 
-ramp-headphones-0 = 
-ramp-headphones-1 = 
 format-muted = <label-muted>
 format-muted-foreground = ${colors.foreground}
-label-muted =  Mute
+label-muted =  Mute
 
 ; vim:ft=dosini cms=;\ %s

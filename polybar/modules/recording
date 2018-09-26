@@ -12,12 +12,13 @@ stop_recording() {
 
 
 main() {
+	local output=" Recording"
 	if [[ -f "$pidfile" ]]; then
-		echo "Recording"
+		echo "$output"
 	fi
 	while read -r cmd; do
 		case $cmd in
-			start) echo "Recording" ;;
+			start) echo "$output" ;;
 			stop) echo ;;
 		esac
 	done < "$pipe"

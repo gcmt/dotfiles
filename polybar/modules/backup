@@ -27,7 +27,11 @@ main() {
 		case $event in
 			started)
 				notify "Backup Started" "$archive"
-				echo " Backup"
+				if [[ "$archive" =~ ^rsync\.net ]]; then
+					echo " Backup"
+				elif [[ "$archive" =~ MyPassport ]]; then
+					echo " Backup"
+				fi
 				;;
 			completed)
 				notify "Backup Finished" "$archive"
@@ -35,7 +39,7 @@ main() {
 				;;
 			error)
 				notify_err "Backup Failed" "$archive"
-				echo '%{F#ce7d86} Backup%{F-}'
+				echo '%{F#ce7d86} Backup%{F-}'
 				;;
 			clean)
 				echo

@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
-import os
 import sys
 import time
 import argparse
+from pathlib import Path
 from datetime import datetime
 from subprocess import run
 
@@ -32,9 +32,8 @@ def main():
     if args.root:
         cmd += ['-win', 'root']
 
-    now = datetime.utcnow()
-    home = os.environ['HOME']
-    dest = f"{home}/Downloads/Screenshot_{now.strftime('%Y-%m-%d-%T')}.png"
+    timestamp = datetime.now().strftime('%Y-%m-%d-%T')
+    dest = Path.home() / f'Downloads/Screenshot_{timestamp}.png'
 
     proc = run(cmd + [dest])
     if proc.returncode:

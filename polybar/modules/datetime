@@ -3,10 +3,10 @@
 import os
 import sys
 import time
+import threading
 from pathlib import Path
 from datetime import datetime
 from subprocess import run, PIPE
-from threading import Thread, Event
 
 
 FIFO = Path("/tmp/polybar_datetime.fifo")
@@ -14,9 +14,33 @@ STATE = Path(f"/run/user/{os.getuid()}/polybar_datetime_style")
 
 FORMATS = {
     'default': '%a %d %H:%M',
-    'utc': '%a %d %H:%M',
+    'utc': '%a %d %H:%M UTC',
     'seconds': '%a %d %H:%M:%S'
 }
+
+
+class Clock(threading.Thread):
+
+    def __init__(self, style='default'):
+        super().__init__(daemon=True)
+        self.stop_event = threading.Event()
+        self.style = style
+
+    def run(self):
+        while True:
+            print_date(self.style)
+            if self.stop_event.wait(timeout=1.0):
+                return
+
+    def stop(self):
+        self.stop_event.set()
+        self.join()
+
+
+def start_clock(style):
+    clock = Clock(style=style)
+    clock.start()
+    return clock
 
 
 def print_date(style):
@@ -24,45 +48,29 @@ def print_date(style):
     print(now.strftime(FORMATS.get(style)))
 
 
-def clock(style, stop):
-    while not stop.is_set():
-        print_date(style)
-        time.sleep(1)
-
-
-def start_clock(style, stop):
-    thread = Thread(target=clock, daemon=True, args=(style, stop))
-    thread.start()
-    return thread
+def get_current_style():
+    current = STATE.read_text()
+    return current if current in FORMATS else 'default'
 
 
 def main():
 
-    current = STATE.read_text()
-    current = current if current else 'default'
-
-    stop = Event()
-    thread = start_clock(current, stop)
+    clock = start_clock(get_current_style())
 
     while True:
         style = FIFO.read_text().strip()
         if style in FORMATS:
             STATE.write_text(style)
-            stop.set()
-            print_date(style)
-            thread.join()
-            stop.clear()
-            thread = start_clock(style, stop)
+            clock.stop()
+            clock = start_clock(style)
 
 
 def menu():
 
-    styles = ["default", "seconds", "utc"]
-    entries = "default\nshow seconds\nutc time"
+    styles = ['default', 'seconds', 'utc']
+    entries = 'default\nshow seconds\nutc time'
 
-    current = STATE.read_text()
-    selected = styles.index(current) if current in styles else 0
-
+    selected = styles.index(get_current_style())
     cmd = ['i3-tiny-menu', '-format', 'i', '-selected-row', str(selected)]
 
     try:

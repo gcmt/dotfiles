@@ -10,6 +10,7 @@ from subprocess import run
 
 def parse_args():
     parser = argparse.ArgumentParser(allow_abbrev=False)
+    parser.add_argument('-root', action="store_true", default=False)
     parser.add_argument('-wait', type=int, nargs='?', const=4)
     return parser.parse_known_args()
 
@@ -17,6 +18,8 @@ def parse_args():
 def main():
 
     args, import_args = parse_args()
+
+    cmd = ['import'] + import_args
 
     if args.wait:
         id = '6677'
@@ -26,11 +29,14 @@ def main():
         run(['dunstify', '-C', id, '', ''])
         time.sleep(0.5)
 
+    if args.root:
+        cmd += ['-win', 'root']
+
     now = datetime.utcnow()
     home = os.environ['HOME']
     dest = f"{home}/Downloads/Screenshot_{now.strftime('%Y-%m-%d-%T')}.png"
 
-    proc = run(['import'] + import_args + [dest])
+    proc = run(cmd + [dest])
     if proc.returncode:
         sys.exit(1)
 

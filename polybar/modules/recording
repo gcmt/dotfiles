@@ -12,6 +12,9 @@ stop_recording() {
 
 
 main() {
+	if [[ -f "$pidfile" ]]; then
+		echo "Recording"
+	fi
 	while read -r cmd; do
 		case $cmd in
 			start) echo "Recording" ;;

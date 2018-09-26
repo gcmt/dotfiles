@@ -11,7 +11,6 @@ from subprocess import run, Popen, PIPE
 
 
 UID = os.getuid()
-HOME = os.environ['HOME']
 DISPLAY = os.environ['DISPLAY']
 
 PIDFILE = Path(f"/run/user/{UID}/rec.pid")
@@ -133,14 +132,14 @@ def main():
 
     else:
 
-        now = datetime.utcnow()
-        dest = f"{HOME}/Downloads/Recording_{now.strftime('%Y-%m-%d-%T')}.mp4"
+        timestamp = datetime.now().strftime('%Y-%m-%d-%T')
+        dest = Path.home() / f'Downloads/Recording_{timestamp}.mp4'
 
         proc = ffmpeg(dest, args)
         print(f"Started recording to {dest}...")
         polybar_send('start')
 
-        METAFILE.write_text(dest)
+        METAFILE.write_text(str(dest))
         PIDFILE.write_text(str(proc.pid))
 
         proc.wait()

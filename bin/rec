@@ -116,13 +116,20 @@ def main():
 
     args = parse_args()
 
-    if PIDFILE.exists() and METAFILE.exists():
+    if PIDFILE.exists():
 
-        dest = METAFILE.read_text()
-        pid = PIDFILE.read_text()
+        try:
+            dest = METAFILE.read_text()
+        except FileNotFoundError:
+            dest = '???'
 
-        run(['kill', pid])
-        print(f"Stopped recording to {dest}")
+        try:
+            pid = PIDFILE.read_text()
+        except FileNotFoundError:
+            pass
+        else:
+            run(['kill', pid])
+            print(f"Stopped recording to {dest}")
 
     else:
 

@@ -42,5 +42,6 @@ def main():
 
     print(f"Screen captured at {dest}")
 
+
 if __name__ == '__main__':
     main()

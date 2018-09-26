@@ -1,47 +1,107 @@
-#!/bin/bash
+#!/usr/bin/python -u
 
-current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$current_dir" || exit 1
-source utils
-
-
-state_get() {
-	utils::state_get "$timer" "$@"
-}
-
-
-print_remaining_time() {
-	local t=$1
-	local d=$(( t / 60 / 60 / 24 ))
-	local h=$(( t / 60 / 60 % 24 ))
-	local m=$(( t / 60 % 60 ))
-	local s=$(( t % 60 ))
-	local out="$(printf "%02d" $s)"
-	(( m > 0 )) && out="$(printf "%02d" $m):$out"
-	(( h > 0 )) && out="$h:$out"
-	(( d > 0 )) && out="$d:$out"
-	echo "$out"
-}
+import os
+import sys
+import time
+import threading
+import datetime
+import pathlib
+from subprocess import run, PIPE
 
 
-main() {
-
-	if [[ -f "$timer" ]]; then
-		local seconds=$(( $(state_get timer_end) - $(date +'%s')))
-		if (( seconds < 0 )); then
-			notify-send 'Timer' 'Timer finished!'
-			timer stop
-			echo
-		else
-			print_remaining_time $seconds
-		fi
-	else
-		echo
-	fi
-
-}
+FIFO = pathlib.Path("/tmp/polybar_timer.fifo")
 
 
-timer="$HOME/.run/timer"
+class Timer(threading.Thread):
 
-main "$@"
+    def __init__(self, duration):
+        super().__init__(daemon=True)
+        self.stop_event = threading.Event()
+        self.duration = duration
+
+    def run(self):
+        end = datetime.datetime.now() + datetime.timedelta(seconds=self.duration)
+        while True:
+            remaining = end - datetime.datetime.now()
+            if remaining.days < 0:
+                elapsed = format_time(datetime.timedelta(seconds=self.duration))
+                notify("Timer Finished", f"Time elapsed:  {elapsed}")
+                print('')
+                return
+            print(format_time(remaining))
+            if self.stop_event.wait(timeout=1.0):
+                return
+
+    def stop(self):
+        self.stop_event.set()
+        self.join()
+        print('')
+
+
+def start_timer(duration):
+    timer = Timer(duration=duration)
+    timer.start()
+    return timer
+
+
+def notify(title, msg=""):
+    run(['notify-send', '-t', '5000', title, msg])
+
+
+def format_time(delta):
+    t = round(delta.total_seconds())
+    d = t // 60 // 60 // 24
+    h = t // 60 // 60 % 24
+    m = t // 60 % 60
+    s = t % 60
+    out = "{:02}".format(s)
+    if m > 0:
+        out = "{:02}".format(m) + f':{out}'
+    if h > 0:
+        out = f'{h}:{out}'
+    if d > 0:
+        out = f'{d}:{out}'
+    if not (m or h or d):
+        out += 's'
+    return out
+
+
+def parse_command(raw):
+    rv = {'command': '', 'arg': ''}
+    cmd = raw.strip().split(maxsplit=1)
+    if len(cmd) > 0:
+        rv['command'] = cmd[0]
+    if len(cmd) > 1:
+        rv['arg'] = cmd[1]
+    return rv
+
+
+def main():
+    timer = None
+    while True:
+        cmd = parse_command(FIFO.read_text())
+        if cmd['command'] == 'stop':
+            if timer and timer.is_alive():
+                timer.stop()
+        elif cmd['command'] == 'start' and cmd['arg'].isdigit():
+            if timer and timer.is_alive():
+                timer.stop()
+            timer = start_timer(int(cmd['arg']))
+        elif cmd['command'] == 'toggle' and cmd['arg'].isdigit():
+            if timer and timer.is_alive():
+                timer.stop()
+            else:
+                timer = start_timer(int(cmd['arg']))
+
+
+if __name__ == '__main__':
+
+    try:
+        os.mkfifo(FIFO)
+    except FileExistsError:
+        pass
+
+    if '-stop' in sys.argv:
+        FIFO.write_text('stop\n')
+    else:
+        main()

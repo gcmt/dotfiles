@@ -154,7 +154,7 @@ type = custom/script
 exec = ~/.config/polybar/modules/timer
 tail = true
 
-click-left = timer stop
+click-left = ~/.config/polybar/modules/timer -stop
 
 label = "%{B#00e7e8eb} %{B-}  %output%"
 

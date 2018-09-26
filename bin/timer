@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-get_duration() {
+_get_duration() {
 	local n mod total=0
 	for arg in "$@"; do
 		n=$(echo "$arg" | grep -o '^[0-9]\+')
@@ -18,40 +18,23 @@ get_duration() {
 }
 
 
-start_timer() {
-	local seconds="$(get_duration "$@")"
-	if [[ -z "$seconds" ]]; then
-		return 1
-	fi
-	local end="$(expr $(date +'%s') + "$seconds")"
-	echo "timer_end=$end" > "$timer"
-}
-
-
-stop_timer() {
-	rm -f "$timer"
-}
-
-
-timer="$HOME/.run/timer"
-
-mkdir -p "$HOME/.run"
+fifo="/tmp/polybar_timer.fifo"
 
 if [[ "$1" == start || "$1" =~ [0-9]+ ]]; then
 
-	start_timer "$@" || exit 1
+	seconds="$(_get_duration "$@")"
+	(( seconds > 0 )) || exit 1
+	echo "start $seconds" > "$fifo"
 
 elif [[ "$1" == toggle ]]; then
 
-	if [[ -e "$timer" ]]; then
-		stop_timer
-	else
-		start_timer "$@" || exit 1
-	fi
+	seconds="$(_get_duration "$@")"
+	(( seconds > 0 )) || exit 1
+	echo "toggle $seconds" > "$fifo"
 
 elif [[ "$1" == stop ]]; then
 
-	stop_timer
+	echo "stop" > "$fifo"
 
 else
 

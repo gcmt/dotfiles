@@ -15,12 +15,11 @@ DISPLAY = os.environ['DISPLAY']
 
 PIDFILE = Path(f"/run/user/{UID}/rec.pid")
 METAFILE = Path(f"/run/user/{UID}/rec.out")
-POLYBAR_FIFO = Path("/tmp/polybar_recording.fifo")
+FIFO = Path("/tmp/polybar_recording.fifo")
 
 
 def polybar_send(cmd):
-    if POLYBAR_FIFO.exists():
-        POLYBAR_FIFO.write_text(f'{cmd}\n')
+    FIFO.exists() and FIFO.write_text(f'{cmd}\n')
 
 
 def cleanup():

@@ -8,6 +8,10 @@ from datetime import datetime
 from subprocess import run
 
 
+def notify(*args):
+    run(['dunstify'] + list(args))
+
+
 def parse_args():
     parser = argparse.ArgumentParser(allow_abbrev=False)
     parser.add_argument('-root', action="store_true", default=False)
@@ -24,9 +28,9 @@ def main():
     if args.wait:
         id = '6677'
         for s in reversed(range(1, args.wait+1)):
-            run(['dunstify', '-r', id, f'Screenshot in {s} seconds', ''])
+            notify('-r', id, f'Screenshot in {s} seconds')
             time.sleep(1)
-        run(['dunstify', '-C', id, '', ''])
+        notify('-C', id)
         time.sleep(0.5)
 
     if args.root:

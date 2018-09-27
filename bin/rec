@@ -4,9 +4,11 @@ import os
 import re
 import sys
 import atexit
+import signal
 import argparse
 from pathlib import Path
 from datetime import datetime
+from functools import partial
 from subprocess import run, Popen, PIPE
 
 
@@ -20,15 +22,6 @@ FIFO = Path("/tmp/polybar_recording.fifo")
 
 def polybar_send(cmd):
     FIFO.exists() and FIFO.write_text(f'{cmd}\n')
-
-
-def cleanup():
-    polybar_send('stop')
-    try:
-        os.remove(PIDFILE)
-        os.remove(METAFILE)
-    except FileNotFoundError:
-        pass
 
 
 def error(msg):
@@ -112,6 +105,17 @@ def parse_args():
 
 def main():
 
+    def cleanup(*args):
+        try:
+            PIDFILE.unlink()
+            METAFILE.unlink()
+        except FileNotFoundError:
+            pass
+
+    atexit.register(cleanup)
+    signal.signal(signal.SIGINT, cleanup)
+    signal.signal(signal.SIGTERM, cleanup)
+
     args = parse_args()
 
     if PIDFILE.exists():
@@ -139,11 +143,19 @@ def main():
         polybar_send('start')
 
         METAFILE.write_text(str(dest))
-        PIDFILE.write_text(str(proc.pid))
+        PIDFILE.write_text(str(os.getpid()))
+
+        def terminate(proc, *args):
+            polybar_send('stop')
+            proc.terminate()
+
+        terminate = partial(terminate, proc)
+        atexit.register(terminate)
+        signal.signal(signal.SIGINT, terminate)
+        signal.signal(signal.SIGTERM, terminate)
 
         proc.wait()
 
 
 if __name__ == '__main__':
-    atexit.register(cleanup)
     main()

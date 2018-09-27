@@ -24,6 +24,7 @@ timer() {
         if (( remaining >= 0 )); then
             format_time $remaining
         else
+            notify-send "Timer Finished" "Elapsed time:  $(format_time $1)"
             echo && break
         fi
         sleep 1

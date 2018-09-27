@@ -23,29 +23,31 @@ view_log() {
 
 
 main() {
-	while read -r event archive; do
-		case $event in
-			started)
-				notify "Backup Started" "$archive"
-				if [[ "$archive" =~ ^rsync\.net ]]; then
-					echo " Backup"
-				elif [[ "$archive" =~ MyPassport ]]; then
-					echo " Backup"
-				fi
-				;;
-			completed)
-				notify "Backup Finished" "$archive"
-				echo
-				;;
-			error)
-				notify_err "Backup Failed" "$archive"
-				echo '%{F#ce7d86} Backup%{F-}'
-				;;
-			clean)
-				echo
-				;;
-		esac
-	done < "$pipe"
+	while true; do
+		if read -r event archive < "$pipe"; then
+			case $event in
+				started)
+					notify "Backup Started" "$archive"
+					if [[ "$archive" =~ ^rsync\.net ]]; then
+						echo " Backup"
+					elif [[ "$archive" =~ MyPassport ]]; then
+						echo " Backup"
+					fi
+					;;
+				completed)
+					notify "Backup Finished" "$archive"
+					echo
+					;;
+				error)
+					notify_err "Backup Failed" "$archive"
+					echo '%{F#ce7d86} Backup%{F-}'
+					;;
+				clean)
+					echo
+					;;
+			esac
+		fi
+	done
 }
 
 

@@ -7,5 +7,6 @@ fi
 
 case $1 in
 	stop) echo stop > "$fifo" ;;
-	start|'') echo start > "$fifo" ;;
+	start) echo start > "$fifo" ;;
+	toggle|'') echo toggle > "$fifo" ;;
 esac

@@ -31,14 +31,29 @@ main() {
 		if read -r cmd < "$fifo"; then
 			case $cmd in
 				start)
-					[[ "$pid" ]] && kill $pid
+					if [[ -n "$pid" ]]; then
+						kill $pid
+					fi
 					stopwatch &
 					pid=$!
 					;;
 				stop)
-					[[ "$pid" ]] && kill $pid
+					if [[ -n "$pid" ]]; then
+						kill $pid
+					fi
 					echo
 					pid=
+					;;
+				toggle)
+					if [[ -n "$pid" ]]; then
+						kill $pid
+						echo
+						pid=
+					else
+						stopwatch &
+						pid=$!
+					fi
+					;;
 			esac
 		fi
 	done

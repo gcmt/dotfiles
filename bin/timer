@@ -19,6 +19,9 @@ _get_duration() {
 
 
 fifo="/tmp/polybar_timer.fifo"
+if [[ ! -p "$fifo" ]]; then
+	exit 1
+fi
 
 if [[ "$1" == start || "$1" =~ [0-9]+ ]]; then
 

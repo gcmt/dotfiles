@@ -24,8 +24,11 @@ func! ranger#open(target, ...)
 		let cmd += s:no_preview
 	end
 	" Must be the last argument before executing the command
-	let target = shellescape(a:target)
-	let cmd += filereadable(a:target) ? ['--selectfile='.target] : [target]
+	if filereadable(a:target)
+		let cmd += ['--selectfile='.shellescape(a:target)]
+	else
+		let cmd += [fnamemodify(a:target, ':p:h')]
+	end
 	if external
 		sil call system(join([g:ranger_term_prg] + ['-e'] + cmd))
 	else

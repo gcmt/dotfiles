@@ -3,10 +3,8 @@
 
 stop_recording() {
 	if [[ -f "$pidfile" ]]; then
-		echo stop > "$pipe"
-		local file="$(cat "$metafile")"
 		kill "$(cat "$pidfile")"
-		nemo "$file"
+		echo stop > "$fifo"
 	fi
 }
 

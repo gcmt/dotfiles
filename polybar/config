@@ -157,7 +157,7 @@ tail = true
 
 click-left = ~/.config/polybar/modules/timer -stop
 
-label = "%{B#00e7e8eb} %{B-}  %output%"
+label =  %output%
 
 ; Stopwatch
 ; ----------------------------------------------------------------------------

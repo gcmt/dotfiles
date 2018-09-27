@@ -75,7 +75,7 @@ font-2 = "Font Awesome 5 Free:style=Regular:size=10;3"
 
 modules-left = i3
 modules-center = datetime
-modules-right = rec backup wlan eth volume battery timer
+modules-right = rec backup wlan eth volume battery timer stopwatch
 
 ; i3 workspaces
 ; ----------------------------------------------------------------------------

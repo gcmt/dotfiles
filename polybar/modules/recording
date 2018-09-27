@@ -16,21 +16,23 @@ main() {
 	if [[ -f "$pidfile" ]]; then
 		echo "$output"
 	fi
-	while read -r cmd; do
-		case $cmd in
-			start) echo "$output" ;;
-			stop) echo ;;
-		esac
-	done < "$pipe"
+	while true; do
+		if read -r cmd < "$fifo"; then
+			case $cmd in
+				start) echo "$output" ;;
+				stop) echo ;;
+			esac
+		fi
+	done
 }
 
 
 pidfile="/run/user/$UID/rec.pid"
 metafile="/run/user/$UID/rec.out"
 
-pipe="/tmp/polybar_recording.fifo"
-if [[ ! -p "$pipe" ]]; then
-	mkfifo "$pipe"
+fifo="/tmp/polybar_recording.fifo"
+if [[ ! -p "$fifo" ]]; then
+	mkfifo "$fifo"
 fi
 
 case "$1" in

@@ -51,6 +51,7 @@ aug _autotype
 	au BufEnter *.vue inoremap <silent> <buffer> ! <c-]><c-g>u<c-r>=autotype#vue#bang()<cr>
 
 	au FileType python inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#python#esc_o()<cr>
+	au FileType python inoremap <silent> <buffer> : <c-]><c-g>u<c-r>=autotype#python#colon()<cr>
 
 	au FileType sh inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#sh#space()<cr>
 	au FileType sh inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#sh#outward_parenthesis()<cr>

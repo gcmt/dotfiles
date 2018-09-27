@@ -14,3 +14,19 @@ func! autotype#python#esc_o()
 
 	return "\<esc>o"
 endf
+
+
+func! autotype#python#colon()
+
+	if g:autotype_disabled || autotype#inside('Comment', 'String')
+		return ':'
+	end
+
+	let line = getline('.')
+
+	if line =~ '\v^\s*try>'
+		return ":\<cr>"
+	end
+
+	return ':'
+endf

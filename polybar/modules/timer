@@ -26,16 +26,15 @@ class Timer(threading.Thread):
             if remaining.days < 0:
                 elapsed = format_time(datetime.timedelta(seconds=self.duration))
                 notify("Timer Finished", f"Time elapsed:  {elapsed}")
-                print('')
-                return
+                break
             print(format_time(remaining))
             if self.stop_event.wait(timeout=1.0):
-                return
+                break
+        print()
 
     def stop(self):
         self.stop_event.set()
         self.join()
-        print('')
 
 
 def start_timer(duration):

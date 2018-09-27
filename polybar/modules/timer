@@ -1,106 +1,67 @@
-#!/usr/bin/python -u
-
-import os
-import sys
-import time
-import threading
-import datetime
-import pathlib
-from subprocess import run, PIPE
+#!/bin/bash
 
 
-FIFO = pathlib.Path("/tmp/polybar_timer.fifo")
+format_time() {
+    local t=$1
+    local d=$(( t / 60 / 60 / 24 ))
+    local h=$(( t / 60 / 60 % 24 ))
+    local m=$(( t / 60 % 60 ))
+    local s=$(( t % 60 ))
+    local out="$(printf "%02d" $s)"
+    (( m > 0 )) && out="$(printf "%02d" $m):$out"
+    (( h > 0 )) && out="$h:$out"
+    (( d > 0 )) && out="$d:$out"
+    (( m == 0 && h == 0 && d == 0 )) && out="${out}s"
+    echo "$out"
+}
 
 
-class Timer(threading.Thread):
-
-    def __init__(self, duration):
-        super().__init__(daemon=True)
-        self.stop_event = threading.Event()
-        self.duration = duration
-
-    def run(self):
-        end = datetime.datetime.now() + datetime.timedelta(seconds=self.duration)
-        while True:
-            remaining = end - datetime.datetime.now()
-            if remaining.days < 0:
-                elapsed = format_time(datetime.timedelta(seconds=self.duration))
-                notify("Timer Finished", f"Time elapsed:  {elapsed}")
-                break
-            print(format_time(remaining))
-            if self.stop_event.wait(timeout=1.0):
-                break
-        print()
-
-    def stop(self):
-        self.stop_event.set()
-        self.join()
+timer() {
+    local remaining
+    local end=$(( $(date +%s) + $1 ))
+    while true; do
+        remaining=$(( end - $(date +%s) ))
+        if (( remaining >= 0 )); then
+            format_time $remaining
+        else
+            echo && break
+        fi
+        sleep 1
+    done
+}
 
 
-def start_timer(duration):
-    timer = Timer(duration=duration)
-    timer.start()
-    return timer
+main() {
+    local pid
+    while true; do
+        if read -r cmd seconds < "$fifo"; then
+            case $cmd in
+                start)
+                    if [[ -n "$pid" ]]; then
+                        kill $pid
+                    fi
+                    timer "$seconds" &
+                    pid=$!
+                    ;;
+                stop)
+                    if [[ -n "$pid" ]]; then
+                        kill $pid
+                    fi
+                    echo
+                    pid=
+                    ;;
+            esac
+        fi
+    done
+}
 
 
-def notify(title, msg=""):
-    run(['notify-send', '-t', '5000', title, msg])
+fifo="/tmp/polybar_timer.fifo"
+if [[ ! -p "$fifo" ]]; then
+    mkfifo "$fifo"
+fi
 
-
-def format_time(delta):
-    t = round(delta.total_seconds())
-    d = t // 60 // 60 // 24
-    h = t // 60 // 60 % 24
-    m = t // 60 % 60
-    s = t % 60
-    out = "{:02}".format(s)
-    if m > 0:
-        out = "{:02}".format(m) + f':{out}'
-    if h > 0:
-        out = f'{h}:{out}'
-    if d > 0:
-        out = f'{d}:{out}'
-    if not (m or h or d):
-        out += 's'
-    return out
-
-
-def parse_command(raw):
-    rv = {'command': '', 'arg': ''}
-    cmd = raw.strip().split(maxsplit=1)
-    if len(cmd) > 0:
-        rv['command'] = cmd[0]
-    if len(cmd) > 1:
-        rv['arg'] = cmd[1]
-    return rv
-
-
-def main():
-    timer = None
-    while True:
-        cmd = parse_command(FIFO.read_text())
-        if cmd['command'] == 'stop':
-            if timer and timer.is_alive():
-                timer.stop()
-        elif cmd['command'] == 'start' and cmd['arg'].isdigit():
-            if timer and timer.is_alive():
-                timer.stop()
-            timer = start_timer(int(cmd['arg']))
-        elif cmd['command'] == 'toggle' and cmd['arg'].isdigit():
-            if timer and timer.is_alive():
-                timer.stop()
-            else:
-                timer = start_timer(int(cmd['arg']))
-
-
-if __name__ == '__main__':
-
-    try:
-        os.mkfifo(FIFO)
-    except FileExistsError:
-        pass
-
-    if '-stop' in sys.argv:
-        FIFO.write_text('stop\n')
-    else:
-        main()
+case $1 in
+    -stop) echo stop > "$fifo" ;;
+    '') main ;;
+esac

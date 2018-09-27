@@ -3,8 +3,12 @@
 
 stop_recording() {
 	if [[ -f "$pidfile" ]]; then
+		local file="$(cat "$metafile")"
 		kill "$(cat "$pidfile")"
 		echo stop > "$fifo"
+	fi
+	if [[ -n "$file" ]]; then
+		i3-msg "exec --no-startup-id nemo $file"
 	fi
 }
 

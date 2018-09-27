@@ -159,6 +159,19 @@ click-left = ~/.config/polybar/modules/timer -stop
 
 label = "%{B#00e7e8eb} %{B-}  %output%"
 
+; Stopwatch
+; ----------------------------------------------------------------------------
+
+[module/stopwatch]
+
+type = custom/script
+exec = ~/.config/polybar/modules/stopwatch
+tail = true
+
+click-left = ~/.config/polybar/modules/stopwatch -stop
+
+label =  %output%
+
 ; Screen Recording
 ; ----------------------------------------------------------------------------
 

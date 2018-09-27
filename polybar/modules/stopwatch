@@ -1,0 +1,56 @@
+#!/bin/bash
+
+
+format_time() {
+	local t=$1
+	local d=$(( t / 60 / 60 / 24 ))
+	local h=$(( t / 60 / 60 % 24 ))
+	local m=$(( t / 60 % 60 ))
+	local s=$(( t % 60 ))
+	local out="$(printf "%02d" $s)"
+	(( m > 0 )) && out="$(printf "%02d" $m):$out"
+	(( h > 0 )) && out="$h:$out"
+	(( d > 0 )) && out="$d:$out"
+	(( m == 0 && h == 0 && d == 0 )) && out="${out}s"
+	echo "$out"
+}
+
+
+stopwatch() {
+	local start=$(date +%s)
+	while true; do
+		format_time $(( $(date +%s) - start ))
+		sleep 1
+	done
+}
+
+
+main() {
+	local pid
+	while true; do
+		if read -r cmd < "$fifo"; then
+			case $cmd in
+				start)
+					[[ "$pid" ]] && kill $pid
+					stopwatch &
+					pid=$!
+					;;
+				stop)
+					[[ "$pid" ]] && kill $pid
+					echo
+					pid=
+			esac
+		fi
+	done
+}
+
+
+fifo="/tmp/polybar_stopwatch.fifo"
+if [[ ! -p "$fifo" ]]; then
+	mkfifo "$fifo"
+fi
+
+case $1 in
+	-stop) echo stop > "$fifo" ;;
+	'') main ;;
+esac

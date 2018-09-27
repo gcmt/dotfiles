@@ -1,0 +1,11 @@
+#!/bin/bash
+
+fifo="/tmp/polybar_stopwatch.fifo"
+if [[ ! -p "$fifo" ]]; then
+	exit 1
+fi
+
+case $1 in
+	stop) echo stop > "$fifo" ;;
+	start|'') echo start > "$fifo" ;;
+esac

@@ -13,23 +13,17 @@ default="scratch"
 
 # Find the last active session that is not $default or cmus
 last_active_session() {
-	local sessions="$(tmux ls -F '#{session_activity}:#S' 2>/dev/null)"
-	if [[ -z "$sessions" ]]; then
-		return 1
-	fi
-	local candidate session activity delta last_delta
-	while IFS= read -r line; do
-		candidate="$(echo $line | sed 's/^[0-9]\+://')"
-		if [[ "$candidate" =~ $default|cmus|calc ]]; then
+	local session activity candidate delta last_delta
+	while read -r activity candidate; do
+		if [[ "$candidate" =~ ^($default|cmus|calc)$ ]]; then
 			continue
 		fi
-		activity="$(echo $line | grep -o '^[0-9]\+')"
-		delta=$(( $(date '+%s') - $activity ))
-		if (( $delta < ${last_delta:-$(date '+%s')} )); then
+		delta=$(( $(date '+%s') - activity ))
+		if (( delta < ${last_delta:-$(date '+%s')} )); then
 			session="$candidate"
 			last_delta=$delta
 		fi
-	done <<< "$sessions"
+	done < <(tmux ls -F '#{session_activity} #S' 2>/dev/null)
 	echo "$session"
 }
 
@@ -40,7 +34,7 @@ fi
 
 if (( $dry == 1 )); then
 	echo "$target"
-	exit 0
+	exit
 fi
 
 if ! tmux has -t "=$target" 2>/dev/null; then

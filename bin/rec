@@ -21,7 +21,7 @@ FIFO = Path("/tmp/polybar_recording.fifo")
 
 
 def polybar_send(cmd):
-    FIFO.exists() and FIFO.write_text(f'{cmd}\n')
+    FIFO.is_fifo() and FIFO.write_text(f'{cmd}\n')
 
 
 def error(msg):

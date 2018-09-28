@@ -36,6 +36,7 @@ fifo="/tmp/polybar_recording.fifo"
 if [[ ! -p "$fifo" ]]; then
 	mkfifo "$fifo"
 fi
+trap "rm '$fifo'" 0
 
 case "$1" in
 	-stop) stop_recording ;;

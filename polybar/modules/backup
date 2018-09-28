@@ -24,7 +24,7 @@ view_log() {
 
 main() {
 	while true; do
-		if read -r event archive < "$pipe"; then
+		if read -r event archive < "$fifo"; then
 			case $event in
 				started)
 					notify "Backup Started" "$archive"
@@ -70,7 +70,7 @@ handle_left_click() {
 
 handle_right_click() {
 	if [[ -e "$err_file" ]]; then
-		echo clean > "$pipe"
+		echo clean > "$fifo"
 	fi
 }
 
@@ -81,10 +81,11 @@ borg_dir="/run/borg-backup"
 arch_file="$borg_dir/archive"
 err_file="$borg_dir/error"
 
-pipe="/tmp/polybar_backup.fifo"
-if [[ ! -p "$pipe" ]]; then
-	mkfifo "$pipe"
+fifo="/tmp/polybar_backup.fifo"
+if [[ ! -p "$fifo" ]]; then
+	mkfifo "$fifo"
 fi
+trap "rm '$fifo'" 0
 
 case "$1" in
 	click-left) handle_left_click ;;

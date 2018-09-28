@@ -3,6 +3,8 @@
 import os
 import sys
 import time
+import atexit
+import signal
 import threading
 from pathlib import Path
 from datetime import datetime
@@ -88,14 +90,34 @@ def menu():
 
 if __name__ == '__main__':
 
-    try:
-        os.mkfifo(FIFO)
-    except FileExistsError:
-        pass
-
-    STATE.touch()
+    scriptname = os.path.basename(__file__)
 
     if '-menu' in sys.argv:
+
+        if not FIFO.is_fifo():
+            print(f"{scriptname}: polybar module not running", file=sys.stderr)
+            sys.exit(1)
+
         menu()
+
     else:
+
+        try:
+            os.mkfifo(FIFO)
+        except FileExistsError:
+            pass
+
+        STATE.touch()
+
+        def cleanup(*args):
+            try:
+                FIFO.unlink()
+                STATE.unlink()
+            except FileNotFoundError:
+                pass
+
+        atexit.register(cleanup)
+        signal.signal(signal.SIGINT, cleanup)
+        signal.signal(signal.SIGTERM, cleanup)
+
         main()

@@ -61,6 +61,7 @@ fifo="/tmp/polybar_timer.fifo"
 if [[ ! -p "$fifo" ]]; then
     mkfifo "$fifo"
 fi
+trap "rm '$fifo'" 0
 
 case $1 in
     -stop) echo stop > "$fifo" ;;

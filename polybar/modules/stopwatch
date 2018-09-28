@@ -61,11 +61,19 @@ main() {
 
 
 fifo="/tmp/polybar_stopwatch.fifo"
-if [[ ! -p "$fifo" ]]; then
-	mkfifo "$fifo"
-fi
 
-case $1 in
-	-stop) echo stop > "$fifo" ;;
-	'') main ;;
-esac
+if (( $# == 0 )); then
+	if [[ -p "$fifo" ]]; then
+		echo "$(basename $0): already running" 1>&2
+		exit 1
+	fi
+	mkfifo "$fifo"
+	trap "rm '$fifo'" 0
+	main
+else
+	if [[ ! -p "$fifo" ]]; then
+		echo "$(basename $0): polybar module not running" 1>&2
+		exit 1
+	fi
+	echo $1 > "$fifo"
+fi

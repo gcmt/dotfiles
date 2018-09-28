@@ -1,12 +1,8 @@
 #!/bin/bash
 
-fifo="/tmp/polybar_stopwatch.fifo"
-if [[ ! -p "$fifo" ]]; then
-	exit 1
-fi
+module="$HOME/.config/polybar/modules/stopwatch"
 
 case $1 in
-	stop) echo stop > "$fifo" ;;
-	start) echo start > "$fifo" ;;
-	toggle|'') echo toggle > "$fifo" ;;
+	start|stop) eval "$module $1" ;;
+	toggle|'') eval "$module toggle" ;;
 esac

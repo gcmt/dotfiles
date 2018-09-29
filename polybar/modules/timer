@@ -2,68 +2,68 @@
 
 
 format_time() {
-    local t=$1
-    local d=$(( t / 60 / 60 / 24 ))
-    local h=$(( t / 60 / 60 % 24 ))
-    local m=$(( t / 60 % 60 ))
-    local s=$(( t % 60 ))
-    local out="$(printf "%02d" $s)"
-    (( m > 0 )) && out="$(printf "%02d" $m):$out"
-    (( h > 0 )) && out="$h:$out"
-    (( d > 0 )) && out="$d:$out"
-    (( m == 0 && h == 0 && d == 0 )) && out="${out}s"
-    echo "$out"
+	local t=$1
+	local d=$(( t / 60 / 60 / 24 ))
+	local h=$(( t / 60 / 60 % 24 ))
+	local m=$(( t / 60 % 60 ))
+	local s=$(( t % 60 ))
+	local out="$(printf "%02d" $s)"
+	(( m > 0 )) && out="$(printf "%02d" $m):$out"
+	(( h > 0 )) && out="$h:$out"
+	(( d > 0 )) && out="$d:$out"
+	(( m == 0 && h == 0 && d == 0 )) && out="${out}s"
+	echo "$out"
 }
 
 
 timer() {
-    local remaining
-    local end=$(( $(date +%s) + $1 ))
-    while true; do
-        remaining=$(( end - $(date +%s) ))
-        if (( remaining > 0 )); then
-            format_time $remaining
-        else
-            notify-send "Timer Finished" "Elapsed time:  $(format_time $1)"
-            echo && break
-        fi
-        sleep 1
-    done
+	local remaining
+	local end=$(( $(date +%s) + $1 ))
+	while true; do
+		remaining=$(( end - $(date +%s) ))
+		if (( remaining > 0 )); then
+			format_time $remaining
+		else
+			notify-send "Timer Finished" "Elapsed time:  $(format_time $1)"
+			echo && break
+		fi
+		sleep 1
+	done
 }
 
 
 main() {
-    local pid
-    while true; do
-        if read -r cmd seconds < "$fifo"; then
-            case $cmd in
-                start)
-                    if [[ -n "$pid" ]]; then
-                        kill $pid
-                    fi
-                    timer "$seconds" &
-                    pid=$!
-                    ;;
-                stop)
-                    if [[ -n "$pid" ]]; then
-                        kill $pid
-                    fi
-                    echo
-                    pid=
-                    ;;
-            esac
-        fi
-    done
+	local pid
+	while true; do
+		if read -r cmd seconds < "$fifo"; then
+			case $cmd in
+				start)
+					if [[ -n "$pid" ]]; then
+						kill $pid
+					fi
+					timer "$seconds" &
+					pid=$!
+					;;
+				stop)
+					if [[ -n "$pid" ]]; then
+						kill $pid
+					fi
+					echo
+					pid=
+					;;
+			esac
+		fi
+	done
 }
 
 
 fifo="/tmp/polybar_timer.fifo"
 if [[ ! -p "$fifo" ]]; then
-    mkfifo "$fifo"
+	mkfifo "$fifo"
 fi
 trap "rm '$fifo'" 0
 
 case $1 in
-    -stop) echo stop > "$fifo" ;;
-    '') main ;;
+	-stop) echo stop > "$fifo" ;;
+	'') main ;;
 esac

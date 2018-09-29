@@ -2,9 +2,7 @@
 
 scriptname="$(basename "$0")"
 pidfile="/run/user/$UID/$scriptname.pid"
-
-basedir="$HOME/.run/i3"
-out="$basedir/last-window"
+out="/run/user/$UID/i3-last-window"
 
 exec 200>"$pidfile"
 if ! flock -n 200; then
@@ -12,6 +10,7 @@ if ! flock -n 200; then
 	exit 1
 else
 	echo $$ >&200
+	echo > "$out"
 fi
 
 cleanup() {
@@ -19,9 +18,6 @@ cleanup() {
 }
 
 trap cleanup 0
-
-mkdir -p "$basedir"
-echo "" > "$out"
 
 last=
 xprop -root -spy _NET_ACTIVE_WINDOW | while read -r line; do

@@ -205,6 +205,10 @@ activate() {
 	echo "virtual environment activated: $venv"
 }
 
+vimx() {
+	touch "$@" && chmod u+x "$@" && vim "$@"
+}
+
 # open files that contain the given pattern
 vimg() {
 	vim -q <(rg --vimgrep "$@") +copen
@@ -341,15 +345,18 @@ bindkey "^n" down-line-or-beginning-search
 bindkey '^w' backward-delete-word
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
-bindkey '^k' edit-command-line
 
 bindkey '^e' end-of-line
 bindkey '^a' beginning-of-line
 
-bindkey -M vicmd '^k' edit-command-line
 bindkey -M vicmd 'H' vi-beginning-of-line
 bindkey -M vicmd 'L' vi-end-of-line
 bindkey -M vicmd 'Y' vi-yank-eol
+
+bindkey '^k' edit-command-line
+bindkey -M vicmd '^k' edit-command-line
+
+bindkey '^q' push-line-or-edit
 
 bindkey '^s' toggle-sudo
 bindkey -M vicmd '^s' toggle-sudo
@@ -363,11 +370,6 @@ for i in {1..4}; do
 	bindkey "\\e$i" delete-argument-$i
 done
 
-bindkey '^f' delete-argument-1
-bindkey -M vicmd '^t' delete-argument-1
-bindkey '^F' delete-argument-2
-bindkey -M vicmd '^F' delete-argument-2
-
 # PLUGINS
 # ----------------------------------------------------------------------------
 
@@ -380,7 +382,7 @@ fi
 
 if [[ -e "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && "$TERM" != "linux" ]]; then
 	source "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
-	bindkey '^g' autosuggest-accept
+	bindkey '^f' autosuggest-accept
 	bindkey '^d' autosuggest-execute
 fi
 

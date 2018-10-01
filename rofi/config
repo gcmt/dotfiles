@@ -181,11 +181,11 @@ rofi.me-accept-entry: MousePrimary
 rofi.kb-accept-entry: Control+d,Return
 
 ! Use entered text as command (in ssh/run modi)
-rofi.kb-accept-custom: Control+f
+rofi.kb-accept-custom: Control+Return
 
 ! Launch the application in a terminal (in run mode).
 ! Return the selected entry and move to the next item while keeping Rofi open. (in dmenu)
-rofi.kb-accept-alt: Control+Return
+rofi.kb-accept-alt:
 
 ! Delete entry from history
 rofi.kb-delete-entry: Control+r
@@ -224,7 +224,7 @@ rofi.kb-row-first:
 rofi.kb-row-last:
 
 ! Set selected item as input text
-rofi.kb-row-select: Control+y
+rofi.kb-row-select: Control+f
 
 ! Take a screenshot of the rofi window
 rofi.kb-screenshot:

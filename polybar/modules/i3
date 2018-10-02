@@ -28,14 +28,13 @@ def colored(s, fg=None, bg=None):
     return rv
 
 
-def print_workspaces(mode=None):
+def print_workspaces(i3, mode=None):
 
     out = ''
     hidden = ''
 
     tree = i3.get_tree()
-    focused = tree.find_focused()
-    active = focused.workspace()
+    active = tree.find_focused().workspace()
 
     for w in tree.workspaces():
         if w.name.startswith('_') and not w is active:
@@ -59,10 +58,11 @@ def print_workspaces(mode=None):
 
 
 def update_bar(self, e):
-    print_workspaces()
+    print_workspaces(self)
+
 
 def on_mode_change(self, e):
-    print_workspaces(mode=e.change)
+    print_workspaces(self, mode=e.change)
 
 
 i3 = i3ipc.Connection()
@@ -74,5 +74,5 @@ i3.on('window::move', update_bar)
 i3.on('window::close', update_bar)
 i3.on('mode', on_mode_change)
 
-print_workspaces()
+print_workspaces(i3)
 i3.main()

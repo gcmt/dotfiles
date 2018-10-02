@@ -6,6 +6,7 @@ import sys
 import argparse
 import i3ipc
 import shlex
+from pathlib import Path
 
 
 def error(msg):
@@ -21,12 +22,23 @@ def parse_args():
     parser.add_argument('-n', help="The window instance")
     parser.add_argument('-m', help="The window marks (use - to require no marks)")
     parser.add_argument('-fallback', default="", help="The command to execute when no window gets focused")
+    parser.add_argument('-id', help="The window id")
     args = parser.parse_args()
 
-    if args.t is None and args.c is None and args.n is None and args.m is None:
+    if args.id is None and args.t is None and args.c is None and args.n is None and args.m is None:
         parser.print_usage(file=sys.stderr)
         error("provide at least one selection criteria")
         sys.exit(2)
+
+    if args.m != "-":
+        args.m = set(args.m.split(',')) if args.m else set()
+
+    if args.id:
+        try:
+            args.id = int(args.id, 16)
+        except ValueError:
+            error("invalid id, must be an hexadecimal number")
+            sys.exit(2)
 
     return args
 
@@ -45,38 +57,41 @@ def match(args, win):
     return True
 
 
-def get_last_window():
+def get_last_window(tree):
     try:
-        with open(os.path.expanduser('~/.run/i3/last-window'), 'r') as f:
-            return f.read().strip()
-    except FileNotFoundError:
-        return ''
+        id = Path(f'/run/user/{os.getuid()}/i3-last-window').read_text()
+        return tree.find_by_window(int(id, 16))
+    except (FileNotFoundError, ValueError):
+        return None
+
+
+def focus(win):
+    if win.workspace().name == '_scratch':
+        return win.command('move to workspace current')
+    return win.command('focus')
 
 
 def main():
 
     args = parse_args()
-
-    if args.m != "-":
-        args.m = set(args.m.split(',')) if args.m else set()
-
     i3 = i3ipc.Connection()
     tree = i3.get_tree()
 
-    # If the target window is already focused, change the focus to the
-    # previously focused window
-    focused = tree.find_focused()
-    if focused.type == 'con' and match(args, focused):
-        id = get_last_window()
-        if not id:
-            sys.exit(1)
-        i3.command(f'[id="{id}"] focus')
-        sys.exit(0)
+    if not args.id:
+        # If the target window is already focused, change the focus to the
+        # previously focused window
+        focused = tree.find_focused()
+        if focused.type == 'con' and match(args, focused):
+            last = get_last_window(tree)
+            if not last:
+                sys.exit(1)
+            focus(last)
+            sys.exit(0)
 
     success = False
     for win in tree.leaves():
-        if match(args, win):
-            res = win.command('focus')
+        if args.id and args.id == win.window or not args.id and match(args, win):
+            res = focus(win)
             success = "True" in str(res)
             break
 
@@ -87,6 +102,8 @@ def main():
         except FileNotFoundError:
             error(f"command not found: {fallback[0]}")
             sys.exit(1)
+    else:
+        sys.exit(not success)
 
 
 if __name__ == '__main__':

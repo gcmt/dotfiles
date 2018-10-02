@@ -735,7 +735,7 @@
 		end
 		call system('firefox ' . shellescape(url))
 		if !v:shell_error
-			call system('i3-msg "[class="Firefox"] focus"')
+			call system('i3-focus -c Firefox -m -')
 		end
 	endf
 

@@ -1,0 +1,40 @@
+#!/usr/bin/env python
+
+import i3ipc
+import argparse
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Cycle i3 workspaces (ignore workspaces starting with an underscore)")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-next', action='store_true', help="focus next workspace")
+    group.add_argument('-prev', action='store_true', help="focus previous workspace")
+    return parser.parse_args()
+
+
+def main():
+
+    args = parse_args()
+    i3 = i3ipc.Connection()
+
+    tree = i3.get_tree()
+    workspaces = tree.workspaces()
+    active = tree.find_focused().workspace()
+
+    try:
+        active_idx = workspaces.index(active)
+    except ValueError:
+        return
+
+    offset = 1 if args.next else -1
+    i = active_idx + offset
+    while i % len(workspaces) != active_idx:
+        w = workspaces[i % len(workspaces)]
+        if not w.name.startswith('_'):
+            i3.command(f'workspace number {w.num}')
+            return
+        i += offset
+
+
+if __name__ == '__main__':
+    main()

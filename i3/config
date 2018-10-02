@@ -205,16 +205,16 @@ bindsym $mod+a workspace back_and_forth
 bindsym $mod+Tab exec --no-startup-id i3-focus-last-window
 
 # Cycle through workspaces
-bindsym $mod+n workspace next
-bindsym $mod+p workspace prev
+bindsym $mod+n exec --no-startup-id i3-next-workspace -next
+bindsym $mod+p exec --no-startup-id i3-next-workspace -prev
 
 # Change focus between tiling / floating windows
 bindsym $mod+z focus mode_toggle
 
 # Scratchpad bindings
-bindsym $mod+minus scratchpad show
-bindsym $mod+Control+minus scratchpad show; floating disable
-bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+0 workspace _scratch
+bindsym $mod+minus exec --no-startup-id i3-scratch -pop
+bindsym $mod+Shift+minus exec --no-startup-id i3-scratch -push
 
 # Toggle tiling / floating
 bindsym $mod+f floating toggle

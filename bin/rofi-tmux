@@ -36,10 +36,7 @@ case $rofi_exit in
 	*)
 
 		# If the tmux session is already opened, switch to it
-		cmd="[title=\"^$session - Tmux\"] focus"
-		if i3-msg "$cmd" 2>/dev/null | grep -q false; then
-			exec urxvt -e t "$session"
-		fi
+		exec i3-focus -c URxvt -t "^$session - Tmux$" -fallback "urxvt -e t $session"
 		;;
 
 esac

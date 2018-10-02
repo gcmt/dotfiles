@@ -6,10 +6,8 @@ import sys
 import i3ipc
 import argparse
 from html import escape
+from operator import attrgetter
 from subprocess import run, PIPE
-
-
-SCRATCHPAD = '__i3_scratch'
 
 
 def error(msg):
@@ -23,10 +21,9 @@ def error(msg):
 def format_windows(windows):
     dimcolor = '#797d84'
     for w in windows:
-        wsname = w.workspace().name
-        ws = '$' if wsname == SCRATCHPAD else wsname
-        row = f"<span foreground='{dimcolor}'>{escape(ws)}</span>   "
-        if wsname == '__i3_scratch':
+        workspace = w.workspace().name
+        row = f"<span foreground='{dimcolor}'>{escape(workspace)}</span>   "
+        if workspace == '_scratch':
             row += f"<span foreground='{dimcolor}'>{escape(w.name)}</span>"
         else:
             row += f"{escape(w.name)}" if w.focused else escape(w.name)
@@ -36,13 +33,16 @@ def format_windows(windows):
 # Get windows of all workspaces. If the 'scratchpad' argument is given and it's
 # True, windows in the scratchpad workspace are also returned.
 def get_windows(tree, scratchpad=True):
-    windows = []
-    for ws in tree.workspaces():
-        windows += ws.leaves()
-    windows.sort(key=lambda w: w.workspace().num)
-    if scratchpad:
-        windows += tree.scratchpad().leaves()
-    return windows
+    rv = []
+    scratch = []
+    for w in sorted(tree.workspaces(), key=attrgetter('name')):
+        windows = sorted(w.leaves(), key=attrgetter('name'))
+        if w.name != '_scratch':
+            rv += windows
+        elif scratchpad:
+            scratch = windows
+    rv += scratch
+    return rv
 
 
 # Fix various window properties.
@@ -156,24 +156,23 @@ def main():
 
     # -kb-accept-entry
     if exitcode == 0:
-        # focus the selected window
-        cmd = 'focus;'
-        if win.workspace().name == SCRATCHPAD:
-            cmd += 'floating disable'
-        win.command(cmd)
+        # focus the selected window (or retrieve it from the scratchpad)
+        if win.workspace().name == '_scratch':
+            win.command('move to workspace current')
+        else:
+            win.command('focus')
         sys.exit(0)
 
     # -kb-custom-1
     if exitcode == 10:
         # move the selected window to the current workspace
-        num = tree.find_focused().workspace().num
-        win.command(f'move to workspace number {num}; floating disable')
+        win.command(f'move to workspace current')
         sys.exit(0)
 
     # -kb-custom-2
     if exitcode == 11:
         # move the selected window to the scratchpad
-        win.command('move scratchpad')
+        win.command('move to workspace _scratch')
         os.execv(sys.argv[0], sys.argv)
 
     # -kb-custom-3
@@ -192,7 +191,7 @@ def main():
         # hide/show scratchpad windows
         argv  = [a for a in sys.argv if 'scratchpad' not in a]
         argv += ['-no-scratchpad'] if args.scratchpad else ['-scratchpad']
-        os.execv(sys.argv[0], argv)
+        os.execv(argv[0], argv)
 
 
 if __name__ == '__main__':

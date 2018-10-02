@@ -1,0 +1,80 @@
+#!/usr/bin/python -u
+
+import re
+import i3ipc
+from subprocess import run
+
+
+class Colors:
+
+    dim    = {'fg': '#bbbbbb', 'bg': '#e7e8eb'}
+    normal = {'fg': '#52565e', 'bg': '#e7e8eb'}
+    active = {'fg': '#52565e', 'bg': '#c2c7ce'}
+    urgent = {'fg': '#e7e8eb', 'bg': '#ce7d86'}
+    mode   = {'fg': '#e7e8eb', 'bg': '#ce7d86'}
+
+
+def padded(s):
+    return f'  {s}  '
+
+
+def clickable(s, btn=1, cmd=''):
+    s = s.replace(':', '\:')
+    return f'%{{A{btn}:{cmd}:}}{s}%{{A}}'
+
+
+def colored(s, fg=None, bg=None):
+    rv = s
+    rv = f'%{{B{bg}}}{rv}%{{B-}}' if bg else rv
+    rv = f'%{{F{fg}}}{rv}%{{F-}}' if fg else rv
+    return rv
+
+
+def print_workspaces(mode=None):
+
+    out = ''
+    hidden = ''
+
+    tree = i3.get_tree()
+    focused = tree.find_focused()
+    active = focused.workspace()
+
+    for w in tree.workspaces():
+        if w.name.startswith('_') and not w is active:
+            hidden = '›››'
+            continue
+        colors = Colors.normal
+        if w is active:
+            colors = Colors.active
+        elif w.urgent:
+            colors = Colors.urgent
+        block = colored(padded(w.name), **colors)
+        out += clickable(block, cmd=f'i3-msg workspace {w.name}')
+
+    if hidden:
+        out += colored(padded(hidden), **Colors.normal)
+
+    if mode and mode != 'default':
+        out += colored(padded(mode), **Colors.mode)
+
+    print(out)
+
+
+def update_bar(self, e):
+    print_workspaces()
+
+def on_mode_change(self, e):
+    print_workspaces(mode=e.change)
+
+
+i3 = i3ipc.Connection()
+
+i3.on('workspace::focus', update_bar)
+i3.on('workspace::urgent', update_bar)
+i3.on('workspace::rename', update_bar)
+i3.on('window::move', update_bar)
+i3.on('window::close', update_bar)
+i3.on('mode', on_mode_change)
+
+print_workspaces()
+i3.main()

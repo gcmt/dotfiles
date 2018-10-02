@@ -1,0 +1,49 @@
+#!/usr/bin/env python
+
+import sys
+import i3ipc
+import argparse
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Custom i3 scratchpad")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-push', action='store_true', help="Push the current window to the scratchpad")
+    group.add_argument('-pop', action='store_true', help="Pop the last pushed window from the scratchpad")
+    return parser.parse_args()
+
+
+def find_scratchpad(workspaces):
+    for w in workspaces:
+        if w.name == '_scratch':
+            return w
+
+
+def main():
+
+    args = parse_args()
+    i3 = i3ipc.Connection()
+    tree = i3.get_tree()
+
+    if args.push:
+
+        if not tree.find_focused():
+            sys.exit(1)
+
+        i3.command('move to workspace _scratch')
+
+    elif args.pop:
+
+        scratchpad = find_scratchpad(tree.workspaces())
+        if not scratchpad:
+            sys.exit(1)
+
+        windows = scratchpad.leaves()
+        if not windows:
+            sys.exit(1)
+
+        windows[-1].command('move to workspace current')
+
+
+if __name__ == '__main__':
+    main()

@@ -49,7 +49,7 @@ def print_workspaces(i3, mode=None):
         out += clickable(block, cmd=f'i3-msg workspace {w.name}')
 
     if hidden:
-        out += colored(padded(hidden), **Colors.normal)
+        out += colored(padded(hidden), **Colors.dim)
 
     if mode and mode != 'default':
         out += colored(padded(mode), **Colors.mode)

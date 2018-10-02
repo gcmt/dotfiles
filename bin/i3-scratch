@@ -10,6 +10,7 @@ def parse_args():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-push', action='store_true', help="Push the current window to the scratchpad")
     group.add_argument('-pop', action='store_true', help="Pop the last pushed window from the scratchpad")
+    group.add_argument('-focus', action='store_true', help="Move to the scratchpad container")
     return parser.parse_args()
 
 
@@ -43,6 +44,14 @@ def main():
             sys.exit(1)
 
         windows[-1].command('move to workspace current')
+
+    elif args.focus:
+
+        scratchpad = find_scratchpad(tree.workspaces())
+        if not scratchpad:
+            sys.exit(1)
+
+        scratchpad.command('focus')
 
 
 if __name__ == '__main__':

@@ -212,7 +212,7 @@ bindsym $mod+p exec --no-startup-id i3-next-workspace -prev
 bindsym $mod+z focus mode_toggle
 
 # Scratchpad bindings
-bindsym $mod+0 workspace _scratch
+bindsym $mod+0 exec --no-startup-id i3-scratch -focus
 bindsym $mod+minus exec --no-startup-id i3-scratch -pop
 bindsym $mod+Shift+minus exec --no-startup-id i3-scratch -push
 

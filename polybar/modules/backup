@@ -23,6 +23,16 @@ view_log() {
 
 
 main() {
+
+	if [[ ! -p "$fifo" ]]; then
+		mkfifo "$fifo"
+	fi
+	trap "rm '$fifo'" 0
+
+	if [[ -e "$err_file" ]]; then
+		echo '%{F#ce7d86} Backup%{F-}'
+	fi
+
 	while true; do
 		if read -r event archive < "$fifo"; then
 			case $event in
@@ -48,10 +58,12 @@ main() {
 			esac
 		fi
 	done
+
 }
 
 
-handle_left_click() {
+click_left() {
+
 	local archive
 	if [[ -e "$err_file" ]]; then
 		archive="$(cat "$err_file")"
@@ -60,16 +72,18 @@ handle_left_click() {
 	else
 		return 1
 	fi
+
 	if [[ "$archive" =~ ^rsync\.net ]]; then
 		view_log borg-backup-rsync
 	elif [[ "$archive" =~ MyPassport ]]; then
 		view_log borg-backup-hdd
 	fi
+
 }
 
 
-handle_right_click() {
-	if [[ -e "$err_file" ]]; then
+click_right() {
+	if [[ -e "$err_file" && -p "$fifo" ]]; then
 		echo clean > "$fifo"
 	fi
 }
@@ -80,15 +94,10 @@ quiet=0
 borg_dir="/run/borg-backup"
 arch_file="$borg_dir/archive"
 err_file="$borg_dir/error"
-
 fifo="/tmp/polybar_backup.fifo"
-if [[ ! -p "$fifo" ]]; then
-	mkfifo "$fifo"
-fi
-trap "rm '$fifo'" 0
 
 case "$1" in
-	click-left) handle_left_click ;;
-	click-right) handle_right_click ;;
+	click-left) click_left ;;
+	click-right) click_right ;;
 	*) main ;;
 esac

@@ -79,7 +79,7 @@ for_window [class="Firefox" instance="Places"] title_format " %title - Mozilla F
 
 # Mouse bindings
 bindsym --release button3 exec --no-startup-id i3-titlebar-menu
-bindsym --whole-window button2 exec --no-startup-id i3-choose-window -no-inputbar -followmouse
+bindsym --whole-window button2 exec --no-startup-id i3-choose-window -no-inputbar -mouse y
 
 # Open console calculator
 bindsym $mod+backslash exec --no-startup-id i3-calc

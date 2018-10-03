@@ -6,7 +6,7 @@ import sys
 import i3ipc
 import argparse
 from html import escape
-from operator import attrgetter
+from operator import attrgetter, itemgetter
 from subprocess import run, PIPE
 
 
@@ -18,11 +18,13 @@ def error(msg):
 # Turn windows into formatted lines to be passed to Rofi.
 # Pango markup is supported if the '-markup-rows' Rofi option is used:
 # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
-def format_windows(windows):
+def format_windows(windows, args):
     dimcolor = '#797d84'
     for w in windows:
+        row = ''
         workspace = w.workspace().name
-        row = f"<span foreground='{dimcolor}'>{escape(workspace)}</span>   "
+        if not args.hide_workspace:
+            row += f"<span foreground='{dimcolor}'>{escape(workspace)}</span>   "
         if workspace == '_scratch':
             row += f"<span foreground='{dimcolor}'>{escape(w.name)}</span>"
         else:
@@ -30,19 +32,45 @@ def format_windows(windows):
         yield row
 
 
-# Get windows of all workspaces. If the 'scratchpad' argument is given and it's
-# True, windows in the scratchpad workspace are also returned.
-def get_windows(tree, scratchpad=True):
-    rv = []
-    scratch = []
-    for w in sorted(tree.workspaces(), key=attrgetter('name')):
-        windows = sorted(w.leaves(), key=attrgetter('name'))
-        if w.name != '_scratch':
-            rv += windows
-        elif scratchpad:
-            scratch = windows
-    rv += scratch
-    return rv
+# Match a window against the given rules.
+def match(win, rules):
+    results = []
+    for rule in rules:
+        try:
+            if re.match('^!?\w+=', rule):
+                prop, string = rule.split('=', maxsplit=1)
+                prop_ = prop[1:] if prop.startswith('!') else prop
+                success = getattr(win, prop_) == string
+            elif re.match('!?^\w+~', rule):
+                prop, regex = rule.split('~', maxsplit=1)
+                prop_ = prop[1:] if prop.startswith('!') else prop
+                success = re.search(regex, getattr(win, prop_)) is not None
+            else:
+                raise AttributeError
+            result = not success if prop.startswith('!') else success
+            results.append(result)
+        except AttributeError as e:
+            error(e)
+            pass
+    return not rules or any(results)
+
+
+# Get windows.
+def get_windows(tree, args):
+    windows, scratchpad = [], []
+    rules = list(map(itemgetter(0), args.g)) if args.g else []
+    for space in sorted(tree.workspaces(), key=attrgetter('name')):
+        for win in sorted(space.leaves(), key=attrgetter('name')):
+            win.workspace_name = space.name
+            win.workspace_num = space.num
+            if not match(win, rules):
+                continue
+            if space.name != '_scratch':
+                windows.append(win)
+            elif args.scratchpad:
+                scratchpad.append(win)
+    windows += scratchpad
+    return windows
 
 
 # Fix various window properties.
@@ -82,20 +110,34 @@ def rofi(windows, args):
     options  = ['-dmenu', '-i', '-format', 'i']
     options += ['-markup-rows', '-selected-row', str(selected)]
 
-    lines = min(len(windows), 12)
+    chars = max([len(w.name) + len(w.workspace().name) for w in windows]) + 10
+    if args.tiny:
+        options += ['-theme', 'tiny']
+        chars = max([chars, 80])
+    else:
+        options += ['-theme', 'main-light']
+        chars = max([chars, 120])
+    options += ['-theme-str', f'window {{ width: {chars}ch; }}']
 
-    options += ['-theme', 'main-light']
+    lines = min(len(windows), 12)
     options += ['-theme-str', f'listview {{ fixed-height: false; lines: {lines}; }}']
 
-    if args.followmouse:
+    if args.mouse:
 
         x, y = get_mouse_coordinates()
         if not x and not y:
             error("can't get mouse location")
             sys.exit(1)
 
-        options += ['-theme-str', 'window { location: north; anchor: center; }']
-        options += ['-theme-str', f'window {{ y-offset:{y}px; }}']
+        if args.mouse == 'xy':
+            options += ['-theme-str', f'window {{ x-offset: {x}px; y-offset: {y}px; }}']
+            options += ['-theme-str', 'window { location: north west; anchor: north west; }']
+        elif args.mouse == 'x':
+            options += ['-theme-str', f'window {{ x-offset: {x}px; }}']
+            options += ['-theme-str', 'window { location: west; anchor: center; }']
+        elif args.mouse == 'y':
+            options += ['-theme-str', f'window {{ y-offset: {y}px; }}']
+            options += ['-theme-str', 'window { location: north; anchor: center; }']
 
     if len(windows) <= lines:
         options += ['-theme-str', 'listview { scrollbar: false; }']
@@ -113,7 +155,7 @@ def rofi(windows, args):
 
     try:
         cmd = ['rofi'] + options
-        input = "\n".join(format_windows(windows))
+        input = "\n".join(format_windows(windows, args))
         proc = run(cmd, input=input, stdout=PIPE, encoding='utf8')
         return proc.stdout.strip(), proc.returncode
     except FileNotFoundError:
@@ -124,13 +166,20 @@ def rofi(windows, args):
 # Parse command line arguments.
 def parse_args():
     parser = argparse.ArgumentParser(description="Improved i3 window switcher")
-    parser.add_argument('-followmouse', action='store_true', default=False, help="display rofi near the mouse")
+
+    parser.add_argument('-mouse', const='xy', nargs='?', choices=['x', 'y', 'xy'], help="display rofi at mouse position")
+    parser.add_argument('-tiny', action='store_true', help="display a tiny menu")
+    parser.add_argument('-hide-workspace', action='store_true', default=False, help="hide workspaces")
+    parser.add_argument('-g', nargs='*', action='append', help="filter windows")
+
     group1 = parser.add_mutually_exclusive_group(required=False)
     group1.add_argument('-inputbar', action='store_true', default=True, help="display the input bar")
     group1.add_argument('-no-inputbar', action='store_false', dest='inputbar', help="hide the input bar")
+
     group2 = parser.add_mutually_exclusive_group(required=False)
     group2.add_argument('-scratchpad', action='store_true', default=True, help="include scratchpad windows")
     group2.add_argument('-no-scratchpad', action='store_false', dest='scratchpad', help="exclude scratchpad windows")
+
     return parser.parse_args()
 
 
@@ -140,7 +189,7 @@ def main():
     i3 = i3ipc.Connection()
     tree = i3.get_tree()
 
-    windows = get_windows(tree, args.scratchpad)
+    windows = get_windows(tree, args)
     if not windows:
         sys.exit(0)
 

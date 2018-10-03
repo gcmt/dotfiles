@@ -51,7 +51,7 @@ def rofi(args, rofiargs):
     else:
         input = None
 
-    options  = ['-dmenu', '-click-to-exit', '-theme', 'i3-tiny-menu']
+    options  = ['-dmenu', '-click-to-exit', '-theme', 'tiny']
     options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary']
 
     x, y = get_mouse_coordinates()

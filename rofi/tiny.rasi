@@ -3,9 +3,9 @@
 
 * {
 	font: "Noto Sans Regular 10";
-	background: rgba(231, 232, 235, 100%);
-	foreground: rgba(82, 86, 94, 100%);
-	selected-normal-background: rgba(208, 211, 216, 100%);
+	background: rgba(232, 232, 235, 100%);
+	foreground: rgba(83, 86, 94, 100%);
+	selected-normal-background: rgba(222, 225, 229, 100%);
 	separator-color: rgba(222, 225, 229, 100%);
 }
 

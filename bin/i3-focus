@@ -16,13 +16,14 @@ def error(msg):
 
 def parse_args():
 
-    parser = argparse.ArgumentParser(description="i3 focus helper")
+    parser = argparse.ArgumentParser(allow_abbrev=False, description="i3 focus helper")
+    parser.add_argument('-id', help="The window id")
     parser.add_argument('-t', help="The window name (title)")
     parser.add_argument('-c', help="The window class")
     parser.add_argument('-n', help="The window instance")
     parser.add_argument('-m', help="The window marks (use - to require no marks)")
     parser.add_argument('-fallback', default="", help="The command to execute when no window gets focused")
-    parser.add_argument('-id', help="The window id")
+    parser.add_argument('-move', action='store_true', default=False, help="Move the focused window to the current workspace")
     args = parser.parse_args()
 
     if args.id is None and args.t is None and args.c is None and args.n is None and args.m is None:
@@ -65,10 +66,10 @@ def get_last_window(tree):
         return None
 
 
-def focus(win):
-    if win.workspace().name == '_scratch':
-        return win.command('move to workspace current')
-    return win.command('focus')
+def focus(win, move=False):
+    if win.workspace().name == '_scratch' or move:
+        win.command('move to workspace current')
+    return 'True' in str(win.command('focus'))
 
 
 def main():
@@ -91,8 +92,7 @@ def main():
     success = False
     for win in tree.leaves():
         if args.id and args.id == win.window or not args.id and match(args, win):
-            res = focus(win)
-            success = "True" in str(res)
+            success = focus(win, move=args.move)
             break
 
     fallback = shlex.split(args.fallback)

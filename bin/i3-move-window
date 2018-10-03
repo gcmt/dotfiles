@@ -17,10 +17,11 @@ main() {
 		exit 1
 	fi
 
-	i3-msg "move to workspace \"$name\"" >/dev/null
+	cmd="move to workspace \"$name\""
 	if [[ ! "$name" =~ ^_ ]]; then
-		i3-msg "workspace \"$name\"" >/dev/null
+		cmd="$cmd; workspace \"$name\""
 	fi
+	i3-msg "$cmd" >/dev/null
 
 }
 

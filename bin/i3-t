@@ -1,17 +1,4 @@
 #!/bin/bash
 
-new_window=0
-while getopts "n" OPT; do
-	case $OPT in
-		n) new_window=1 ;;
-	esac
-done
-shift $((OPTIND -1))
-
-if (( new_window == 1 )); then
-	exec urxvt -e t "$1"
-else
-	# If the tmux session is already opened, switch to it
-	session=$(t -d "$1")
-	exec i3-focus -c URxvt -t "^$session - Tmux$" -fallback "urxvt -e t $session"
-fi
+session=$(t -d "$1")
+exec i3-focus -c URxvt -t "^$session - Tmux$" -fallback "urxvt -e t $session"

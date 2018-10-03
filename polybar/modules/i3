@@ -4,7 +4,6 @@ import os
 import i3ipc
 import atexit
 import signal
-import threading
 from pathlib import Path
 from threading import Thread
 

@@ -19,12 +19,12 @@ main() {
 	while (( num < 10 )); do
 		if ! workspace_exists $num; then
 			i3-msg "move container to workspace number $num" >/dev/null
-			if (( $follow == 1 )); then
+			if (( follow == 1 )); then
 				i3-msg "workspace number $num" >/dev/null
 			fi
 			break
 		fi
-		num=$(expr $num + 1)
+		(( num += 1 ))
 	done
 }
 

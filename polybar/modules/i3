@@ -43,7 +43,7 @@ def colored(s, fg=None, bg=None):
 def draw(i3, mode=None, all=False):
 
     out = ''
-    hidden = ''
+    indicator = ''
     mode = mode != 'default' and mode
     menu_cmd = "i3-choose-window -no-inputbar -tiny -mouse"
 
@@ -54,29 +54,27 @@ def draw(i3, mode=None, all=False):
     active = tree.find_focused().workspace()
 
     for w in tree.workspaces():
-        if not all and w.name.startswith('_') and not w is active:
-            hidden += '›'
+        hidden = w.name.startswith('_')
+        if not all and hidden and not w is active:
+            indicator += '›'
             continue
-        if w.name.startswith('_'):
-            colors = Colors.hidden
-        else:
-            colors = Colors.normal
+        colors = Colors.hidden if hidden else Colors.normal
         if w is active:
-            if w.name.startswith('_'):
-                colors = Colors.hidden_active
-            else:
-                colors = Colors.active
+            colors = Colors.hidden_active if hidden else Colors.active
         if w.urgent:
             colors = Colors.urgent
-        name = w.name[1:] if w.name.startswith('_') else w.name
-        block = colored(padded(name), **colors)
+        block = colored(padded(w.name.lstrip('_')), **colors)
         block = _clickable(block, btn=1, cmd=f'i3-msg workspace {w.name}')
         block = _clickable(block, btn=3, cmd=f"{menu_cmd} -hide-workspace -g 'workspace_name={w.name}'")
         out += block
 
-    if hidden:
-        block = colored(padded(hidden), **Colors.dim)
-        block = _clickable(block, btn=1, cmd=f'echo all > {FIFO}')
+    if all:
+        indicator = '‹'
+
+    if indicator:
+        cmd = 'visible' if all else 'all'
+        block = colored(padded(indicator), **Colors.dim)
+        block = _clickable(block, btn=1, cmd=f'echo {cmd} > {FIFO}')
         block = _clickable(block, btn=3, cmd=f"{menu_cmd} -g 'workspace_name~^_'")
         out += block
 
@@ -108,7 +106,9 @@ def listen_i3(i3):
 def listen_fifo(i3):
     while True:
         msg = FIFO.read_text().strip()
-        if msg == 'all':
+        if msg == 'visible':
+            draw(i3, all=False)
+        elif msg == 'all':
             draw(i3, all=True)
 
 

@@ -62,6 +62,7 @@ def get_windows(tree, args):
     rules = list(map(itemgetter(0), args.g)) if args.g else []
     for space in sorted(tree.workspaces(), key=attrgetter('name')):
         for win in sorted(space.leaves(), key=attrgetter('name')):
+            win.window_name = win.name
             win.workspace_name = space.name
             win.workspace_num = space.num
             if not match(win, rules):

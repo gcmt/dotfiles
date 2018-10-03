@@ -41,6 +41,10 @@ def draw(i3, mode=None, all=False):
     out = ''
     hidden = ''
     mode = mode != 'default' and mode
+    menu_cmd = "i3-choose-window -no-inputbar -tiny -mouse"
+
+    # disallow clicks when a mode is active
+    _clickable = lambda s, **kwargs: s if mode else clickable(s, **kwargs)
 
     tree = i3.get_tree()
     active = tree.find_focused().workspace()
@@ -55,18 +59,20 @@ def draw(i3, mode=None, all=False):
         elif w.urgent:
             colors = Colors.urgent
         block = colored(padded(w.name), **colors)
-        if mode:
-            out += block
-        else:
-            out += clickable(block, cmd=f'i3-msg workspace {w.name}')
+        block = _clickable(block, btn=1, cmd=f'i3-msg workspace {w.name}')
+        block = _clickable(block, btn=3, cmd=f"{menu_cmd} -hide-workspace -g 'workspace_name={w.name}'")
+        out += block
 
     if hidden:
         block = colored(padded(hidden), **Colors.dim)
-        out += clickable(block, cmd=f'echo all > {FIFO}')
+        block = _clickable(block, btn=1, cmd=f'echo all > {FIFO}')
+        block = _clickable(block, btn=3, cmd=f"{menu_cmd} -g 'workspace_name~^_'")
+        out += block
 
     if mode:
         out += colored(padded(mode), **Colors.mode)
 
+    out = _clickable(out, btn=2, cmd=f"{menu_cmd}")
     print(out)
 
 

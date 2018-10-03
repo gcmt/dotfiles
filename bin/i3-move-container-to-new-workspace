@@ -1,15 +1,5 @@
 #!/bin/bash
 
-follow=0
-while getopts "f" OPT; do
-	case $OPT in
-		f) follow=1 ;;
-	esac
-done
-shift $((OPTIND -1))
-
-workspaces=$(i3-msg -t get_workspaces)
-
 workspace_exists() {
 	echo "$workspaces" | jq -e ".[] | select(.num==$1)" >/dev/null
 }
@@ -27,5 +17,12 @@ main() {
 		(( num += 1 ))
 	done
 }
+
+workspaces=$(i3-msg -t get_workspaces)
+
+follow=0
+if [[ "$*" =~ -follow($| ) ]]; then
+	follow=1
+fi
 
 main

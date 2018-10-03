@@ -5,7 +5,7 @@ style="$style -theme-str 'window { width: 25%; }'"
 style="$style -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
 style="$style -theme-str 'case-indicator { enabled: false; }'"
 
-options="-dmenu -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Shift+Return'"
+options="-dmenu -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Control+n'"
 
 sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus\\|calc")
 session=$(echo "$sessions" | eval "rofi $options $style")
@@ -30,7 +30,8 @@ case $rofi_exit in
 
 	11)
 
-		exec urxvt -e t "$session"
+		# open a new client linked to the current session in a different terminal window
+		urxvt -e tmux new -t "$session" \; set destroy-unattached
 		;;
 
 	*)

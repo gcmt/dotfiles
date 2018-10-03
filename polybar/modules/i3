@@ -26,7 +26,7 @@ def padded(s):
 
 
 def clickable(s, btn=1, cmd=''):
-    s = s.replace(':', '\:')
+    cmd = cmd.replace(':', '\:')
     return f'%{{A{btn}:{cmd}:}}{s}%{{A}}'
 
 

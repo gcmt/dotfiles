@@ -2,13 +2,15 @@
 
 main() {
 
-	options="-dmenu -p 'Move to: '"
-	options="$options -theme 'main-light'"
-	options="$options -theme-str 'window { width: 25%; }'"
-	options="$options -theme-str 'listview { enabled: false; }'"
-	options="$options -theme-str 'case-indicator { enabled: false; }'"
-	options="$options -theme-str 'prompt { enabled: true; }'"
-	name=$(echo "" | eval "rofi $options" | sed 's/\(\s\+$\|^\s\+\)//g')
+	opts="-dmenu -p 'Move to'"
+	opts="$opts -theme 'main-light'"
+	opts="$opts -theme-str 'window { width: 25%; }'"
+	opts="$opts -theme-str 'listview { enabled: false; }'"
+	opts="$opts -theme-str 'case-indicator { enabled: false; }'"
+	opts="$opts -theme-str 'inputbar { padding: 0; }'"
+	opts="$opts -theme-str 'entry { padding: 12; }'"
+	opts="$opts -theme-str 'prompt { enabled: true; padding: 12; color: #676b72; background-color: #dcdfe2; }'"
+	name=$(echo "" | eval "rofi $opts" | sed 's/\(\s\+$\|^\s\+\)//g')
 
 	if [[ -z "$name" ]]; then
 		exit 1
@@ -18,6 +20,7 @@ main() {
 	if [[ ! "$name" =~ ^_ ]]; then
 		i3-msg "workspace \"$name\"" >/dev/null
 	fi
+
 }
 
 main

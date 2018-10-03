@@ -17,13 +17,15 @@ main() {
 	if (( reset == 1 )); then
 		name=$(echo "$current" | grep -o "^[0-9]\\+")
 	else
-		style="-theme 'main-light'"
-		style="$style -theme-str 'window { width: 25%; }'"
-		style="$style -theme-str 'listview { enabled: false; }'"
-		style="$style -theme-str 'case-indicator { enabled: false; }'"
-		style="$style -theme-str 'prompt { enabled: true; }'"
-		options="-dmenu -p 'Name: ' -filter '$current' "
-		name=$(echo "" | eval "rofi $options $style" | sed 's/\(\s\+$\|^\s\+\)//g')
+		opts="-dmenu -p 'Rename' -filter '$current' "
+		opts="$opts -theme 'main-light'"
+		opts="$opts -theme-str 'window { width: 25%; }'"
+		opts="$opts -theme-str 'listview { enabled: false; }'"
+		opts="$opts -theme-str 'case-indicator { enabled: false; }'"
+		opts="$opts -theme-str 'inputbar { padding: 0; }'"
+		opts="$opts -theme-str 'entry { padding: 12; }'"
+		opts="$opts -theme-str 'prompt { enabled: true; padding: 12; color: #676b72; background-color: #dcdfe2; }'"
+		name=$(echo "" | eval "rofi $opts" | sed 's/\(\s\+$\|^\s\+\)//g')
 	fi
 
 	if [[ -z "$name" ]]; then
@@ -31,6 +33,7 @@ main() {
 	fi
 
 	i3-msg "rename workspace to \"$name\"" >/dev/null
+
 }
 
 reset=0

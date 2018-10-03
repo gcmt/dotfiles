@@ -1,11 +1,20 @@
 #!/usr/bin/python -u
 
+import os
 import i3ipc
+import atexit
+import signal
+import threading
+from pathlib import Path
+from threading import Thread
+
+
+FIFO = Path("/tmp/polybar_i3.fifo")
 
 
 class Colors:
 
-    dim    = {'fg': '#bbbbbb', 'bg': '#e7e8eb'}
+    dim    = {'fg': '#aaaaaa', 'bg': '#e7e8eb'}
     normal = {'fg': '#52565e', 'bg': '#e7e8eb'}
     active = {'fg': '#52565e', 'bg': '#c2c7ce'}
     urgent = {'fg': '#e7e8eb', 'bg': '#ce7d86'}
@@ -28,17 +37,18 @@ def colored(s, fg=None, bg=None):
     return rv
 
 
-def print_workspaces(i3, mode=None):
+def draw(i3, mode=None, all=False):
 
     out = ''
     hidden = ''
+    mode_ = mode and mode != 'default'
 
     tree = i3.get_tree()
     active = tree.find_focused().workspace()
 
     for w in tree.workspaces():
-        if w.name.startswith('_') and not w is active:
-            hidden = '›››'
+        if not all and w.name.startswith('_') and not w is active:
+            hidden += '›'
             continue
         colors = Colors.normal
         if w is active:
@@ -46,33 +56,70 @@ def print_workspaces(i3, mode=None):
         elif w.urgent:
             colors = Colors.urgent
         block = colored(padded(w.name), **colors)
-        out += clickable(block, cmd=f'i3-msg workspace {w.name}')
+        if mode_:
+            out += block
+        else:
+            out += clickable(block, cmd=f'i3-msg workspace {w.name}')
 
     if hidden:
-        out += colored(padded(hidden), **Colors.dim)
+        block = colored(padded(hidden), **Colors.dim)
+        out += clickable(block, cmd=f'echo all > {FIFO}')
 
-    if mode and mode != 'default':
+    if mode_:
         out += colored(padded(mode), **Colors.mode)
 
     print(out)
 
 
-def update_bar(self, e):
-    print_workspaces(self)
+def listen_i3(i3):
+
+    def on_workspace(self, e):
+        draw(self)
+
+    def on_mode_change(self, e):
+        draw(self, mode=e.change)
+
+    i3.on('workspace::focus', on_workspace)
+    i3.on('workspace::urgent', on_workspace)
+    i3.on('workspace::rename', on_workspace)
+    i3.on('window::move', on_workspace)
+    i3.on('window::close', on_workspace)
+    i3.on('mode', on_mode_change)
+
+    i3.main()
 
 
-def on_mode_change(self, e):
-    print_workspaces(self, mode=e.change)
+def listen_fifo(i3):
+    while True:
+        msg = FIFO.read_text().strip()
+        if msg == 'all':
+            draw(i3, all=True)
 
 
-i3 = i3ipc.Connection()
+def main():
 
-i3.on('workspace::focus', update_bar)
-i3.on('workspace::urgent', update_bar)
-i3.on('workspace::rename', update_bar)
-i3.on('window::move', update_bar)
-i3.on('window::close', update_bar)
-i3.on('mode', on_mode_change)
+    try:
+        os.mkfifo(FIFO)
+    except FileExistsError:
+        pass
 
-print_workspaces(i3)
-i3.main()
+    def cleanup(*args):
+        try:
+            FIFO.unlink()
+        except FileNotFoundError:
+            pass
+
+    atexit.register(cleanup)
+    signal.signal(signal.SIGINT, cleanup)
+    signal.signal(signal.SIGTERM, cleanup)
+
+    i3 = i3ipc.Connection()
+
+    draw(i3)
+
+    Thread(target=listen_i3, args=(i3,), daemon=True).start()
+    listen_fifo(i3)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,23 @@
+#!/bin/bash
+
+main() {
+
+	options="-dmenu -p 'Move to: '"
+	options="$options -theme 'main-light'"
+	options="$options -theme-str 'window { width: 25%; }'"
+	options="$options -theme-str 'listview { enabled: false; }'"
+	options="$options -theme-str 'case-indicator { enabled: false; }'"
+	options="$options -theme-str 'prompt { enabled: true; }'"
+	name=$(echo "" | eval "rofi $options" | sed 's/\(\s\+$\|^\s\+\)//g')
+
+	if [[ -z "$name" ]]; then
+		exit 1
+	fi
+
+	i3-msg "move to workspace \"$name\"" >/dev/null
+	if [[ ! "$name" =~ ^_ ]]; then
+		i3-msg "workspace \"$name\"" >/dev/null
+	fi
+}
+
+main

@@ -40,7 +40,7 @@ def draw(i3, mode=None, all=False):
 
     out = ''
     hidden = ''
-    mode_ = mode and mode != 'default'
+    mode = mode != 'default' and mode
 
     tree = i3.get_tree()
     active = tree.find_focused().workspace()
@@ -55,7 +55,7 @@ def draw(i3, mode=None, all=False):
         elif w.urgent:
             colors = Colors.urgent
         block = colored(padded(w.name), **colors)
-        if mode_:
+        if mode:
             out += block
         else:
             out += clickable(block, cmd=f'i3-msg workspace {w.name}')
@@ -64,7 +64,7 @@ def draw(i3, mode=None, all=False):
         block = colored(padded(hidden), **Colors.dim)
         out += clickable(block, cmd=f'echo all > {FIFO}')
 
-    if mode_:
+    if mode:
         out += colored(padded(mode), **Colors.mode)
 
     print(out)

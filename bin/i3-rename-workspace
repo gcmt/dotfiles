@@ -17,7 +17,7 @@ main() {
 	if (( reset == 1 )); then
 		name=$(echo "$current" | grep -o "^[0-9]\\+")
 	else
-		opts="-dmenu -p 'Rename' -filter '$current' "
+		opts="-dmenu -p 'Name' -filter '$current' "
 		opts="$opts -theme 'main-light'"
 		opts="$opts -theme-str 'window { width: 25%; }'"
 		opts="$opts -theme-str 'listview { enabled: false; }'"

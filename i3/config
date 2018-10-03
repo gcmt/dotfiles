@@ -112,7 +112,7 @@ bindsym $mod+Shift+u exec --no-startup-id rofi-tmux
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace
-bindsym $mod+Shift+comma exec --no-startup-id i3-rename-workspace -r
+bindsym $mod+Shift+comma exec --no-startup-id i3-rename-workspace -reset
 
 # Create new workspace
 bindsym $mod+w exec --no-startup-id i3-new-workspace

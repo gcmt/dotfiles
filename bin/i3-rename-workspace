@@ -6,34 +6,36 @@ current_workspace_name() {
 		| cut -d "\"" -f 2
 }
 
+main() {
+
+	# add a trailing space if the worksapce name is just a number
+	current=$(current_workspace_name)
+	if [[ "$current" =~ ^[0-9]+$ ]]; then
+		current="$current "
+	fi
+
+	if (( reset == 1 )); then
+		name=$(echo "$current" | grep -o "^[0-9]\\+")
+	else
+		style="-theme 'main-light'"
+		style="$style -theme-str 'window { width: 25%; }'"
+		style="$style -theme-str 'listview { enabled: false; }'"
+		style="$style -theme-str 'case-indicator { enabled: false; }'"
+		style="$style -theme-str 'prompt { enabled: true; }'"
+		options="-dmenu -p 'Name: ' -filter '$current' "
+		name=$(echo "" | eval "rofi $options $style" | sed 's/\(\s\+$\|^\s\+\)//g')
+	fi
+
+	if [[ -z "$name" ]]; then
+		exit 1
+	fi
+
+	i3-msg "rename workspace to \"$name\"" >/dev/null
+}
+
 reset=0
-while getopts "r" OPT; do
-	case $OPT in
-		r) reset=1 ;;
-	esac
-done
-shift $((OPTIND -1))
-
-# add a trailing space if the worksapce name is just a number
-current=$(current_workspace_name)
-if [[ "$current" =~ ^[0-9]+$ ]]; then
-	current="$current "
+if [[ "$*" =~ -reset($| ) ]]; then
+	reset=1
 fi
 
-if [[ "$reset" -eq 1 ]]; then
-	name=$(echo "$current" | grep -o "^[0-9]\+")
-else
-	style="-theme 'main-light'"
-	style="$style -theme-str 'window { width: 25%; }'"
-	style="$style -theme-str 'listview { enabled: false; }'"
-	style="$style -theme-str 'case-indicator { enabled: false; }'"
-	style="$style -theme-str 'prompt { enabled: true; }'"
-	options="-dmenu -p 'Name: ' -filter '$current' "
-	name=$(echo "" | eval "rofi $options $style" | sed 's/\(\s\+$\|^\s\+\)//g')
-fi
-
-if [[ -z "$name" ]]; then
-	exit 1
-fi
-
-i3-msg "rename workspace to \"$name\"" >/dev/null
+main

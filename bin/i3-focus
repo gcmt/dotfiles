@@ -11,7 +11,7 @@ from pathlib import Path
 
 def error(msg):
     script = os.path.basename(__file__)
-    print(f"{script}: error: {msg}", file=sys.stderr)
+    print(f"{script}: {msg}", file=sys.stderr)
 
 
 def parse_args():
@@ -36,10 +36,10 @@ def parse_args():
 
     if args.id:
         try:
-            args.id = int(args.id, 16)
+            args.id = int(args.id, 16) if args.id.startswith('0x') else int(args.id)
         except ValueError:
-            error("invalid id, must be an hexadecimal number")
-            sys.exit(2)
+            error(f"invalid argument '{args.id}' for option -id, must be a number")
+            sys.exit(1)
 
     return args
 
@@ -60,9 +60,15 @@ def match(args, win):
 
 def get_last_window(tree):
     try:
-        id = Path(f'/run/user/{os.getuid()}/i3-last-window').read_text()
-        return tree.find_by_window(int(id, 16))
-    except (FileNotFoundError, ValueError):
+        path = f'/run/user/{os.getuid()}/i3-last-window'
+        id = Path(path).read_text().strip()
+        id = int(id, 16) if id.startswith('0x') else int(id)
+        return tree.find_by_window(id)
+    except FileNotFoundError:
+        error(f"could not read last window id, file not found: {path}")
+        return None
+    except ValueError:
+        error(f"invalid window id '{id}' in {path}")
         return None
 
 

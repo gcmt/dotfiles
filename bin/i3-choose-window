@@ -147,11 +147,12 @@ def rofi(windows, args):
         options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,Super+Tab,j']
         options += ['-kb-accept-entry', 'l,Return,Control+d', '-kb-cancel', 'Escape,q']
         options += ['-kb-custom-1', 'm', '-kb-custom-2', 'underscore']
-        options += ['-kb-custom-3', 'o', '-kb-custom-4', 'Q', '-kb-custom-5', 'a']
+        options += ['-kb-custom-3', 'o', '-kb-custom-4', 'Q']
+        options += ['-kb-custom-5', 'a', '-kb-custom-6', 'i']
     else:
         options += ['-kb-custom-1', 'Control+m', '-kb-custom-2', 'Super+underscore']
         options += ['-kb-custom-3', 'Control+o', '-kb-custom-4', 'Super+Q']
-        options += ['-kb-custom-5', 'Control+a']
+        options += ['-kb-custom-5', 'Control+a', '-kb-custom-6', 'Control+i']
 
     try:
         cmd = ['rofi'] + options
@@ -240,6 +241,13 @@ def main():
         # hide/show scratchpad windows
         argv  = [a for a in sys.argv if 'scratchpad' not in a]
         argv += ['-no-scratchpad'] if args.scratchpad else ['-scratchpad']
+        os.execv(argv[0], argv)
+
+    # -kb-custom-6
+    if exitcode == 15:
+        # toggle input bar
+        argv  = [a for a in sys.argv if 'inputbar' not in a]
+        argv += ['-no-inputbar'] if args.inputbar else ['-inputbar']
         os.execv(argv[0], argv)
 
 

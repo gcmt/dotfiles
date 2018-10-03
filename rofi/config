@@ -230,7 +230,7 @@ rofi.kb-row-select: Control+f
 rofi.kb-screenshot:
 
 ! Toggle case sensitivity
-rofi.kb-toggle-case-sensitivity: Control+i
+rofi.kb-toggle-case-sensitivity:
 
 ! Toggle sort
 rofi.kb-toggle-sort:

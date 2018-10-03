@@ -13,11 +13,15 @@ FIFO = Path("/tmp/polybar_i3.fifo")
 
 class Colors:
 
-    dim    = {'fg': '#aaaaaa', 'bg': '#e7e8eb'}
+    dim    = {'fg': '#a2a6ad', 'bg': '#e7e8eb'}
+    mode   = {'fg': '#e7e8eb', 'bg': '#ce7d86'}
+
+    urgent = {'fg': '#e7e8eb', 'bg': '#ce7d86'}
     normal = {'fg': '#52565e', 'bg': '#e7e8eb'}
     active = {'fg': '#52565e', 'bg': '#c2c7ce'}
-    urgent = {'fg': '#e7e8eb', 'bg': '#ce7d86'}
-    mode   = {'fg': '#e7e8eb', 'bg': '#ce7d86'}
+
+    hidden = {'fg': '#a2a6ad', 'bg': '#e7e8eb'}
+    hidden_active = {'fg': '#848891', 'bg': '#c2c7ce'}
 
 
 def padded(s):
@@ -53,12 +57,19 @@ def draw(i3, mode=None, all=False):
         if not all and w.name.startswith('_') and not w is active:
             hidden += '›'
             continue
-        colors = Colors.normal
+        if w.name.startswith('_'):
+            colors = Colors.hidden
+        else:
+            colors = Colors.normal
         if w is active:
-            colors = Colors.active
-        elif w.urgent:
+            if w.name.startswith('_'):
+                colors = Colors.hidden_active
+            else:
+                colors = Colors.active
+        if w.urgent:
             colors = Colors.urgent
-        block = colored(padded(w.name), **colors)
+        name = w.name[1:] if w.name.startswith('_') else w.name
+        block = colored(padded(name), **colors)
         block = _clickable(block, btn=1, cmd=f'i3-msg workspace {w.name}')
         block = _clickable(block, btn=3, cmd=f"{menu_cmd} -hide-workspace -g 'workspace_name={w.name}'")
         out += block

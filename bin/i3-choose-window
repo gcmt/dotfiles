@@ -33,6 +33,7 @@ def format_windows(windows, args):
 
 
 # Match a window against the given rules.
+# All rules must be satisfied for a successful match.
 def match(win, rules):
     results = []
     for rule in rules:
@@ -52,7 +53,7 @@ def match(win, rules):
         except AttributeError as e:
             error(e)
             pass
-    return not rules or any(results)
+    return not rules or all(results)
 
 
 # Get windows.

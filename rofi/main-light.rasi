@@ -10,6 +10,9 @@
 	separator-color: rgba(225, 228, 232, 100%);
 	background-color: @background;
 
+	prompt-background: rgba(225, 228, 232, 100%);
+	prompt-color: rgba(103, 107, 114, 100%);
+
 	normal-foreground: @foreground;
 	normal-background: @background;
 	selected-normal-foreground: @foreground;

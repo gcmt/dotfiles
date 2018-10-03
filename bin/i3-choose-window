@@ -37,16 +37,16 @@ def match(win, rules):
     results = []
     for rule in rules:
         try:
-            if re.match('^!?\w+=', rule):
+            if re.match('!?\w+=', rule):
                 prop, string = rule.split('=', maxsplit=1)
                 prop_ = prop[1:] if prop.startswith('!') else prop
                 success = getattr(win, prop_) == string
-            elif re.match('!?^\w+~', rule):
+            elif re.match('!?\w+~', rule):
                 prop, regex = rule.split('~', maxsplit=1)
                 prop_ = prop[1:] if prop.startswith('!') else prop
                 success = re.search(regex, getattr(win, prop_)) is not None
             else:
-                raise AttributeError
+                raise AttributeError(f"invalid rule '{rule}'")
             result = not success if prop.startswith('!') else success
             results.append(result)
         except AttributeError as e:

@@ -59,9 +59,10 @@ def match(win, rules):
 # Get windows.
 def get_windows(tree, args):
     windows, scratchpad = [], []
+    by_name = attrgetter('name')
     rules = list(map(itemgetter(0), args.g)) if args.g else []
-    for space in sorted(tree.workspaces(), key=attrgetter('name')):
-        for win in sorted(space.leaves(), key=attrgetter('name')):
+    for space in sorted(tree.workspaces(), key=by_name):
+        for win in sorted(space.leaves(), key=by_name):
             win.window_name = win.name
             win.workspace_name = space.name
             win.workspace_num = space.num

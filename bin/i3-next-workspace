@@ -31,7 +31,7 @@ def main():
     while i % len(workspaces) != active_idx:
         w = workspaces[i % len(workspaces)]
         if not w.name.startswith('_'):
-            i3.command(f'workspace number {w.num}')
+            w.command('focus')
             return
         i += offset
 

@@ -1,19 +1,12 @@
 #!/bin/bash
 
-workspace_exists() {
-	echo "$1" | jq -e ".[] | select(.num==$2)" >/dev/null
-}
+num=1
+workspaces="$(i3-msg -t get_workspaces | jq '.[] | .num')"
 
-main() {
-	local num=1
-	local workspaces="$(i3-msg -t get_workspaces)"
-	while (( num < 10 )); do
-		if ! workspace_exists "$workspaces" "$num"; then
-			i3-msg "workspace number $num" >/dev/null
-			break
-		fi
-		(( num += 1 ))
-	done
-}
-
-main
+while (( num < 10 )); do
+	if ! grep -q "$num" <<< "$workspaces"; then
+		i3-msg "workspace number $num" >/dev/null
+		break
+	fi
+	(( num += 1 ))
+done

@@ -3,6 +3,7 @@
 main() {
 
 	opts="-dmenu -p 'Move to'"
+	opts="$opts -kb-custom-1 'Control+Return'"
 	opts="$opts -theme 'main-light'"
 	opts="$opts -theme-str 'window { width: 25%; }'"
 	opts="$opts -theme-str 'listview { enabled: false; }'"
@@ -11,14 +12,20 @@ main() {
 	opts="$opts -theme-str 'entry { padding: 12; }'"
 	opts="$opts -theme-str 'prompt { enabled: true; padding: 12; }'"
 	opts="$opts -theme-str 'prompt { color: @prompt-color ; background-color: @prompt-background; }'"
-	name=$(echo "" | eval "rofi $opts" | sed 's/\(\s\+$\|^\s\+\)//g')
+
+	name=$(echo "" | eval "rofi $opts")
+	rofi_exit=$?
+	echo $rofi_exit
+
+	# strip whitespaces
+	name="$(echo "$name" | sed 's/\(\s\+$\|^\s\+\)//g')"
 
 	if [[ -z "$name" ]]; then
 		exit 1
 	fi
 
 	cmd="move to workspace \"$name\""
-	if [[ ! "$name" =~ ^_ ]]; then
+	if [[ ! "$name" =~ ^_scratch$ && $rofi_exit != 10 ]]; then
 		cmd="$cmd; workspace \"$name\""
 	fi
 	i3-msg "$cmd" >/dev/null

@@ -20,15 +20,23 @@ main() {
 	# strip whitespaces
 	name="$(echo "$name" | sed 's/\(\s\+$\|^\s\+\)//g')"
 
-	if [[ -z "$name" ]]; then
+	if (( rofi_exit == 1 )); then
 		exit 1
 	fi
 
-	cmd="move to workspace \"$name\""
-	if [[ ! "$name" =~ ^_scratch$ && $rofi_exit != 10 ]]; then
-		cmd="$cmd; workspace \"$name\""
+	if [[ -z "$name" ]]; then
+		# automatically pick a workspace when no name is given
+		case $rofi_exit in
+			10) i3-move-to-new-workspace ;;
+			*) i3-move-to-new-workspace -follow ;;
+		esac
+	else
+		cmd="move to workspace \"$name\""
+		if [[ ! "$name" =~ ^_scratch$ && $rofi_exit != 10 ]]; then
+			cmd="$cmd; workspace \"$name\""
+		fi
+		i3-msg "$cmd" >/dev/null
 	fi
-	i3-msg "$cmd" >/dev/null
 
 }
 

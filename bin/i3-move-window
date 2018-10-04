@@ -2,6 +2,7 @@
 
 main() {
 
+	local opts
 	opts="-dmenu -p 'Move to'"
 	opts="$opts -kb-custom-1 'Control+Return'"
 	opts="$opts -theme 'main-light'"
@@ -13,9 +14,9 @@ main() {
 	opts="$opts -theme-str 'prompt { enabled: true; padding: 12; }'"
 	opts="$opts -theme-str 'prompt { color: @prompt-color ; background-color: @prompt-background; }'"
 
+	local name rofi_exit
 	name=$(echo "" | eval "rofi $opts")
 	rofi_exit=$?
-	echo $rofi_exit
 
 	# strip whitespaces
 	name="$(echo "$name" | sed 's/\(\s\+$\|^\s\+\)//g')"
@@ -31,6 +32,7 @@ main() {
 			*) i3-move-to-new-workspace -follow ;;
 		esac
 	else
+		local cmd
 		cmd="move to workspace \"$name\""
 		if [[ ! "$name" =~ ^_scratch$ && $rofi_exit != 10 ]]; then
 			cmd="$cmd; workspace \"$name\""

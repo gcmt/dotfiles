@@ -181,7 +181,7 @@ rofi.me-accept-entry: MousePrimary
 rofi.kb-accept-entry: Control+d,Return
 
 ! Use entered text as command (in ssh/run modi)
-rofi.kb-accept-custom: Control+Return
+rofi.kb-accept-custom: Shift+Return
 
 ! Launch the application in a terminal (in run mode).
 ! Return the selected entry and move to the next item while keeping Rofi open. (in dmenu)

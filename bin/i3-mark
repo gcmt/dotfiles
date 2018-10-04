@@ -1,15 +1,31 @@
 #!/bin/bash
 
-style="-theme-str 'window { width: 25%; }'"
-style="$style -theme-str 'listview { enabled: false; }'"
-style="$style -theme-str 'case-indicator { enabled: false; }'"
-style="$style -theme-str 'prompt { enabled: true; }'"
+opts="-dmenu -p 'Mark'"
+opts="$opts -kb-custom-1 'Control+a,Control+Return'"
+opts="$opts -theme 'main-light'"
+opts="$opts -theme-str 'window { width: 25%; }'"
+opts="$opts -theme-str 'listview { enabled: false; }'"
+opts="$opts -theme-str 'case-indicator { enabled: false; }'"
+opts="$opts -theme-str 'inputbar { padding: 0; }'"
+opts="$opts -theme-str 'entry { padding: 12; }'"
+opts="$opts -theme-str 'prompt { enabled: true; padding: 12; }'"
+opts="$opts -theme-str 'prompt { color: @prompt-color ; background-color: @prompt-background; }'"
 
-options="-dmenu -p 'Mark: '"
+mark="$(eval "rofi $opts")"
+rofi_exit=$?
 
-mark=$(echo "" | eval "rofi $options $style" | sed 's/\(\s\+$\|^\s\+\)//g')
-if [[ -z "$mark" ]]; then
+if (( rofi_exit == 1 )); then
 	exit 1
 fi
 
-i3-msg "mark $mark"
+# strip whitespaces
+mark="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$mark")"
+
+if [[ -z "$mark" ]]; then
+	i3-msg "[con_id=\"__focused__\"] unmark"
+else
+	case $rofi_exit in
+		10) i3-msg "mark --add \"$mark\"" ;;
+		*) i3-msg "mark \"$mark\"" ;;
+	esac
+fi

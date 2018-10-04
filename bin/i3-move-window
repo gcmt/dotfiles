@@ -32,10 +32,13 @@ main() {
 			*) i3-move-to-new-workspace -follow ;;
 		esac
 	else
-		local cmd
-		cmd="move to workspace \"$name\""
+		local cmd num
+		if [[ "$name" =~ ^[0-9]+$ ]]; then
+			num="number"
+		fi
+		cmd="move to workspace $num \"$name\""
 		if [[ ! "$name" =~ ^_scratch$ && $rofi_exit != 10 ]]; then
-			cmd="$cmd; workspace \"$name\""
+			cmd="$cmd; workspace $num \"$name\""
 		fi
 		i3-msg "$cmd" >/dev/null
 	fi

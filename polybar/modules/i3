@@ -47,13 +47,20 @@ def draw(i3, mode=None, all=False):
     mode = mode != 'default' and mode
     menu_cmd = "i3-choose-window -no-inputbar -tiny -mouse"
 
-    # disallow clicks when a mode is active
+    # disable clicks when a mode is active
     _clickable = lambda s, **kwargs: s if mode else clickable(s, **kwargs)
 
     tree = i3.get_tree()
     active = tree.find_focused().workspace()
 
-    for w in tree.workspaces():
+    # move the scratchpad at the end
+    workspaces = tree.workspaces()
+    for i, w in enumerate(workspaces):
+        if w.name == '_scratch':
+            workspaces.append(workspaces.pop(i))
+            break
+
+    for w in workspaces:
         hidden = w.name.startswith('_')
         if not all and hidden and not w is active:
             indicator += '›'

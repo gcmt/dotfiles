@@ -9,11 +9,13 @@ current_workspace_name() {
 main() {
 
 	# add a trailing space if the worksapce name is just a number
+	local current
 	current=$(current_workspace_name)
 	if [[ "$current" =~ ^[0-9]+$ ]]; then
 		current="$current "
 	fi
 
+	local opts name
 	if (( reset == 1 )); then
 		name=$(echo "$current" | grep -o "^[0-9]\\+")
 	else

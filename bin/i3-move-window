@@ -15,11 +15,11 @@ main() {
 	opts="$opts -theme-str 'prompt { color: @prompt-color ; background-color: @prompt-background; }'"
 
 	local name rofi_exit
-	name=$(echo "" | eval "rofi $opts")
+	name="$(eval "rofi $opts")"
 	rofi_exit=$?
 
 	# strip whitespaces
-	name="$(echo "$name" | sed 's/\(\s\+$\|^\s\+\)//g')"
+	name="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$name")"
 
 	if (( rofi_exit == 1 )); then
 		exit 1

@@ -17,7 +17,7 @@ main() {
 
 	local opts name
 	if (( reset == 1 )); then
-		name=$(echo "$current" | grep -o "^[0-9]\\+")
+		name="$(grep -o "^[0-9]\\+" <<< "$current")"
 	else
 		opts="-dmenu -p 'Name' -filter '$current' "
 		opts="$opts -theme 'main-light'"
@@ -28,7 +28,8 @@ main() {
 		opts="$opts -theme-str 'entry { padding: 12; }'"
 		opts="$opts -theme-str 'prompt { enabled: true; padding: 12; }'"
 		opts="$opts -theme-str 'prompt { color: @prompt-color ; background-color: @prompt-background; }'"
-		name=$(echo "" | eval "rofi $opts" | sed 's/\(\s\+$\|^\s\+\)//g')
+		name="$(eval "rofi $opts")"
+		name="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$name")"
 	fi
 
 	if [[ -z "$name" ]]; then

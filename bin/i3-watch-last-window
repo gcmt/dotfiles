@@ -21,7 +21,7 @@ trap cleanup 0
 
 last=
 xprop -root -spy _NET_ACTIVE_WINDOW | while read -r line; do
-	current="$(echo "$line" | grep -io "0x[a-f0-9]\\+")"
+	current="$(grep -io "0x[a-f0-9]\\+" <<< "$line")"
 	if [[ "$current" == "$last" ]]; then
 		continue
 	fi

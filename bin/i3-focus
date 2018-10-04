@@ -66,10 +66,8 @@ def get_last_window(tree):
         return tree.find_by_window(id)
     except FileNotFoundError:
         error(f"could not read last window id, file not found: {path}")
-        return None
     except ValueError:
         error(f"invalid window id '{id}' in {path}")
-        return None
 
 
 def focus(win, move=False):

@@ -12,16 +12,18 @@ opts="$opts -theme 'main-light'"
 current="$(mpc current -f '[%artist%  %title%]|[%file%]')"
 opts="$opts -select \"$current\""
 
-if [[ "$cmd" == 'playlist' ]]; then
-	opts="$opts -format d"
-else
-	opts="$opts -format i"
-fi
-
 files=()
 while read -r line; do
 	files+=( "$line" )
 done < <(mpc "$cmd" -f "%file%")
+
+if [[ "$cmd" == 'playlist' ]]; then
+	opts="$opts -format d"
+	opts="$opts -mesg 'Playlist: ${#files[@]} songs'"
+else
+	opts="$opts -format i"
+	opts="$opts -mesg 'Browse: ${#files[@]} songs'"
+fi
 
 format="[<span foreground='##797d84'>%artist%</span>  %title%]|[%file%]"
 idx="$(mpc "$cmd" -f "$format" | sed 's/&/&amp;/g' | eval "rofi $opts")"

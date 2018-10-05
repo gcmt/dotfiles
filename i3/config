@@ -272,6 +272,8 @@ bindsym $mod+F5 exec --no-startup-id urxvt -name floating -e ncmpcpp
 bindsym $mod+F6 exec --no-startup-id mpc toggle
 bindsym $mod+F7 exec --no-startup-id mpc prev
 bindsym $mod+F8 exec --no-startup-id mpc next
+bindsym $mod+F9 exec --no-startup-id rofi-mpd
+bindsym $mod+Shift+F9 exec --no-startup-id rofi-mpd -add
 
 # Screenshots (XF86LaunchA = F3)
 bindsym XF86LaunchA exec --no-startup-id capture -window root

@@ -8,17 +8,15 @@ while getopts "i" OPT; do
 done
 shift $((OPTIND -1))
 
-options="-dmenu -format i"
-
-style="-theme 'main-light'"
-style="$style -theme-str 'window { width: 25%; }'"
-style="$style -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
-style="$style -theme-str 'case-indicator { enabled: false; }'"
+opts="-dmenu -format i -theme 'main-light'"
+opts="$opts -theme-str 'window { width: 25%; }'"
+opts="$opts -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
+opts="$opts -theme-str 'case-indicator { enabled: false; }'"
 
 if (( inputbar == 0 )); then
-    style="$style -theme-str 'mainbox { children: [listview]; }'"
-    options="$options -kb-row-up 'Up,Control+k,k' -kb-row-down 'Down,Control+j,Super+Tab,j'"
-    options="$options -kb-accept-entry 'l,Return,Control+d' -kb-cancel 'Escape,q'"
+    opts="$opts -theme-str 'mainbox { children: [listview]; }'"
+    opts="$opts -kb-row-up 'Up,Control+k,k' -kb-row-down 'Down,Control+j,Super+Tab,j'"
+    opts="$opts -kb-accept-entry 'l,Return,Control+d' -kb-cancel 'Escape,q'"
 fi
 
 entries="notes\\nlogbook\\ntodo"
@@ -29,7 +27,7 @@ files=(
     "$HOME/Docs/todo.md"
 )
 
-idx=$(echo -e "$entries" | eval "rofi $options $style")
+idx=$(echo -e "$entries" | eval "rofi $opts")
 if [[ -z "$idx" ]]; then
 	exit 1
 fi

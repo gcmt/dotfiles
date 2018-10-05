@@ -1,14 +1,13 @@
 #!/bin/bash
 
-style="-theme 'main-light'"
-style="$style -theme-str 'window { width: 25%; }'"
-style="$style -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
-style="$style -theme-str 'case-indicator { enabled: false; }'"
-
-options="-dmenu -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Control+n'"
+opts="-dmenu -theme 'main-light'"
+opts="$opts -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Control+n'"
+opts="$opts -theme-str 'window { width: 25%; }'"
+opts="$opts -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
+opts="$opts -theme-str 'case-indicator { enabled: false; }'"
 
 sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus\\|calc")
-session=$(echo "$sessions" | eval "rofi $options $style")
+session=$(echo "$sessions" | eval "rofi $opts")
 rofi_exit=$?
 
 if [[ $rofi_exit == 1 || -z "$session" ]]; then
@@ -19,9 +18,9 @@ case $rofi_exit in
 
 	10)
 
-		options="-dmenu -p 'Kill session \"$session\" ? '"
-		style="$style -theme-str 'prompt { enabled: true; }'"
-		choice=$(printf "yes\nno" | eval "rofi $options $style")
+		opts="-dmenu -p 'Kill session \"$session\" ? '"
+		opts="$opts -theme-str 'prompt { enabled: true; }'"
+		choice=$(printf "yes\nno" | eval "rofi $opts")
 		if [[ $choice == yes ]]; then
 			tmux kill-session -t "=$session"
 		fi

@@ -1,19 +1,11 @@
 #!/bin/bash
 
-inputbar=0
-while getopts "i" OPT; do
-	case $OPT in
-		i) inputbar=1 ;;
-	esac
-done
-shift $((OPTIND -1))
-
 opts="-dmenu -format i -theme 'main-light'"
 opts="$opts -theme-str 'window { width: 25%; }'"
 opts="$opts -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
 opts="$opts -theme-str 'case-indicator { enabled: false; }'"
 
-if (( inputbar == 0 )); then
+if [[ ! "$*" =~ -inputbar($| ) ]]; then
     opts="$opts -theme-str 'mainbox { children: [listview]; }'"
     opts="$opts -kb-row-up 'Up,Control+k,k' -kb-row-down 'Down,Control+j,Super+Tab,j'"
     opts="$opts -kb-accept-entry 'l,Return,Control+d' -kb-cancel 'Escape,q'"

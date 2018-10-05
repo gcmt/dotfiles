@@ -1,6 +1,13 @@
 
-* {
+/* Fonts
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+prompt, entry, element {
 	font: "Noto Sans Regular 10";
+}
+
+textbox {
+	font: "Noto Sans Regular 8";
 }
 
 /* Containers
@@ -21,7 +28,7 @@ mainbox {
 
 message {
 	border-color: @separator-color;
-	padding: 5;
+	padding: 0 12 6;
 }
 
 textbox {
@@ -33,13 +40,12 @@ textbox {
 
 inputbar {
 	text-color: @normal-foreground;
-	background-color: @inputbar-background;
-	padding: 12 12;
+	padding: 12 12 6;
 }
 
 prompt {
-	enabled: false;
 	text-color: @normal-foreground;
+	enabled: false;
 }
 
 entry {

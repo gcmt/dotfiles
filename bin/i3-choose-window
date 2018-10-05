@@ -116,10 +116,10 @@ def rofi(windows, args):
     chars = max([len(w.name) + len(w.workspace().name) for w in windows]) + 10
     if args.tiny:
         options += ['-theme', 'tiny']
-        chars = max([chars, 80])
+        chars = max([min([chars, 100]), 80])
     else:
         options += ['-theme', 'main-light']
-        chars = max([chars, 120])
+        chars = max([min([chars, 120]), 80])
     options += ['-theme-str', f'window {{ width: {chars}ch; }}']
 
     lines = min(len(windows), 12)

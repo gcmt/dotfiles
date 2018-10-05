@@ -34,18 +34,30 @@ if (( rofi_exit == 1 )); then
 fi
 
 case $rofi_exit in
+
 	10)
 		exec "$(realpath "$0")" -add
 		;;
+
 	11)
 		exec "$(realpath "$0")"
 		;;
+
 	*)
 		if [[ "$cmd" == 'playlist' ]]; then
 			mpc play "$idx"
 		else
-			mpc add "${files[idx]}"
-			mpc play "$(mpc playlist | wc -l)"
+			# be sure not to add duplicate songs
+			target="${files[idx]}"
+			playlist="$(mpc playlist -f '%file%')"
+			pos="$(echo "$playlist" | grep -Fn "$target" | grep -om1 '^[0-9]\+')"
+			if [[ -n "$pos" ]]; then
+				mpc play "$pos"
+			else
+				mpc add "$target"
+				mpc play "$(mpc playlist | wc -l)"
+			fi
 		fi
 		;;
+
 esac

@@ -85,15 +85,13 @@ set-title() {
 add-zsh-hook precmd set-title
 
 forget-commands() {
-	local cmd="${${(z)1}[1]}"
-	# forget mistyped commands
-	if [[ ! -e "$cmd" ]] && ! type "$cmd" >/dev/null 2>&1; then
+	if [[ "$1" =~ '^(sudo\s+)?(rm|mv|cp)\>' ]]; then
 		return 1
 	fi
-	if [[ "$1" =~ '^(fg|rm|mv|cp|l|la|zs|ze|youtube-dl)\>' ]]; then
+	if [[ "$1" =~ '^(fg|l|la|zs|ze|youtube-dl)\>' ]]; then
 		return 1
 	fi
-	if [[ "$1" =~ '^(cd|ll|lla|va|vim|python|py|ipy|pudb)\s+$' ]]; then
+	if [[ "$1" =~ '^(cd|ll|lla|va|vim|python|py|ipy|pudb)\s*$' ]]; then
 		return 1
 	fi
 }

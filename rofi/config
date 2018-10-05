@@ -188,7 +188,7 @@ rofi.kb-accept-custom: Shift+Return
 rofi.kb-accept-alt:
 
 ! Delete entry from history
-rofi.kb-delete-entry: Control+r
+rofi.kb-delete-entry:
 
 ! Switch to the next mode.
 rofi.kb-mode-next:

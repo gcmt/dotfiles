@@ -250,3 +250,11 @@ if [[ "$*" =~ -mpv($| ) || -n "$all" ]]; then
 		link "$dotdir/mpv/lua-settings" "$XDG_CONFIG_HOME/mpv/lua-settings"
 	fi
 fi
+
+if [[ "$*" =~ -nemo($| ) || -n "$all" ]]; then
+	if [[ -n "$all" ]] && ! hash nemo 2>/dev/null; then
+		skip nemo
+	else
+		link "$dotdir/nemo" "$XDG_DATA_HOME/nemo"
+	fi
+fi

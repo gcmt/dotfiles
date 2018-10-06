@@ -4,9 +4,6 @@ if [[ -d "$1" ]]; then
 	current="$1"
 	cd "$1" || exit 1
 	shift
-	if [[ "$2" == "$current" ]]; then
-		shift
-	fi
 else
 	exit 1
 fi

@@ -1,10 +1,11 @@
 #!/bin/bash
 
-opts="-dmenu -theme 'main-light'"
+common=" -theme-str 'window { width: 25%; }'"
+common+=" -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
+common+=" -theme-str 'case-indicator { enabled: false; }'"
+
+opts="-dmenu -theme 'main-light' $common"
 opts+=" -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Control+n'"
-opts+=" -theme-str 'window { width: 25%; }'"
-opts+=" -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
-opts+=" -theme-str 'case-indicator { enabled: false; }'"
 
 sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus\\|calc")
 session=$(echo "$sessions" | eval "rofi $opts")
@@ -15,10 +16,8 @@ if [[ $rofi_exit == 1 || -z "$session" ]]; then
 fi
 
 case $rofi_exit in
-
 	10)
-
-		opts="-dmenu -p 'Kill session \"$session\" ? '"
+		opts="-dmenu -p 'Kill session \"$session\" ? ' -theme 'main-light' $common"
 		opts+=" -theme-str 'prompt { enabled: true; }'"
 		choice=$(printf "yes\nno" | eval "rofi $opts")
 		if [[ $choice == yes ]]; then
@@ -26,17 +25,12 @@ case $rofi_exit in
 		fi
 		exec "$0"
 		;;
-
 	11)
-
 		# open a new client linked to the current session in a different terminal window
 		urxvt -e tmux new -t "$session" \; set destroy-unattached
 		;;
-
 	*)
-
 		# If the tmux session is already opened, switch to it
 		exec i3-focus -c URxvt -t "^$session - Tmux$" -fallback "urxvt -e t $session"
 		;;
-
 esac

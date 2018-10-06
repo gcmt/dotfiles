@@ -1,14 +1,14 @@
 #!/bin/bash
 
 opts="-dmenu -format i -theme 'main-light'"
-opts="$opts -theme-str 'window { width: 25%; }'"
-opts="$opts -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
-opts="$opts -theme-str 'case-indicator { enabled: false; }'"
+opts+=" -theme-str 'window { width: 25%; }'"
+opts+=" -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
+opts+=" -theme-str 'case-indicator { enabled: false; }'"
 
 if [[ ! "$*" =~ -inputbar($| ) ]]; then
-    opts="$opts -theme-str 'mainbox { children: [listview]; }'"
-    opts="$opts -kb-row-up 'Up,Control+k,k' -kb-row-down 'Down,Control+j,Super+Tab,j'"
-    opts="$opts -kb-accept-entry 'l,Return,Control+d' -kb-cancel 'Escape,q'"
+    opts+=" -theme-str 'mainbox { children: [listview]; }'"
+    opts+=" -kb-row-up 'Up,Control+k,k' -kb-row-down 'Down,Control+j,Super+Tab,j'"
+    opts+=" -kb-accept-entry 'l,Return,Control+d' -kb-cancel 'Escape,q'"
 fi
 
 entries="notes\\nlogbook\\ntodo"

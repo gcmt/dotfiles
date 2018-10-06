@@ -10,26 +10,26 @@ res="$(xrdb -query all)"
 seq=
 
 fgColor=$(echo "$res" | grep "$term.foreground" | grep -o '\S\+$')
-[[ -n "$fgColor" ]] && seq="$seq\e]10;$fgColor\a"
+[[ -n "$fgColor" ]] && seq+="\e]10;$fgColor\a"
 
 bgColor=$(echo "$res" | grep "$term.background" | grep -o '\S\+$')
-[[ -n "$bgColor" ]] && seq="$seq\e]11;$bgColor\a"
+[[ -n "$bgColor" ]] && seq+="\e]11;$bgColor\a"
 
 curColor=$(echo "$res" | grep "$term.cursorColor" | grep -o '\S\+$')
-[[ -n "$curColor" ]] && seq="$seq\e]12;$curColor\a"
+[[ -n "$curColor" ]] && seq+="\e]12;$curColor\a"
 
 hlColor=$(echo "$res" | grep "$term.highlightColor" | grep -o '\S\+$')
-[[ -n "$hlColor" ]] && seq="$seq\e]17;$hlColor\a"
+[[ -n "$hlColor" ]] && seq+="\e]17;$hlColor\a"
 
 # internal border color in urxvt
 bdColor=$(echo "$res" | grep "$term.borderColor" | grep -o '\S\+$')
-seq="$seq\e]708;${bdColor:-bgColor}\a"
+seq+="\e]708;${bdColor:-bgColor}\a"
 
 colors="$(echo "$res" | grep "^.color[0-9]\\+:")"
 while read -r line ; do
 	num=$(echo $line | grep -Po '(?<=color)\d+')
 	val=$(echo $line | grep -o '\S\+$')
-	seq="$seq\e]4;$num;$val\a"
+	seq+="\e]4;$num;$val\a"
 done <<< "$colors"
 
 if [ -n "$TMUX" ]; then

@@ -1,10 +1,10 @@
 #!/bin/bash
 
 opts="-dmenu -theme 'main-light'"
-opts="$opts -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Control+n'"
-opts="$opts -theme-str 'window { width: 25%; }'"
-opts="$opts -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
-opts="$opts -theme-str 'case-indicator { enabled: false; }'"
+opts+=" -kb-custom-1 'Control+BackSpace' -kb-custom-2 'Control+n'"
+opts+=" -theme-str 'window { width: 25%; }'"
+opts+=" -theme-str 'listview { fixed-height: false; scrollbar: false; }'"
+opts+=" -theme-str 'case-indicator { enabled: false; }'"
 
 sessions=$(tmux ls -F '#{session_name}' 2>/dev/null | grep -v "cmus\\|calc")
 session=$(echo "$sessions" | eval "rofi $opts")
@@ -19,7 +19,7 @@ case $rofi_exit in
 	10)
 
 		opts="-dmenu -p 'Kill session \"$session\" ? '"
-		opts="$opts -theme-str 'prompt { enabled: true; }'"
+		opts+=" -theme-str 'prompt { enabled: true; }'"
 		choice=$(printf "yes\nno" | eval "rofi $opts")
 		if [[ $choice == yes ]]; then
 			tmux kill-session -t "=$session"

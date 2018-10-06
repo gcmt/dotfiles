@@ -6,11 +6,11 @@ if [[ "$*" =~ -add($| ) ]]; then
 fi
 
 opts="-dmenu -i -markup-rows"
-opts="$opts -kb-custom-1 'Control+a' -kb-custom-2 'Control+q' -kb-custom-3 'Control+r'"
-opts="$opts -theme 'main-light'"
+opts+=" -kb-custom-1 'Control+a' -kb-custom-2 'Control+q' -kb-custom-3 'Control+r'"
+opts+=" -theme 'main-light'"
 
 current="$(mpc current -f '[%artist%  %title%]|[%file%]')"
-opts="$opts -select \"$current\""
+opts+=" -select \"$current\""
 
 files=()
 while read -r line; do
@@ -18,11 +18,11 @@ while read -r line; do
 done < <(mpc "$cmd" -f "%file%")
 
 if [[ "$cmd" == 'playlist' ]]; then
-	opts="$opts -format d"
-	opts="$opts -mesg 'Playlist: ${#files[@]} songs'"
+	opts+=" -format d"
+	opts+=" -mesg 'Playlist: ${#files[@]} songs'"
 else
-	opts="$opts -format i"
-	opts="$opts -mesg 'Browse: ${#files[@]} songs'"
+	opts+=" -format i"
+	opts+=" -mesg 'Browse: ${#files[@]} songs'"
 fi
 
 format="[<span foreground='##797d84'>%artist%</span>  %title%]|[%file%]"

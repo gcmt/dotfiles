@@ -1,9 +1,0 @@
-[Nemo Action]
-Active=true
-Name=Rename With Vidir
-Comment=Rename selected files with Vidir
-Dependencies=vidir
-Exec=<vidir.sh %P %F>
-Selection=notnone
-Extensions=any
-Quote=double

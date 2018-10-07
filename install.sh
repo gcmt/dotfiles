@@ -106,14 +106,6 @@ if [[ "$*" =~ -polybar($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -termite($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash termite 2>/dev/null; then
-		skip termite
-	else
-		link "$dotdir/termite" "$XDG_CONFIG_HOME/termite"
-	fi
-fi
-
 if [[ "$*" =~ -urxvt($| ) || -n "$all" ]]; then
 	if [[ -n "$all" ]] && ! hash urxvt 2>/dev/null; then
 		skip urxvt

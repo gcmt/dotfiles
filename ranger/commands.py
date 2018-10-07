@@ -6,6 +6,30 @@ import ranger
 from ranger.api.commands import Command
 
 
+class vidir(Command):
+    """:vidir
+
+    Rename all files in the current directory or marked files if any.
+    """
+
+    def execute(self):
+
+        if not self.fm.thisdir:
+            self.fm.notify("Nothing to rename!", bad=True)
+            return
+
+        if self.fm.thisdir.marked_items:
+            files = self.fm.thisdir.get_selection()
+        else:
+            files = []
+
+        args = [f.relative_path for f in files]
+        self.fm.execute_command(['vidir', *args])
+
+        for f in files:
+            self.fm.thisdir.mark_item(f, False)
+
+
 class ext(Command):
     """:ext <filename>
 

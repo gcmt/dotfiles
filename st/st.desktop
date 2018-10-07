@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=St
-GenericName=Simple Terminal
-Comment=Simple terminal implementation for X
-Exec=st
-Terminal=false
-Type=Application
-Categories=System;TerminalEmulator;
-StartupNotify=true

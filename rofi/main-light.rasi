@@ -3,12 +3,11 @@
 
 	background: rgba(237, 238, 242, 100%);
 	foreground: rgba(82, 86, 94, 100%);
-	scrollbar: rgba(82, 86, 94, 100%);
 
-	shadow: rgba(0, 0, 0, 0%);
-	inputbar-background: @background;
-	separator-color: rgba(225, 228, 232, 100%);
 	background-color: @background;
+
+	scrollbar-color: rgba(103, 107, 114, 100%);
+	separator-color: rgba(225, 228, 232, 100%);
 
 	prompt-background: rgba(225, 228, 232, 100%);
 	prompt-color: rgba(103, 107, 114, 100%);

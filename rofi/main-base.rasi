@@ -27,7 +27,6 @@ mainbox {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 message {
-	border-color: @separator-color;
 	padding: 0 12 6;
 }
 
@@ -39,29 +38,28 @@ textbox {
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 inputbar {
-	text-color: @normal-foreground;
+	text-color: @foreground;
 	padding: 12 12 6;
 }
 
 prompt {
-	text-color: @normal-foreground;
+	text-color: @foreground;
 	enabled: false;
 }
 
 entry {
-	text-color: @normal-foreground;
+	text-color: @foreground;
 }
 
 case-indicator {
-	text-color: @normal-foreground;
+	text-color: @foreground;
 }
 
 /* Scrollbar
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 scrollbar {
-	width: 4;
-	handle-color: @scrollbar;
+	handle-color: @scrollbar-color;
 	handle-width: 2;
 }
 
@@ -73,7 +71,6 @@ listview {
 	fixed-height: true;
 	spacing: 0;
 	scrollbar: true;
-	border-color: @separator-color;
 }
 
 element {

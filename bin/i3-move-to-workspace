@@ -4,16 +4,8 @@
 ask_for_workspace() {
 
 	local opts
-	opts="-dmenu -p 'Move to'"
+	opts="-dmenu -p 'Move to' -theme 'i3-input'"
 	opts+=" -kb-custom-1 'Control+Return'"
-	opts+=" -theme 'main-light'"
-	opts+=" -theme-str 'window { width: 25%; }'"
-	opts+=" -theme-str 'listview { enabled: false; }'"
-	opts+=" -theme-str 'case-indicator { enabled: false; }'"
-	opts+=" -theme-str 'inputbar { padding: 0; }'"
-	opts+=" -theme-str 'entry { padding: 12; }'"
-	opts+=" -theme-str 'prompt { enabled: true; padding: 12; }'"
-	opts+=" -theme-str 'prompt { color: @prompt-color ; background-color: @prompt-background; }'"
 
 	local name rofi_exit
 	name="$(eval "rofi $opts")"

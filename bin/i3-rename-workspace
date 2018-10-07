@@ -19,15 +19,7 @@ main() {
 	if (( reset == 1 )); then
 		name="$(grep -o "^[0-9]\\+" <<< "$current")"
 	else
-		opts="-dmenu -p 'Name' -filter '$current' "
-		opts+=" -theme 'main-light'"
-		opts+=" -theme-str 'window { width: 25%; }'"
-		opts+=" -theme-str 'listview { enabled: false; }'"
-		opts+=" -theme-str 'case-indicator { enabled: false; }'"
-		opts+=" -theme-str 'inputbar { padding: 0; }'"
-		opts+=" -theme-str 'entry { padding: 12; }'"
-		opts+=" -theme-str 'prompt { enabled: true; padding: 12; }'"
-		opts+=" -theme-str 'prompt { color: @prompt-color ; background-color: @prompt-background; }'"
+		opts="-dmenu -p 'Name' -filter '$current' -theme 'i3-input'"
 		name="$(eval "rofi $opts")"
 		name="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$name")"
 	fi

@@ -1,0 +1,29 @@
+
+@import "main-light"
+
+window {
+	width: 25%;
+}
+
+listview {
+	enabled: false;
+}
+
+case-indicator {
+	enabled: false;
+}
+
+inputbar {
+	padding: 0;
+}
+
+entry {
+	padding: 12;
+}
+
+prompt {
+	enabled: true;
+	padding: 12;
+	color: @prompt-color;
+	background-color: @prompt-background;
+}

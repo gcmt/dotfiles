@@ -10,9 +10,9 @@
 }
 
 window {
+	location: center;
+	anchor: center;
 	width: 200px;
-	location: north west;
-	anchor: north west;
 }
 
 listview {

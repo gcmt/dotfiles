@@ -53,6 +53,7 @@ def rofi(args, rofiargs):
 
     options  = ['-dmenu', '-click-to-exit', '-theme', 'tiny']
     options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary']
+    options += ['-theme-str', 'window { location: north west; anchor: north west; }']
 
     x, y = get_mouse_coordinates()
     if not x and not y:

@@ -3,21 +3,20 @@
 opts="-dmenu -p 'Mark' -theme 'i3-input'"
 opts+=" -kb-custom-1 'Control+a,Control+Return'"
 
-mark="$(eval "rofi $opts")"
+marks="$(eval "rofi $opts")"
 rofi_exit=$?
 
 if (( rofi_exit == 1 )); then
 	exit 1
 fi
 
-# strip whitespaces
-mark="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$mark")"
-
-if [[ -z "$mark" ]]; then
+if (( $rofi_exit != 10 )); then
 	i3-msg "[con_id=\"__focused__\"] unmark"
-else
-	case $rofi_exit in
-		10) i3-msg "mark --add \"$mark\"" ;;
-		*) i3-msg "mark \"$mark\"" ;;
-	esac
 fi
+
+IFS=','
+marks=($marks)
+for mark in "${marks[@]}"; do
+	mark="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$mark")"
+	i3-msg "mark --add \"$mark\""
+done

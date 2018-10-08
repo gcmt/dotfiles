@@ -14,12 +14,6 @@ def parse_args():
     return parser.parse_args()
 
 
-def find_scratchpad(workspaces):
-    for w in workspaces:
-        if w.name == '_scratch':
-            return w
-
-
 def main():
 
     args = parse_args()
@@ -47,11 +41,11 @@ def main():
 
     elif args.focus:
 
-        scratchpad = find_scratchpad(tree.workspaces())
-        if not scratchpad:
-            sys.exit(1)
+        for w in tree.workspaces():
+            if w.name == '_scratch':
+                i3.command('workspace _scratch')
 
-        scratchpad.command('focus')
+
 
 
 if __name__ == '__main__':

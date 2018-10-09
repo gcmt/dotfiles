@@ -1,11 +1,11 @@
 #!/bin/bash
 
 num=1
-workspaces="$(i3-msg -t get_workspaces | jq '.[] | .num')"
+workspaces="$(i3-msg -t get_workspaces | jq '.[] | .num' | grep '^[0-9]')"
 
 while (( num < 10 )); do
 	if ! grep -q "$num" <<< "$workspaces"; then
-		i3-msg "workspace number $num" >/dev/null
+		i3-msg -q "workspace number $num"
 		break
 	fi
 	(( num += 1 ))

@@ -75,11 +75,13 @@ def draw(i3, mode=None, all=False):
         block = _clickable(block, btn=3, cmd=f"{menu_cmd} -hide-workspace -g 'workspace_name={w.name}'")
         out += block
 
+    indicator = ''
+
     if all:
         indicator = '‹'
         indicator = colored(padded(indicator), **Colors.dim)
         indicator = _clickable(indicator, btn=1, cmd=f"echo visible > '{FIFO}'")
-    else:
+    elif hidden:
         indicator = '›' * len(hidden)
         indicator = colored(padded(indicator), **Colors.dim)
         indicator = _clickable(indicator, btn=1, cmd=f"echo all > '{FIFO}'")

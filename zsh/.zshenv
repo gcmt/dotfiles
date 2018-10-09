@@ -15,3 +15,5 @@ export MANPAGER="/bin/bash -c \
 export EDITOR=vim
 export BROWSER=firefox
 export LANG=en_US.UTF-8
+
+export RANGER_LOAD_DEFAULT_RC=FALSE

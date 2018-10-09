@@ -18,6 +18,9 @@ main() {
 	local opts name
 	if (( reset == 1 )); then
 		name="$(grep -o "^[0-9]\\+" <<< "$current")"
+		if [[ -z "$name" ]]; then
+			name="$(i3-new-workspace -dry)"
+		fi
 	else
 		opts="-dmenu -p 'Name' -filter '$current' -theme 'i3-input'"
 		name="$(eval "rofi $opts")"
@@ -28,7 +31,7 @@ main() {
 		exit 1
 	fi
 
-	i3-msg "rename workspace to \"$name\"" >/dev/null
+	i3-msg -q "rename workspace to \"$name\""
 
 }
 

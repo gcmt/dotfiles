@@ -43,7 +43,7 @@ def colored(s, fg=None, bg=None):
 def draw(i3, mode=None, all=False):
 
     out = ''
-    indicator = ''
+    hidden = []
     mode = mode != 'default' and mode
     menu_cmd = "i3-choose-window -no-inputbar -tiny -mouse"
 
@@ -61,13 +61,13 @@ def draw(i3, mode=None, all=False):
             break
 
     for w in workspaces:
-        hidden = w.name.startswith('_')
-        if not all and hidden and not w is active:
-            indicator += '›'
+        is_hidden = w.name.startswith('_')
+        if not all and is_hidden and not w is active:
+            hidden.append(w)
             continue
-        colors = Colors.hidden if hidden else Colors.normal
+        colors = Colors.hidden if is_hidden else Colors.normal
         if w is active:
-            colors = Colors.hidden_active if hidden else Colors.active
+            colors = Colors.hidden_active if is_hidden else Colors.active
         if w.urgent:
             colors = Colors.urgent
         block = colored(padded(w.name.lstrip('_')), **colors)
@@ -77,13 +77,15 @@ def draw(i3, mode=None, all=False):
 
     if all:
         indicator = '‹'
+        indicator = colored(padded(indicator), **Colors.dim)
+        indicator = _clickable(indicator, btn=1, cmd=f"echo visible > '{FIFO}'")
+    else:
+        indicator = '›' * len(hidden)
+        indicator = colored(padded(indicator), **Colors.dim)
+        indicator = _clickable(indicator, btn=1, cmd=f"echo all > '{FIFO}'")
+        indicator = _clickable(indicator, btn=3, cmd=f"{menu_cmd} -g 'workspace_name~^_'")
 
-    if indicator:
-        cmd = 'visible' if all else 'all'
-        block = colored(padded(indicator), **Colors.dim)
-        block = _clickable(block, btn=1, cmd=f'echo {cmd} > {FIFO}')
-        block = _clickable(block, btn=3, cmd=f"{menu_cmd} -g 'workspace_name~^_'")
-        out += block
+    out += indicator
 
     if mode:
         out += colored(padded(mode), **Colors.mode)

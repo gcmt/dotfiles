@@ -208,7 +208,7 @@ bindsym $mod+Shift+9 move container to workspace number 9; workspace number 9
 
 # Move window to new workspace and back
 bindsym $mod+backslash exec --no-startup-id i3-move-to-workspace -ask
-bindsym $mod+less exec --no-startup-id i3-move-to-workspace -auto -nofollow
+bindsym $mod+Control+w exec --no-startup-id i3-move-to-workspace -auto -nofollow
 bindsym $mod+Shift+w exec --no-startup-id i3-move-to-workspace -auto
 bindsym $mod+Control+a move container to workspace back_and_forth
 bindsym $mod+Shift+a move container to workspace back_and_forth; workspace back_and_forth

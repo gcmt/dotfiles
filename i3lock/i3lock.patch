@@ -1,6 +1,6 @@
 diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
---- i3lock.orig/unlock_indicator.c	2018-10-12 21:20:42.013338263 +0200
-+++ i3lock.new/unlock_indicator.c	2018-10-12 21:21:11.650004970 +0200
+--- i3lock.orig/unlock_indicator.c	2018-10-12 21:26:31.066672000 +0200
++++ i3lock.new/unlock_indicator.c	2018-10-12 21:26:57.683338693 +0200
 @@ -22,11 +22,6 @@
  #include "randr.h"
  #include "dpi.h"
@@ -133,7 +133,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
      if (img) {
          if (!tile) {
              cairo_set_source_surface(xcb_ctx, img, 0, 0);
-@@ -131,80 +205,26 @@
+@@ -131,107 +205,40 @@
          cairo_fill(xcb_ctx);
      }
  
@@ -217,7 +217,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
          char *text = NULL;
 -        /* We don't want to show more than a 3-digit number. */
 -        char buf[4];
-+        cairo_set_source_rgb(msg_ctx, 255.0, 255.0, 255.0);
++        cairo_set_source_rgba(msg_ctx, 255.0, 255.0, 255.0, 0.8);
 +        cairo_select_font_face(msg_ctx, "Noto Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 +        cairo_set_font_size(msg_ctx, 14.0);
  
@@ -226,16 +226,20 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -        cairo_set_font_size(ctx, 28.0);
          switch (auth_state) {
              case STATE_AUTH_VERIFY:
-                 text = "verifying…";
-@@ -213,25 +233,12 @@
-                 text = "locking…";
+-                text = "verifying…";
++                text = "…";
+                 break;
+             case STATE_AUTH_LOCK:
+-                text = "locking…";
++                text = "Locking…";
                  break;
              case STATE_AUTH_WRONG:
 -                text = "wrong!";
-+                text = "wrong password!";
++                text = "Sorry, try again.";
                  break;
              case STATE_I3LOCK_LOCK_FAILED:
-                 text = "lock failed!";
+-                text = "lock failed!";
++                text = "Lock failed!";
                  break;
              default:
 -                if (unlock_state == STATE_NOTHING_TO_DELETE) {
@@ -266,8 +270,8 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -            cairo_show_text(ctx, text);
 -            cairo_close_path(ctx);
 +            cairo_text_extents(msg_ctx, text, &extents);
-+            x = msg_width/2 - extents.width/2;
-+            y = extents.height/2 - extents.y_bearing;
++            x = msg_width/2 - (extents.width/2 + extents.x_bearing);
++            y = msg_height/2 - (extents.height/2 + extents.y_bearing);
 +
 +            cairo_move_to(msg_ctx, x, y);
 +            cairo_show_text(msg_ctx, text);

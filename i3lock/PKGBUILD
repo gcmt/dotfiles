@@ -18,7 +18,7 @@ source=(
 	"lock.png"
 )
 sha1sums=('SKIP'
-          'faeeb9a761213f86b5d338e376a24f1a3caeef08'
+          '525edd6e586ef65888645ff3a98343a43cfcee67'
           'd6301099a4f201d80f9573df14437388a7dde609')
 
 

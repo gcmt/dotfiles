@@ -221,22 +221,22 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         /* Display a text of the current PAM state */
 
         char *text = NULL;
-        cairo_set_source_rgb(msg_ctx, 255.0, 255.0, 255.0);
+        cairo_set_source_rgba(msg_ctx, 255.0, 255.0, 255.0, 0.8);
         cairo_select_font_face(msg_ctx, "Noto Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(msg_ctx, 14.0);
 
         switch (auth_state) {
             case STATE_AUTH_VERIFY:
-                text = "verifying…";
+                text = "…";
                 break;
             case STATE_AUTH_LOCK:
-                text = "locking…";
+                text = "Locking…";
                 break;
             case STATE_AUTH_WRONG:
-                text = "wrong password!";
+                text = "Sorry, try again.";
                 break;
             case STATE_I3LOCK_LOCK_FAILED:
-                text = "lock failed!";
+                text = "Lock failed!";
                 break;
             default:
                 break;
@@ -247,8 +247,8 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
             double x, y;
 
             cairo_text_extents(msg_ctx, text, &extents);
-            x = msg_width/2 - extents.width/2;
-            y = extents.height/2 - extents.y_bearing;
+            x = msg_width/2 - (extents.width/2 + extents.x_bearing);
+            y = msg_height/2 - (extents.height/2 + extents.y_bearing);
 
             cairo_move_to(msg_ctx, x, y);
             cairo_show_text(msg_ctx, text);

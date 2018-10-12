@@ -68,9 +68,6 @@ extern xcb_screen_t *screen;
  * Local variables.
  ******************************************************************************/
 
-/* Lock icon */
-cairo_surface_t *lock_image;
-
 /* Cache the screen’s visual, necessary for creating a Cairo context. */
 static xcb_visualtype_t *vistype;
 
@@ -155,10 +152,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
     double lock_height = 0;
     double lock_scaling = 1.0;
 
-    if (lock_image == NULL) {
-        lock_image = cairo_image_surface_create_from_png(lock_path);
-    }
-
+    cairo_surface_t *lock_image = cairo_image_surface_create_from_png(lock_path);
     bool image_loaded = cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS;
 
     if (image_loaded) {
@@ -319,9 +313,12 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
     cairo_surface_destroy(xcb_output);
     cairo_surface_destroy(psw_surface);
     cairo_surface_destroy(lock_surface);
+    cairo_surface_destroy(lock_image);
+    cairo_surface_destroy(msg_surface);
     cairo_destroy(xcb_ctx);
     cairo_destroy(psw_ctx);
     cairo_destroy(lock_ctx);
+    cairo_destroy(msg_ctx);
     return bg_pixmap;
 }
 

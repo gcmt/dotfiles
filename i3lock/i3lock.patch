@@ -1,6 +1,6 @@
 diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
---- i3lock.orig/unlock_indicator.c	2018-10-12 21:26:31.066672000 +0200
-+++ i3lock.new/unlock_indicator.c	2018-10-12 21:26:57.683338693 +0200
+--- i3lock.orig/unlock_indicator.c	2018-10-12 21:54:35.206673605 +0200
++++ i3lock.new/unlock_indicator.c	2018-10-12 21:55:28.736673652 +0200
 @@ -22,11 +22,6 @@
  #include "randr.h"
  #include "dpi.h"
@@ -13,17 +13,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
  /*******************************************************************************
   * Variables defined in i3lock.c.
   ******************************************************************************/
-@@ -73,6 +68,9 @@
-  * Local variables.
-  ******************************************************************************/
- 
-+/* Lock icon */
-+cairo_surface_t *lock_image;
-+
- /* Cache the screen’s visual, necessary for creating a Cairo context. */
- static xcb_visualtype_t *vistype;
- 
-@@ -87,24 +85,100 @@
+@@ -87,24 +82,97 @@
   *
   */
  xcb_pixmap_t draw_image(uint32_t *resolution) {
@@ -106,10 +96,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +    double lock_height = 0;
 +    double lock_scaling = 1.0;
 +
-+    if (lock_image == NULL) {
-+        lock_image = cairo_image_surface_create_from_png(lock_path);
-+    }
-+
++    cairo_surface_t *lock_image = cairo_image_surface_create_from_png(lock_path);
 +    bool image_loaded = cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS;
 +
 +    if (image_loaded) {
@@ -133,7 +120,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
      if (img) {
          if (!tile) {
              cairo_set_source_surface(xcb_ctx, img, 0, 0);
-@@ -131,107 +205,40 @@
+@@ -131,107 +199,40 @@
          cairo_fill(xcb_ctx);
      }
  
@@ -148,8 +135,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                  BUTTON_RADIUS /* radius */,
 -                  0 /* start */,
 -                  2 * M_PI /* end */);
-+    if (unlock_indicator && (unlock_state >= STATE_KEY_PRESSED || auth_state > STATE_AUTH_IDLE)) {
- 
+-
 -        /* Use the appropriate color for the different PAM states
 -         * (currently verifying, wrong password, or default) */
 -        switch (auth_state) {
@@ -170,7 +156,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                break;
 -        }
 -        cairo_fill_preserve(ctx);
-+        /* Print each password character as a dot */
++    if (unlock_indicator && (unlock_state >= STATE_KEY_PRESSED || auth_state > STATE_AUTH_IDLE)) {
  
 -        switch (auth_state) {
 -            case STATE_AUTH_VERIFY:
@@ -186,7 +172,8 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                    cairo_set_source_rgb(ctx, 125.0 / 255, 51.0 / 255, 0);
 -                    break;
 -                }
--
++        /* Print each password character as a dot */
+ 
 -                cairo_set_source_rgb(ctx, 51.0 / 255, 125.0 / 255, 0);
 -                break;
 +        if (input_position) {
@@ -258,7 +245,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
                  break;
          }
  
-@@ -239,96 +246,82 @@
+@@ -239,96 +240,85 @@
              cairo_text_extents_t extents;
              double x, y;
  
@@ -406,9 +393,12 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -    cairo_destroy(ctx);
 +    cairo_surface_destroy(psw_surface);
 +    cairo_surface_destroy(lock_surface);
++    cairo_surface_destroy(lock_image);
++    cairo_surface_destroy(msg_surface);
      cairo_destroy(xcb_ctx);
 +    cairo_destroy(psw_ctx);
 +    cairo_destroy(lock_ctx);
++    cairo_destroy(msg_ctx);
      return bg_pixmap;
  }
  

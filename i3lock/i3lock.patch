@@ -1,6 +1,6 @@
 diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
---- i3lock.orig/unlock_indicator.c	2018-10-12 17:02:29.543336354 +0200
-+++ i3lock.new/unlock_indicator.c	2018-10-12 17:04:04.756669752 +0200
+--- i3lock.orig/unlock_indicator.c	2018-10-12 20:14:07.523333693 +0200
++++ i3lock.new/unlock_indicator.c	2018-10-12 20:14:52.063333729 +0200
 @@ -22,11 +22,6 @@
  #include "randr.h"
  #include "dpi.h"
@@ -83,7 +83,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +    double lock_height = 0;
 +    double lock_scaling = 1.0;
 +
-+    if (!lock_image) {
++    if (lock_image == NULL) {
 +        lock_image = cairo_image_surface_create_from_png(lock_path);
 +    }
 +

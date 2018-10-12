@@ -132,7 +132,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
     double lock_height = 0;
     double lock_scaling = 1.0;
 
-    if (!lock_image) {
+    if (lock_image == NULL) {
         lock_image = cairo_image_surface_create_from_png(lock_path);
     }
 

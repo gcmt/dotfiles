@@ -1,0 +1,56 @@
+_pkgname=i3lock
+pkgname=i3lock-patched
+pkgver=2.11
+pkgrel=1
+pkgdesc="An improved screenlocker based upon XCB and PAM"
+arch=('i686' 'x86_64')
+url="https://i3wm.org/i3lock/"
+license=('MIT')
+provides=('i3lock')
+conflicts=('i3lock')
+depends=('xcb-util-image' 'libev' 'cairo' 'libxkbcommon-x11')
+backup=("etc/pam.d/i3lock")
+makedepends=('git')
+source=("git://github.com/i3/i3lock#branch=master" "i3lock.patch" "lock.png")
+sha1sums=('SKIP'
+          '88a8d5387de6b71afe3f5ee1322c4d049cb680b6'
+          'd6301099a4f201d80f9573df14437388a7dde609')
+
+
+pkgver() {
+	cd "$srcdir/$_pkgname"
+	git describe --tags | sed 's/-/./g'
+}
+
+
+prepare() {
+	cd "$_pkgname"
+
+	echo "Applying patch i3lock.patch..."
+	patch -p1 -i "$srcdir/i3lock.patch"
+}
+
+build() {
+	cd "$_pkgname"
+
+	# Fix ticket FS#31544, sed line taken from gentoo
+	sed -i -e 's:login:system-auth:' pam/i3lock
+
+	autoreconf --force --install
+
+	rm -rf build/
+	mkdir -p build && cd build/
+
+	../configure --prefix=/usr --sysconfdir=/etc --disable-sanitizers
+}
+
+
+package() {
+	cd "$_pkgname"
+	cd build/
+
+	make DESTDIR="$pkgdir/" install
+
+	install -Dm644 ../LICENSE "$pkgdir/usr/share/licenses/$_pkgname/LICENSE"
+	install -Dm644 "$srcdir/lock.png" "$pkgdir/usr/share/$_pkgname/resources/lock.png"
+}

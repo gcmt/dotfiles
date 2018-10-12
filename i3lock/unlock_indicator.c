@@ -214,14 +214,10 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                 text = "lock failed!";
                 break;
             default:
-                if (unlock_state == STATE_NOTHING_TO_DELETE) {
-                    text = "no input";
-                }
                 break;
         }
 
         if (text) {
-
             cairo_text_extents_t extents;
             double x, y;
 
@@ -231,23 +227,6 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
             cairo_move_to(msg_ctx, x, y);
             cairo_show_text(msg_ctx, text);
-            cairo_close_path(msg_ctx);
-
-        }
-
-        if (auth_state == STATE_AUTH_WRONG && (modifier_string != NULL)) {
-
-            cairo_text_extents_t extents;
-            double x, y;
-
-            cairo_set_font_size(msg_ctx, 14.0);
-
-            cairo_text_extents(msg_ctx, modifier_string, &extents);
-            x = msg_width/2 - extents.width/2;
-            y = extents.height/2 - extents.y_bearing + 28.0;
-
-            cairo_move_to(msg_ctx, x, y);
-            cairo_show_text(msg_ctx, modifier_string);
             cairo_close_path(msg_ctx);
         }
 

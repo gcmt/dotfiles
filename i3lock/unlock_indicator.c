@@ -104,11 +104,13 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
     /* Password field */
 
+    const char *psw_placeholder = "Type password to unlock…";
+
     const double psw_dots_radius = ceil(scaling_factor * 5);
     const double psw_dots_spacing = ceil(scaling_factor * 8);
 
-    double psw_height = psw_dots_radius * 2;
-    double psw_width = 1;
+    double psw_height = psw_dots_radius * 5;
+    double psw_width = 400;
 
     if (input_position) {
         psw_width = input_position * (psw_dots_radius * 2) + (input_position - 1) * psw_dots_spacing;
@@ -116,6 +118,26 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
     cairo_surface_t *psw_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, psw_width, psw_height);;
     cairo_t *psw_ctx = cairo_create(psw_surface);
+
+    if (!input_position) {
+        /* Display password placeholder */
+
+        cairo_text_extents_t extents;
+        double x, y;
+
+        cairo_set_source_rgba(psw_ctx, 255.0, 255.0, 255.0, 1);
+        cairo_select_font_face(psw_ctx, "Noto Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+        cairo_set_font_size(psw_ctx, 18.0);
+
+        cairo_text_extents(psw_ctx, psw_placeholder, &extents);
+        x = psw_width/2 - (extents.width/2 + extents.x_bearing);
+        y = psw_height/2 - (extents.height/2 + extents.y_bearing);
+
+        cairo_scale(psw_ctx, scaling_factor, scaling_factor);
+        cairo_move_to(psw_ctx, x, y);
+        cairo_show_text(psw_ctx, psw_placeholder);
+        cairo_close_path(psw_ctx);
+    }
 
     /* Auth state message */
 
@@ -128,6 +150,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
     /* Lock icon */
 
     const char *lock_path = "/usr/share/i3lock/resources/lock.png";
+
     double lock_width = 35;
     double lock_height = 0;
     double lock_scaling = 1.0;
@@ -186,11 +209,13 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
         /* Print each password character as a dot */
 
-        cairo_scale(psw_ctx, scaling_factor, scaling_factor);
-        cairo_set_source_rgba(psw_ctx, 255.0, 255.0, 255.0, 1);
-        for (int x = psw_dots_radius; x < psw_width; x += (psw_dots_radius*2 + psw_dots_spacing)) {
-            cairo_arc(psw_ctx, x, psw_height/2.0, psw_dots_radius, 0, 2*M_PI);
-            cairo_fill(psw_ctx);
+        if (input_position) {
+            cairo_scale(psw_ctx, scaling_factor, scaling_factor);
+            cairo_set_source_rgba(psw_ctx, 255.0, 255.0, 255.0, 1);
+            for (int x = psw_dots_radius; x < psw_width; x += (psw_dots_radius*2 + psw_dots_spacing)) {
+                cairo_arc(psw_ctx, x, psw_height/2.0, psw_dots_radius, 0, 2*M_PI);
+                cairo_fill(psw_ctx);
+            }
         }
 
         /* Display a text of the current PAM state */

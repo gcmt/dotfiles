@@ -1,6 +1,6 @@
 diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
---- i3lock.orig/unlock_indicator.c	2018-10-12 15:48:54.556676035 +0200
-+++ i3lock.new/unlock_indicator.c	2018-10-12 15:50:09.220009440 +0200
+--- i3lock.orig/unlock_indicator.c	2018-10-12 17:02:29.543336354 +0200
++++ i3lock.new/unlock_indicator.c	2018-10-12 17:04:04.756669752 +0200
 @@ -22,11 +22,6 @@
  #include "randr.h"
  #include "dpi.h"
@@ -78,31 +78,31 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +
 +    /* Lock icon */
 +
-+    double lock_final_width = 35;
-+    double lock_final_height = 0;
-+
-+    /* Lock icon */
-+
-+    const char *lock_image_path = "/usr/share/i3lock/resources/lock.png";
-+    cairo_surface_t *lock_surface = NULL;
-+    cairo_t *lock_ctx = NULL;
++    const char *lock_path = "/usr/share/i3lock/resources/lock.png";
++    double lock_width = 35;
++    double lock_height = 0;
++    double lock_scaling = 1.0;
 +
 +    if (!lock_image) {
-+        lock_image = cairo_image_surface_create_from_png(lock_image_path);
++        lock_image = cairo_image_surface_create_from_png(lock_path);
 +    }
 +
-+    if (cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS) {
-+        const double lock_width = cairo_image_surface_get_width(lock_image);
-+        const double lock_height = cairo_image_surface_get_height(lock_image);
-+        const double lock_scaling = lock_final_width / lock_width;
-+        lock_final_height = floor(lock_height * lock_scaling);
-+        lock_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, lock_final_width, lock_final_height);
-+        lock_ctx = cairo_create(lock_surface);
++    bool image_loaded = cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS;
++
++    if (image_loaded) {
++        const double lock_image_width = cairo_image_surface_get_width(lock_image);
++        const double lock_image_height = cairo_image_surface_get_height(lock_image);
++        lock_scaling = lock_width / lock_image_width;
++        lock_height = floor(lock_image_height * lock_scaling);
++    }
++
++    cairo_surface_t *lock_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, lock_width, lock_height);
++    cairo_t *lock_ctx = cairo_create(lock_surface);
++
++    if (image_loaded) {
 +        cairo_scale(lock_ctx, lock_scaling, lock_scaling);
 +        cairo_set_source_surface(lock_ctx, lock_image, 0, 0);
 +        cairo_paint(lock_ctx);
-+    } else {
-+        printf("Image '%s' not found\n", lock_image_path);
 +    }
 +
 +    /* Display background image */
@@ -125,8 +125,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                  BUTTON_RADIUS /* radius */,
 -                  0 /* start */,
 -                  2 * M_PI /* end */);
-+    if (unlock_indicator && (unlock_state >= STATE_KEY_PRESSED || auth_state > STATE_AUTH_IDLE)) {
- 
+-
 -        /* Use the appropriate color for the different PAM states
 -         * (currently verifying, wrong password, or default) */
 -        switch (auth_state) {
@@ -147,7 +146,8 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                break;
 -        }
 -        cairo_fill_preserve(ctx);
--
++    if (unlock_indicator && (unlock_state >= STATE_KEY_PRESSED || auth_state > STATE_AUTH_IDLE)) {
+ 
 -        switch (auth_state) {
 -            case STATE_AUTH_VERIFY:
 -            case STATE_AUTH_LOCK:
@@ -173,7 +173,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +            cairo_fill(psw_ctx);
          }
 -        cairo_stroke(ctx);
- 
+-
 -        /* Draw an inner seperator line. */
 -        cairo_set_source_rgb(ctx, 0, 0, 0);
 -        cairo_set_line_width(ctx, 2.0);
@@ -184,10 +184,10 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                  0,
 -                  2 * M_PI);
 -        cairo_stroke(ctx);
-+        /* Display a text of the current PAM state */
  
 -        cairo_set_line_width(ctx, 10.0);
--
++        /* Display a text of the current PAM state */
+ 
 -        /* Display a (centered) text of the current PAM state. */
          char *text = NULL;
 -        /* We don't want to show more than a 3-digit number. */
@@ -327,9 +327,9 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +            double x, y;
 +            int offset = top_margin;
 +
-+            if (cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS) {
-+                x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (lock_final_width / 2)));
-+                y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (lock_final_height / 2))) + offset;
++            if (image_loaded) {
++                x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (lock_width / 2)));
++                y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (lock_height / 2))) + offset;
 +                cairo_set_source_surface(xcb_ctx, lock_surface, x, y);
 +                cairo_paint(xcb_ctx);
 +                offset += psw_top_margin;
@@ -361,9 +361,9 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +        double x, y;
 +        int offset = top_margin;
 +
-+        if (cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS) {
-+            x = (last_resolution[0] / 2) - (lock_final_width / 2);
-+            y = (last_resolution[1] / 2) - (lock_final_height / 2) + offset;
++        if (image_loaded) {
++            x = (last_resolution[0] / 2) - (lock_width / 2);
++            y = (last_resolution[1] / 2) - (lock_height / 2) + offset;
 +            cairo_set_source_surface(xcb_ctx, lock_surface, x, y);
 +            cairo_paint(xcb_ctx);
 +            offset += psw_top_margin;

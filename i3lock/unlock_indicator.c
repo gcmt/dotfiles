@@ -127,31 +127,31 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
     /* Lock icon */
 
-    double lock_final_width = 35;
-    double lock_final_height = 0;
-
-    /* Lock icon */
-
-    const char *lock_image_path = "/usr/share/i3lock/resources/lock.png";
-    cairo_surface_t *lock_surface = NULL;
-    cairo_t *lock_ctx = NULL;
+    const char *lock_path = "/usr/share/i3lock/resources/lock.png";
+    double lock_width = 35;
+    double lock_height = 0;
+    double lock_scaling = 1.0;
 
     if (!lock_image) {
-        lock_image = cairo_image_surface_create_from_png(lock_image_path);
+        lock_image = cairo_image_surface_create_from_png(lock_path);
     }
 
-    if (cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS) {
-        const double lock_width = cairo_image_surface_get_width(lock_image);
-        const double lock_height = cairo_image_surface_get_height(lock_image);
-        const double lock_scaling = lock_final_width / lock_width;
-        lock_final_height = floor(lock_height * lock_scaling);
-        lock_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, lock_final_width, lock_final_height);
-        lock_ctx = cairo_create(lock_surface);
+    bool image_loaded = cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS;
+
+    if (image_loaded) {
+        const double lock_image_width = cairo_image_surface_get_width(lock_image);
+        const double lock_image_height = cairo_image_surface_get_height(lock_image);
+        lock_scaling = lock_width / lock_image_width;
+        lock_height = floor(lock_image_height * lock_scaling);
+    }
+
+    cairo_surface_t *lock_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, lock_width, lock_height);
+    cairo_t *lock_ctx = cairo_create(lock_surface);
+
+    if (image_loaded) {
         cairo_scale(lock_ctx, lock_scaling, lock_scaling);
         cairo_set_source_surface(lock_ctx, lock_image, 0, 0);
         cairo_paint(lock_ctx);
-    } else {
-        printf("Image '%s' not found\n", lock_image_path);
     }
 
     /* Display background image */
@@ -260,9 +260,9 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
             double x, y;
             int offset = top_margin;
 
-            if (cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS) {
-                x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (lock_final_width / 2)));
-                y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (lock_final_height / 2))) + offset;
+            if (image_loaded) {
+                x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (lock_width / 2)));
+                y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (lock_height / 2))) + offset;
                 cairo_set_source_surface(xcb_ctx, lock_surface, x, y);
                 cairo_paint(xcb_ctx);
                 offset += psw_top_margin;
@@ -290,9 +290,9 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         double x, y;
         int offset = top_margin;
 
-        if (cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS) {
-            x = (last_resolution[0] / 2) - (lock_final_width / 2);
-            y = (last_resolution[1] / 2) - (lock_final_height / 2) + offset;
+        if (image_loaded) {
+            x = (last_resolution[0] / 2) - (lock_width / 2);
+            y = (last_resolution[1] / 2) - (lock_height / 2) + offset;
             cairo_set_source_surface(xcb_ctx, lock_surface, x, y);
             cairo_paint(xcb_ctx);
             offset += psw_top_margin;

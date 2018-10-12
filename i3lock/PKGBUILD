@@ -13,7 +13,7 @@ backup=("etc/pam.d/i3lock")
 makedepends=('git')
 source=("git://github.com/i3/i3lock#branch=master" "i3lock.patch" "lock.png")
 sha1sums=('SKIP'
-          '88a8d5387de6b71afe3f5ee1322c4d049cb680b6'
+          '29b3e11609e9a02fad9b3689cf63783357d0b3bc'
           'd6301099a4f201d80f9573df14437388a7dde609')
 
 

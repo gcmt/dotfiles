@@ -65,12 +65,7 @@ if [[ "$mute" -eq 1 ]]; then
 fi
 
 bg="$(grep -Po "(?<=file\=).+" "$HOME/.config/nitrogen/bg-saved.cfg")"
-bg_locked="$(dirname "$bg")/$(basename "$bg" | sed 's/\(.\+\)\.\(.\+\)$/\1_locked.\2/')"
-if [[ ! -e "$bg_locked" ]]; then
-	bg_locked="$HOME/.local/share/wallpapers/locked.png"
-fi
-
-i3lock -eu -i "$bg_locked"
+i3lock -e -i "$bg"
 
 if [[ "$blank" -eq 1 ]]; then
 	sleep "$delay"

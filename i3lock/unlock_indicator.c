@@ -84,7 +84,6 @@ auth_state_t auth_state;
 xcb_pixmap_t draw_image(uint32_t *resolution) {
 
     xcb_pixmap_t bg_pixmap = XCB_NONE;
-    const double scaling_factor = get_dpi_value() / 96.0;
 
     if (!vistype) {
         vistype = get_root_visual_type(screen);
@@ -102,8 +101,8 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
     const char *psw_placeholder = "Type password to unlock…";
 
-    const double psw_dots_radius = ceil(scaling_factor * 5);
-    const double psw_dots_spacing = ceil(scaling_factor * 8);
+    const double psw_dots_radius = 5;
+    const double psw_dots_spacing = 8;
 
     double psw_height = psw_dots_radius * 5;
     double psw_width = 400;
@@ -129,7 +128,6 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         x = psw_width/2 - (extents.width/2 + extents.x_bearing);
         y = psw_height/2 - (extents.height/2 + extents.y_bearing);
 
-        cairo_scale(psw_ctx, scaling_factor, scaling_factor);
         cairo_move_to(psw_ctx, x, y);
         cairo_show_text(psw_ctx, psw_placeholder);
         cairo_close_path(psw_ctx);
@@ -176,7 +174,6 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         /* Print each password character as a dot */
 
         if (input_position) {
-            cairo_scale(psw_ctx, scaling_factor, scaling_factor);
             cairo_set_source_rgba(psw_ctx, 255.0, 255.0, 255.0, 1);
             for (int x = psw_dots_radius; x < psw_width; x += (psw_dots_radius*2 + psw_dots_spacing)) {
                 cairo_arc(psw_ctx, x, psw_height/2.0, psw_dots_radius, 0, 2*M_PI);

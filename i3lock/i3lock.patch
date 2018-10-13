@@ -1,6 +1,6 @@
 diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
---- i3lock.orig/unlock_indicator.c	2018-10-13 07:20:24.576667670 +0200
-+++ i3lock.new/unlock_indicator.c	2018-10-13 07:21:02.473334382 +0200
+--- i3lock.orig/unlock_indicator.c	2018-10-13 07:39:50.210002049 +0200
++++ i3lock.new/unlock_indicator.c	2018-10-13 07:40:34.963335435 +0200
 @@ -22,11 +22,6 @@
  #include "randr.h"
  #include "dpi.h"
@@ -13,13 +13,13 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
  /*******************************************************************************
   * Variables defined in i3lock.c.
   ******************************************************************************/
-@@ -87,24 +82,69 @@
+@@ -87,24 +82,67 @@
   *
   */
  xcb_pixmap_t draw_image(uint32_t *resolution) {
 +
      xcb_pixmap_t bg_pixmap = XCB_NONE;
-     const double scaling_factor = get_dpi_value() / 96.0;
+-    const double scaling_factor = get_dpi_value() / 96.0;
 -    int button_diameter_physical = ceil(scaling_factor * BUTTON_DIAMETER);
 -    DEBUG("scaling_factor is %.f, physical diameter is %d px\n",
 -          scaling_factor, button_diameter_physical);
@@ -46,8 +46,8 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +
 +    const char *psw_placeholder = "Type password to unlock…";
 +
-+    const double psw_dots_radius = ceil(scaling_factor * 5);
-+    const double psw_dots_spacing = ceil(scaling_factor * 8);
++    const double psw_dots_radius = 5;
++    const double psw_dots_spacing = 8;
 +
 +    double psw_height = psw_dots_radius * 5;
 +    double psw_width = 400;
@@ -73,7 +73,6 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +        x = psw_width/2 - (extents.width/2 + extents.x_bearing);
 +        y = psw_height/2 - (extents.height/2 + extents.y_bearing);
 +
-+        cairo_scale(psw_ctx, scaling_factor, scaling_factor);
 +        cairo_move_to(psw_ctx, x, y);
 +        cairo_show_text(psw_ctx, psw_placeholder);
 +        cairo_close_path(psw_ctx);
@@ -92,7 +91,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
      if (img) {
          if (!tile) {
              cairo_set_source_surface(xcb_ctx, img, 0, 0);
-@@ -131,107 +171,40 @@
+@@ -131,107 +169,39 @@
          cairo_fill(xcb_ctx);
      }
  
@@ -149,7 +148,6 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                cairo_set_source_rgb(ctx, 51.0 / 255, 125.0 / 255, 0);
 -                break;
 +        if (input_position) {
-+            cairo_scale(psw_ctx, scaling_factor, scaling_factor);
 +            cairo_set_source_rgba(psw_ctx, 255.0, 255.0, 255.0, 1);
 +            for (int x = psw_dots_radius; x < psw_width; x += (psw_dots_radius*2 + psw_dots_spacing)) {
 +                cairo_arc(psw_ctx, x, psw_height/2.0, psw_dots_radius, 0, 2*M_PI);
@@ -217,7 +215,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
                  break;
          }
  
-@@ -239,96 +212,62 @@
+@@ -239,96 +209,62 @@
              cairo_text_extents_t extents;
              double x, y;
  

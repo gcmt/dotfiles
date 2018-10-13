@@ -72,7 +72,7 @@ if (( force == 0 )); then
 	# Do not lock the screen when certain windows are focused
 	wm_class=$(xprop -id "$id" 2> /dev/null | grep WM_CLASS)
 	class=$(echo "$wm_class" | grep -Po '(?<=")\w+(?=")' | tail -n1)
-	if echo "${excluded[@]}" | grep -qiP "(^|\\s)$class($|\\s)"; then
+	if (IFS=$'\n'; echo "${excluded[*]}") | grep -Fxiq "$class"; then
 		echo 1>&2 "cannot lock screen: focused window class is '$class'"
 		exit 1
 	fi

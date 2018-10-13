@@ -10,12 +10,13 @@ shift $((OPTIND -1))
 
 target=$1
 default="scratch"
+exclude=("$default" cmus calc)
 
 # Find the last active session that is not $default or cmus
 last_active_session() {
 	local session activity candidate delta last_delta
 	while read -r activity candidate; do
-		if [[ "$candidate" =~ ^($default|cmus|calc)$ ]]; then
+		if (IFS=$'\n'; echo "${exclude[*]}") | grep -Fxq "$candidate"; then
 			continue
 		fi
 		delta=$(( $(date '+%s') - activity ))

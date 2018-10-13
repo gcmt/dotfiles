@@ -2,31 +2,22 @@
 
 print_help() {
 	echo "Usage: "
-	echo "  lock [-force] [-mute] [-blank]"
+	echo "  lock [-force] [-blank]"
 	echo
 	echo "Options: "
 	echo "  -force   Force screen locking when fullscreen is on and regardless of ignored classes (${excluded[*]})"
-	echo "  -mute    Mute volume before locking"
 	echo "  -blank   Turn off the screen after $delay seconds"
 	echo
 }
 
-volume_state=1
-if amixer -D pulse get Master | grep -q '\[off\]$'; then
-	volume_state=0
-fi
-
 delay=2
 excluded=(mpv)
 
-mute=0
 force=0
 blank=0
 
 while (( $# )); do
-	if [[ "$1" == "-mute" ]]; then
-		mute=1
-	elif [[ "$1" == "-force" ]]; then
+	if [[ "$1" == "-force" ]]; then
 		force=1
 	elif [[ "$1" == "-blank" ]]; then
 		blank=1
@@ -69,7 +60,12 @@ else
 	echo $$ >&200
 fi
 
-if (( mute == 1 )); then
+volume_state=1
+if amixer -D pulse get Master | grep -q '\[off\]$'; then
+	volume_state=0
+fi
+
+if (( volume_state == 1 )); then
 	volume -q mute
 fi
 
@@ -77,7 +73,7 @@ fi
 
 	cleanup() {
 		rm -f "$pidfile"
-		if (( volume_state == 1 && mute == 1 )); then
+		if (( volume_state == 1 )); then
 			volume -q unmute
 		fi
 	}

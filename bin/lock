@@ -1,25 +1,5 @@
 #!/bin/bash
 
-scriptname="$(basename "$0")"
-pidfile="/run/user/$UID/$scriptname.pid"
-
-exec 200>"$pidfile"
-if ! flock -n 200; then
-	echo "$scriptname: already running" 2>&1
-	exit 1
-else
-	echo $$ >&200
-fi
-
-cleanup() {
-	rm -f "$pidfile"
-	if (( volume_state == 1 && mute == 1 )); then
-		volume -q unmute
-	fi
-}
-
-trap cleanup 0
-
 print_help() {
 	echo "Usage: "
 	echo "  lock [-force] [-mute] [-blank]"
@@ -78,16 +58,38 @@ if (( force == 0 )); then
 	fi
 fi
 
+scriptname="$(basename "$0")"
+pidfile="/run/user/$UID/$scriptname.pid"
+
+exec 200>"$pidfile"
+if ! flock -n 200; then
+	echo "$scriptname: already running" 2>&1
+	exit 1
+else
+	echo $$ >&200
+fi
+
 if (( mute == 1 )); then
 	volume -q mute
 fi
 
-bg="$(grep -Po "(?<=file\=).+" "$HOME/.config/nitrogen/bg-saved.cfg")"
-i3lock -ne -i "$bg" &
+(
+
+	cleanup() {
+		rm -f "$pidfile"
+		if (( volume_state == 1 && mute == 1 )); then
+			volume -q unmute
+		fi
+	}
+
+	trap cleanup 0
+
+	bg="$(grep -Po "(?<=file\=).+" "$HOME/.config/nitrogen/bg-saved.cfg")"
+	i3lock -ne -i "$bg"
+
+) &
 
 if (( blank == 1 )); then
 	sleep "$delay"
 	xset dpms force off
 fi
-
- wait

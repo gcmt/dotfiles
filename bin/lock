@@ -1,73 +1,93 @@
 #!/bin/bash
 
-pgrep -x i3lock > /dev/null && exit 1
+scriptname="$(basename "$0")"
+pidfile="/run/user/$UID/$scriptname.pid"
+
+exec 200>"$pidfile"
+if ! flock -n 200; then
+	echo "$scriptname: already running" 2>&1
+	exit 1
+else
+	echo $$ >&200
+fi
+
+cleanup() {
+	rm -f "$pidfile"
+	if (( volume_state == 1 && mute == 1 )); then
+		volume -q unmute
+	fi
+}
+
+trap cleanup 0
+
+print_help() {
+	echo "Usage: "
+	echo "  lock [-force] [-mute] [-blank]"
+	echo
+	echo "Options: "
+	echo "  -force   Force screen locking when fullscreen is on and regardless of ignored classes (${excluded[*]})"
+	echo "  -mute    Mute volume before locking"
+	echo "  -blank   Turn off the screen after $delay seconds"
+	echo
+}
+
+volume_state=1
+if amixer -D pulse get Master | grep -q '\[off\]$'; then
+	volume_state=0
+fi
+
+delay=2
+excluded=(mpv)
 
 mute=0
 force=0
 blank=0
-delay=2
-excluded=(mpv)
 
-_print_help() {
-	echo "Usage: "
-	echo "  lock [-f] [-m] [-b]"
-	echo
-	echo "Options: "
-	echo "  -f    Force screen locking when fullscreen is on and regardless of ignored classes (${excluded[*]})"
-	echo "  -m    Mute volume before locking"
-	echo "  -b    Turn off the screen after $delay seconds"
-	echo
-}
-
-while getopts ":mfbh" OPT; do
-	case $OPT in
-		m)
-			mute=1
-			;;
-		f)
-			force=1
-			;;
-		b)
-			blank=1
-			;;
-		h)
-			_print_help
-			exit
-			;;
-		\?)
-			echo 1>&2 "Invalid option: $OPTARG"
-			_print_help
-			exit 1
-			;;
-	esac
+while (( $# )); do
+	if [[ "$1" == "-mute" ]]; then
+		mute=1
+	elif [[ "$1" == "-force" ]]; then
+		force=1
+	elif [[ "$1" == "-blank" ]]; then
+		blank=1
+	elif [[ "$1" == "-help" ]]; then
+		print_help
+		exit 0
+	else
+		echo "Unknown option: $1" 1>&2
+		print_help
+		exit 1
+	fi
+	shift
 done
-shift $((OPTIND - 1))
 
-if [[ "$force" -eq 0 ]]; then
+if (( force == 0 )); then
 	id=$(xdotool getwindowfocus)
 	# Do not lock the screen when fullscreen is active
 	wm_state=$(xprop -id "$id" | grep _NET_WM_STATE)
 	if echo "$wm_state" | grep -q FULLSCREEN; then
-		echo 1>&2 "Cannot lock screen: fullscreen on"
+		echo 1>&2 "cannot lock screen: fullscreen on"
 		exit 1
 	fi
 	# Do not lock the screen when certain windows are focused
 	wm_class=$(xprop -id "$id" 2> /dev/null | grep WM_CLASS)
 	class=$(echo "$wm_class" | grep -Po '(?<=")\w+(?=")' | tail -n1)
 	if echo "${excluded[@]}" | grep -qiP "(^|\\s)$class($|\\s)"; then
-		echo 1>&2 "Cannot lock screen: focused window class is '$class'"
+		echo 1>&2 "cannot lock screen: focused window class is '$class'"
 		exit 1
 	fi
 fi
 
-if [[ "$mute" -eq 1 ]]; then
+if (( mute == 1 )); then
 	volume -q mute
 fi
 
 bg="$(grep -Po "(?<=file\=).+" "$HOME/.config/nitrogen/bg-saved.cfg")"
-i3lock -e -i "$bg"
+i3lock -ne -i "$bg" &
 
-if [[ "$blank" -eq 1 ]]; then
+if (( blank == 1 )); then
 	sleep "$delay"
 	xset dpms force off
 fi
+
+ wait

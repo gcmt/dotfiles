@@ -15,11 +15,9 @@ _patches=("i3lock.patch")
 source=(
 	"git://github.com/i3/i3lock#branch=master"
 	"${_patches[@]}"
-	"lock.png"
 )
 sha1sums=('SKIP'
-          '43b86abd4c989a836e4abcd1c6bb9b5e1c1d3d49'
-          'd6301099a4f201d80f9573df14437388a7dde609')
+          '2f09ee842cc8d97f9809ac7938a63c7e34220ee6')
 
 
 pkgver() {
@@ -59,5 +57,4 @@ package() {
 	make DESTDIR="$pkgdir/" install
 
 	install -Dm644 ../LICENSE "$pkgdir/usr/share/licenses/$_pkgname/LICENSE"
-	install -Dm644 "$srcdir/lock.png" "$pkgdir/usr/share/$_pkgname/resources/lock.png"
 }

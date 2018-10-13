@@ -1,6 +1,6 @@
 diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
---- i3lock.orig/unlock_indicator.c	2018-10-12 21:54:35.206673605 +0200
-+++ i3lock.new/unlock_indicator.c	2018-10-12 21:55:28.736673652 +0200
+--- i3lock.orig/unlock_indicator.c	2018-10-13 07:20:24.576667670 +0200
++++ i3lock.new/unlock_indicator.c	2018-10-13 07:21:02.473334382 +0200
 @@ -22,11 +22,6 @@
  #include "randr.h"
  #include "dpi.h"
@@ -13,7 +13,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
  /*******************************************************************************
   * Variables defined in i3lock.c.
   ******************************************************************************/
-@@ -87,24 +82,97 @@
+@@ -87,24 +82,69 @@
   *
   */
  xcb_pixmap_t draw_image(uint32_t *resolution) {
@@ -39,9 +39,8 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
      cairo_surface_t *xcb_output = cairo_xcb_surface_create(conn, bg_pixmap, vistype, resolution[0], resolution[1]);
      cairo_t *xcb_ctx = cairo_create(xcb_output);
  
-+    const int top_margin = 300;
-+    const int psw_top_margin = 60;
-+    const int msg_top_margin = 60;
++    const int y_pos = 75; /* percentage of the screen height */
++    const int psw_bottom_margin = 40;
 +
 +    /* Password field */
 +
@@ -83,44 +82,17 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +    /* Auth state message */
 +
 +    const double msg_width = 400;
-+    const double msg_height = 50;
++    const double msg_height = 30;
 +
 +    cairo_surface_t *msg_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, msg_width, msg_height);
 +    cairo_t *msg_ctx = cairo_create(msg_surface);
-+
-+    /* Lock icon */
-+
-+    const char *lock_path = "/usr/share/i3lock/resources/lock.png";
-+
-+    double lock_width = 35;
-+    double lock_height = 0;
-+    double lock_scaling = 1.0;
-+
-+    cairo_surface_t *lock_image = cairo_image_surface_create_from_png(lock_path);
-+    bool image_loaded = cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS;
-+
-+    if (image_loaded) {
-+        const double lock_image_width = cairo_image_surface_get_width(lock_image);
-+        const double lock_image_height = cairo_image_surface_get_height(lock_image);
-+        lock_scaling = lock_width / lock_image_width;
-+        lock_height = floor(lock_image_height * lock_scaling);
-+    }
-+
-+    cairo_surface_t *lock_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, lock_width, lock_height);
-+    cairo_t *lock_ctx = cairo_create(lock_surface);
-+
-+    if (image_loaded) {
-+        cairo_scale(lock_ctx, lock_scaling, lock_scaling);
-+        cairo_set_source_surface(lock_ctx, lock_image, 0, 0);
-+        cairo_paint(lock_ctx);
-+    }
 +
 +    /* Display background image */
 +
      if (img) {
          if (!tile) {
              cairo_set_source_surface(xcb_ctx, img, 0, 0);
-@@ -131,107 +199,40 @@
+@@ -131,107 +171,40 @@
          cairo_fill(xcb_ctx);
      }
  
@@ -185,7 +157,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +            }
          }
 -        cairo_stroke(ctx);
--
+ 
 -        /* Draw an inner seperator line. */
 -        cairo_set_source_rgb(ctx, 0, 0, 0);
 -        cairo_set_line_width(ctx, 2.0);
@@ -196,15 +168,15 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                  0,
 -                  2 * M_PI);
 -        cairo_stroke(ctx);
- 
--        cairo_set_line_width(ctx, 10.0);
 +        /* Display a text of the current PAM state */
  
+-        cairo_set_line_width(ctx, 10.0);
+-
 -        /* Display a (centered) text of the current PAM state. */
          char *text = NULL;
 -        /* We don't want to show more than a 3-digit number. */
 -        char buf[4];
-+        cairo_set_source_rgba(msg_ctx, 255.0, 255.0, 255.0, 0.8);
++        cairo_set_source_rgba(msg_ctx, 255.0, 255.0, 255.0, 0.9);
 +        cairo_select_font_face(msg_ctx, "Noto Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 +        cairo_set_font_size(msg_ctx, 14.0);
  
@@ -245,7 +217,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
                  break;
          }
  
-@@ -239,96 +240,85 @@
+@@ -239,96 +212,62 @@
              cairo_text_extents_t extents;
              double x, y;
  
@@ -256,6 +228,21 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -            cairo_move_to(ctx, x, y);
 -            cairo_show_text(ctx, text);
 -            cairo_close_path(ctx);
+-        }
+-
+-        if (auth_state == STATE_AUTH_WRONG && (modifier_string != NULL)) {
+-            cairo_text_extents_t extents;
+-            double x, y;
+-
+-            cairo_set_font_size(ctx, 14.0);
+-
+-            cairo_text_extents(ctx, modifier_string, &extents);
+-            x = BUTTON_CENTER - ((extents.width / 2) + extents.x_bearing);
+-            y = BUTTON_CENTER - ((extents.height / 2) + extents.y_bearing) + 28.0;
+-
+-            cairo_move_to(ctx, x, y);
+-            cairo_show_text(ctx, modifier_string);
+-            cairo_close_path(ctx);
 +            cairo_text_extents(msg_ctx, text, &extents);
 +            x = msg_width/2 - (extents.width/2 + extents.x_bearing);
 +            y = msg_height/2 - (extents.height/2 + extents.y_bearing);
@@ -264,27 +251,6 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 +            cairo_show_text(msg_ctx, text);
 +            cairo_close_path(msg_ctx);
          }
- 
--        if (auth_state == STATE_AUTH_WRONG && (modifier_string != NULL)) {
--            cairo_text_extents_t extents;
--            double x, y;
-+    }
- 
--            cairo_set_font_size(ctx, 14.0);
-+    if (xr_screens > 0) {
- 
--            cairo_text_extents(ctx, modifier_string, &extents);
--            x = BUTTON_CENTER - ((extents.width / 2) + extents.x_bearing);
--            y = BUTTON_CENTER - ((extents.height / 2) + extents.y_bearing) + 28.0;
--
--            cairo_move_to(ctx, x, y);
--            cairo_show_text(ctx, modifier_string);
--            cairo_close_path(ctx);
--        }
-+        /* Composite the unlock indicator in the middle of each screen. */
-+        for (int screen = 0; screen < xr_screens; screen++) {
-+            double x, y;
-+            int offset = top_margin;
  
 -        /* After the user pressed any valid key or the backspace key, we
 -         * highlight a random part of the unlock indicator to confirm this
@@ -305,15 +271,9 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -            } else {
 -                /* For backspace, we use red. */
 -                cairo_set_source_rgb(ctx, 219.0 / 255, 51.0 / 255, 0);
-+            if (image_loaded) {
-+                x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (lock_width / 2)));
-+                y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (lock_height / 2))) + offset;
-+                cairo_set_source_surface(xcb_ctx, lock_surface, x, y);
-+                cairo_paint(xcb_ctx);
-+                offset += psw_top_margin;
-             }
+-            }
 -            cairo_stroke(ctx);
- 
+-
 -            /* Draw two little separators for the highlighted part of the
 -             * unlock indicator. */
 -            cairo_set_source_rgb(ctx, 0, 0, 0);
@@ -332,23 +292,26 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -                      highlight_start + (M_PI / 3.0) /* end */);
 -            cairo_stroke(ctx);
 -        }
--    }
-+            x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (psw_width / 2)));
-+            y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (psw_height / 2))) + offset;
-+            cairo_set_source_surface(xcb_ctx, psw_surface, x, y);
-+            cairo_rectangle(xcb_ctx, x, y, psw_width, psw_height);
-+            cairo_fill(xcb_ctx);
-+            offset += msg_top_margin;
+     }
  
--    if (xr_screens > 0) {
--        /* Composite the unlock indicator in the middle of each screen. */
--        for (int screen = 0; screen < xr_screens; screen++) {
+     if (xr_screens > 0) {
++
+         /* Composite the unlock indicator in the middle of each screen. */
+         for (int screen = 0; screen < xr_screens; screen++) {
 -            int x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (button_diameter_physical / 2)));
 -            int y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (button_diameter_physical / 2)));
 -            cairo_set_source_surface(xcb_ctx, output, x, y);
 -            cairo_rectangle(xcb_ctx, x, y, button_diameter_physical, button_diameter_physical);
++            double x, y;
++
++            x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (psw_width / 2)));
++            y = ceil(xr_resolutions[screen].height * y_pos / 100);
++            cairo_set_source_surface(xcb_ctx, psw_surface, x, y);
++            cairo_rectangle(xcb_ctx, x, y, psw_width, psw_height);
++            cairo_fill(xcb_ctx);
++
 +            x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (msg_width / 2)));
-+            y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (msg_height / 2))) + offset;
++            y = y + psw_height + psw_bottom_margin;
 +            cairo_set_source_surface(xcb_ctx, msg_surface, x, y);
 +            cairo_rectangle(xcb_ctx, x, y, msg_width, msg_height);
              cairo_fill(xcb_ctx);
@@ -364,25 +327,15 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -        cairo_set_source_surface(xcb_ctx, output, x, y);
 -        cairo_rectangle(xcb_ctx, x, y, button_diameter_physical, button_diameter_physical);
 +        double x, y;
-+        int offset = top_margin;
-+
-+        if (image_loaded) {
-+            x = (last_resolution[0] / 2) - (lock_width / 2);
-+            y = (last_resolution[1] / 2) - (lock_height / 2) + offset;
-+            cairo_set_source_surface(xcb_ctx, lock_surface, x, y);
-+            cairo_paint(xcb_ctx);
-+            offset += psw_top_margin;
-+        }
 +
 +        x = (last_resolution[0] / 2) - (psw_width / 2);
-+        y = (last_resolution[1] / 2) - (psw_height / 2) + offset;
++        y = ceil(last_resolution[1] * y_pos / 100);
 +        cairo_set_source_surface(xcb_ctx, psw_surface, x, y);
 +        cairo_rectangle(xcb_ctx, x, y, psw_width, psw_height);
 +        cairo_fill(xcb_ctx);
-+        offset += msg_top_margin;
 +
 +        x = (last_resolution[0] / 2) - (msg_width / 2);
-+        y = (last_resolution[1] / 2) - (msg_height / 2) + offset;
++        y = y + psw_height + psw_bottom_margin;
 +        cairo_set_source_surface(xcb_ctx, msg_surface, x, y);
 +        cairo_rectangle(xcb_ctx, x, y, msg_width, msg_height);
          cairo_fill(xcb_ctx);
@@ -392,12 +345,9 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
 -    cairo_surface_destroy(output);
 -    cairo_destroy(ctx);
 +    cairo_surface_destroy(psw_surface);
-+    cairo_surface_destroy(lock_surface);
-+    cairo_surface_destroy(lock_image);
 +    cairo_surface_destroy(msg_surface);
      cairo_destroy(xcb_ctx);
 +    cairo_destroy(psw_ctx);
-+    cairo_destroy(lock_ctx);
 +    cairo_destroy(msg_ctx);
      return bg_pixmap;
  }

@@ -95,9 +95,8 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
     cairo_surface_t *xcb_output = cairo_xcb_surface_create(conn, bg_pixmap, vistype, resolution[0], resolution[1]);
     cairo_t *xcb_ctx = cairo_create(xcb_output);
 
-    const int top_margin = 300;
-    const int psw_top_margin = 60;
-    const int msg_top_margin = 60;
+    const int y_pos = 75; /* percentage of the screen height */
+    const int psw_bottom_margin = 40;
 
     /* Password field */
 
@@ -139,37 +138,10 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
     /* Auth state message */
 
     const double msg_width = 400;
-    const double msg_height = 50;
+    const double msg_height = 30;
 
     cairo_surface_t *msg_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, msg_width, msg_height);
     cairo_t *msg_ctx = cairo_create(msg_surface);
-
-    /* Lock icon */
-
-    const char *lock_path = "/usr/share/i3lock/resources/lock.png";
-
-    double lock_width = 35;
-    double lock_height = 0;
-    double lock_scaling = 1.0;
-
-    cairo_surface_t *lock_image = cairo_image_surface_create_from_png(lock_path);
-    bool image_loaded = cairo_surface_status(lock_image) == CAIRO_STATUS_SUCCESS;
-
-    if (image_loaded) {
-        const double lock_image_width = cairo_image_surface_get_width(lock_image);
-        const double lock_image_height = cairo_image_surface_get_height(lock_image);
-        lock_scaling = lock_width / lock_image_width;
-        lock_height = floor(lock_image_height * lock_scaling);
-    }
-
-    cairo_surface_t *lock_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, lock_width, lock_height);
-    cairo_t *lock_ctx = cairo_create(lock_surface);
-
-    if (image_loaded) {
-        cairo_scale(lock_ctx, lock_scaling, lock_scaling);
-        cairo_set_source_surface(lock_ctx, lock_image, 0, 0);
-        cairo_paint(lock_ctx);
-    }
 
     /* Display background image */
 
@@ -215,7 +187,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         /* Display a text of the current PAM state */
 
         char *text = NULL;
-        cairo_set_source_rgba(msg_ctx, 255.0, 255.0, 255.0, 0.8);
+        cairo_set_source_rgba(msg_ctx, 255.0, 255.0, 255.0, 0.9);
         cairo_select_font_face(msg_ctx, "Noto Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(msg_ctx, 14.0);
 
@@ -256,25 +228,15 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         /* Composite the unlock indicator in the middle of each screen. */
         for (int screen = 0; screen < xr_screens; screen++) {
             double x, y;
-            int offset = top_margin;
-
-            if (image_loaded) {
-                x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (lock_width / 2)));
-                y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (lock_height / 2))) + offset;
-                cairo_set_source_surface(xcb_ctx, lock_surface, x, y);
-                cairo_paint(xcb_ctx);
-                offset += psw_top_margin;
-            }
 
             x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (psw_width / 2)));
-            y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (psw_height / 2))) + offset;
+            y = ceil(xr_resolutions[screen].height * y_pos / 100);
             cairo_set_source_surface(xcb_ctx, psw_surface, x, y);
             cairo_rectangle(xcb_ctx, x, y, psw_width, psw_height);
             cairo_fill(xcb_ctx);
-            offset += msg_top_margin;
 
             x = (xr_resolutions[screen].x + ((xr_resolutions[screen].width / 2) - (msg_width / 2)));
-            y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (msg_height / 2))) + offset;
+            y = y + psw_height + psw_bottom_margin;
             cairo_set_source_surface(xcb_ctx, msg_surface, x, y);
             cairo_rectangle(xcb_ctx, x, y, msg_width, msg_height);
             cairo_fill(xcb_ctx);
@@ -286,25 +248,15 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
          * place the unlock indicator in the middle of the X root window and
          * hope for the best. */
         double x, y;
-        int offset = top_margin;
-
-        if (image_loaded) {
-            x = (last_resolution[0] / 2) - (lock_width / 2);
-            y = (last_resolution[1] / 2) - (lock_height / 2) + offset;
-            cairo_set_source_surface(xcb_ctx, lock_surface, x, y);
-            cairo_paint(xcb_ctx);
-            offset += psw_top_margin;
-        }
 
         x = (last_resolution[0] / 2) - (psw_width / 2);
-        y = (last_resolution[1] / 2) - (psw_height / 2) + offset;
+        y = ceil(last_resolution[1] * y_pos / 100);
         cairo_set_source_surface(xcb_ctx, psw_surface, x, y);
         cairo_rectangle(xcb_ctx, x, y, psw_width, psw_height);
         cairo_fill(xcb_ctx);
-        offset += msg_top_margin;
 
         x = (last_resolution[0] / 2) - (msg_width / 2);
-        y = (last_resolution[1] / 2) - (msg_height / 2) + offset;
+        y = y + psw_height + psw_bottom_margin;
         cairo_set_source_surface(xcb_ctx, msg_surface, x, y);
         cairo_rectangle(xcb_ctx, x, y, msg_width, msg_height);
         cairo_fill(xcb_ctx);
@@ -312,12 +264,9 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
     cairo_surface_destroy(xcb_output);
     cairo_surface_destroy(psw_surface);
-    cairo_surface_destroy(lock_surface);
-    cairo_surface_destroy(lock_image);
     cairo_surface_destroy(msg_surface);
     cairo_destroy(xcb_ctx);
     cairo_destroy(psw_ctx);
-    cairo_destroy(lock_ctx);
     cairo_destroy(msg_ctx);
     return bg_pixmap;
 }

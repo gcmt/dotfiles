@@ -190,7 +190,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
         switch (auth_state) {
             case STATE_AUTH_VERIFY:
-                text = "…";
+                text = "";
                 break;
             case STATE_AUTH_LOCK:
                 text = "Locking…";

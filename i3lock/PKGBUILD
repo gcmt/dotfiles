@@ -17,7 +17,7 @@ source=(
 	"${_patches[@]}"
 )
 sha1sums=('SKIP'
-          'e2490addb426c279ca7e5558a53ee43a7f6159e8')
+          '7087cd6a56ee4547443a2bf4bf447a0cd087e63f')
 
 
 pkgver() {

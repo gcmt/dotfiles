@@ -1,6 +1,6 @@
-diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
---- i3lock.orig/unlock_indicator.c	2018-10-13 07:39:50.210002049 +0200
-+++ i3lock.new/unlock_indicator.c	2018-10-13 07:40:34.963335435 +0200
+diff -ura a/unlock_indicator.c b/unlock_indicator.c
+--- a/unlock_indicator.c	2018-10-14 07:17:57.466666981 +0200
++++ b/unlock_indicator.c	2018-10-14 07:18:40.163333711 +0200
 @@ -22,11 +22,6 @@
  #include "randr.h"
  #include "dpi.h"
@@ -184,7 +184,7 @@ diff -ura i3lock.orig/unlock_indicator.c i3lock.new/unlock_indicator.c
          switch (auth_state) {
              case STATE_AUTH_VERIFY:
 -                text = "verifying…";
-+                text = "…";
++                text = "";
                  break;
              case STATE_AUTH_LOCK:
 -                text = "locking…";

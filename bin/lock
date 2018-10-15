@@ -10,17 +10,21 @@ print_help() {
 	echo
 }
 
-delay=2
-excluded=(mpv)
-
+delay=0
 force=0
 blank=0
+
+excluded=(mpv)
 
 while (( $# )); do
 	if [[ "$1" == "-force" ]]; then
 		force=1
 	elif [[ "$1" == "-blank" ]]; then
 		blank=1
+		if [[ "$2" =~ ^[0-9]+$ ]]; then
+			delay="$2"
+			shift
+		fi
 	elif [[ "$1" == "-help" ]]; then
 		print_help
 		exit 0
@@ -72,6 +76,10 @@ fi
 (
 
 	cleanup() {
+		local parent="$(cat "$pidfile")"
+		if [[ "$(ps -p "$parent" -o comm=)" == "lock" ]]; then
+			kill "$parent"
+		fi
 		rm -f "$pidfile"
 		if (( volume_state == 1 )); then
 			volume -q unmute

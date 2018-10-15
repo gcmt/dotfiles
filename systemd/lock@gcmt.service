@@ -1,0 +1,15 @@
+[Unit]
+Description=Lock screen
+Before=sleep.target
+
+[Service]
+Type=forking
+User=gcmt
+Environment=DISPLAY=:0
+Environment=PATH=/home/gcmt/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:
+Environment=XDG_RUNTIME_DIR=/run/user/1000
+ExecStart=/home/gcmt/.local/bin/lock -force
+ExecStartPost=/usr/bin/sleep 1
+
+[Install]
+WantedBy=sleep.target

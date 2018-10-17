@@ -5,4 +5,4 @@ while pgrep -x xautolock >/dev/null; do sleep 1; done
 
 xautolock -secure \
 	-cornerdelay 5 -corners "++--" \
-	-time 15 -locker "lock -blank 300" &
+	-time 30 -locker "lock -blank 300" &

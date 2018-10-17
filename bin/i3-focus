@@ -36,7 +36,7 @@ def parse_args():
 
     if args.id:
         try:
-            args.id = int(args.id, 16) if args.id.startswith('0x') else int(args.id)
+            args.id = int(args.id, 0)
         except ValueError:
             error(f"invalid argument '{args.id}' for option -id, must be a number")
             sys.exit(1)
@@ -61,8 +61,7 @@ def match(args, win):
 def get_last_window(tree):
     try:
         path = f'/run/user/{os.getuid()}/i3-last-window'
-        id = Path(path).read_text().strip()
-        id = int(id, 16) if id.startswith('0x') else int(id)
+        id = int(Path(path).read_text().strip(), 0)
         return tree.find_by_window(id)
     except FileNotFoundError:
         error(f"could not read last window id, file not found: {path}")

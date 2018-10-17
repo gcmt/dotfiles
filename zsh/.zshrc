@@ -176,11 +176,6 @@ RPROMPT='$(_prompt_git)'
 # FUNCTIONS
 # ----------------------------------------------------------------------------
 
-function lb() {
-	local name=${1:-$(date '+%Y-%m-%d')}
-	vim ~/Documents/logbook/$name.txt
-}
-
 # create virtual environment
 mkvenv() {
 	local venv=${1:-venv}

@@ -1,6 +1,6 @@
 _pkgname=i3lock
 pkgname=i3lock-patched
-pkgver=2.11.1.g0c4b294
+pkgver=2.11.2.g7f9caec
 pkgrel=1
 pkgdesc="An improved screenlocker based upon XCB and PAM"
 arch=('i686' 'x86_64')

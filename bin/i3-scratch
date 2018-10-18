@@ -47,9 +47,6 @@ def main():
 
     elif args.focus:
 
-        if not find_scratchpad(tree):
-            sys.exit(1)
-
         i3.command('workspace _scratch')
 
 

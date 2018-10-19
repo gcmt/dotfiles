@@ -1,8 +1,0 @@
-#!/bin/bash
-# Open the calculator or kill it if it's already opened.
-
-if i3-msg '[class="URxvt" instance="^calc$"] focus' 2> /dev/null | grep -q false; then
-	exec urxvt -name calc -e calc-tmux
-else
-	i3-msg kill
-fi

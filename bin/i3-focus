@@ -17,13 +17,20 @@ def error(msg):
 def parse_args():
 
     parser = argparse.ArgumentParser(allow_abbrev=False, description="i3 focus helper")
+
     parser.add_argument('-id', help="The window id")
     parser.add_argument('-t', help="The window name (title)")
     parser.add_argument('-c', help="The window class")
     parser.add_argument('-n', help="The window instance")
     parser.add_argument('-m', help="The window marks (use - to require no marks)")
-    parser.add_argument('-fallback', default="", help="The command to execute when no window gets focused")
-    parser.add_argument('-move', action='store_true', default=False, help="Move the focused window to the current workspace")
+    parser.add_argument('-fallback', default="", help="The command to execute when the targeted window does not exist")
+
+    group1 = parser.add_mutually_exclusive_group(required=False)
+    group1.add_argument('-move', action='store_true', default=False, help="Move the targeted window to the current workspace")
+    group1.add_argument('-kill', action='store_true', default=False, help="Kill the targeted window")
+    group1.add_argument('-bounce', action='store_true', default=True, help="Focus the previously focused window when the target window is already focused (default)")
+    group1.add_argument('-nobounce', action='store_false', default='bounce', help="Don't focus the previously focused window when the target window is already focused")
+
     args = parser.parse_args()
 
     if args.id is None and args.t is None and args.c is None and args.n is None and args.m is None:
@@ -75,27 +82,32 @@ def focus(win, move=False):
     return 'True' in str(win.command('focus'))
 
 
+def kill(win):
+    return 'True' in str(win.command('kill'))
+
+
 def main():
 
     args = parse_args()
     i3 = i3ipc.Connection()
     tree = i3.get_tree()
+    focused = tree.find_focused()
 
-    if not args.id:
-        # If the target window is already focused, change the focus to the
-        # previously focused window
-        focused = tree.find_focused()
+    if args.bounce and not args.kill:
         if focused.type == 'con' and match(args, focused):
             last = get_last_window(tree)
             if not last:
                 sys.exit(1)
             focus(last)
-            sys.exit(0)
+            sys.exit()
 
     success = False
     for win in tree.leaves():
         if args.id and args.id == win.window or not args.id and match(args, win):
-            success = focus(win, move=args.move)
+            if args.kill:
+                success = kill(win)
+            else:
+                success = focus(win, move=args.move)
             break
 
     fallback = shlex.split(args.fallback)

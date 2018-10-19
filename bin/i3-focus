@@ -29,7 +29,7 @@ def parse_args():
     group1.add_argument('-move', action='store_true', default=False, help="Move the targeted window to the current workspace")
     group1.add_argument('-kill', action='store_true', default=False, help="Kill the targeted window")
     group1.add_argument('-bounce', action='store_true', default=True, help="Focus the previously focused window when the target window is already focused (default)")
-    group1.add_argument('-nobounce', action='store_false', default='bounce', help="Don't focus the previously focused window when the target window is already focused")
+    group1.add_argument('-nobounce', action='store_false', dest='bounce', help="Don't focus the previously focused window when the target window is already focused")
 
     args = parser.parse_args()
 

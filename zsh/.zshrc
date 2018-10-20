@@ -143,17 +143,18 @@ colors
 
 setopt prompt_subst
 
-_prompt_git() {
-	local branch
-	branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-	if (( $? != 0 )); then
-		return
+_prompt_meta() {
+	local meta=()
+	local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+	if [[ -n "$VIRTUAL_ENV" ]]; then
+		meta+=("%F{22}py:%F{18}$(basename "$VIRTUAL_ENV")%f")
 	fi
-	echo -n " git:$branch"
-}
-
-_prompt_venv() {
-	test -n "$VIRTUAL_ENV" && echo -n "(venv) "
+	if [[ -n "$branch" ]]; then
+		meta+=("%F{22}git:%F{18}$branch%f")
+	fi
+	if (( ${#meta[@]} > 0 )); then
+		echo -n "[ ${meta[*]} ] "
+	fi
 }
 
 _prompt_user() {
@@ -162,7 +163,7 @@ _prompt_user() {
 
 _prompt_cwd() {
 	if (( DIRTRIM == 1 )); then
-		echo -n "%F{18}%(4~|../%2~|%~)%f"
+		echo -n "%F{18}%(4~|../%3~|%~)%f"
 	else
 		echo -n "%F{18}%~%f"
 	fi
@@ -170,8 +171,10 @@ _prompt_cwd() {
 
 DIRTRIM=1
 
-PROMPT='%F{red}%(?..%? )%f%(1j.%jj .)$(_prompt_user) $(_prompt_cwd) $(_prompt_venv)%F{18}$%f '
-RPROMPT='$(_prompt_git)'
+PROMPT=
+PROMPT+='%F{red}%(?..%? )%f%(1j.%jj .)'
+PROMPT+='$(_prompt_meta)$(_prompt_user) ${22}at%f $(_prompt_cwd) '
+PROMPT+='%F{22}$%f '
 
 # FUNCTIONS
 # ----------------------------------------------------------------------------

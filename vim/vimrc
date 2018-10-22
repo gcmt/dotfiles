@@ -764,8 +764,9 @@
 	command! -nargs=0 Vimrc edit $MYVIMRC
 	command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 
-	" Save the current buffer as sudo
-	command! -nargs=0 WriteSudo exec 'write !sudo tee % > /dev/null'
+	" Write helpers
+	command! -nargs=0 SudoWrite exec 'write !sudo tee % > /dev/null'
+	command! -nargs=* Write write <args>
 
 	" Returns the syntax group under the cursor
 	func! _cursyn()

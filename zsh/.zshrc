@@ -173,7 +173,7 @@ DIRTRIM=1
 
 PROMPT=
 PROMPT+='%F{red}%(?..%? )%f%(1j.%jj .)'
-PROMPT+='$(_prompt_meta)$(_prompt_user) ${22}at%f $(_prompt_cwd) '
+PROMPT+='$(_prompt_meta)$(_prompt_user)${22},%f $(_prompt_cwd) '
 PROMPT+='%F{22}$%f '
 
 # FUNCTIONS

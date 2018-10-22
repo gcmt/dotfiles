@@ -22,11 +22,5 @@ func! autotype#python#colon()
 		return ':'
 	end
 
-	let line = getline('.')
-
-	if line =~ '\v^\s*try>'
-		return ":\<cr>"
-	end
-
 	return ':'
 endf

@@ -22,7 +22,7 @@ link() {
 		return 1
 	fi
 	ln -sfn "$1" "$2"
-	echo "[ ${colors[green]}OK${colors[nc]} ] ${2/$HOME/\~} -> ${1/$HOME/\~}"
+	echo "[ ${colors[green]}OK${colors[nc]} ] ${2/$HOME/\~} → ${1/$HOME/\~}"
 }
 
 skip() {

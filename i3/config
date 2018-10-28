@@ -279,8 +279,8 @@ bindsym $mod+$alt+space mode "i3"
 bindsym XF86AudioPlay exec --no-startup-id mpc toggle
 bindsym XF86AudioNext exec --no-startup-id mpc next
 bindsym XF86AudioPrev exec --no-startup-id mpc prev
-bindsym $mod+XF86AudioPlay exec --no-startup-id urxvt -name floating -e ncmpcpp
-bindsym $mod+F5 exec --no-startup-id urxvt -name floating -e ncmpcpp
+bindsym $mod+XF86AudioPlay exec --no-startup-id i3-focus -c URxvt -t '^ncmpcpp$' -kill -fallback 'urxvt -name floating -e ncmpcpp'
+bindsym $mod+F5 exec --no-startup-id i3-focus -c URxvt -t '^ncmpcpp$' -kill -fallback 'urxvt -name floating -e ncmpcpp'
 bindsym $mod+F6 exec --no-startup-id mpc toggle
 bindsym $mod+F7 exec --no-startup-id mpc prev
 bindsym $mod+F8 exec --no-startup-id mpc next

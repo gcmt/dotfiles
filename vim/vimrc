@@ -907,6 +907,20 @@
 
 	let g:objects_enabled = 1
 
+	aug _objects
+		au!
+		au FileType python call objects#mapl('Aif', 'objects#python#if', {})
+		au FileType python call objects#mapl('Iif', 'objects#python#if', {'inner': 1})
+		au FileType python call objects#mapl('Afo', 'objects#python#for', {})
+		au FileType python call objects#mapl('Ifo', 'objects#python#for', {'inner': 1})
+		au FileType python call objects#mapl('Awh', 'objects#python#while', {})
+		au FileType python call objects#mapl('Iwh', 'objects#python#while', {'inner': 1})
+		au FileType python call objects#mapl('Atry', 'objects#python#try', {})
+		au FileType python call objects#mapl('Itry', 'objects#python#try', {'inner': 1})
+		au FileType python call objects#mapl('Awi', 'objects#python#with', {})
+		au FileType python call objects#mapl('Iwi', 'objects#python#with', {'inner': 1})
+	aug END
+
 " Ultisnips
 " ----------------------------------------------------------------------------
 

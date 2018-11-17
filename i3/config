@@ -21,6 +21,8 @@ exec_always --no-startup-id ~/.config/mpd/start.sh
 
 exec_always --no-startup-id i3-watch-last-window
 
+exec_always --no-startup-id parcellite
+
 # Variables
 # ----------------------------------------------------------------------------
 

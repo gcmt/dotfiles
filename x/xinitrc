@@ -1,5 +1,5 @@
 
-export MONITOR_PRIMARY="$(xrandr | grep "primary" | grep -o "^[^ ]\+")"
+export MONITOR_PRIMARY="$(xrandr | grep -w "connected" | grep -o "^[^ ]\+")"
 
 export QT_QPA_PLATFORMTHEME=qt5ct
 

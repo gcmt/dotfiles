@@ -1,0 +1,4 @@
+#!/bin/bash
+
+read -r X Y W H < <(slop -f "%x %y %w %h")
+i3-msg -q "floating enable, move position $X $Y, resize set $W $H"

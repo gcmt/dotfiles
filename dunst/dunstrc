@@ -278,4 +278,8 @@
 	summary = "Volume"
 	format = "%b"
 
+[sensors]
+	summary = "Sensors"
+	format = "%b"
+
 # vim: ft=cfg cms=#\ %s

@@ -79,6 +79,9 @@ for_window [class="Firefox" instance="Places"] title_format " %title - Mozilla F
 bindsym --release button3 exec --no-startup-id i3-titlebar-menu
 bindsym --whole-window button2 exec --no-startup-id i3-choose-window -no-inputbar -mouse y
 
+# Sensors
+bindsym $mod+g exec --no-startup-id sensors-notify
+
 # Open console calculator
 bindsym $mod+ugrave exec --no-startup-id i3-focus -n calc -kill -fallback 'urxvt -name calc -e calc-tmux'
 

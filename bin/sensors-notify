@@ -1,0 +1,8 @@
+#!/bin/bash
+
+id=1010
+timeout=5000
+
+text="$(sensors | tr -s " " | grep -Pv "^Adapter:" | sed "s;^[^:]\+$;<b>&1</b>;")"
+
+dunstify -t $timeout -r $id "Sensors" "$text"

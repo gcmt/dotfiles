@@ -1,8 +1,56 @@
 #!/bin/bash
 
+scriptname="$(basename "$0")"
+gpu_info_file="/sys/kernel/debug/dri/0/amdgpu_pm_info"
+
 id=1010
 timeout=5000
+verbose=0
+interval="0.5"
+pinned=0
 
-text="$(sensors | tr -s " " | grep -Pv "^Adapter:" | sed "s;^[^:]\+$;<b>&1</b>;")"
+while (( $# )); do
+	if [[ "$1" == "-i" || "$1" == "-interval" ]]; then
+		if [[ "$2" =~ ^[0-9.]+$ ]]; then
+			interval="$2"
+			shift
+		else
+			echo "$scriptname: Option -interval requires an argument" 1>&2
+			exit 1
+		fi
+	elif [[ "$1" == "-t" || "$1" == "-timeout" ]]; then
+		if [[ "$2" =~ ^[0-9]+$ ]]; then
+			timeout="$2"
+			shift
+		else
+			echo "$scriptname: Option -timeout requires an argument" 1>&2
+			exit 1
+		fi
+	elif [[ "$1" == "-pin" || "$1" == "-pinned" ]]; then
+		pinned=1
+	else
+		echo "$scriptname: Unknown option: $1" 1>&2
+		exit 1
+	fi
+	shift
+done
 
-dunstify -t $timeout -r $id "Sensors" "$text"
+if (( $(pgrep -c sensors-notify) > 1 )); then
+	dunstify -C $id
+	killall sensors-notify
+fi
+
+_get_info() {
+	local info
+	info+=$'<b>amdgpu_pm_info</b>\n'
+	info+="$(sudo cat "$gpu_info_file" | tail -n +28 | head -n +7 | sed -e 's/^\s\+//')"
+	info+=$'\n\n'
+	info+="$(sensors | tr -s " " | grep -Pv "^Adapter:" | sed "s;^[^:]\+$;<b>&1</b>;")"
+	echo "$info"
+}
+
+while true; do
+	dunstify -t $timeout -r $id "Sensors" "$(_get_info)"
+	(( pinned == 0 )) && break
+	sleep "$interval"
+done

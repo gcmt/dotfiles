@@ -8,13 +8,7 @@ colors[yellow]=$(tput setaf 3)
 colors[white]=$(tput setaf 7)
 
 dotdir="$(cd "$(dirname "$0")" && pwd)"
-
-source "$dotdir/zsh/.zshenv"
-
-if [[ -z "$XDG_CONFIG_HOME" || -z "$XDG_CACHE_HOME" || -z "$XDG_DATA_HOME" ]]; then
-	echo >&2 'XDG directories not set'
-	exit 1
-fi
+args="$(IFS=$'\n'; echo "$*")"
 
 link() {
 	if [[ -e "$2" && ! -L "$2" ]]; then
@@ -29,17 +23,29 @@ skip() {
 	echo "[ ${colors[yellow]}SKIP${colors[nc]} ] $1: not installed"
 }
 
+arg() {
+	echo "$args" | grep -Fxq -- "$1"
+}
+
+installed() {
+	hash "$1" 2>/dev/null
+}
+
+
+source "$dotdir/zsh/.zshenv"
+
+if [[ -z "$XDG_CONFIG_HOME" || -z "$XDG_CACHE_HOME" || -z "$XDG_DATA_HOME" ]]; then
+	echo 'XDG directories not set' >&2
+	exit 1
+fi
+
 mkdir -p "$XDG_DATA_HOME"
 mkdir -p "$XDG_CACHE_HOME"
 mkdir -p "$XDG_CONFIG_HOME"
 
-all=
-if [[ "$*" =~ -all($| ) ]]; then
-	all=yes
-fi
 
-if [[ "$*" =~ -x($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash xinit 2>/dev/null; then
+if arg -x || arg -all; then
+	if arg -all && ! arg -x && ! installed xinit; then
 		skip x
 	else
 		link "$dotdir/x/xinitrc" "$HOME/.xinitrc"
@@ -49,48 +55,49 @@ if [[ "$*" =~ -x($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -redshift($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash redshift 2>/dev/null; then
+if arg -redshift || arg -all; then
+	if arg -all && ! arg -redshift && ! installed redshift; then
 		skip redshift
 	else
 		link "$dotdir/redshift" "$XDG_CONFIG_HOME/redshift"
 	fi
 fi
 
-if [[ "$*" =~ -fontconfig($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash fc-list 2>/dev/null; then
+if arg -fontconfig || arg -all; then
+	if arg -all && ! arg -fontconfig && ! installed fc-list; then
 		skip fontconfig
 	else
 		link "$dotdir/fontconfig" "$XDG_CONFIG_HOME/fontconfig"
 	fi
 fi
 
-if [[ "$*" =~ -ranger($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash ranger 2>/dev/null; then
+if arg -ranger || arg -all; then
+	if arg -all && ! arg -ranger && ! installed ranger; then
 		skip ranger
 	else
 		link "$dotdir/ranger" "$XDG_CONFIG_HOME/ranger"
 	fi
 fi
 
-if [[ "$*" =~ -rofi($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash rofi 2>/dev/null; then
+if arg -rofi || arg -all; then
+	if arg -all && ! arg -rofi && ! installed rofi; then
 		skip rofi
 	else
 		link "$dotdir/rofi" "$XDG_CONFIG_HOME/rofi"
 	fi
 fi
 
-if [[ "$*" =~ -compton($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash compton 2>/dev/null; then
+if arg -compton || arg -all; then
+	if arg -all && ! arg -compton && ! installed compton; then
 		skip compton
 	else
-		link "$dotdir/compton/compton.conf" "$XDG_CONFIG_HOME/compton.conf"
+		link "$dotdir/compton" "$XDG_CONFIG_HOME/compton"
+		link "$XDG_CONFIG_HOME/compton/compton.conf" "$XDG_CONFIG_HOME/compton.conf"
 	fi
 fi
 
-if [[ "$*" =~ -i3($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash i3 2>/dev/null; then
+if arg -i3 || arg -all; then
+	if arg -all && ! arg -i3 && ! installed i3; then
 		skip i3wm
 	else
 		mkdir -p "$XDG_DATA_HOME/i3"
@@ -98,24 +105,24 @@ if [[ "$*" =~ -i3($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -polybar($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash polybar 2>/dev/null; then
+if arg -polybar || arg -all; then
+	if arg -all && ! arg -polybar && ! installed polybar; then
 		skip polybar
 	else
 		link "$dotdir/polybar" "$XDG_CONFIG_HOME/polybar"
 	fi
 fi
 
-if [[ "$*" =~ -urxvt($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash urxvt 2>/dev/null; then
+if arg -urxvt || arg -all; then
+	if arg -all && ! arg -urxvt && ! installed urxvt; then
 		skip urxvt
 	else
 		link "$dotdir/urxvt" "$HOME/.urxvt"
 	fi
 fi
 
-if [[ "$*" =~ -vim($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash vim 2>/dev/null; then
+if arg -vim || arg -all; then
+	if arg -all && ! arg -vim && ! installed vim; then
 		skip vim
 	else
 		mkdir -p "$XDG_DATA_HOME/vim"
@@ -124,8 +131,8 @@ if [[ "$*" =~ -vim($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -zsh($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash zsh 2>/dev/null; then
+if arg -zsh || arg -all; then
+	if arg -all && ! arg -zsh && ! installed zsh; then
 		skip zsh
 	else
 		mkdir -p "$XDG_DATA_HOME/zsh"
@@ -136,8 +143,8 @@ if [[ "$*" =~ -zsh($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -bash($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash bash 2>/dev/null; then
+if arg -bash || arg -all; then
+	if arg -all && ! arg -bash && ! installed bash; then
 		skip bash
 	else
 		link "$dotdir/bash/.bashrc" "$HOME/.bashrc"
@@ -145,57 +152,57 @@ if [[ "$*" =~ -bash($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -tmux($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash tmux 2>/dev/null; then
+if arg -tmux || arg -all; then
+	if arg -all && ! arg -tmux && ! installed tmux; then
 		skip tmux
 	else
 		link "$dotdir/tmux/tmux.conf" "$HOME/.tmux.conf"
 	fi
 fi
 
-if [[ "$*" =~ -git($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash git 2>/dev/null; then
+if arg -git || arg -all; then
+	if arg -all && ! arg -git && ! installed git; then
 		skip git
 	else
 		link "$dotdir/git" "$XDG_CONFIG_HOME/git"
 	fi
 fi
 
-if [[ "$*" =~ -ctags($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash ctags 2>/dev/null; then
+if arg -ctags || arg -all; then
+	if arg -all && ! arg -ctags && ! installed ctags; then
 		skip ctags
 	else
 		link "$dotdir/ctags/ctags" "$HOME/.ctags"
 	fi
 fi
 
-if [[ "$*" =~ -elixir($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash elixir 2>/dev/null; then
+if arg -elixir || arg -all; then
+	if arg -all && ! arg -elixir && ! installed elixir; then
 		skip elixir
 	else
 		link "$dotdir/elixir/iex.exs" "$HOME/.iex.exs"
 	fi
 fi
 
-if [[ "$*" =~ -gtk($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash gtk-demo 2>/dev/null; then
-		skip
+if arg -gtk || arg -all; then
+	if arg -all && ! arg -gtk && ! installed gtk-demo; then
+		skip gtk
 	else
 		link "$dotdir/gtk-2.0" "$XDG_CONFIG_HOME/gtk-2.0"
 		link "$dotdir/gtk-3.0" "$XDG_CONFIG_HOME/gtk-3.0"
 	fi
 fi
 
-if [[ "$*" =~ -dunst($| ) || -n "$all" ]]; then
-	if hash dunst 2>/dev/null; then
-		link "$dotdir/dunst" "$XDG_CONFIG_HOME/dunst"
-	else
+if arg -dunst || arg -all; then
+	if arg -all && ! arg -dunst && ! installed dunst; then
 		skip dunst
+	else
+		link "$dotdir/dunst" "$XDG_CONFIG_HOME/dunst"
 	fi
 fi
 
-if [[ "$*" =~ -mpd($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash mpd 2>/dev/null; then
+if arg -mpd || arg -all; then
+	if arg -all && ! arg -mpd && ! installed mpd; then
 		skip mpd
 	else
 		mkdir -p "$XDG_DATA_HOME/mpd"
@@ -204,8 +211,8 @@ if [[ "$*" =~ -mpd($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -ncmpcpp($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash ncmpcpp 2>/dev/null; then
+if arg -ncmpcpp || arg -all; then
+	if arg -all && ! arg -ncmpcpp && ! installed ncmpcpp; then
 		skip ncmpcpp
 	else
 		mkdir -p "$XDG_CONFIG_HOME/ncmpcpp"
@@ -214,16 +221,16 @@ if [[ "$*" =~ -ncmpcpp($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -zathura($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash zathura 2>/dev/null; then
+if arg -zathura || arg -all; then
+	if arg -all && ! arg -zathura && ! installed zathura; then
 		skip zathura
 	else
 		link "$dotdir/zathura" "$XDG_CONFIG_HOME/zathura"
 	fi
 fi
 
-if [[ "$*" =~ -cmus($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash cmus 2>/dev/null; then
+if arg -cmus || arg -all; then
+	if arg -all && ! arg -cmus && ! installed cmus; then
 		skip cmus
 	else
 		mkdir -p "$XDG_CONFIG_HOME/cmus"
@@ -232,8 +239,8 @@ if [[ "$*" =~ -cmus($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -mpv($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash mpv 2>/dev/null; then
+if arg -mpv || arg -all; then
+	if arg -all && ! arg -mpv && ! installed mpv; then
 		skip mpv
 	else
 		mkdir -p "$XDG_CONFIG_HOME/mpv"
@@ -243,8 +250,8 @@ if [[ "$*" =~ -mpv($| ) || -n "$all" ]]; then
 	fi
 fi
 
-if [[ "$*" =~ -nemo($| ) || -n "$all" ]]; then
-	if [[ -n "$all" ]] && ! hash nemo 2>/dev/null; then
+if arg -nemo || arg -all; then
+	if arg -all && ! arg -nemo && ! installed nemo; then
 		skip nemo
 	else
 		link "$dotdir/nemo" "$XDG_DATA_HOME/nemo"

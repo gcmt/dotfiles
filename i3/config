@@ -9,7 +9,7 @@ bar {
 
 exec --no-startup-id tmux new -ds scratch
 
-exec --no-startup-id compton
+exec_always --no-startup-id ~/.config/compton/start.sh
 
 exec_always --no-startup-id nitrogen --restore
 

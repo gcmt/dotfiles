@@ -83,6 +83,7 @@ bindsym --whole-window button2 exec --no-startup-id i3-choose-window -no-inputba
 
 # Sensors
 bindsym $mod+g exec --no-startup-id sensors-notify
+bindsym $mod+Shift+g exec --no-startup-id sensors-notify -pinned
 
 # Open console calculator
 bindsym $mod+ugrave exec --no-startup-id i3-focus -n calc -kill -fallback 'urxvt -name calc -e calc-tmux'

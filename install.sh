@@ -1,26 +1,23 @@
 #!/bin/bash
 
-declare -A colors
-colors[nc]=$(tput sgr0)
-colors[red]=$(tput setaf 1)
-colors[green]=$(tput setaf 2)
-colors[yellow]=$(tput setaf 3)
-colors[white]=$(tput setaf 7)
+_red() { echo "$(tput setaf 1)$*$(tput sgr0)"; }
+_green() { echo "$(tput setaf 2)$*$(tput sgr0)"; }
+_yellow() { echo "$(tput setaf 3)$*$(tput sgr0)"; }
 
 dotdir="$(cd "$(dirname "$0")" && pwd)"
 args="$(IFS=$'\n'; echo "$*")"
 
 link() {
 	if [[ -e "$2" && ! -L "$2" ]]; then
-		echo >&2 "[ ${colors[red]}FAIL${colors[nc]} ] $2: file exists and it's a real file."
+		echo >&2 "[ $(_red FAIL) ] $2: file exists and it's a real file."
 		return 1
 	fi
 	ln -sfn "$1" "$2"
-	echo "[ ${colors[green]}OK${colors[nc]} ] ${2/$HOME/\~} → ${1/$HOME/\~}"
+	echo "[ $(_green OK) ] ${2/$HOME/\~} → ${1/$HOME/\~}"
 }
 
 skip() {
-	echo "[ ${colors[yellow]}SKIP${colors[nc]} ] $1: not installed"
+	echo "[ $(_yellow SKIP) ] $1: not installed"
 }
 
 arg() {

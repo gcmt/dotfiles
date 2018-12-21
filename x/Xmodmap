@@ -1,31 +1,4 @@
 
-!! CapsLock -> Control
+!! CapsLock -> Escape
 clear lock
-keycode 66 = Control_L
-add control = Control_L
-
-! Control_L -> Escape
-keycode 37 = Escape
-
-! Tab -> Escape
-! keycode 23 = Escape
-
-!! Disable Shift_L
-! remove shift = Shift_L
-
-!! Shift_R -> Escape
-! remove shift = Shift_R
-! keycode 62 = Escape
-
-!! Shift_L -> Meta
-! clear shift
-! clear mod1
-! add shift = Alt_L Shift_R
-!! Alt_L -> Shift
-! add mod1 = Shift_L
-! keycode 50 = Alt_L Meta_L
-
-! Tab -> Meta
-! clear mod1
-! keycode 23 = Alt_L
-! add mod1 = Alt_L
+keycode 66 = Escape

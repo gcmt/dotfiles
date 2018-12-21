@@ -31,10 +31,13 @@ _parse_args() {
 }
 
 _get_info() {
-	local info
-	info+=$'<b>amdgpu_pm_info</b>\n'
-	info+="$(sudo cat "$gpu_info_file" | tail -n +28 | head -n +7 | sed -e 's/^\s\+//')"
-	info+=$'\n\n'
+	local info gpu_info
+	gpu_info="$(sudo cat "$gpu_info_file" 2>/dev/null | tail -n +28 | head -n +7 | sed -e 's/^\s\+//')"
+	if (( $? == 0 )); then
+		info+=$'<b>amdgpu_pm_info</b>\n'
+		info+="$gpu_info"
+		info+=$'\n\n'
+	fi
 	info+="$(sensors | tr -s " " | grep -Pv "^Adapter:" | sed "s;^[^:]\+$;<b>&1</b>;")"
 	echo "$info"
 }

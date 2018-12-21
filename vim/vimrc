@@ -476,9 +476,6 @@
 	noremap <c-k> {
 	noremap <c-j> }
 
-	noremap <bs> <c-b>
-	noremap <cr> <c-f>
-
 	noremap <silent> gw :<c-u>call <sid>next_word(0)<cr>
 	noremap <silent> gb :<c-u>call <sid>next_word(1)<cr>
 
@@ -512,8 +509,8 @@
 	cnoremap <expr> <tab> getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
 	cnoremap <expr> <s-tab> getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
 
-	noremap <c-b> ?
-	noremap <c-f> /
+	" noremap <c-b> ?
+	" noremap <c-f> /
 
 	" toggle highlighting of the last search pattern
 	nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>

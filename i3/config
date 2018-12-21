@@ -86,19 +86,16 @@ bindsym $mod+g exec --no-startup-id sensors-notify
 bindsym $mod+Shift+g exec --no-startup-id sensors-notify -pinned
 
 # Open console calculator
-bindsym $mod+ugrave exec --no-startup-id i3-focus -n calc -kill -fallback 'urxvt -name calc -e calc-tmux'
+bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback 'urxvt -name calc -e calc-tmux'
 
 # Edit files
 bindsym $mod+e exec --no-startup-id rofi-edit
 
 # Shortcuts
 bindsym $mod+x exec --no-startup-id i3-focus -c URxvt -n ranger -fallback "urxvt -name ranger -title Ranger -e ranger"
-bindsym $mod+Shift+plus exec --no-startup-id i3-focus -c Firefox -m - -fallback firefox
+bindsym $mod+bracketleft exec --no-startup-id i3-focus -c Firefox -m - -fallback firefox
 bindsym $mod+apostrophe exec --no-startup-id i3-focus -m _mark
 bindsym $mod+Shift+apostrophe mark _mark
-
-# Open mail in a new browser window
-bindsym $mod+ograve exec i3-focus -t "\| FastMail -" -fallback "firefox --no-remote -P Mail"
 
 # Kill window
 bindsym $mod+Shift+q kill
@@ -109,13 +106,13 @@ bindsym $mod+Shift+m [con_id="__focused__"] unmark
 
 # Open tmux
 bindsym $mod+u exec --no-startup-id i3-t
-bindsym $mod+plus exec --no-startup-id i3-t scratch
+bindsym $mod+bracketright exec --no-startup-id i3-t scratch
 
 # Pick tmux session
 bindsym $mod+Shift+u exec --no-startup-id rofi-tmux
 
 # Rename current workspace
-bindsym $mod+comma exec --no-startup-id i3-rename-workspace
+bindsym $mod+comma exec --no-startup-id i3-rename-workspace -menu
 bindsym $mod+Shift+comma exec --no-startup-id i3-rename-workspace -reset
 
 # Create new workspace
@@ -124,7 +121,11 @@ bindsym $mod+w exec --no-startup-id i3-new-workspace
 # Rofi bindings
 bindsym $mod+space exec --no-startup-id rofi -show drun
 bindsym $alt+space exec --no-startup-id "rofi -show run -kb-accept-entry Control+d -kb-accept-custom Return,Control+m -kb-delete-entry Control+r"
-bindsym Control+space exec --no-startup-id i3-choose-window -no-inputbar
+bindsym $mod+slash exec --no-startup-id i3-choose-window -no-inputbar
+bindsym $mod+Shift+slash exec --no-startup-id i3-choose-window
+
+bindsym Menu exec --no-startup-id i3-choose-window -no-inputbar
+bindsym Shift+Menu exec --no-startup-id i3-choose-window
 
 # Toggle Polybar visibility
 bindsym $mod+Return exec --no-startup-id polybar-toggle
@@ -148,17 +149,14 @@ bindsym $mod+b split vertical
 # Vertical layout, split horizontally
 bindsym $mod+r split horizontal
 
-# Reset workspace layout
-bindsym $mod+Shift+0 [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
-
 # Change window layout (stacked, tabbed, toggle split)
 bindsym $mod+s layout stacking
 bindsym $mod+t layout tabbed
 bindsym $mod+d layout toggle split
 
 # Focus the parent or child container
-bindsym $mod+period focus child
-bindsym $mod+Shift+period focus parent
+bindsym $mod+colon focus child
+bindsym $mod+Shift+colon focus parent
 
 # Move container
 bindsym $mod+c move position center
@@ -214,7 +212,7 @@ bindsym $mod+Shift+8 move container to workspace number 8; workspace number 8
 bindsym $mod+Shift+9 move container to workspace number 9; workspace number 9
 
 # Move window to new workspace and back
-bindsym $mod+backslash exec --no-startup-id i3-move-to-workspace -ask
+bindsym $mod+period exec --no-startup-id i3-move-to-workspace -ask
 bindsym $mod+Control+w exec --no-startup-id i3-move-to-workspace -auto -nofollow
 bindsym $mod+Shift+w exec --no-startup-id i3-move-to-workspace -auto
 bindsym $mod+Control+a move container to workspace back_and_forth
@@ -222,7 +220,7 @@ bindsym $mod+Shift+a move container to workspace back_and_forth; workspace back_
 
 # Move to last focused workspace/window
 bindsym $mod+a workspace back_and_forth
-bindsym $mod+Tab exec --no-startup-id i3-focus-last-window
+bindsym $mod+backslash exec --no-startup-id i3-focus-last-window
 
 # Cycle through workspaces
 bindsym $mod+n exec --no-startup-id i3-next-workspace -next
@@ -238,6 +236,10 @@ bindsym $mod+Shift+minus exec --no-startup-id i3-scratch -push
 
 # Toggle tiling / floating
 bindsym $mod+f floating toggle
+
+# Suspend/Lock shortcuts
+bindsym Scroll_Lock exec --no-startup-id lock -force -blank 2
+bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
 
 mode "float" {
 
@@ -271,6 +273,9 @@ mode "i3" {
 	bindsym c exec --no-startup-id urxvt -name floating -e vim .config/i3/config; mode "default"
 	bindsym t exec --no-startup-id urxvt -name floating -e vim .config/redshift/redshift.conf; mode "default"
 
+	# Reset workspace layout
+	bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
+
 	bindsym q mode "default"
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
@@ -278,6 +283,19 @@ mode "i3" {
 }
 
 bindsym $mod+$alt+space mode "i3"
+
+# App shortcuts
+mode "open" {
+
+	bindsym m exec --no-startup-id i3-focus -t "\| FastMail -" -fallback "firefox --no-remote -P Mail"; mode "default"
+
+	bindsym q mode "default"
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+	bindsym Control+c mode "default"
+}
+
+bindsym $mod+Tab mode "open"
 
 # Controls
 # ----------------------------------------------------------------------------

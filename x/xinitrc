@@ -5,12 +5,12 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 
 xrdb -load ~/.Xresources
 
-setxkbmap -layout it
+setxkbmap -model pc87 -rules evdev -layout us -variant altgr-intl
 
 xmodmap ~/.Xmodmap
 
 xset s off dpms 0 0 0
 
-xset r rate 175 25
+xset r rate 170 25
 
 exec i3

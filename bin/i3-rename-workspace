@@ -16,12 +16,13 @@ main() {
 	fi
 
 	local opts name
+	name="$(grep -o "^[0-9]\\+" <<< "$current")"
+
 	if (( reset == 1 )); then
-		name="$(grep -o "^[0-9]\\+" <<< "$current")"
 		if [[ -z "$name" ]]; then
 			name="$(i3-new-workspace -dry)"
 		fi
-	else
+	elif (( menu == 1 )); then
 		opts="-dmenu -p 'Name' -filter '$current' -theme 'i3-input'"
 		name="$(eval "rofi $opts")"
 		name="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$name")"
@@ -35,9 +36,33 @@ main() {
 
 }
 
+print_help() {
+	echo "Usage: "
+	echo "  i3-rename-workspace [-menu|-reset]"
+	echo
+}
+
+parse_args() {
+	while (( $# )); do
+		if [[ "$1" == "-reset" ]]; then
+			reset=1
+		elif [[ "$1" == "-menu" ]]; then
+			menu=1
+		elif [[ "$1" == "-help" ]]; then
+			print_help
+			exit 0
+		else
+			echo "Unknown option: $1" 1>&2
+			print_help
+			exit 1
+		fi
+		shift
+	done
+}
+
 reset=0
-if [[ "$*" =~ -reset($| ) ]]; then
-	reset=1
-fi
+menu=0
+
+parse_args "$@"
 
 main

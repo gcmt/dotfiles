@@ -211,7 +211,7 @@ def main():
     if exitcode == 0:
         # focus the selected window (or retrieve it from the scratchpad)
         if win.workspace().name == '_scratch':
-            win.command('move to workspace current')
+            win.command('move to workspace current, focus')
         else:
             win.command('focus')
         sys.exit(0)
@@ -219,7 +219,7 @@ def main():
     # -kb-custom-1
     if exitcode == 10:
         # move the selected window to the current workspace
-        win.command(f'move to workspace current')
+        win.command('move to workspace current, focus')
         sys.exit(0)
 
     # -kb-custom-2

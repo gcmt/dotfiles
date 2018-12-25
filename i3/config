@@ -231,6 +231,7 @@ bindsym $mod+z focus mode_toggle
 
 # Scratchpad bindings
 bindsym $mod+0 exec --no-startup-id i3-scratch -focus
+bindsym $mod+Shift+0 exec --no-startup-id i3-choose-window -no-inputbar -hide-workspace -g 'workspace_name=_scratch'
 bindsym $mod+minus exec --no-startup-id i3-scratch -pop
 bindsym $mod+Shift+minus exec --no-startup-id i3-scratch -push
 

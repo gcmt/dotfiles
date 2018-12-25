@@ -114,6 +114,8 @@ def main():
     if fallback and not success:
         try:
             os.execvp(fallback[0], fallback)
+        except OSError:
+            os.execv(fallback[0], fallback)
         except FileNotFoundError:
             error(f"command not found: {fallback[0]}")
             sys.exit(1)

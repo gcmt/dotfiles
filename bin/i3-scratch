@@ -43,7 +43,7 @@ def main():
         if not windows:
             sys.exit(1)
 
-        windows[-1].command('move to workspace current')
+        windows[-1].command('move to workspace current, focus')
 
     elif args.focus:
 

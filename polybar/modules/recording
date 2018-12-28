@@ -14,7 +14,7 @@ stop_recording() {
 
 
 main() {
-	local output=" Recording"
+	local output=" Rec"
 	if [[ -f "$pidfile" ]]; then
 		echo "$output"
 	fi

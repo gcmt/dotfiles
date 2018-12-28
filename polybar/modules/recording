@@ -31,14 +31,21 @@ main() {
 
 pidfile="/run/user/$UID/rec.pid"
 metafile="/run/user/$UID/rec.out"
-
 fifo="/tmp/polybar_recording.fifo"
-if [[ ! -p "$fifo" ]]; then
-	mkfifo "$fifo"
-fi
-trap "rm '$fifo'" 0
 
 case "$1" in
-	-stop) stop_recording ;;
-	*) main ;;
+	-stop)
+		if [[ ! -p "$fifo" ]]; then
+			echo "$fifo does not exist" >&2
+			exit 1
+		fi
+		stop_recording
+		;;
+	*)
+		if [[ ! -p "$fifo" ]]; then
+			mkfifo "$fifo"
+		fi
+		trap "rm '$fifo'" 0
+		main
+		;;
 esac

@@ -22,27 +22,30 @@ view_log() {
 }
 
 
-main() {
-
-	if [[ ! -p "$fifo" ]]; then
-		mkfifo "$fifo"
-	fi
-	trap "rm '$fifo'" 0
-
-	if [[ -e "$err_file" ]]; then
+print_label() {
+	local failed="$1" archive="$2"
+	if (( failed == 1 )); then
 		echo '%{F#ce7d86} Backup%{F-}'
+	elif [[ "$archive" =~ ^rsync\.net ]]; then
+		echo " Backup"
+	elif [[ "$archive" =~ MyPassport ]]; then
+		echo " Backup"
 	fi
+}
 
+
+main() {
+	if [[ -e "$err_file" ]]; then
+		print_label 1
+	elif [[ -e "$arch_file" ]]; then
+		print_label 0 "$(cat "$arch_file")"
+	fi
 	while true; do
 		if read -r event archive < "$fifo"; then
 			case $event in
 				started)
 					notify "Backup Started" "$archive"
-					if [[ "$archive" =~ ^rsync\.net ]]; then
-						echo " Backup"
-					elif [[ "$archive" =~ MyPassport ]]; then
-						echo " Backup"
-					fi
+					print_label 0 "$archive"
 					;;
 				completed)
 					notify "Backup Finished" "$archive"
@@ -50,7 +53,7 @@ main() {
 					;;
 				error)
 					notify_err "Backup Failed" "$archive"
-					echo '%{F#ce7d86} Backup%{F-}'
+					print_label 1
 					;;
 				clean)
 					echo
@@ -58,34 +61,6 @@ main() {
 			esac
 		fi
 	done
-
-}
-
-
-click_left() {
-
-	local archive
-	if [[ -e "$err_file" ]]; then
-		archive="$(cat "$err_file")"
-	elif [[ -e "$arch_file" ]]; then
-		archive="$(cat "$arch_file")"
-	else
-		return 1
-	fi
-
-	if [[ "$archive" =~ ^rsync\.net ]]; then
-		view_log borg-backup-rsync
-	elif [[ "$archive" =~ MyPassport ]]; then
-		view_log borg-backup-hdd
-	fi
-
-}
-
-
-click_right() {
-	if [[ -e "$err_file" && -p "$fifo" ]]; then
-		echo clean > "$fifo"
-	fi
 }
 
 
@@ -96,8 +71,36 @@ arch_file="$borg_dir/archive"
 err_file="$borg_dir/error"
 fifo="/tmp/polybar_backup.fifo"
 
+
 case "$1" in
-	click-left) click_left ;;
-	click-right) click_right ;;
-	*) main ;;
+
+	click-left)
+		if [[ -e "$err_file" ]]; then
+			archive="$(cat "$err_file")"
+		elif [[ -e "$arch_file" ]]; then
+			archive="$(cat "$arch_file")"
+		else
+			exit
+		fi
+		if [[ "$archive" =~ ^rsync\.net ]]; then
+			view_log borg-backup-rsync
+		elif [[ "$archive" =~ MyPassport ]]; then
+			view_log borg-backup-hdd
+		fi
+		;;
+
+	click-right)
+		if [[ -e "$err_file" && -p "$fifo" ]]; then
+			echo clean > "$fifo"
+		fi
+		;;
+
+	*)
+		if [[ ! -p "$fifo" ]]; then
+			mkfifo "$fifo"
+		fi
+		trap "rm '$fifo'" 0
+		main
+		;;
+
 esac

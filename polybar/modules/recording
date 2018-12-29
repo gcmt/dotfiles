@@ -5,6 +5,8 @@ stop_recording() {
 	if [[ -f "$pidfile" ]]; then
 		local file="$(cat "$metafile")"
 		kill "$(cat "$pidfile")"
+	fi
+	if [[ -p "$fifo" ]]; then
 		echo stop > "$fifo"
 	fi
 	if [[ -n "$file" ]]; then
@@ -35,10 +37,6 @@ fifo="/tmp/polybar_recording.fifo"
 
 case "$1" in
 	-stop)
-		if [[ ! -p "$fifo" ]]; then
-			echo "$fifo does not exist" >&2
-			exit 1
-		fi
 		stop_recording
 		;;
 	*)

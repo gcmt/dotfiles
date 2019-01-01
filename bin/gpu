@@ -141,7 +141,11 @@ if [[ -n "$profile" ]]; then
 fi
 
 if (( edit == 1 )); then
-	exec vim ~/.local/bin/gpu
+	if tty -s; then
+		exec vim ~/.local/bin/gpu
+	else
+		exec urxvt -e vim .local/bin/gpu
+	fi
 fi
 
 _view_gpu_info

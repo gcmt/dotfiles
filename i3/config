@@ -23,6 +23,8 @@ exec_always --no-startup-id i3-watch-last-window
 
 exec_always --no-startup-id parcellite
 
+exec_always --no-startup-id gpu -p base
+
 # Variables
 # ----------------------------------------------------------------------------
 

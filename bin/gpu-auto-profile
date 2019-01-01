@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+
+scriptname="$(basename "$0")"
+pidfile="/run/user/$UID/$scriptname.pid"
+
+exec 200>"$pidfile"
+if ! flock -n 200; then
+    echo "$scriptname: already running" 2>&1
+    exit 1
+else
+    echo $$ >&200
+fi
+
+_cleanup() {
+    rm -f "$pidfile"
+}
+
+trap _cleanup 0
+
+_notify() {
+    dunstify -r 6688 -t 3000 "$@"
+}
+
+i3-msg -t subscribe -m '[ "window" ]' | while read -r event; do
+    change="$(jq -r .change <<< "$event")"
+    class="$(jq -r .container.window_properties.class <<< "$event")"
+    width="$(jq -r .container.rect.width <<< "$event")"
+    if [[ "$class" != 'Steam' || "$width" -lt 400 ]]; then
+        continue
+    fi
+    if [[ "$change" == 'new' ]]; then
+        gpu -profile high
+        _notify "AMDGPU" "High profile enabled"
+    elif [[ "$change" == 'close' ]]; then
+        gpu -profile base
+        _notify "AMDGPU" "Base profile enabled"
+    fi
+done

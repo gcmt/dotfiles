@@ -1,0 +1,147 @@
+#!/bin/bash
+
+pp_od_clk_voltage="/sys/class/drm/card0/device/pp_od_clk_voltage"
+power1_cap="/sys/class/drm/card0/device/hwmon/hwmon0/power1_cap"
+
+if [[ ! -f "$pp_od_clk_voltage" ]]; then
+	echo "File '$pp_od_clk_voltage' not found" >&2
+	exit 1
+fi
+
+_set_power_cap() {
+	echo "$1" | sudo tee "$power1_cap" >/dev/null;
+}
+
+_set_clk_voltage() {
+	echo "$1" | sudo tee "$pp_od_clk_voltage" >/dev/null;
+}
+
+_commit_clk_voltage() {
+	echo "c" | sudo tee "$pp_od_clk_voltage" >/dev/null;
+}
+
+_reset_clk_voltage() {
+	echo "r" | sudo tee "$pp_od_clk_voltage" >/dev/null;
+}
+
+_view_clk_voltage() {
+	cat "$pp_od_clk_voltage" | head -n -4;
+}
+
+_view_ranges() {
+	cat "$pp_od_clk_voltage" | tail -4;
+}
+
+_view_power_cap() {
+	echo "POWER_CAP:"
+	echo "$(( $(cat "$power1_cap") / 1000000 ))W";
+}
+
+_view_gpu_info() {
+	_view_clk_voltage
+	_view_power_cap
+}
+
+parse_args() {
+	while (( $# )); do
+		if [[ "$1" == "-ranges" ]]; then
+			ranges=1
+		elif [[ "$1" == "-view" ]]; then
+			view=1
+		elif [[ "$1" == "-reset" ]]; then
+			reset=1
+		elif [[ "$1" == "-edit" ]]; then
+			edit=1
+		elif [[ "$1" =~ "-profile" || "$1" =~ "-p" ]]; then
+			if [[ -z "$2" || "$2" =~ ^- ]]; then
+				echo "Error: the -profile option expects an argument" >&2
+				exit 1
+			fi
+			if [[ ! "$2" =~ ^(base|high)$ ]]; then
+				echo "Error: the profile can only be one of < high | base >" >&2
+				exit 1
+			fi
+			profile="$2"
+			shift
+		else
+			echo "Unknown option: $1" >&2
+			exit 1
+		fi
+		shift
+	done
+}
+
+ranges=0
+view=0
+profile=
+reset=0
+edit=0
+
+parse_args "$@"
+
+if (( ranges == 1 )); then
+
+	_view_ranges
+	exit
+
+fi
+
+if (( reset == 1 )); then
+
+	_reset_clk_voltage
+	_view_gpu_info
+
+	exit
+
+fi
+
+if [[ -n "$profile" ]]; then
+
+	_set_power_cap 195000000
+
+	# default values
+	# _set_clk_voltage "s 0 300  750"
+	# _set_clk_voltage "s 1 600  769"
+	# _set_clk_voltage "s 2 900  887"
+	# _set_clk_voltage "s 3 1162 1118"
+	# _set_clk_voltage "s 4 1233 1200"
+	# _set_clk_voltage "s 5 1275 1150"
+	# _set_clk_voltage "s 6 1319 1150"
+	# _set_clk_voltage "s 7 1360 1150"
+
+	_set_clk_voltage "s 0 300  750"
+	_set_clk_voltage "s 1 600  769"
+	_set_clk_voltage "s 2 900  887"
+	_set_clk_voltage "s 3 1162 1000"
+	_set_clk_voltage "s 4 1233 1025"
+	_set_clk_voltage "s 5 1275 1025"
+	_set_clk_voltage "s 6 1319 1025"
+
+	case "$profile" in
+		base)
+			_set_clk_voltage "s 7 1360 1025"
+			;;
+		high)
+			#_set_clk_voltage "s 7 1380 1050"
+			#_set_clk_voltage "s 7 1400 1100"
+			_set_clk_voltage "s 7 1420 1125"
+			#_set_clk_voltage "s 7 1440 1150"
+			_set_clk_voltage "m 2 2250 950"
+			;;
+	esac
+
+	_commit_clk_voltage
+
+	if (( view == 1 )); then
+		_view_gpu_info
+	fi
+
+	exit
+
+fi
+
+if (( edit == 1 )); then
+	exec vim ~/.local/bin/gpu
+fi
+
+_view_gpu_info

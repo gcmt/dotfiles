@@ -52,7 +52,7 @@ parse_args() {
 			reset=1
 		elif [[ "$1" == "-edit" ]]; then
 			edit=1
-		elif [[ "$1" =~ "-profile" || "$1" =~ "-p" ]]; then
+		elif [[ "$1" =~ ^(-profile|-p)$ ]]; then
 			if [[ -z "$2" || "$2" =~ ^- ]]; then
 				echo "Error: the -profile option expects an argument" >&2
 				exit 1

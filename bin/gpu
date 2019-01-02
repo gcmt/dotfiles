@@ -112,12 +112,12 @@ if [[ -n "$profile" ]]; then
 	case "$profile" in
 		base)
 			_set_clk_voltage "s 7 1360 1025"
+			_set_clk_voltage "m 2 2000 950"
 			;;
 		high)
 			#_set_clk_voltage "s 7 1380 1050"
 			#_set_clk_voltage "s 7 1400 1100"
 			_set_clk_voltage "s 7 1420 1125"
-			#_set_clk_voltage "s 7 1440 1150"
 			_set_clk_voltage "m 2 2250 950"
 			;;
 	esac

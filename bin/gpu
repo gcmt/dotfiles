@@ -58,7 +58,7 @@ parse_args() {
 				exit 1
 			fi
 			if [[ ! "$2" =~ ^(base|high)$ ]]; then
-				echo "Error: the profile can only be one of < high | base >" >&2
+				echo "Error: Unknown profile. Can be one of < high | base >" >&2
 				exit 1
 			fi
 			profile="$2"
@@ -79,20 +79,12 @@ edit=0
 
 parse_args "$@"
 
-if (( ranges == 1 )); then
-
-	_view_ranges
-	exit
-
-fi
-
-if (( reset == 1 )); then
-
-	_reset_clk_voltage
-	_view_gpu_info
-
-	exit
-
+if (( edit == 1 )); then
+	if tty -s; then
+		exec vim ~/.local/bin/gpu
+	else
+		exec urxvt -e vim .local/bin/gpu
+	fi
 fi
 
 if [[ -n "$profile" ]]; then
@@ -140,12 +132,14 @@ if [[ -n "$profile" ]]; then
 
 fi
 
-if (( edit == 1 )); then
-	if tty -s; then
-		exec vim ~/.local/bin/gpu
-	else
-		exec urxvt -e vim .local/bin/gpu
-	fi
+if (( reset == 1 )); then
+	_reset_clk_voltage
 fi
 
-_view_gpu_info
+if (( view == 1 || $# == 0 )); then
+	_view_gpu_info
+fi
+
+if (( ranges == 1 )); then
+	_view_ranges
+fi

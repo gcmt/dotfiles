@@ -23,10 +23,6 @@ func! search#do(bufnr, pattern, search_bufname, search_options, view_options)
 		return s:err(printf("Buffer %s does not exist", self.bufnr))
 	end
 
-	if bufwinnr(a:search_bufname) != -1
-		exec bufwinnr(a:search_bufname) . 'wincmd c'
-	end
-
 	if empty(a:pattern)
 		if bufexists(a:search_bufname)
 			let s = getbufvar(bufnr(a:search_bufname), 'search').s

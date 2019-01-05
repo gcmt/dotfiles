@@ -4,41 +4,47 @@ if ! hash acpi 2>/dev/null; then
 	exit 1
 fi
 
-last_notification="/tmp/polybar-battery"
-
-if [[ ! -f "$last_notification" ]]; then
-	echo 0 > "$last_notification"
-fi
-
-is_charging() {
+_is_charging() {
 	acpi -b | grep -q Charging
 }
 
-# Usage: notify N message
+_get_charge() {
+	acpi -b | grep -Po '[0-9]+(?=%)'
+}
+
+# Usage: _notify N message
 # Don't send notification if at least N seconds haven't passed since the last notification
-notify() {
-	is_charging && return
-	local elapsed=$(($(date +'%s') - $(cat "$last_notification")))
+_notify() {
+	_is_charging && return
+	local elapsed="$(( $(date +'%s') - last_notification ))"
 	if (( elapsed > $1 )); then
-		date +'%s' > "$last_notification"
+		last_notification="$(date +'%s')"
 		notify-send -t 10000 "Battery low" "$2"
 	fi
 }
 
-charge=$(acpi -b | grep -Po '[0-9]+(?=%)')
+_print_label() {
+	local icon charge
+	charge="$(_get_charge)"
+	if (( charge < 15 )); then
+		_notify 120 "Remaining charge:  $charge%"
+		icon=""
+	elif (( charge < 30 )); then
+		_notify 240 "Remaining charge:  $charge%"
+		icon=""
+	elif (( charge < 50 )); then
+		icon=""
+	elif (( charge < 75 )); then
+		icon=""
+	else
+		icon=""
+	fi
+	echo "$icon $charge%"
+}
 
-if (( charge < 15 )); then
-	notify 120 "Remaining charge:  $charge%"
-	icon=""
-elif (( charge < 30 )); then
-	notify 240 "Remaining charge:  $charge%"
-	icon=""
-elif (( charge < 50 )); then
-	icon=""
-elif (( charge < 75 )); then
-	icon=""
-else
-	icon=""
-fi
+last_notification=0
 
-echo "$icon $charge%"
+while true; do
+	_print_label
+	sleep 30
+done

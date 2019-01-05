@@ -94,7 +94,8 @@ tail = true
 
 type = custom/script
 exec = ~/.config/polybar/modules/battery
-interval = 30
+label = %output%
+tail = true
 
 ; Date & time
 ; ----------------------------------------------------------------------------

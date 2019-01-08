@@ -93,7 +93,7 @@ def main():
     i3 = i3ipc.Connection()
     tree = i3.get_tree()
 
-    if args.bounce and not args.kill:
+    if args.bounce and not args.kill and not args.move:
         focused = tree.find_focused()
         if focused.type == 'con' and match(args, focused):
             last = get_last_window(tree)

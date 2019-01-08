@@ -22,7 +22,6 @@ HISTFILE="$XDG_DATA_HOME/zsh/history"
 setopt auto_cd
 setopt extended_glob
 setopt no_list_ambiguous
-setopt transient_rprompt
 setopt complete_aliases
 
 setopt share_history
@@ -324,6 +323,15 @@ delete-argument() {
 }
 zle -N delete-argument
 
+# add timestamp every time a command is executed
+accept-line-timestamp() {
+	RPROMPT='$(date +%T)'
+	zle reset-prompt
+	zle accept-line
+	RPROMPT=
+}
+zle -N accept-line-timestamp
+
 # BINDINGS
 # ----------------------------------------------------------------------------
 
@@ -360,6 +368,7 @@ bindkey -M vicmd '^s' toggle-sudo
 bindkey '^t' trim-prompt-cwd
 bindkey -M vicmd '^t' trim-prompt-cwd
 
+bindkey "^M" accept-line-timestamp
 for i in {1..4}; do
 	eval "delete-argument-$i() { NUMERIC=$i zle delete-argument }"
 	zle -N delete-argument-$i

@@ -1,4 +1,28 @@
 #!/bin/bash
 
-session=$(t -d "$1")
-exec i3-focus -c URxvt -t "^$session - Tmux$" -fallback "urxvt -e t $session"
+move=0
+target=
+
+while (( $# )); do
+	if [[ "$1" == "-move" ]]; then
+		move=1
+	elif [[ ! "$1" =~ ^- ]]; then
+		target="$1"
+	else
+		echo "Bad argument: $1" >&2
+		exit 1
+	fi
+	shift
+done
+
+session=$(t -d "$target")
+
+if [[ -z "$session" ]]; then
+	exit 1
+fi
+
+if (( move == 1 )); then
+	exec i3-focus -c URxvt -t "^$session - Tmux$" -move
+else
+	exec i3-focus -c URxvt -t "^$session - Tmux$" -fallback "urxvt -e t $session"
+fi

@@ -113,6 +113,7 @@ bindsym $mod+Shift+m [con_id="__focused__"] unmark
 # Open tmux
 bindsym $mod+u exec --no-startup-id i3-t
 bindsym $mod+bracketright exec --no-startup-id i3-t scratch
+bindsym $mod+Shift+bracketright exec --no-startup-id i3-t -move scratch
 
 # Pick tmux session
 bindsym $mod+Shift+u exec --no-startup-id rofi-tmux

@@ -68,7 +68,8 @@ def match(args, win):
 def get_last_window(tree):
     try:
         path = f'/run/user/{os.getuid()}/i3-last-window'
-        id = int(Path(path).read_text().strip(), 0)
+        id = Path(path).read_text().strip()
+        id = int(id, 0)
         return tree.find_by_window(id)
     except FileNotFoundError:
         error(f"could not read last window id, file not found: {path}")

@@ -109,10 +109,8 @@ set-colors() {
 	fi
 	if [[ "$(_colorscheme)" == "dark" ]]; then
 		export LS_COLORS='fi=97'
-		export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=237'
 	else
 		export LS_COLORS='fi=90'
-		export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=249'
 	fi
 }
 
@@ -369,6 +367,7 @@ bindkey '^t' trim-prompt-cwd
 bindkey -M vicmd '^t' trim-prompt-cwd
 
 bindkey "^M" accept-line-timestamp
+
 for i in {1..4}; do
 	eval "delete-argument-$i() { NUMERIC=$i zle delete-argument }"
 	zle -N delete-argument-$i
@@ -383,12 +382,6 @@ if [[ -e "$ZDATADIR/ext/rofi.zsh" ]]; then
 	bindkey '^[e' rofi-find
 	bindkey '^[d' rofi-cd
 	bindkey '^[r' rofi-history
-fi
-
-if [[ -e "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh" && "$TERM" != "linux" ]]; then
-	source "$ZDATADIR/ext/zsh-autosuggestions/zsh-autosuggestions.zsh"
-	bindkey '^f' autosuggest-accept
-	bindkey '^d' autosuggest-execute
 fi
 
 # LOCAL RC

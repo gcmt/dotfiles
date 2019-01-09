@@ -3,11 +3,7 @@
 # Applications
 # ----------------------------------------------------------------------------
 
-bar {
-	i3bar_command $HOME/.config/polybar/start.sh
-}
-
-exec --no-startup-id tmux new -ds scratch
+exec_always --no-startup-id ~/.config/polybar/start.sh
 
 exec_always --no-startup-id ~/.config/compton/start.sh
 
@@ -24,6 +20,8 @@ exec_always --no-startup-id i3-watch-last-window
 exec_always --no-startup-id parcellite
 
 exec_always --no-startup-id gpu -p base
+
+exec --no-startup-id tmux new -ds scratch
 
 # Variables
 # ----------------------------------------------------------------------------

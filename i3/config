@@ -67,6 +67,7 @@ for_window [class="URxvt" instance="calc"] floating enable, resize set 35ppt 30p
 for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable
 for_window [class="Ssh-askpass"] floating enable
+for_window [class="feh" title="^Cheatsheet$"] floating enable, move position center
 
 for_window [class="KeepassXC"] layout stacking
 for_window [class="git-cola"] layout stacking
@@ -304,6 +305,8 @@ mode "open" {
 }
 
 bindsym $mod+Tab mode "open"
+
+bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
 
 # Controls
 # ----------------------------------------------------------------------------

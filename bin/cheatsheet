@@ -1,0 +1,12 @@
+#!/bin/bash
+
+img="$(mktemp).png"
+
+convert \
+	-trim -font "Noto Mono" -pointsize 10 \
+	-fill "#444444" -background white -bordercolor white -border 25 \
+	pango:"$(cat -)" "$img"
+
+feh -x --title "Cheatsheet" "$img"
+
+rm "$img"

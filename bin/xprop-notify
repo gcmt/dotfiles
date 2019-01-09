@@ -1,5 +1,5 @@
 #!/bin/bash
 
 id="$(xwininfo | grep -Pio '(?<=window id: )0x[a-z0-9]+')"
-props=$(xprop -id "$id" | grep 'WM_WINDOW_ROLE\|WM_CLASS' | sed 's/(STRING)//')
+props=$(xprop -id "$id" | grep '^\(WM_WINDOW_ROLE\|WM_CLASS\|WM_NAME\)' | sed 's/(STRING)//')
 notify-send -t 15000 "xprop" "ID = $id ($(( id )))\\n$props"

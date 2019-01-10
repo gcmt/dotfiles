@@ -730,10 +730,7 @@
 		if empty(url)
 			return
 		end
-		call system('firefox ' . shellescape(url))
-		if !v:shell_error
-			call system('i3-focus -c Firefox -m -')
-		end
+		call system('i3-msg "exec --no-startup-id firefox --new-tab ' . shellescape(url) . '"')
 	endf
 
 	" Clear undo history (:h clear-undo)

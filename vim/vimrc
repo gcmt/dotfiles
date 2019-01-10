@@ -386,13 +386,13 @@
 
 	let g:quickfix_height = 50
 
-	nnoremap <silent> gxq :cwindow<cr>
+	nnoremap <silent> gxq :cwindow<cr>zz
 	nnoremap <silent> ]q :cnext<cr>zz:set cul<cr>
 	nnoremap <silent> ]Q :clast<cr>zz:set cul<cr>
 	nnoremap <silent> [q :cprev<cr>zz:set cul<cr>
 	nnoremap <silent> [Q :cfirst<cr>zz:set cul<cr>
 
-	nnoremap <silent> gxl :lwindow<cr>
+	nnoremap <silent> gxl :lwindow<cr>zz
 	nnoremap <silent> ]l :lnext<cr>zz:set cul<cr>
 	nnoremap <silent> ]L :llast<cr>zz:set cul<cr>
 	nnoremap <silent> [l :lprev<cr>zz:set cul<cr>
@@ -469,13 +469,6 @@
 	noremap J 3gj
 	noremap K 3gk
 
-	noremap M %
-	noremap H ^
-	noremap L g_
-
-	noremap <c-k> {
-	noremap <c-j> }
-
 	noremap <silent> gw :<c-u>call <sid>next_word(0)<cr>
 	noremap <silent> gb :<c-u>call <sid>next_word(1)<cr>
 
@@ -509,15 +502,12 @@
 	cnoremap <expr> <tab> getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
 	cnoremap <expr> <s-tab> getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
 
-	" noremap <c-b> ?
-	" noremap <c-f> /
-
 	" toggle highlighting of the last search pattern
 	nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
 
 	" Toggle search for current word or selected text without moving the cursor
-	nnoremap <silent> S :call <sid>search(0)<cr>
-	vnoremap <silent> S :<c-u>call <sid>search(1)<cr>
+	nnoremap <silent> <enter> :call <sid>search(0)<cr>
+	vnoremap <silent> <enter> :<c-u>call <sid>search(1)<cr>
 
 	fun! s:search(visual)
 		if a:visual && line("'<") != line("'>")
@@ -714,8 +704,8 @@
 	endf
 
 	" Open url in browser
-	nnoremap <silent> gh :call <sid>open_url(0)<cr>
-	vnoremap <silent> gh :call <sid>open_url(1)<cr>
+	nnoremap <silent> g% :call <sid>open_url(0)<cr>
+	vnoremap <silent> g% :call <sid>open_url(1)<cr>
 
 	func! s:open_url(visual)
 		if a:visual
@@ -809,9 +799,9 @@
 " Search
 " ----------------------------------------------------------------------------
 
-	nnoremap gs :Search<space>
-	nnoremap gr :Search<cr>
-	nnoremap <silent> gS :Search \<<c-r><c-w>\><cr>
+	nnoremap s :Search<space>
+	nnoremap gs :Search<cr>
+	nnoremap <silent> S :Search \<<c-r><c-w>\><cr>
 
 " Buffers
 " ----------------------------------------------------------------------------

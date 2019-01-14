@@ -110,7 +110,18 @@ click-right = ~/.config/polybar/modules/datetime -menu
 
 label = %output%
 
-; backup
+; Volume
+; ----------------------------------------------------------------------------
+
+[module/volume]
+
+type = custom/script
+exec = ~/.config/polybar/modules/volume
+tail = true
+
+label = %output%
+
+; Backup
 ; ----------------------------------------------------------------------------
 
 [module/backup]
@@ -192,23 +203,5 @@ label-connected = %local_ip%
 
 format-disconnected = <label-disconnected>
 label-disconnected =
-
-; Volume
-; ----------------------------------------------------------------------------
-
-[module/volume]
-
-type = internal/alsa
-
-format-volume = <ramp-volume> <label-volume>
-label-volume = %percentage%%
-
-ramp-volume-0 = 
-ramp-volume-1 = 
-ramp-volume-2 = 
-
-format-muted = <label-muted>
-format-muted-foreground = ${colors.foreground}
-label-muted =  Mute
 
 ; vim:ft=dosini cms=;\ %s

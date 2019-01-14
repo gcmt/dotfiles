@@ -1,0 +1,35 @@
+#!/bin/bash
+
+if ! hash amixer 2>/dev/null; then
+	exit 1
+fi
+
+is_mute() {
+	amixer -D pulse get Master | grep -q '\[off\]'
+}
+
+get_volume() {
+	amixer -D pulse get Master | grep -Pom1 '[0-9]+(?=%)'
+}
+
+decorate() {
+	echo "%{A4:volume up:}%{A5:volume down:}%{A1:volume toggle:}$*%{A}%{A}%{A}"
+}
+
+print_label() {
+	local volume="$(get_volume)"
+	if is_mute; then
+		decorate " Mute"
+	elif (( volume < 25 )); then
+		decorate " $volume%"
+	elif (( volume < 75 )); then
+		decorate " $volume%"
+	else
+		decorate " $volume%"
+	fi
+}
+
+print_label
+pactl subscribe | while read -r event; do
+	print_label
+done

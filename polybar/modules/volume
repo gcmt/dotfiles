@@ -1,15 +1,20 @@
 #!/bin/bash
 
-if ! hash amixer 2>/dev/null; then
+if ! pulseaudio --check; then
+	echo 'pulseaudio not running'
 	exit 1
 fi
 
-is_mute() {
-	amixer -D pulse get Master | grep -q '\[off\]'
+get_info() {
+	pacmd list-sinks | grep -A23 "^\s*\* index:"
 }
 
 get_volume() {
-	amixer -D pulse get Master | grep -Pom1 '[0-9]+(?=%)'
+	get_info | grep "^\s*volume:" | grep -Pom1 '[0-9]+(?=%)' | tail -1
+}
+
+is_mute() {
+	get_info | grep "^\s*muted:" | grep -q "yes"
 }
 
 decorate() {
@@ -22,7 +27,7 @@ print_label() {
 		decorate " Mute"
 	elif (( volume < 25 )); then
 		decorate " $volume%"
-	elif (( volume < 75 )); then
+	elif (( volume < 50 )); then
 		decorate " $volume%"
 	else
 		decorate " $volume%"
@@ -30,6 +35,8 @@ print_label() {
 }
 
 print_label
-pactl subscribe | while read -r event; do
-	print_label
+pactl subscribe | while read -r _ event _ type _; do
+	if [[ "$event" == "'change'" && "$type" == 'sink' ]]; then
+		print_label
+	fi
 done

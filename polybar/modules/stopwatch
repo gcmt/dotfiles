@@ -17,9 +17,11 @@ format_time() {
 
 
 stopwatch() {
+	local elapsed
 	local start=$(date +%s)
 	while true; do
-		format_time $(( $(date +%s) - start ))
+		elapsed="$(format_time $(( $(date +%s) - start )))"
+		echo " $elapsed"
 		sleep 1
 	done
 }

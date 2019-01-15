@@ -84,7 +84,6 @@ modules-right = rec backup wlan eth volume battery timer stopwatch
 
 type = custom/script
 exec = ~/.config/polybar/modules/i3
-label = %output%
 tail = true
 
 ; Battery
@@ -94,7 +93,6 @@ tail = true
 
 type = custom/script
 exec = ~/.config/polybar/modules/battery
-label = %output%
 tail = true
 
 ; Date & time
@@ -105,10 +103,7 @@ tail = true
 type = custom/script
 exec = ~/.config/polybar/modules/datetime
 tail = true
-
 click-right = ~/.config/polybar/modules/datetime -menu
-
-label = %output%
 
 ; Volume
 ; ----------------------------------------------------------------------------
@@ -119,8 +114,6 @@ type = custom/script
 exec = ~/.config/polybar/modules/volume
 tail = true
 
-label = %output%
-
 ; Backup
 ; ----------------------------------------------------------------------------
 
@@ -129,11 +122,8 @@ label = %output%
 type = custom/script
 exec = ~/.config/polybar/modules/backup
 tail = true
-
 click-left = ~/.config/polybar/modules/backup click-left
 click-right = ~/.config/polybar/modules/backup click-right
-
-label = %output%
 
 ; Timer
 ; ----------------------------------------------------------------------------
@@ -143,10 +133,7 @@ label = %output%
 type = custom/script
 exec = ~/.config/polybar/modules/timer
 tail = true
-
 click-left = ~/.config/polybar/modules/timer -stop
-
-label =  %output%
 
 ; Stopwatch
 ; ----------------------------------------------------------------------------
@@ -156,10 +143,7 @@ label =  %output%
 type = custom/script
 exec = ~/.config/polybar/modules/stopwatch
 tail = true
-
 click-left = ~/.config/polybar/modules/stopwatch stop
-
-label =  %output%
 
 ; Screen Recording
 ; ----------------------------------------------------------------------------
@@ -169,10 +153,7 @@ label =  %output%
 type = custom/script
 exec = ~/.config/polybar/modules/recording
 tail = true
-
 click-left = ~/.config/polybar/modules/recording -stop
-
-label = %output%
 
 ; Wifi
 ; ----------------------------------------------------------------------------
@@ -183,8 +164,6 @@ type = custom/script
 exec = ~/.config/polybar/modules/wlan wlp2s0
 interval = 1
 
-label = %output%
-
 ; Ethernet
 ; ----------------------------------------------------------------------------
 
@@ -193,7 +172,5 @@ label = %output%
 type = custom/script
 exec = ~/.config/polybar/modules/eth enp5s0
 interval = 1
-
-label = %output%
 
 ; vim:ft=dosini cms=;\ %s

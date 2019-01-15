@@ -162,7 +162,7 @@ click-left = ~/.config/polybar/modules/recording -stop
 
 type = custom/script
 exec = ~/.config/polybar/modules/wlan wlp2s0
-interval = 1
+interval = 3
 
 ; Ethernet
 ; ----------------------------------------------------------------------------
@@ -171,6 +171,6 @@ interval = 1
 
 type = custom/script
 exec = ~/.config/polybar/modules/eth enp5s0
-interval = 1
+interval = 3
 
 ; vim:ft=dosini cms=;\ %s

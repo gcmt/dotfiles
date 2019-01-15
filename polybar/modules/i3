@@ -93,6 +93,7 @@ def draw(i3, mode=None, all=False):
         out += colored(padded(mode), **Colors.mode)
 
     out = _clickable(out, btn=2, cmd=f"{menu_cmd}")
+    out += _clickable("     ", btn=1, cmd="i3-new-workspace")
     print(out)
 
 

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+if="${1:-wlan0}"
+
+state_up() {
+	ip addr | grep -q ": $if:.* state UP "
+}
+
+ip_addr() {
+	ip addr | grep -A2 ": $if:" | grep -Po "(?<=inet )[0-9.]+"
+}
+
+ssid() {
+	iw dev "$if" link 2>/dev/null | grep -Po "(?<=SSID: ).*"
+}
+
+draw_block() {
+	echo " $(ssid)"
+}
+
+state_up && draw_block

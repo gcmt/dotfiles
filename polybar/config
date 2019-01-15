@@ -179,29 +179,21 @@ label = %output%
 
 [module/wlan]
 
-type = internal/network
-interface = wlp2s0
-interval = 2
+type = custom/script
+exec = ~/.config/polybar/modules/wlan wlp2s0
+interval = 1
 
-format-connected =  <label-connected>
-label-connected = %essid%
-
-format-disconnected = <label-disconnected>
-label-disconnected =
+label = %output%
 
 ; Ethernet
 ; ----------------------------------------------------------------------------
 
 [module/eth]
 
-type = internal/network
-interface = enp4s0
-interval = 2
+type = custom/script
+exec = ~/.config/polybar/modules/eth enp5s0
+interval = 1
 
-format-connected =  <label-connected>
-label-connected = %local_ip%
-
-format-disconnected = <label-disconnected>
-label-disconnected =
+label = %output%
 
 ; vim:ft=dosini cms=;\ %s

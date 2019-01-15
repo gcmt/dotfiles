@@ -1,0 +1,17 @@
+#!/bin/bash
+
+if="${1:-eth0}"
+
+state_up() {
+	ip addr | grep -q ": $if:.* state UP "
+}
+
+ip_addr() {
+	ip addr | grep -A2 ": $if:" | grep -Po "(?<=inet )[0-9.]+"
+}
+
+draw_block() {
+	echo " $(ip_addr)"
+}
+
+state_up && draw_block

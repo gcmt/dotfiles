@@ -5,5 +5,5 @@ choice="$(echo -e "$entries" | i3-tiny-menu -format d)"
 
 case "$choice" in
 	1) i3-msg kill window ;;
-	2) i3-msg move scratchpad ;;
+	2) i3-scratch -push ;;
 esac

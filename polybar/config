@@ -77,98 +77,52 @@ modules-left = i3
 modules-center = datetime
 modules-right = rec backup wlan eth volume battery timer stopwatch
 
-; i3
-; ----------------------------------------------------------------------------
-
 [module/i3]
-
 type = custom/script
 exec = ~/.config/polybar/modules/i3
 tail = true
 
-; Battery
-; ----------------------------------------------------------------------------
-
 [module/battery]
-
 type = custom/script
 exec = ~/.config/polybar/modules/battery
 tail = true
 
-; Date & time
-; ----------------------------------------------------------------------------
-
 [module/datetime]
-
 type = custom/script
 exec = ~/.config/polybar/modules/datetime
 tail = true
-click-right = ~/.config/polybar/modules/datetime -menu
-
-; Volume
-; ----------------------------------------------------------------------------
 
 [module/volume]
-
 type = custom/script
 exec = ~/.config/polybar/modules/volume
 tail = true
 
-; Backup
-; ----------------------------------------------------------------------------
-
 [module/backup]
-
 type = custom/script
 exec = ~/.config/polybar/modules/backup
 tail = true
-click-left = ~/.config/polybar/modules/backup click-left
-click-right = ~/.config/polybar/modules/backup click-right
-
-; Timer
-; ----------------------------------------------------------------------------
 
 [module/timer]
-
 type = custom/script
 exec = ~/.config/polybar/modules/timer
 tail = true
-click-left = ~/.config/polybar/modules/timer -stop
-
-; Stopwatch
-; ----------------------------------------------------------------------------
 
 [module/stopwatch]
-
 type = custom/script
 exec = ~/.config/polybar/modules/stopwatch
 tail = true
-click-left = ~/.config/polybar/modules/stopwatch stop
-
-; Screen Recording
-; ----------------------------------------------------------------------------
 
 [module/rec]
-
 type = custom/script
 exec = ~/.config/polybar/modules/recording
 tail = true
-click-left = ~/.config/polybar/modules/recording -stop
-
-; Wifi
-; ----------------------------------------------------------------------------
 
 [module/wlan]
-
 type = custom/script
 exec = ~/.config/polybar/modules/wlan wlp2s0
 interval = 3
 
-; Ethernet
-; ----------------------------------------------------------------------------
-
 [module/eth]
-
 type = custom/script
 exec = ~/.config/polybar/modules/eth enp5s0
 interval = 3

@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 format_time() {
 	local t=$1
 	local d=$(( t / 60 / 60 / 24 ))
@@ -15,17 +14,15 @@ format_time() {
 	echo "$out"
 }
 
-
 stopwatch() {
 	local elapsed
 	local start=$(date +%s)
 	while true; do
 		elapsed="$(format_time $(( $(date +%s) - start )))"
-		echo " $elapsed"
+		echo "%{A1:$scriptpath stop:}%{A3:$scriptpath start:} $elapsed%{A}%{A}"
 		sleep 1
 	done
 }
-
 
 main() {
 	local pid
@@ -61,21 +58,25 @@ main() {
 	done
 }
 
+err() {
+	echo "$scriptname: $*" >&2
+	exit 1
+}
 
+scriptpath="$(realpath -s "$0")"
+scriptname="$(basename "$scriptpath")"
 fifo="/tmp/polybar_stopwatch.fifo"
 
 if (( $# == 0 )); then
 	if [[ -p "$fifo" ]]; then
-		echo "$(basename $0): already running" 1>&2
-		exit 1
+		err "module already running"
 	fi
 	mkfifo "$fifo"
 	trap "rm '$fifo'" 0
 	main
 else
 	if [[ ! -p "$fifo" ]]; then
-		echo "$(basename $0): polybar module not running" 1>&2
-		exit 1
+		err "module not running"
 	fi
-	echo $1 > "$fifo"
+	echo "$1" > "$fifo"
 fi

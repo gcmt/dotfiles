@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 format_time() {
 	local t=$1
 	local d=$(( t / 60 / 60 / 24 ))
@@ -15,14 +14,13 @@ format_time() {
 	echo "$out"
 }
 
-
 timer() {
 	local remaining
 	local end=$(( $(date +%s) + $1 ))
 	while true; do
 		remaining=$(( end - $(date +%s) ))
 		if (( remaining > 0 )); then
-			echo " $(format_time $remaining)"
+			echo "%{A:$scriptpath stop:} $(format_time $remaining)%{A}"
 		else
 			notify-send "Timer Finished" "Elapsed time:  $(format_time $1)"
 			echo && break
@@ -30,7 +28,6 @@ timer() {
 		sleep 1
 	done
 }
-
 
 main() {
 	local pid
@@ -56,14 +53,25 @@ main() {
 	done
 }
 
+err() {
+	echo "$scriptname: $*" >&2
+	exit 1
+}
 
+scriptpath="$(realpath -s "$0")"
+scriptname="$(basename "$scriptpath")"
 fifo="/tmp/polybar_timer.fifo"
-if [[ ! -p "$fifo" ]]; then
-	mkfifo "$fifo"
-fi
-trap "rm '$fifo'" 0
 
-case $1 in
-	-stop) echo stop > "$fifo" ;;
-	'') main ;;
-esac
+if (( $# == 0 )); then
+	if [[ -p "$fifo" ]]; then
+		err "module already running"
+	fi
+	mkfifo "$fifo"
+	trap "rm '$fifo'" 0
+	main
+else
+	if [[ ! -p "$fifo" ]]; then
+		err "module not running"
+	fi
+	echo "$1" > "$fifo"
+fi

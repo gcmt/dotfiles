@@ -1,22 +1,17 @@
 #!/bin/bash
 
-
 stop_recording() {
 	if [[ -f "$pidfile" ]]; then
 		local file="$(cat "$metafile")"
 		kill "$(cat "$pidfile")"
-	fi
-	if [[ -p "$fifo" ]]; then
-		echo stop > "$fifo"
-	fi
-	if [[ -n "$file" ]]; then
-		i3-msg "exec --no-startup-id nemo $file"
+		if [[ -n "$file" ]]; then
+			i3-msg -q "exec --no-startup-id nemo $file"
+		fi
 	fi
 }
 
-
 main() {
-	local output=" Rec"
+	local output="%{A1:$scriptpath stop:} Rec%{A}"
 	if [[ -f "$pidfile" ]]; then
 		echo "$output"
 	fi
@@ -30,20 +25,28 @@ main() {
 	done
 }
 
+err() {
+	echo "$scriptname: $*" >&2
+	exit 1
+}
+
+scriptpath="$(realpath -s "$0")"
+scriptname="$(basename "$scriptpath")"
+fifo="/tmp/polybar_recording.fifo"
 
 pidfile="/run/user/$UID/rec.pid"
 metafile="/run/user/$UID/rec.out"
-fifo="/tmp/polybar_recording.fifo"
 
-case "$1" in
-	-stop)
-		stop_recording
-		;;
-	*)
-		if [[ ! -p "$fifo" ]]; then
-			mkfifo "$fifo"
-		fi
-		trap "rm '$fifo'" 0
-		main
-		;;
-esac
+if (( $# == 0 )); then
+	if [[ -p "$fifo" ]]; then
+		err "module already running"
+	fi
+	mkfifo "$fifo"
+	trap "rm '$fifo'" 0
+	main
+else
+	if [[ ! -p "$fifo" ]]; then
+		err "module not running"
+	fi
+	stop_recording
+fi

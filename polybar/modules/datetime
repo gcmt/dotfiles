@@ -47,7 +47,8 @@ def start_clock(style):
 
 def print_date(style):
     now = datetime.utcnow() if style == 'utc' else datetime.now()
-    print(now.strftime(FORMATS.get(style)))
+    t = now.strftime(FORMATS.get(style))
+    print(f'%{{A3:{os.path.realpath(__file__)} -menu:}}{t}%{{A}}')
 
 
 def get_current_style():
@@ -56,9 +57,7 @@ def get_current_style():
 
 
 def main():
-
     clock = start_clock(get_current_style())
-
     while True:
         style = FIFO.read_text().strip()
         if style in FORMATS:
@@ -88,19 +87,24 @@ def menu():
     FIFO.write_text(style + '\n')
 
 
-if __name__ == '__main__':
-
+def err(message):
     scriptname = os.path.basename(__file__)
+    print(f"{scriptname}: {message}", file=sys.stderr)
+    sys.exit(1)
+
+
+if __name__ == '__main__':
 
     if '-menu' in sys.argv:
 
         if not FIFO.is_fifo():
-            print(f"{scriptname}: polybar module not running", file=sys.stderr)
-            sys.exit(1)
-
+            err("module not running")
         menu()
 
     else:
+
+        if FIFO.is_fifo():
+            err("module already running")
 
         try:
             os.mkfifo(FIFO)

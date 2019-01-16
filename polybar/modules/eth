@@ -11,7 +11,10 @@ ip_addr() {
 }
 
 draw_block() {
-	echo " $(ip_addr)"
+	local addr="$(ip_addr)"
+	if [[ -n "$addr" ]]; then
+		echo " $addr"
+	fi
 }
 
 state_up && draw_block

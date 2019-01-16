@@ -17,6 +17,4 @@ nnoremap <silent> <buffer> W :call buffers#actions#delete('bwipe!')<cr>
 nnoremap <silent> <buffer> u :call buffers#actions#delete('bunload')<cr>
 nnoremap <silent> <buffer> U :call buffers#actions#delete('bunload!')<cr>
 
-if exists(':Explorer')
-	nnoremap <silent> <buffer> . :call buffers#actions#switch_to_explorer()<cr>
-end
+nnoremap <silent> <buffer> . :call buffers#actions#open_explorer()<cr>

@@ -43,11 +43,12 @@ func! buffers#actions#toggle_unlisted()
 	call buffers#render()
 endf
 
-" buffers#switch_to_explorer() -> 0
+" buffers#open_explorer() -> 0
 " Close the window and open the explorer instead.
-func! buffers#actions#switch_to_explorer()
+func! buffers#actions#open_explorer()
+	let cmd = exists(':Ranger') ? 'Ranger!' : 'Explorer'
 	close
-	exec 'Explorer' expand('%:p:h')
+	exec cmd expand('%:p:h')
 endf
 
 " s:err({msg:string}) -> 0

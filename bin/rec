@@ -112,9 +112,17 @@ def main():
         except FileNotFoundError:
             pass
 
+    def stop_recording(proc, *args):
+        polybar_send('stop')
+        if proc.poll() is None:
+            proc.terminate()
+
+    def exit(*args):
+        sys.exit()
+
     atexit.register(cleanup)
-    signal.signal(signal.SIGINT, cleanup)
-    signal.signal(signal.SIGTERM, cleanup)
+    signal.signal(signal.SIGINT, exit)
+    signal.signal(signal.SIGTERM, exit)
 
     args = parse_args()
 
@@ -145,14 +153,7 @@ def main():
         METAFILE.write_text(str(dest))
         PIDFILE.write_text(str(os.getpid()))
 
-        def terminate(proc, *args):
-            polybar_send('stop')
-            proc.terminate()
-
-        terminate = partial(terminate, proc)
-        atexit.register(terminate)
-        signal.signal(signal.SIGINT, terminate)
-        signal.signal(signal.SIGTERM, terminate)
+        atexit.register(partial(stop_recording, proc))
 
         proc.wait()
 

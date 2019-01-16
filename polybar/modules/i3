@@ -137,9 +137,12 @@ def main():
         except FileNotFoundError:
             pass
 
+    def exit(*args):
+        sys.exit()
+
     atexit.register(cleanup)
-    signal.signal(signal.SIGINT, cleanup)
-    signal.signal(signal.SIGTERM, cleanup)
+    signal.signal(signal.SIGINT, exit)
+    signal.signal(signal.SIGTERM, exit)
 
     i3 = i3ipc.Connection()
 

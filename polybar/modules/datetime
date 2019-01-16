@@ -99,12 +99,10 @@ if __name__ == '__main__':
 
         if not FIFO.is_fifo():
             err("module not running")
+
         menu()
 
     else:
-
-        if FIFO.is_fifo():
-            err("module already running")
 
         try:
             os.mkfifo(FIFO)
@@ -120,8 +118,11 @@ if __name__ == '__main__':
             except FileNotFoundError:
                 pass
 
+        def exit(*args):
+            sys.exit()
+
         atexit.register(cleanup)
-        signal.signal(signal.SIGINT, cleanup)
-        signal.signal(signal.SIGTERM, cleanup)
+        signal.signal(signal.SIGINT, exit)
+        signal.signal(signal.SIGTERM, exit)
 
         main()

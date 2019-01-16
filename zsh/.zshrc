@@ -96,26 +96,6 @@ forget-commands() {
 }
 add-zsh-hook zshaddhistory forget-commands
 
-# COLORS
-# ----------------------------------------------------------------------------
-
-_colorscheme() {
-	xrdb -query all | grep colorscheme | grep -o '\w\+$'
-}
-
-set-colors() {
-	if [[ ! $DISPLAY ]]; then
-		return
-	fi
-	if [[ "$(_colorscheme)" == "dark" ]]; then
-		export LS_COLORS='fi=97'
-	else
-		export LS_COLORS='fi=90'
-	fi
-}
-
-add-zsh-hook precmd set-colors
-
 # VI MODE
 # ----------------------------------------------------------------------------
 
@@ -242,6 +222,22 @@ va() {
 	[ $# -eq 0 ] && vagrant status || vagrant "$@"
 }
 
+l() {
+	local colors
+	if [[ "$DISPLAY" ]]; then
+		if [[ "$(_colorscheme)" == "dark" ]]; then
+			colors='fi=97'
+		else
+			colors='fi=90'
+		fi
+	fi
+	LS_COLORS="$colors" ls --color=auto --group-directories-first --quoting-style=literal "$@"
+}
+
+_colorscheme() {
+	xrdb -query all | grep colorscheme | grep -o '\w\+$'
+}
+
 # ALIASES
 # ----------------------------------------------------------------------------
 
@@ -267,11 +263,10 @@ alias mv='mv -iv'
 alias cp='cp -iv'
 alias mkdir='mkdir -pv'
 
-alias ls='ls --color=auto --group-directories-first --quoting-style=literal'
-alias l='ls'
-alias la='ls -A'
-alias ll='ls -lh'
-alias lla='ls -lhA'
+alias ls='l'
+alias la='l -A'
+alias ll='l -lh'
+alias lla='l -lhA'
 
 alias py="python"
 alias ipy="ipython"

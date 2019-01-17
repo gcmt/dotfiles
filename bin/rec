@@ -24,9 +24,10 @@ def polybar_send(cmd):
     FIFO.is_fifo() and FIFO.write_text(f'{cmd}\n')
 
 
-def error(msg):
+def error(msg, exit=True):
     script = os.path.basename(__file__)
     print(f"{script}: {msg}", file=sys.stderr)
+    exit and sys.exit(1)
 
 
 def get_screen_size(display):
@@ -36,7 +37,6 @@ def get_screen_size(display):
         stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout
     except FileNotFoundError as e:
         error('xrandr not found')
-        sys.exit(1)
 
     for line in stdout.split('\n'):
         if 'connected' in line:
@@ -54,7 +54,6 @@ def get_selection():
         proc = run(cmd, stdout=PIPE, encoding='utf8')
     except FileNotFoundError:
         error('slop not found')
-        sys.exit(1)
 
     if proc.returncode:
         sys.exit(1)
@@ -86,7 +85,6 @@ def ffmpeg(dest, args):
         return Popen(cmd)
     except FileNotFoundError:
         error('ffmpeg not found')
-        sys.exit(1)
 
 
 def parse_args():
@@ -134,12 +132,19 @@ def main():
             dest = '???'
 
         try:
-            pid = PIDFILE.read_text()
+            pid = PIDFILE.read_text().strip()
+            pid = int(pid)
         except FileNotFoundError:
-            pass
-        else:
-            run(['kill', pid])
-            print(f"Stopped recording to {dest}")
+            error(f"file '{PIDFILE}' not found")
+        except ValueError:
+            error(f"invalid pid value '{pid}'")
+
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except ProcessLookupError:
+            error(f"can't stop recording process with pid '{pid}'")
+
+        print(f"Stopped recording to {dest}")
 
     else:
 

@@ -1,4 +1,11 @@
 
+func! autotype#css#setup()
+	" inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#css#space()<cr>
+	inoremap <silent> <buffer> { <c-]><c-g>u<c-r>=autotype#css#outward_brace()<cr>
+	inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#css#esc_o()<cr>
+	inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#css#outward_parenthesis()<cr>
+endf
+
 func! autotype#css#esc_o()
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
 		return "\<esc>o"

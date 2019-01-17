@@ -28,43 +28,25 @@ aug _autotype
 
 	au BufWritePost */autoload/autotype/* source %
 
-	" au BufEnter *.js inoremap <silent> <buffer> : <c-]><c-g>u<c-r>=autotype#javascript#colon()<cr>
-	au BufEnter *.js inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#javascript#outward_parenthesis()<cr>
-	au BufEnter *.js inoremap <silent> <buffer> <c-g><c-f> <c-]><c-g>u<c-r>=autotype#javascript#skip_to('\v\}')<cr>
-	au BufEnter *.js inoremap <silent> <buffer> { <c-]><c-g>u<c-r>=autotype#javascript#outward_brace()<cr>
-	au BufEnter *.js inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#javascript#space()<cr>
-	au BufEnter *.js inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#javascript#esc_o()<cr>
+	au BufEnter *.js call autotype#javascript#setup()
 
-	au BufEnter *.css,*.scss inoremap <silent> <buffer> { <c-]><c-g>u<c-r>=autotype#css#outward_brace()<cr>
-	" au BufEnter *.css,*.scss inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#css#space()<cr>
-	au BufEnter *.css,*.scss inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#css#esc_o()<cr>
-	au BufEnter *.css,*.scss inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#css#outward_parenthesis()<cr>
+	au BufEnter *.css,*.scss call autotype#css#setup()
 
-	au BufEnter *.html inoremap <silent> <buffer> ! <c-]><c-g>u<c-r>=autotype#html#bang()<cr>
-	au BufEnter *.html inoremap <silent> <buffer> <c-j> <c-]><c-g>u<c-r>=autotype#html#newline()<cr>
-	au BufEnter *.html inoremap <silent> <buffer> <enter> <c-]><c-g>u<c-r>=autotype#html#newline()<cr>
+	au BufEnter *.html call autotype#html#setup()
 
+	au BufEnter *.vue call autotype#vue#setup()
 	au BufEnter *.vue call autotype#vue#locate_sections()
 	au CursorHold *.vue call autotype#vue#locate_sections()
-	au BufEnter *.vue inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#vue#space()<cr>
-	au BufEnter *.vue inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#vue#esc_o()<cr>
-	au BufEnter *.vue inoremap <silent> <buffer> ! <c-]><c-g>u<c-r>=autotype#vue#bang()<cr>
 
-	au FileType python inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#python#esc_o()<cr>
-	au FileType python inoremap <silent> <buffer> : <c-]><c-g>u<c-r>=autotype#python#colon()<cr>
+	au FileType python call autotype#python#setup()
 
-	au FileType sh inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#sh#space()<cr>
-	au FileType sh inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#sh#outward_parenthesis()<cr>
+	au FileType sh call autotype#shell#setup()
+	au FileType zsh call autotype#shell#setup()
 
-	au BufEnter *.ex,*.exs inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#elixir#space()<cr>
-	au BufEnter *.ex,*.exs inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#elixir#esc_o()<cr>
+	au BufEnter *.ex,*.exs call autotype#elixir#setup()
 
-	au BufEnter *.php inoremap <silent> <buffer> . <c-]><c-g>u<c-r>=autotype#php#dot()<cr>
-	au BufEnter *.php inoremap <silent> <buffer> : <c-]><c-g>u<c-r>=autotype#php#colon()<cr>
-	au BufEnter *.php inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#php#outward_parenthesis()<cr>
-	au BufEnter *.php inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#php#esc_o()<cr>
-	au BufEnter *.php inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#php#space()<cr>
+	au BufEnter *.php call autotype#php#setup()
 
-	au BufEnter *.vim,.vimrc,vimrc inoremap <silent> <buffer> <space> <c-]><c-r>=autotype#vim#space()<cr>
+	au BufEnter *.vim,.vimrc,vimrc call autotype#vim#setup()
 
 aug END

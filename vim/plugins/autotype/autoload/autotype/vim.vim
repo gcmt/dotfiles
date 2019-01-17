@@ -1,4 +1,7 @@
 
+func! autotype#vim#setup()
+	inoremap <silent> <buffer> <space> <c-]><c-r>=autotype#vim#space()<cr>
+endf
 
 func! autotype#vim#space()
 	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}

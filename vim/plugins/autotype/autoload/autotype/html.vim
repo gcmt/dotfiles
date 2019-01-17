@@ -1,4 +1,10 @@
 
+func! autotype#html#setup()
+	inoremap <silent> <buffer> ! <c-]><c-g>u<c-r>=autotype#html#bang()<cr>
+	inoremap <silent> <buffer> <c-j> <c-]><c-g>u<c-r>=autotype#html#newline()<cr>
+	inoremap <silent> <buffer> <enter> <c-]><c-g>u<c-r>=autotype#html#newline()<cr>
+endf
+
 func! autotype#html#newline()
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
 		return "\<cr>"

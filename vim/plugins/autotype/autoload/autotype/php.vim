@@ -1,4 +1,12 @@
 
+func! autotype#php#setup()
+	inoremap <silent> <buffer> . <c-]><c-g>u<c-r>=autotype#php#dot()<cr>
+	inoremap <silent> <buffer> : <c-]><c-g>u<c-r>=autotype#php#colon()<cr>
+	inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#php#outward_parenthesis()<cr>
+	inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#php#esc_o()<cr>
+	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#php#space()<cr>
+endf
+
 fun! autotype#php#space()
 	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
 	if g:autotype_disabled || autotype#inside('String', 'Comment') || indent(line('.')) < indent(line('.')+1)

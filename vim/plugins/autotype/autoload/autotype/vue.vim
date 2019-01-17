@@ -1,4 +1,10 @@
 
+func! autotype#vue#setup()
+	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#vue#space()<cr>
+	inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#vue#esc_o()<cr>
+	inoremap <silent> <buffer> ! <c-]><c-g>u<c-r>=autotype#vue#bang()<cr>
+endf
+
 " [firstline, lastline]
 let s:template = [0, 0]
 let s:script = [0, 0]

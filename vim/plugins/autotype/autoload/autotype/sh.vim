@@ -1,4 +1,8 @@
 
+func! autotype#shell#setup()
+	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#sh#space()<cr>
+	inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#sh#outward_parenthesis()<cr>
+endf
 
 func! autotype#sh#outward_parenthesis()
 	let Paren = {-> exists('*pairs#insert_paren') ? pairs#insert_paren('(') : '('}

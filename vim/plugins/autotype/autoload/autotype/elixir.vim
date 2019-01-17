@@ -1,4 +1,9 @@
 
+func! autotype#elixir#setup()
+	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#elixir#space()<cr>
+	inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#elixir#esc_o()<cr>
+endf
+
 func! autotype#elixir#space()
 	let line = getline('.')
 	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}

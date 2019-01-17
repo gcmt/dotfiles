@@ -1,4 +1,13 @@
 
+func! autotype#javascript#setup()
+	" inoremap <silent> <buffer> : <c-]><c-g>u<c-r>=autotype#javascript#colon()<cr>
+	inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#javascript#outward_parenthesis()<cr>
+	inoremap <silent> <buffer> <c-g><c-f> <c-]><c-g>u<c-r>=autotype#javascript#skip_to('\v\}')<cr>
+	inoremap <silent> <buffer> { <c-]><c-g>u<c-r>=autotype#javascript#outward_brace()<cr>
+	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#javascript#space()<cr>
+	inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#javascript#esc_o()<cr>
+endf
+
 fun! autotype#javascript#space()
 	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
 	if g:autotype_disabled || autotype#inside('String', 'Comment') || !empty(autotype#after())

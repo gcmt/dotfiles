@@ -1,5 +1,5 @@
 
-func! autotype#shell#setup()
+func! autotype#sh#setup()
 	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#sh#space()<cr>
 	inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#sh#outward_parenthesis()<cr>
 endf

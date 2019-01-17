@@ -40,8 +40,8 @@ aug _autotype
 
 	au FileType python call autotype#python#setup()
 
-	au FileType sh call autotype#shell#setup()
-	au FileType zsh call autotype#shell#setup()
+	au FileType sh call autotype#sh#setup()
+	au FileType zsh call autotype#sh#setup()
 
 	au BufEnter *.ex,*.exs call autotype#elixir#setup()
 

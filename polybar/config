@@ -4,19 +4,6 @@
 
 [colors]
 
-; dark
-; background = #ef1e222b
-; foreground = #df8e9299
-; blue = #657B99
-; cyan = #739492
-; green = #768A78
-; magenta = #917086
-; red = #945F65
-; orange = #998068
-; yellow = #A39465
-; alert = #aaaf5d66
-
-; light
 background = #e7e8eb
 foreground = #52565e
 blue = #657B99
@@ -76,6 +63,9 @@ font-2 = "Font Awesome 5 Free:style=Regular:size=10;3"
 modules-left = i3
 modules-center = datetime
 modules-right = rec backup eth volume timer stopwatch
+
+; Modules
+; ----------------------------------------------------------------------------
 
 [module/i3]
 type = custom/script

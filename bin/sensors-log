@@ -1,0 +1,74 @@
+#!/bin/bash
+
+err() {
+	echo "$scriptname: $1" 1>&2
+	exit 1
+}
+
+notify() {
+	dunstify -r $id -t "$timeout" "$@"
+}
+
+_exit() {
+	notify "Logging Stopped" "Stopped logging sensors data"
+}
+
+parse_args() {
+	while (( $# )); do
+		if [[ "$1" == "-i" || "$1" == "-interval" ]]; then
+			if [[ "$2" =~ ^[0-9.]+$ ]]; then
+				interval="$2"
+				shift
+			else
+				err "Option -interval requires an argument"
+			fi
+		else
+			err "Unknown option: $1"
+		fi
+		shift
+	done
+}
+
+log() {
+	local data
+	local sensors="$(sensors)"
+	local gpuinfo="$(gpu-info)"
+	local timestamp="$(date +%s.%N)"
+	local gpu_sclk="$(awk '/\(SCLK\)/{print $1}' <<< "$gpuinfo")"
+	local gpu_mclk="$(awk '/\(MCLK\)/{print $1}' <<< "$gpuinfo")"
+	local gpu_vddgfx="$(awk '/\(VDDGFX\)/{print $1}' <<< "$gpuinfo")"
+	local gpu_power="$(awk '/\(average GPU\)/{print $1}' <<< "$gpuinfo")"
+	local gpu_temp="$(awk '/^GPU Temperature:/{print $3}' <<< "$gpuinfo")"
+	local gpu_fan="$(grep -A5 '^amdgpu' <<< "$sensors" | awk '/^fan1/{print $2}')"
+	local cpu_temp="$(grep -A3 '^k10temp' <<< "$sensors" | awk '/^Tdie:/{print $2}' | grep -o '[0-9.]\+')"
+	if [[ "$1" == '-headers' ]]; then
+		data="timestamp,gpu_sclk,gpu_mclk,gpu_vddgfx,gpu_power,gpu_temp,gpu_fan,cpu_temp"
+	else
+		data="$timestamp,$gpu_sclk,$gpu_mclk,$gpu_vddgfx,$gpu_power,$gpu_temp,$gpu_fan,$cpu_temp"
+	fi
+	echo "$data" | tee -a "$logfile"
+}
+
+scriptname="$(basename "$0")"
+
+id=1001
+timeout=5000
+interval="0.5"
+
+parse_args "$@"
+
+if (( $(pgrep -c "$scriptname") > 1 )); then
+	killall "$scriptname"
+fi
+
+logfile="$HOME/Downloads/Sensors_$(date +'%Y-%m-%d-%T').csv"
+> "$logfile"
+
+trap '_exit' 0
+
+notify "Logging Started" "${logfile/$HOME/\~}"
+
+log -headers
+while true; do
+	log && sleep "$interval"
+done

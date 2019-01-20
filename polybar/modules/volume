@@ -1,37 +1,23 @@
 #!/bin/bash
 
 if ! pulseaudio --check; then
-	echo 'pulseaudio not running'
 	exit 1
 fi
 
-get_info() {
-	pacmd list-sinks | grep -A23 "^\s*\* index:"
-}
-
-get_volume() {
-	get_info | grep "^\s*volume:" | grep -Pom1 '[0-9]+(?=%)' | tail -1
-}
-
-is_mute() {
-	get_info | grep "^\s*muted:" | grep -q "yes"
-}
-
-decorate() {
-	echo "%{A4:volume up:}%{A5:volume down:}%{A1:volume toggle:}$*%{A}%{A}%{A}"
-}
-
 print_label() {
-	local volume="$(get_volume)"
-	if is_mute; then
-		decorate " Mute"
+	local label
+	local info="$(pacmd list-sinks | grep -A23 "^\s*\* index:")"
+	local volume="$(grep "^\s*volume:" <<< "$info" | grep -Pom1 '[0-9]+(?=%)' | tail -1)"
+	if grep "^\s*muted:" <<< "$info" | grep -q "yes"; then
+		label=" Mute"
 	elif (( volume < 25 )); then
-		decorate " $volume%"
+		label=" $volume%"
 	elif (( volume < 50 )); then
-		decorate " $volume%"
+		label=" $volume%"
 	else
-		decorate " $volume%"
+		label=" $volume%"
 	fi
+	echo "%{A4:volume up:}%{A5:volume down:}%{A1:volume toggle:}$label%{A}%{A}%{A}"
 }
 
 print_label

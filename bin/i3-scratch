@@ -25,10 +25,12 @@ def main():
     args = parse_args()
     i3 = i3ipc.Connection()
     tree = i3.get_tree()
+    focused = tree.find_focused()
+    workspace = focused.workspace() if focused else None
 
     if args.push:
 
-        if not tree.find_focused():
+        if not focused:
             sys.exit(1)
 
         i3.command('move to workspace _scratch')
@@ -47,9 +49,10 @@ def main():
 
     elif args.focus:
 
-        i3.command('workspace _scratch')
-
-
+        if workspace and workspace.name == '_scratch':
+            i3.command('workspace back_and_forth')
+        else:
+            i3.command('workspace _scratch')
 
 
 if __name__ == '__main__':

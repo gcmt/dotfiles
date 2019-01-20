@@ -3,12 +3,13 @@
 # Applications
 # ----------------------------------------------------------------------------
 
+exec_always --no-startup-id nitrogen --restore
 exec_always --no-startup-id ~/.config/polybar/start.sh
 exec_always --no-startup-id ~/.config/compton/start.sh
-exec_always --no-startup-id nitrogen --restore
 exec_always --no-startup-id ~/.config/redshift/start.sh
 exec_always --no-startup-id ~/.config/dunst/start.sh
 exec_always --no-startup-id ~/.config/mpd/start.sh
+exec_always --no-startup-id ~/.local/bin/autolock
 exec_always --no-startup-id i3-watch-last-window
 exec_always --no-startup-id parcellite
 exec_always --no-startup-id gpu -p base

@@ -73,7 +73,6 @@ def get_last_window(tree):
         error('i3-history not found')
     try:
         id = proc.stdout.splitlines()[-2]
-        print(id)
     except IndexError:
         return None
     try:

@@ -1,6 +1,4 @@
 #!/bin/bash
 
-file="/run/user/$UID/i3-last-window"
-if [[ -s "$file" ]]; then
-	i3-focus -id "$(cat $file)"
-fi
+id="$(i3-history -print | tail -2 | head -1)"
+[[ "$id" ]] && i3-focus -id "$id"

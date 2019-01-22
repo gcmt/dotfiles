@@ -7,6 +7,7 @@ import argparse
 import i3ipc
 import shlex
 from pathlib import Path
+from subprocess import run, Popen, PIPE
 
 
 def error(msg):
@@ -67,14 +68,19 @@ def match(args, win):
 
 def get_last_window(tree):
     try:
-        path = f'/run/user/{os.getuid()}/i3-last-window'
-        id = Path(path).read_text().strip()
+        proc = run(['i3-history', '-print'], stdout=PIPE, encoding='utf8')
+    except FileNotFoundError:
+        error('i3-history not found')
+    try:
+        id = proc.stdout.splitlines()[-2]
+        print(id)
+    except IndexError:
+        return None
+    try:
         id = int(id, 0)
         return tree.find_by_window(id)
-    except FileNotFoundError:
-        error(f"could not read last window id, file not found: {path}")
     except ValueError:
-        error(f"invalid window id '{id}' in {path}")
+        error(f"invalid window id '{id}'")
 
 
 def focus(win, move=False):
@@ -93,7 +99,7 @@ def main():
     i3 = i3ipc.Connection()
     tree = i3.get_tree()
 
-    if args.bounce and not args.kill and not args.move:
+    if args.bounce and not (args.kill or args.move or args.id):
         focused = tree.find_focused()
         if focused.type == 'con' and match(args, focused):
             last = get_last_window(tree)

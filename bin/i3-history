@@ -1,0 +1,71 @@
+#!/bin/bash
+
+scriptname="$(basename "$0")"
+pidfile="/run/user/$UID/$scriptname.pid"
+out="/run/user/$UID/i3-history"
+
+print_help() {
+	echo "Usage: $scriptname -print|-monitor"
+}
+
+if [[ ! "$1" =~ ^(-monitor|-print)$ ]]; then
+	print_help
+	exit 1
+fi
+
+if [[ "$1" == "-print" ]]; then
+	cat "$out" 2>/dev/null
+	exit 0
+fi
+
+exec 200>"$pidfile"
+if ! flock -n 200; then
+	echo "$scriptname: already running" 2>&1
+	exit 1
+fi
+
+echo $$ >&200
+echo > "$out"
+
+cleanup() {
+	rm -f "$out" "$pidfile"
+}
+
+trap cleanup 0
+
+hist_add() {
+	hist_remove "$1"
+	hist+=("$1")
+}
+
+hist_remove() {
+	local new=()
+	for id in "${hist[@]}"; do
+		[[ "$id" != "$1" ]] && new+=("$id")
+	done
+	hist=("${new[@]}")
+}
+
+hist_prune() {
+	for id in "${hist[@]}"; do
+		if ! xprop -id "$id" >/dev/null 2>&1; then
+			hist_remove "$id"
+		fi
+	done
+}
+
+hist_write() {
+	IFS=$'\n'; echo "${hist[*]}" > "$1"
+}
+
+hist=()
+
+xprop -root -spy _NET_ACTIVE_WINDOW | while read -r line; do
+	id="$(grep -io "0x[a-f0-9]\\+" <<< "$line")"
+	if [[ "$id" == "0x0" ]]; then
+		continue
+	fi
+	hist_add "$id"
+	hist_prune
+	hist_write "$out"
+done

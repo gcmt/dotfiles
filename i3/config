@@ -10,7 +10,7 @@ exec_always --no-startup-id ~/.config/redshift/start.sh
 exec_always --no-startup-id ~/.config/dunst/start.sh
 exec_always --no-startup-id ~/.config/mpd/start.sh
 exec_always --no-startup-id ~/.local/bin/autolock
-exec_always --no-startup-id i3-watch-last-window
+exec_always --no-startup-id i3-history -monitor
 exec_always --no-startup-id parcellite
 exec_always --no-startup-id gpu -p base
 exec --no-startup-id tmux new -ds scratch

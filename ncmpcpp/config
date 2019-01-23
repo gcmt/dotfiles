@@ -85,7 +85,8 @@ centered_cursor = no
 
 user_interface = classic
 
-progressbar_look = ───
+# progressbar_look = ───
+progressbar_look = ━━━
 # progressbar_look = ▬▬▬
 
 show_duplicate_tags = yes
@@ -185,7 +186,7 @@ player_state_color = 24
 state_flags_color = 24
 
 progressbar_color = 22
-progressbar_elapsed_color = 23
+progressbar_elapsed_color = 24
 
 statusbar_color = 24
 statusbar_time_color = 24

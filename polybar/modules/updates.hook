@@ -1,0 +1,9 @@
+[Trigger]
+Type = Package
+Operation = Upgrade
+Target= *
+
+[Action]
+Description = Restart polybar module
+When = PostTransaction
+Exec = /bin/bash -c "[[ -f /run/user/$SUDO_UID/polybar_updates.pid ]] && kill $(cat /run/user/$SUDO_UID/polybar_updates.pid)"

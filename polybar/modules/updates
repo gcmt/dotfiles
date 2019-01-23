@@ -1,0 +1,20 @@
+#!/bin/bash
+
+pidfile="/run/user/$UID/polybar_updates.pid"
+trap "rm '$pidfile'" 0
+
+while true; do
+
+	updates="$(checkupdates 2>/dev/null | wc -l)"
+
+	if (( updates > 0 )); then
+		echo " $updates"
+	else
+		echo ""
+	fi
+
+	sleep 1h &
+	echo $! > "$pidfile"
+	wait
+
+done

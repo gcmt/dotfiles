@@ -15,7 +15,7 @@ notify_err() {
 }
 
 view_log() {
-	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1"
+	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1" & disown
 }
 
 print_label() {

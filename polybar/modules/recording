@@ -5,7 +5,7 @@ stop_recording() {
 		local file="$(cat "$metafile")"
 		kill "$(cat "$pidfile")"
 		if [[ -n "$file" ]]; then
-			i3-msg -q "exec --no-startup-id nemo $file"
+			nemo "$file" &
 		fi
 	fi
 }
@@ -44,7 +44,7 @@ if (( $# == 0 )); then
 	mkfifo "$fifo"
 	trap "rm '$fifo'" 0
 	main
-else
+elif [[ "$1" == 'stop' ]]; then
 	if [[ ! -p "$fifo" ]]; then
 		err "module not running"
 	fi

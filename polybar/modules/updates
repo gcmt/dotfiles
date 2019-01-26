@@ -1,20 +1,46 @@
 #!/bin/bash
 
+scriptpath="$(realpath -s "$0")"
 pidfile="/run/user/$UID/polybar_updates.pid"
-trap "rm '$pidfile'" 0
+updatesfile="/run/user/$UID/polybar_updates.updates"
 
-while true; do
+cleanup() {
+	rm "$pidfile" "$updatesfile"
+}
 
-	updates="$(checkupdates 2>/dev/null | wc -l)"
+main() {
+	trap "cleanup" 0
+	local n
+	while true; do
+		n="$(checkupdates | tee "$updatesfile" | wc -l)"
+		if (( n > 0 )); then
+			echo "%{A1:$scriptpath view:}%{A3:$scriptpath quickview:} $n%{A}%{A}"
+		else
+			echo ""
+		fi
+		sleep 1h &
+		echo $! > "$pidfile"
+		wait
+	done
+}
 
-	if (( updates > 0 )); then
-		echo " $updates"
-	else
-		echo ""
+view() {
+	local session=updates
+	if ! tmux has -t "=$session" 2>/dev/null; then
+		tmux new -ds "$session"
+		tmux send -t "$session" C-l "checkupdates" C-m
 	fi
+	urxvt -name floating -e t "$session" &
+}
 
-	sleep 1h &
-	echo $! > "$pidfile"
-	wait
+quickview() {
+	sed 's;^\(\S\+\)\s\+\(.*\)$;\1 <span foreground="#999">\2</span>;' < "$updatesfile" |
+		mouse-menu -noselected -width auto -markup-rows &
+}
 
-done
+case "$1" in
+	"") main ;;
+	view) view ;;
+	quickview) quickview ;;
+	*) exit 1 ;;
+esac

@@ -115,7 +115,9 @@ def rofi(windows, args):
 
     chars = max([len(w.name) + len(w.workspace().name) for w in windows]) + 10
     if args.tiny:
-        options += ['-theme', 'tiny']
+        options += ['-theme-str', 'case-indicator { enabled: false; }']
+        options += ['-theme-str', 'listview { fixed-height: false; scrollbar: false; }']
+        options += ['-theme-str', f'element, inputbar {{ padding: 2px 6px; }}']
         chars = max([min([chars, 100]), 80])
     else:
         options += ['-theme', 'main-light']

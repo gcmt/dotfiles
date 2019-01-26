@@ -1,0 +1,166 @@
+#!/usr/bin/env python
+
+import os
+import re
+import sys
+import argparse
+from subprocess import run, PIPE
+
+
+def error(msg):
+    script = os.path.basename(__file__)
+    print(f"{script}: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+def text_pixel_length(text, font=None, fontsize=None):
+
+    if not font or not fontsize:
+        error("font and fontsize are both required to determine text pixel length")
+
+    try:
+        cmd = ['text-pixel-size', font, str(fontsize)]
+        stdout = run(cmd, input=text, stdout=PIPE, encoding='utf8').stdout
+    except FileNotFoundError as e:
+        error('text-pixel-size not found')
+
+    try:
+        return int(stdout.split()[0])
+    except (IndexError, ValueError):
+        return None
+
+
+def get_screen_size():
+
+    try:
+        stdout = run(['xrandr'], stdout=PIPE, encoding='utf8').stdout
+    except FileNotFoundError as e:
+        error('xrandr not found')
+
+    for line in stdout.split('\n'):
+        if 'connected' in line:
+            match = re.search('(\d+)x(\d+)', line)
+            if match:
+                return int(match.group(1)), int(match.group(2))
+
+    return None, None
+
+
+def get_mouse_coordinates():
+
+    try:
+        cmd = ['xdotool', 'getmouselocation']
+        stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout
+    except FileNotFoundError:
+        error('xdotool not found')
+
+    match = re.search('x:(\d+) y:(\d+)', stdout)
+    if not match:
+        return None, None
+
+    return int(match.group(1)), int(match.group(2))
+
+
+def rofi(args, rofiargs):
+
+    if not sys.stdin.isatty():
+        input = [line.strip() for line in sys.stdin]
+    else:
+        input = None
+
+    options  = ['-dmenu', '-click-to-exit', '-theme', f'{args.theme}']
+    options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary']
+    options += ['-theme-str', f'* {{ font: "{args.font} {args.fontsize}"; }}']
+    options += ['-theme-str', 'case-indicator { enabled: false; }']
+    options += ['-theme-str', 'listview { fixed-height: false; scrollbar: false; }']
+    options += ['-theme-str', 'window { location: north west; anchor: north west; }']
+
+    if args.noselected:
+        options += ['-theme-str', '* { selected-normal-background: @background; }']
+
+    x, y = get_mouse_coordinates()
+    if not x or not y:
+        error("can't get mouse location")
+
+    options += ['-theme-str', f'window {{ x-offset: {x}px; y-offset: {y}px; }}']
+
+    if args.width != 'auto':
+        width = args.width
+    else:
+        width = text_pixel_length("\n".join(input), font=args.font, fontsize=args.fontsize)
+        if not width:
+            error("can't get text pixel size")
+        if len(args.padding) == 1:
+            width += args.padding[0] * 2
+        elif len(args.padding) == 2 or len(args.padding) == 3:
+            width += args.padding[1] * 2
+        elif len(args.padding) == 4:
+            width += args.padding[1] + args.padding[3]
+        width = min(width + args.room, args.maxwidth)
+        width = f'{width}px'
+
+    padding = ' '.join(str(v) for v in args.padding)
+    options += ['-theme-str', f'window {{ width: {width}; }}']
+    options += ['-theme-str', f'element, inputbar {{ padding: {padding}; }}']
+
+    w, h = get_screen_size()
+    if not w or not h:
+        error("can't get screen size")
+
+    if x + int(re.sub("\D", "", width)) > w - 5:
+        options += ['-theme-str', 'window { anchor: north east; }']
+
+    if not args.inputbar:
+        options += ['-theme-str', 'mainbox { children: [listview]; }']
+        options += ['-kb-row-up', 'Up,Control+k,k', '-kb-row-down', 'Down,Control+j,j']
+        options += ['-kb-accept-entry', 'l,Return,Control+d', '-kb-cancel', 'Escape,q']
+
+    try:
+        cmd = ['rofi'] + options + rofiargs
+        input = "\n".join(input) if input else None
+        stdout = run(cmd, input=input, stdout=PIPE, encoding='utf8').stdout
+        return stdout.strip()
+    except FileNotFoundError:
+        error('rofi not found')
+
+
+def parse_args():
+
+    parser = argparse.ArgumentParser(allow_abbrev=False, description="i3 tiny menu")
+    parser.add_argument('-inputbar', action='store_true', default=False, help="display the input bar")
+    parser.add_argument('-noselected', action='store_true', default=False, help="don't highlight selected row")
+    parser.add_argument('-font', default='Noto Sans Regular', help="font (required to calculate width)")
+    parser.add_argument('-fontsize', default=10, help="font size (required to calculate width)")
+    parser.add_argument('-theme', default='main-light', help="base rofi theme")
+    parser.add_argument('-padding', default="2,6", help="padding in pixels (all | v,h | t,h,b | t,r,b,l)")
+    parser.add_argument('-width', default='200', help="width (use auto to automatically calculate the width)")
+    parser.add_argument('-maxwidth', default=600, type=int, help="max width in pixels")
+    parser.add_argument('-room', default=70, type=int, help="additional right padding in pixels")
+
+    args, rofiargs = parser.parse_known_args()
+
+    try:
+        if args.padding:
+            args.padding = [int(x) for x in args.padding.split(',')]
+        else:
+            args.padding = []
+    except ValueError:
+        parser.print_usage(file=sys.stderr)
+        error(f"invalid argument '{args.padding}' for option -padding, must be a list of numbers")
+
+    return args, rofiargs
+
+
+def main():
+
+    args, rofiargs = parse_args()
+
+    choice = rofi(args, rofiargs)
+    if not choice:
+        sys.exit(0)
+
+    print(choice)
+
+
+if __name__ == '__main__':
+    main()

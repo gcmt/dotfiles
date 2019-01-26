@@ -72,7 +72,7 @@ def menu():
     entries = 'default\nshow seconds\nutc time'
 
     selected = styles.index(get_current_style())
-    cmd = ['i3-tiny-menu', '-format', 'i', '-selected-row', str(selected)]
+    cmd = ['mouse-menu', '-format', 'i', '-selected-row', str(selected)]
 
     try:
         stdout = run(cmd, input=entries, stdout=PIPE, encoding='utf8').stdout.strip()

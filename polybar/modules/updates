@@ -30,17 +30,18 @@ view() {
 		tmux new -ds "$session"
 		tmux send -t "$session" C-l "checkupdates" C-m
 	fi
-	urxvt -name floating -e t "$session" &
+	urxvt -name floating -e t "$session"
 }
 
 quickview() {
-	sed 's;^\(\S\+\)\s\+\(.*\)$;\1 <span foreground="#999">\2</span>;' < "$updatesfile" |
-		mouse-menu -noselected -width auto -markup-rows &
+	local choice="$(sed 's;^\(\S\+\)\s\+\(.*\)$;\1 <span foreground="#999">\2</span>;' < "$updatesfile" \
+		| mouse-menu -noselected -width auto -markup-rows)"
+	[[ "$choice" ]] && view
 }
 
 case "$1" in
 	"") main ;;
-	view) view ;;
-	quickview) quickview ;;
+	view) view & ;;
+	quickview) quickview & ;;
 	*) exit 1 ;;
 esac

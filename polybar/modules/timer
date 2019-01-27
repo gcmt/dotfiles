@@ -34,17 +34,25 @@ main() {
 	while true; do
 		if read -r cmd seconds < "$fifo"; then
 			case $cmd in
-				start)
-					if [[ -n "$pid" ]]; then
-						kill $pid
+				toggle)
+					if [[ "$pid" ]]; then
+						kill "$pid"
+						echo
+						pid=
+					elif (( seconds > 0 )); then
+						timer "$seconds" &
+						pid=$!
 					fi
-					timer "$seconds" &
-					pid=$!
+					;;
+				start)
+					[[ "$pid" ]] && kill "$pid"
+					if (( seconds > 0 )); then
+						timer "$seconds" &
+						pid=$!
+					fi
 					;;
 				stop)
-					if [[ -n "$pid" ]]; then
-						kill $pid
-					fi
+					[[ "$pid" ]] && kill "$pid"
 					echo
 					pid=
 					;;

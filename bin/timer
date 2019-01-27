@@ -13,7 +13,7 @@ if [[ "$1" == start || "$1" =~ [0-9]+ ]]; then
 
 elif [[ "$1" == toggle ]]; then
 
-	seconds="$(parse_duration "$@")"
+	seconds="$(toseconds "$@")"
 	(( seconds > 0 )) || exit 1
 	echo "toggle $seconds" > "$fifo"
 

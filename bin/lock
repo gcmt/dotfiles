@@ -100,4 +100,7 @@ if (( blank == 1 )); then
 	sleep "$delay" &
 	echo $! > "$pidfile"
 	wait $! && xset dpms force off
+	rm -f "$pidfile"
 fi
+
+wait

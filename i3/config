@@ -164,10 +164,10 @@ bindsym $mod+Shift+k move up 10px
 bindsym $mod+Shift+l move right 10px
 
 # Resize container
-bindsym $mod+Left resize shrink left 5px or 2ppt
-bindsym $mod+Down resize shrink down 5px or 2ppt
-bindsym $mod+Up resize shrink up 5px or 2ppt
-bindsym $mod+Right resize shrink right 5px or 2ppt
+bindsym $mod+Control+Left resize shrink left 5px or 2ppt
+bindsym $mod+Control+Down resize shrink down 5px or 2ppt
+bindsym $mod+Control+Up resize shrink up 5px or 2ppt
+bindsym $mod+Control+Right resize shrink right 5px or 2ppt
 bindsym $mod+Shift+Left resize grow left 5px or 2ppt
 bindsym $mod+Shift+Down resize grow down 5px or 2ppt
 bindsym $mod+Shift+Up resize grow up 5px or 2ppt

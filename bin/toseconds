@@ -4,7 +4,7 @@ total=0
 
 for arg in "$@"; do
 	if [[ ! "$arg" =~ ^([0-9]+)([smhd])?$ ]]; then
-		echo "Skipping invalid argument: $1" >&2
+		echo "Skipping invalid argument: $arg" >&2
 		continue
 	fi
 	case ${BASH_REMATCH[2]} in

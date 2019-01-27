@@ -3,7 +3,7 @@
 total=0
 
 for arg in "$@"; do
-	if [[ ! "$arg" =~ ([0-9]+)([smhd])?$ ]]; then
+	if [[ ! "$arg" =~ ^([0-9]+)([smhd])?$ ]]; then
 		echo "Skipping invalid argument: $1" >&2
 		continue
 	fi

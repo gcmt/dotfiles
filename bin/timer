@@ -6,24 +6,12 @@ if [[ ! -p "$fifo" ]]; then
 fi
 
 if [[ "$1" == start || "$1" =~ [0-9]+ ]]; then
-
-	seconds="$(toseconds "$@")"
-	(( seconds > 0 )) || exit 1
-	echo "start $seconds" > "$fifo"
-
+	echo "start $(toseconds "$@" 2>/dev/null)" > "$fifo"
 elif [[ "$1" == toggle ]]; then
-
-	seconds="$(toseconds "$@")"
-	(( seconds > 0 )) || exit 1
-	echo "toggle $seconds" > "$fifo"
-
+	echo "toggle $(toseconds "$@" 2>/dev/null)" > "$fifo"
 elif [[ "$1" == stop ]]; then
-
 	echo "stop" > "$fifo"
-
 else
-
-	echo 2>&1 "Usage: timer [start|stop|toggle] [durations]"
+	echo "Usage: timer [start|stop|toggle] [durations]" >&1
 	exit 1
-
 fi

@@ -282,4 +282,8 @@
 	summary = "Sensors"
 	format = "%b"
 
+[lock-inhibitor]
+	summary = "Lock Inhibitor"
+	format = "%b"
+
 # vim: ft=cfg cms=#\ %s

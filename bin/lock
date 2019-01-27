@@ -16,6 +16,11 @@ blank=0
 
 excluded=(mpv)
 
+scriptname="$(basename "$0")"
+pidfile="/run/user/$UID/$scriptname.pid"
+lockfile="/run/user/$UID/$scriptname.lock"
+inhibitor="/run/user/$UID/nolock"
+
 while (( $# )); do
 	if [[ "$1" == "-force" ]]; then
 		force=1
@@ -37,25 +42,30 @@ while (( $# )); do
 done
 
 if (( force == 0 )); then
+
+	if [[ -f "$inhibitor" ]]; then
+		echo "cannot lock screen: inhibitor file exists: $inhibitor" 1>&2
+		exit 1
+	fi
+
 	id=$(xdotool getwindowfocus)
+
 	# Do not lock the screen when fullscreen is active
 	wm_state=$(xprop -id "$id" | grep _NET_WM_STATE)
 	if echo "$wm_state" | grep -q FULLSCREEN; then
-		echo 1>&2 "cannot lock screen: fullscreen on"
+		echo "cannot lock screen: fullscreen on" 1>&2
 		exit 1
 	fi
+
 	# Do not lock the screen when certain windows are focused
 	wm_class=$(xprop -id "$id" 2> /dev/null | grep WM_CLASS)
 	class=$(echo "$wm_class" | grep -Po '(?<=")\w+(?=")' | tail -n1)
 	if (IFS=$'\n'; echo "${excluded[*]}") | grep -Fxiq "$class"; then
-		echo 1>&2 "cannot lock screen: focused window class is '$class'"
+		echo "cannot lock screen: focused window class is '$class'" 1>&2
 		exit 1
 	fi
-fi
 
-scriptname="$(basename "$0")"
-pidfile="/run/user/$UID/$scriptname.pid"
-lockfile="/run/user/$UID/$scriptname.lock"
+fi
 
 exec 200>"$lockfile"
 if ! flock -n 200; then

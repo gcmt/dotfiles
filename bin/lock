@@ -19,7 +19,7 @@ excluded=(mpv)
 scriptname="$(basename "$0")"
 pidfile="/run/user/$UID/$scriptname.pid"
 lockfile="/run/user/$UID/$scriptname.lock"
-inhibitor="/run/user/$UID/nolock"
+caffeine="/run/user/$UID/caffeine"
 
 while (( $# )); do
 	if [[ "$1" == "-force" ]]; then
@@ -43,8 +43,8 @@ done
 
 if (( force == 0 )); then
 
-	if [[ -f "$inhibitor" ]]; then
-		echo "cannot lock screen: inhibitor file exists: $inhibitor" 1>&2
+	if [[ -f "$caffeine" ]]; then
+		echo "cannot lock screen: caffeine" 1>&2
 		exit 1
 	fi
 

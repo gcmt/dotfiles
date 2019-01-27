@@ -1,0 +1,12 @@
+#!/bin/bash
+
+fifo="/tmp/polybar_caffeine.fifo"
+if [[ ! -p "$fifo" ]]; then
+	exit 1
+fi
+
+if [[ -n "$1" ]]; then
+	echo "$1" > "$fifo"
+else
+	echo "toggle" > "$fifo"
+fi

@@ -79,7 +79,7 @@ bindsym --whole-window $mod+button9 exec --no-startup-id i3-next-workspace -next
 bindsym --whole-window $mod+button8 exec --no-startup-id i3-next-workspace -prev
 
 # Prevent/allow screen locking
-bindsym Pause exec --no-startup-id toggle-lock-inhibitor
+bindsym Pause exec --no-startup-id coffee
 
 # Sensors
 bindsym $mod+g exec --no-startup-id sensors-notify

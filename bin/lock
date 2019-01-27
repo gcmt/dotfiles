@@ -55,14 +55,19 @@ fi
 
 scriptname="$(basename "$0")"
 pidfile="/run/user/$UID/$scriptname.pid"
+lockfile="/run/user/$UID/$scriptname.lock"
 
-exec 200>"$pidfile"
+exec 200>"$lockfile"
 if ! flock -n 200; then
 	echo "$scriptname: already running" 2>&1
 	exit 1
-else
-	echo $$ >&200
 fi
+
+cleanup() {
+	rm -f "$lockfile" "$pidfile"
+}
+
+trap "cleanup" 0
 
 volume_state=1
 if amixer -D pulse get Master | grep -q '\[off\]$'; then
@@ -76,17 +81,15 @@ fi
 (
 
 	cleanup() {
-		local parent="$(cat "$pidfile")"
-		if [[ "$(ps -p "$parent" -o comm=)" == "lock" ]]; then
-			kill "$parent"
+		if [[ -f "$pidfile" ]]; then
+			kill "$(cat "$pidfile")"
 		fi
-		rm -f "$pidfile"
 		if (( volume_state == 1 )); then
 			volume -q unmute
 		fi
 	}
 
-	trap cleanup 0
+	trap "cleanup" 0
 
 	bg="$(grep -Po "(?<=file\=).+" "$HOME/.config/nitrogen/bg-saved.cfg")"
 	i3lock -ne -i "$bg"
@@ -94,6 +97,7 @@ fi
 ) &
 
 if (( blank == 1 )); then
-	sleep "$delay"
-	xset dpms force off
+	sleep "$delay" &
+	echo $! > "$pidfile"
+	wait $! && xset dpms force off
 fi

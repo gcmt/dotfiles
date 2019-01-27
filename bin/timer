@@ -1,21 +1,5 @@
 #!/bin/bash
 
-parse_duration() {
-	local n mod total=0
-	for arg in "$@"; do
-		n=$(grep -o '^[0-9]\+' <<< "$arg")
-		(( $? != 0 )) && continue
-		mod=$(grep -o '\([sm]$\|$\)' <<< "$arg")
-		(( $? != 0 )) && continue
-		case $mod in
-			s) total=$(( $total + $n )) ;;
-			m) total=$(( $total + $n "*" 60 )) ;;
-			*) total=$(( $total + $n "*" 60 )) ;;
-		esac
-	done
-	echo "$total"
-}
-
 fifo="/tmp/polybar_timer.fifo"
 if [[ ! -p "$fifo" ]]; then
 	exit 1
@@ -23,7 +7,7 @@ fi
 
 if [[ "$1" == start || "$1" =~ [0-9]+ ]]; then
 
-	seconds="$(parse_duration "$@")"
+	seconds="$(toseconds "$@")"
 	(( seconds > 0 )) || exit 1
 	echo "start $seconds" > "$fifo"
 

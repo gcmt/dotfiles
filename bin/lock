@@ -73,12 +73,6 @@ if ! flock -n 200; then
 	exit 1
 fi
 
-cleanup() {
-	rm -f "$lockfile" "$pidfile"
-}
-
-trap "cleanup" 0
-
 volume_state=1
 if amixer -D pulse get Master | grep -q '\[off\]$'; then
 	volume_state=0
@@ -91,6 +85,7 @@ fi
 (
 
 	cleanup() {
+		rm -f "$lockfile"
 		if [[ -f "$pidfile" ]]; then
 			kill "$(cat "$pidfile")"
 		fi

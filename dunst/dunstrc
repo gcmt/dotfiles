@@ -282,8 +282,8 @@
 	summary = "Sensors"
 	format = "%b"
 
-[lock-inhibitor]
-	summary = "Lock Inhibitor"
+[caffeine]
+	summary = "Caffeine"
 	format = "%b"
 
 # vim: ft=cfg cms=#\ %s

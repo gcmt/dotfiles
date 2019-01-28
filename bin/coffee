@@ -1,12 +1,30 @@
 #!/bin/bash
 
 fifo="/tmp/polybar_caffeine.fifo"
-if [[ ! -p "$fifo" ]]; then
-	exit 1
-fi
+caffeine="/run/user/$UID/caffeine"
 
-if [[ -n "$1" ]]; then
-	echo "$1" > "$fifo"
+notify() {
+	dunstify -r 7788 -t 1000 "Caffeine" "$1"
+}
+
+stop_caffeine() {
+	rm -f "$caffeine"
+	notify "Caffeine OFF"
+}
+
+start_caffeine() {
+	touch "$caffeine"
+	notify "Caffeine ON"
+}
+
+cmd="${1:-toggle}"
+
+if [[ -p "$fifo" ]]; then
+	echo "$cmd" > "$fifo"
 else
-	echo "toggle" > "$fifo"
+	case "$cmd" in
+		start) start_caffeine ;;
+		stop) stop_caffeine ;;
+		toggle) [[ -f "$caffeine" ]] && stop_caffeine || start_caffeine ;;
+	esac
 fi

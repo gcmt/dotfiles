@@ -2,11 +2,11 @@
 
 print_help() {
 	echo "Usage: "
-	echo "  lock [-force] [-blank]"
+	echo "  lock [-force] [-blank [delay]]"
 	echo
 	echo "Options: "
 	echo "  -force   Force screen locking when fullscreen is on and regardless of ignored classes (${excluded[*]})"
-	echo "  -blank   Turn off the screen after $delay seconds"
+	echo "  -blank [delay]   Turn off the screen after $delay seconds"
 	echo
 }
 
@@ -78,9 +78,18 @@ if amixer -D pulse get Master | grep -q '\[off\]$'; then
 	volume_state=0
 fi
 
-if (( volume_state == 1 )); then
-	volume -q mute
+if (( force == 1 )); then
+
+	if (( volume_state == 1 )); then
+		volume -q mute
+	fi
+
+	if hash "mpc" 2>/dev/null; then
+		mpc pause >/dev/null 2>&1
+	fi
+
 fi
+
 
 (
 
@@ -89,7 +98,7 @@ fi
 		if [[ -f "$pidfile" ]]; then
 			kill "$(cat "$pidfile")"
 		fi
-		if (( volume_state == 1 )); then
+		if (( force == 1 && volume_state == 1 )); then
 			volume -q unmute
 		fi
 	}

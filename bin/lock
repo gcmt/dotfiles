@@ -101,11 +101,19 @@ fi
 
 ) &
 
-if (( blank == 1 )); then
+if (( blank == 0 )); then
+	exit
+fi
+
+(
+	cleanup() {
+		rm -f "$pidfile"
+	}
+
+	trap "cleanup" 0
+
 	sleep "$delay" &
 	echo $! > "$pidfile"
 	wait $! && xset dpms force off
-	rm -f "$pidfile"
-fi
 
-wait
+) &

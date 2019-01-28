@@ -276,6 +276,7 @@ alias pypath='python -c "import sys; [print(p) for p in filter(None, sys.path)]"
 alias open='xdg-open'
 alias rg="rg --color=never -S"
 alias http="http --style=algol"
+alias update='systemd-inhibit sudo pacman -Syu'
 
 # WIDGETS
 # ----------------------------------------------------------------------------

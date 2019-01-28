@@ -18,7 +18,7 @@ main() {
 
 print_label() {
 	if [[ -f "$caffeine" ]]; then
-		echo "%{A1:coffee &:}%{A}"
+		echo "%{A1:coffee &:}%{A}"
 	else
 		echo
 	fi

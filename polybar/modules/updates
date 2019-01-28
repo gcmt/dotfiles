@@ -37,7 +37,7 @@ view() {
 
 quickview() {
 	local choice="$(sed 's;^\(\S\+\)\s\+\(.*\)$;\1 <span foreground="#999">\2</span>;' < "$updatesfile" \
-		| mouse-menu -noselected -width auto -markup-rows)"
+		| mouse-menu -noselected -width auto -markup-rows -maxlines 40)"
 	[[ "$choice" ]] && view
 }
 

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+while read file; do
+	fullpath="$PWD/$file"
+	case "$1" in
+		"C-r")
+			convert -rotate 90 "$file" "$file" ;;
+		"C-w")
+			feh --bg-scale "$fullpath" ;;
+	esac
+done

@@ -254,3 +254,11 @@ if arg -nemo || arg -all; then
 		link "$dotdir/nemo" "$XDG_DATA_HOME/nemo"
 	fi
 fi
+
+if arg -sxiv || arg -all; then
+	if arg -all && ! arg -sxiv && ! installed sxiv; then
+		skip sxiv
+	else
+		link "$dotdir/sxiv" "$XDG_CONFIG_HOME/sxiv"
+	fi
+fi

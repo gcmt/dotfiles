@@ -105,7 +105,12 @@ fi
 
 	trap "cleanup" 0
 
-	bg="$(grep -Po "(?<=file\=).+" "$HOME/.config/nitrogen/bg-saved.cfg")"
+	if [[ -f "$HOME/.fehbg" ]]; then
+		bg="$(grep '^feh' ~/.fehbg | grep -Po "${HOME}[^']+")"
+	elif [[ -f "$HOME/.config/nitrogen/bg-saved.cfg" ]]; then
+		bg="$(grep -Po "(?<=file\=).+" "$HOME/.config/nitrogen/bg-saved.cfg")"
+	fi
+
 	i3lock -ne -i "$bg"
 
 ) &

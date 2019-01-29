@@ -13,4 +13,6 @@ xset s off dpms 0 0 0
 
 xset r rate 170 25
 
+~/.fehbg &
+
 exec i3

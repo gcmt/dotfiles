@@ -23,13 +23,12 @@ print_label() {
 	local failed="$1" archive="$2"
 	if (( failed == 1 )); then
 		label="%{F#ce7d86} Backup%{F-}"
-		label="%{A3:$scriptpath clickright:}$label%{A}"
 	elif [[ "$archive" =~ ^rsync\.net ]]; then
 		label=" Backup"
 	elif [[ "$archive" =~ MyPassport ]]; then
 		label=" Backup"
 	fi
-	echo "%{A1:$scriptpath clickleft:}$label%{A}"
+	echo "%{A3:$scriptpath clickright:}%{A1:$scriptpath clickleft:}$label%{A}%{A}"
 }
 
 main() {
@@ -79,6 +78,8 @@ click_left() {
 click_right() {
 	if [[ -e "$err_file" && -p "$fifo" ]]; then
 		echo clean > "$fifo"
+	elif [[ -e "$arch_file" ]]; then
+		mouse-menu -noselected -room 0 -width auto -markup-rows <<< "<b>Archive</b>: $(cat "$arch_file")"
 	fi
 }
 

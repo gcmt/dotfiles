@@ -77,6 +77,9 @@ bindsym --whole-window button8 exec --no-startup-id i3-next-window -prev
 bindsym --whole-window $mod+button9 exec --no-startup-id i3-next-workspace -next
 bindsym --whole-window $mod+button8 exec --no-startup-id i3-next-workspace -prev
 
+# Keyboard cheatsheet
+bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
+
 # Prevent/allow screen locking
 bindsym Pause exec --no-startup-id coffee
 
@@ -264,7 +267,6 @@ mode "float" {
 
 bindsym $mod+Shift+f mode "float"
 
-# i3 commands
 mode "i3" {
 
 	bindsym r reload
@@ -281,6 +283,8 @@ mode "i3" {
 	# Reset workspace layout
 	bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 
+	bindsym w mode "default"; exec --no-startup-id sh -c "cd ~/.local/share/wallpapers && sxiv -rt ."
+
 	bindsym q mode "default"
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
@@ -289,10 +293,10 @@ mode "i3" {
 
 bindsym $mod+$alt+space mode "i3"
 
-# App shortcuts
 mode "open" {
 
 	bindsym m exec --no-startup-id i3-focus -t "\| FastMail -" -fallback "firefox --no-remote -P Mail"; mode "default"
+	bindsym d exec --no-startup-id i3-focus -c Nemo -t "^Downloads" -fallback "nemo Downloads"; mode "default"
 
 	bindsym q mode "default"
 	bindsym Return mode "default"
@@ -301,8 +305,6 @@ mode "open" {
 }
 
 bindsym $mod+Tab mode "open"
-
-bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
 
 # Controls
 # ----------------------------------------------------------------------------

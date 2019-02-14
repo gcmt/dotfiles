@@ -872,6 +872,8 @@
 	let g:ale_lint_on_text_changed = 'never'
 	let g:ale_open_list = 0
 
+	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
+
 " Explorer/Ranger
 " ----------------------------------------------------------------------------
 
@@ -926,3 +928,5 @@
 	let g:loaded_getscriptPlugin = 1
 	let g:loaded_2html_plugin = 1
 	let g:loaded_netrwPlugin = 1
+
+" ----------------------------------------------------------------------------

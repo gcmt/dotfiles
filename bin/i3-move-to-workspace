@@ -72,6 +72,8 @@ fi
 
 ask=0
 auto=0
+next=0
+prev=0
 follow=1
 target=
 
@@ -82,6 +84,10 @@ while (( $# )); do
 		auto=1
 	elif [[ "$1" == "-ask" ]]; then
 		ask=1
+	elif [[ "$1" == "-next" ]]; then
+		next=1
+	elif [[ "$1" == "-prev" ]]; then
+		prev=1
 	elif [[ "$1" =~ ^[^-] ]]; then
 		target="$1"
 	elif [[ "$1" == "-help" ]]; then
@@ -96,12 +102,18 @@ done
 if (( ask == 1 )); then
 	ask_for_workspace
 else
+	wsnum="$(i3-msg -t get_workspaces | jq -r '.[] | .name' | grep -cv '^_')"
 	if (( auto == 1 )); then
 		target="$(first_available_workspace)"
-		if [[ -z "$target" ]]; then
-			echo "No more available workspaces" 1>&2
-			exit 1
-		fi
+	elif (( wsnum == 1 && (next == 1 || prev == 1) )); then
+		target="$(first_available_workspace)"
+	elif (( next == 1 )); then
+		target="$(i3-next-workspace -next -dry)"
+	elif (( prev == 1 )); then
+		target="$(i3-next-workspace -prev -dry)"
+	fi
+	if [[ -z "$target" ]]; then
+		exit 1
 	fi
 	move_to_workspace "$target" "$follow"
 fi

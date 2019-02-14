@@ -217,6 +217,10 @@ bindsym $mod+Control+w exec --no-startup-id i3-move-to-workspace -auto -nofollow
 bindsym $mod+Shift+w exec --no-startup-id i3-move-to-workspace -auto
 bindsym $mod+Control+a move container to workspace back_and_forth
 bindsym $mod+Shift+a move container to workspace back_and_forth; workspace back_and_forth
+bindsym $mod+Shift+n exec --no-startup-id i3-move-to-workspace -next
+bindsym $mod+Shift+p exec --no-startup-id i3-move-to-workspace -prev
+bindsym $mod+Control+n exec --no-startup-id i3-move-to-workspace -next -nofollow
+bindsym $mod+Control+p exec --no-startup-id i3-move-to-workspace -prev -nofollow
 
 # Move to last focused workspace/window
 bindsym $mod+a workspace back_and_forth

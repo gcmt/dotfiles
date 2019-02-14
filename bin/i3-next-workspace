@@ -6,6 +6,7 @@ import argparse
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Cycle i3 workspaces (ignore workspaces starting with an underscore)")
+    parser.add_argument('-dry', action='store_true', help="just print workspace without moving")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('-next', action='store_true', help="focus next workspace")
     group.add_argument('-prev', action='store_true', help="focus previous workspace")
@@ -31,7 +32,10 @@ def main():
     while i % len(workspaces) != active_idx:
         w = workspaces[i % len(workspaces)]
         if not w.name.startswith('_'):
-            i3.command(f'workspace "{w.name}"')
+            if args.dry:
+                print(w.name)
+            else:
+                i3.command(f'workspace "{w.name}"')
             return
         i += offset
 

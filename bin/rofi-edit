@@ -11,17 +11,37 @@ if [[ ! "$*" =~ -inputbar($| ) ]]; then
     opts+=" -kb-accept-entry 'l,Return,Control+d' -kb-cancel 'Escape,q'"
 fi
 
-entries="notes\\nlogbook\\ntodo"
-
+entries=(notes logbook logs todo)
 files=(
     "$HOME/Docs/notes/wall.md"
     "$HOME/Docs/logbook/$(date '+%Y-%m-%d').txt"
+	 "logs"
     "$HOME/Docs/todo.md"
 )
 
-idx=$(echo -e "$entries" | eval "rofi $opts")
+idx=$(IFS=$'\n'; echo "${entries[*]}" | eval "rofi $opts")
 if [[ -z "$idx" ]]; then
 	exit 1
+fi
+
+if [[ "${files[$idx]}" == "logs" ]]; then
+
+	entries=()
+	files=()
+
+	while IFS= read -r -d $'\0' file; do
+		files+=("$file")
+	done < <(find ~/Docs/logs/ -type f -name '[^_]*' -print0)
+
+	for file in "${files[@]}"; do
+		entries+=("$(basename "${file%.*}")")
+	done
+
+	idx=$(IFS=$'\n'; echo "${entries[*]}" | eval "rofi $opts")
+	if [[ -z "$idx" ]]; then
+		exec "$0"
+	fi
+
 fi
 
 exec urxvt -name floating -e vim "${files[$idx]}" +'cd %:p:h'

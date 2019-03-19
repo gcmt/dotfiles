@@ -506,8 +506,8 @@
 	nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
 
 	" Toggle search for current word or selected text without moving the cursor
-	nnoremap <silent> <enter> :call <sid>search(0)<cr>
-	vnoremap <silent> <enter> :<c-u>call <sid>search(1)<cr>
+	nnoremap <silent> \ :call <sid>search(0)<cr>
+	vnoremap <silent> \ :<c-u>call <sid>search(1)<cr>
 
 	fun! s:search(visual)
 		if a:visual && line("'<") != line("'>")

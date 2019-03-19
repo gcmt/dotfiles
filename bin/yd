@@ -1,10 +1,12 @@
 #!/bin/bash
 
+date_prefix=0
 use_selection=0
 extract_audio=0
 
-while getopts "sx" OPT; do
+while getopts "dsx" OPT; do
 	case $OPT in
+		d) date_prefix=1 ;;
 		s) use_selection=1 ;;
 		x) extract_audio=1 ;;
 	esac
@@ -33,6 +35,10 @@ notify-send -t 3000 "Downloading $what" "$title"
 cd ~/Downloads
 
 format="%(title)s.%(ext)s"
+if (( date_prefix == 1 )); then
+	format="%(upload_date)s - $format"
+fi
+
 if (( extract_audio == 1 )); then
 	youtube-dl -q -x --audio-format mp3 -o "$format" "$url"
 else

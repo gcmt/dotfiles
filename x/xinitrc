@@ -5,7 +5,7 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 
 xrdb -load ~/.Xresources
 
-setxkbmap -model pc87 -rules evdev -layout us -variant altgr-intl
+setxkbmap -layout us -variant altgr-intl
 
 xmodmap ~/.Xmodmap
 

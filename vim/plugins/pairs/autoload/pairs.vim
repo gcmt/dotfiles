@@ -51,8 +51,8 @@ func! pairs#delete(keys)
 	if !empty(opening) && closing == s:closing[opening]
 		return "\<c-g>u\<esc>" . '"_ci' . opening
 	end
-	let opening = matchstr(before, "\\v([[{(]|\"|')$")
-	let closing = matchstr(after, "\\v^([]})]|\"|')")
+	let opening = matchstr(before, "\\v([[{(]|\"|'|`)$")
+	let closing = matchstr(after, "\\v^([]})]|\"|'|`)")
 	if !empty(opening) && closing == s:closing[opening]
 		if opening =~ "\\v('|\")" && count(after, opening) % 2 == 0
 			return a:keys

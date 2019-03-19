@@ -43,8 +43,7 @@ func! pairs#space()
 	return "\<c-]>\<space>"
 endf
 
-func! pairs#delete(word)
-	let default_action= a:word ? "\<c-w>" : "\<bs>"
+func! pairs#delete(keys)
 	let after = s:after()
 	let before = s:before()
 	let opening = matchstr(before, '\v[[{(]\ze\s+$')
@@ -56,11 +55,11 @@ func! pairs#delete(word)
 	let closing = matchstr(after, "\\v^([]})]|\"|')")
 	if !empty(opening) && closing == s:closing[opening]
 		if opening =~ "\\v('|\")" && count(after, opening) % 2 == 0
-			return default_action
+			return a:keys
 		end
 		return "\<c-g>u\<right>\<bs>\<bs>"
 	end
-	return default_action
+	return a:keys
 endf
 
 func! pairs#newline()

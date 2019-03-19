@@ -17,9 +17,9 @@ inoremap <expr> " pairs#insert_quote('"')
 inoremap <expr> ' pairs#insert_quote("'")
 inoremap <expr> ` pairs#insert_quote("`")
 
-inoremap <expr> <bs> pairs#delete(0)
-inoremap <expr> <c-h> pairs#delete(0)
-inoremap <expr> <c-w> pairs#delete(1)
+inoremap <expr> <bs> pairs#delete("\<bs>")
+inoremap <expr> <c-h> pairs#delete("\<bs>")
+inoremap <expr> <c-w> pairs#delete("\<c-w>")
 
 inoremap <expr> <space> pairs#space()
 

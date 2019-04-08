@@ -508,6 +508,8 @@
 	" Toggle search for current word or selected text without moving the cursor
 	nnoremap <silent> \ :call <sid>search(0)<cr>
 	vnoremap <silent> \ :<c-u>call <sid>search(1)<cr>
+	nnoremap <silent> <RightMouse> <LeftMouse>:call <sid>search(0)<cr>
+	vnoremap <silent> <RightMouse> :<c-u>call <sid>search(1)<cr>
 
 	fun! s:search(visual)
 		if a:visual && line("'<") != line("'>")
@@ -756,6 +758,9 @@
 	func! _cursyn()
 		return synIDattr(synIDtrans(synID(line('.'), col('.'), 0)), 'name')
 	endf
+
+	nnoremap <2-RightMouse> <nop>
+	nnoremap <3-RightMouse> <nop>
 
 	cnoremap <c-n> <down>
 	cnoremap <c-p> <up>

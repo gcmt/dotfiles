@@ -29,9 +29,9 @@ if [[ "${files[$idx]}" == "logs" ]]; then
 	entries=()
 	files=()
 
-	while IFS= read -r -d $'\0' file; do
+	while read -r file; do
 		files+=("$file")
-	done < <(find ~/Docs/logs/ -type f -name '[^_]*' -print0)
+	done < <(find ~/Docs/logs/ -type f -name '[^_]*')
 
 	for file in "${files[@]}"; do
 		entries+=("$(basename "${file%.*}")")

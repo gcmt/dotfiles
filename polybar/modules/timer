@@ -22,8 +22,10 @@ timer() {
 		if (( remaining > 0 )); then
 			echo "%{A:$scriptpath stop:} $(format_time $remaining)%{A}"
 		else
-			notify-send "Timer Finished" "Elapsed time:  $(format_time $1)"
-			echo && break
+			echo
+			notify-send -t 6000 "Timer Finished" "Elapsed time:  $(format_time $1)"
+			mpv "$sound" >/dev/null 2>&1
+			break
 		fi
 		sleep 1
 	done
@@ -69,6 +71,7 @@ err() {
 scriptpath="$(realpath -s "$0")"
 scriptname="$(basename "$scriptpath")"
 fifo="/tmp/polybar_timer.fifo"
+sound="/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
 
 if (( $# == 0 )); then
 	if [[ -p "$fifo" ]]; then

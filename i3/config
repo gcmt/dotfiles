@@ -102,6 +102,9 @@ bindsym $mod+Shift+apostrophe mark _mark
 # Kill window
 bindsym $mod+Shift+q kill
 
+# Kill other windows
+bindsym $mod+Shift+o exec --no-startup-id i3-only
+
 # Mark/unmark window
 bindsym $mod+m exec --no-startup-id i3-mark
 bindsym $mod+Shift+m [con_id="__focused__"] unmark

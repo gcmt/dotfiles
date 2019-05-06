@@ -83,9 +83,9 @@ bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill 
 # Prevent/allow screen locking
 bindsym Pause exec --no-startup-id coffee
 
-# Sensors
-bindsym $mod+g exec --no-startup-id sensors-notify
-bindsym $mod+Shift+g exec --no-startup-id sensors-notify -pinned
+# Rotate windows
+bindsym $mod+g exec --no-startup-id i3-rotate -next
+bindsym $mod+Shift+g exec --no-startup-id i3-rotate -prev
 
 # Open console calculator
 bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback 'urxvt -name calc -e calc-tmux'

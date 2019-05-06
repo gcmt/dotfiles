@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+import i3ipc
+import argparse
+
+
+def parse_args():
+
+    parser = argparse.ArgumentParser(description="i3 window rotation")
+    parser.add_argument('-follow', action='store_true', help="follow current window")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('-next', action='store_true', help="focus next window")
+    group.add_argument('-prev', action='store_true', help="focus previous window")
+
+    return parser.parse_args()
+
+
+def main():
+
+    args = parse_args()
+    i3 = i3ipc.Connection()
+
+    tree = i3.get_tree()
+    focused = tree.find_focused()
+
+    windows = focused.workspace().leaves()
+    ids = [window.window for window in windows]
+    rotated = list(ids)
+
+    if args.next:
+        rotated.insert(0, rotated.pop())
+    else:
+        rotated.append(rotated.pop(0))
+
+    done = set()
+    for k, id in enumerate(ids):
+        if id in done:
+            continue
+        done.add(rotated[k])
+        i3.command(f'[id="{id}"] swap container with id {rotated[k]}')
+        if not args.follow and id == focused.window:
+            i3.command(f'[id="{rotated[k]}"] focus')
+
+
+if __name__ == '__main__':
+    main()

@@ -1,0 +1,28 @@
+#!/usr/bin/env python
+
+import re
+import sys
+import subprocess
+import i3ipc
+
+
+def get_target_window():
+    out = subprocess.check_output('xwininfo', shell=True).decode('utf-8')
+    match = re.search('Window id:\s+(0x[a-fA-F0-9]+)', out)
+    if match:
+        return match.group(1)
+
+
+def main():
+
+    i3 = i3ipc.Connection()
+
+    target = get_target_window()
+    if not target:
+        sys.exit(1)
+
+    i3.command(f'swap container with id {target}')
+
+
+if __name__ == '__main__':
+    main()

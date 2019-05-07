@@ -22,24 +22,26 @@ def main():
 
     tree = i3.get_tree()
     focused = tree.find_focused()
+    workspace = focused.workspace()
 
-    windows = focused.workspace().leaves()
-    ids = [window.window for window in windows]
+    ids = [w.window for w in workspace.leaves()]
+    curpos = ids.index(focused.window)
+
     rotated = list(ids)
-
     if args.next:
         rotated.insert(0, rotated.pop())
     else:
         rotated.append(rotated.pop(0))
 
-    done = set()
-    for k, id in enumerate(ids):
-        if id in done:
+    for i in range(len(ids)):
+        if ids[i] == rotated[i]:
             continue
-        done.add(rotated[k])
-        i3.command(f'[id="{id}"] swap container with id {rotated[k]}')
-        if not args.follow and id == focused.window:
-            i3.command(f'[id="{rotated[k]}"] focus')
+        i3.command(f'[id="{ids[i]}"] swap container with id {rotated[i]}')
+        k = ids.index(rotated[i])
+        ids[i], ids[k] = ids[k], ids[i]
+
+    if not args.follow:
+        i3.command(f'[id="{rotated[curpos]}"] focus')
 
 
 if __name__ == '__main__':

@@ -83,9 +83,12 @@ bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill 
 # Prevent/allow screen locking
 bindsym Pause exec --no-startup-id coffee
 
+# Swap window
+bindsym $mod+Control+backslash exec --no-startup-id i3-swap
+
 # Rotate windows
-bindsym $mod+g exec --no-startup-id i3-rotate -next
-bindsym $mod+Shift+g exec --no-startup-id i3-rotate -prev
+bindsym $mod+backslash exec --no-startup-id i3-rotate -next
+bindsym $mod+Shift+backslash exec --no-startup-id i3-rotate -prev
 
 # Open console calculator
 bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback 'urxvt -name calc -e calc-tmux'
@@ -230,7 +233,7 @@ bindsym $mod+Control+p exec --no-startup-id i3-move-to-workspace -prev -nofollow
 
 # Move to last focused workspace/window
 bindsym $mod+a workspace back_and_forth
-bindsym $mod+backslash exec --no-startup-id i3-focus-last-window
+bindsym $mod+BackSpace exec --no-startup-id i3-focus-last-window
 
 # Cycle through workspaces
 bindsym $mod+n exec --no-startup-id i3-next-workspace -next

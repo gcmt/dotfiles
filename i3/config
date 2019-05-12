@@ -255,23 +255,8 @@ bindsym $mod+f floating toggle
 bindsym Scroll_Lock exec --no-startup-id lock -force -blank 2
 bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
 
-mode "float" {
-
-	bindsym l floating enable; $float_l; move position center
-	bindsym m floating enable; $float_m; move position center
-	bindsym s floating enable; $float_s; move position center
-	bindsym x floating enable; $float_x; move position center
-
-	bindsym plus floating enable; resize grow right 40px; resize grow down 10px; move position center
-	bindsym minus floating enable; resize shrink right 40px; resize shrink down 10px; move position center
-
-	bindsym q mode "default"
-	bindsym Return mode "default"
-	bindsym Escape mode "default"
-	bindsym Control+c mode "default"
-}
-
-bindsym $mod+Shift+f mode "float"
+bindsym $mod+Control+plus floating enable; resize grow right 40px; resize grow down 10px; move position center
+bindsym $mod+Control+minus floating enable; resize shrink right 40px; resize shrink down 10px; move position center
 
 mode "i3" {
 

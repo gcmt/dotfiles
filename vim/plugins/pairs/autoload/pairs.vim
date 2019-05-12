@@ -25,7 +25,10 @@ func! pairs#insert_quote(quote)
 	if &ft == 'vim' && a:quote == '"' && before =~ '\v^\s*$'
 		return a:quote
 	end
-	if a:quote == "'" && before =~ '\v\a$'
+	if a:quote == "'" && &ft == 'python' && before !~ '\v(f|b|r|u)$'
+		return a:quote
+	end
+	if a:quote == "'" && &ft != 'python' && before =~ '\v\a$'
 		return a:quote
 	end
 	if count(getline('.'), a:quote) % 2 != 0

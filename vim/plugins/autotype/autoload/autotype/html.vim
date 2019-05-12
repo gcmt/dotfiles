@@ -9,7 +9,7 @@ func! autotype#html#newline()
 	if g:autotype_disabled || autotype#inside('String', 'Comment')
 		return "\<cr>"
 	end
-	if '><' == get(autotype#before(1), -1, '') . get(autotype#after(1), 0, '')
+	if autotype#before() =~ '\V>\$' && autotype#after() =~ '\V\^<'
 		return "\<cr>\<esc>O\<tab>"
 	end
 	return "\<cr>"

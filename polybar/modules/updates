@@ -28,9 +28,6 @@ view() {
 	local session=updates
 	if ! tmux has -t "=$session" 2>/dev/null; then
 		tmux new -ds "$session"
-		if [[ "$1" == "-check" ]]; then
-			tmux send -t "$session" C-l "checkupdates" C-m
-		fi
 	fi
 	urxvt -name floating -e t "$session"
 }
@@ -43,7 +40,7 @@ quickview() {
 
 case "$1" in
 	"") main ;;
-	view) view -check & ;;
+	view) view & ;;
 	quickview) quickview & ;;
 	*) exit 1 ;;
 esac

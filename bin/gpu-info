@@ -5,5 +5,5 @@ info="/sys/kernel/debug/dri/0/amdgpu_pm_info"
 if [[ "$*" =~ -v($| ) ]]; then
 	sudo cat "$info"
 else
-	sudo cat "$info" | grep -A9 -Fx "GFX Clocks and Power:" | sed 's/^\s\+//'
+	sudo cat "$info" 2>/dev/null | awk '/GFX Clocks and Power:/,/^$/' | tail -n +2 | grep -v '^$' | sed 's/^\s\+//'
 fi

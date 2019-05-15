@@ -32,7 +32,7 @@ _parse_args() {
 
 _get_info() {
 	local info gpu_info
-	gpu_info="$(sudo cat "$gpu_info_file" 2>/dev/null | tail -n +28 | head -n +7 | sed -e 's/^\s\+//')"
+	gpu_info="$(gpu-info)"
 	if (( $? == 0 )); then
 		info+=$'<b>amdgpu_pm_info</b>\n'
 		info+="$gpu_info"
@@ -43,7 +43,6 @@ _get_info() {
 }
 
 scriptname="$(basename "$0")"
-gpu_info_file="/sys/kernel/debug/dri/0/amdgpu_pm_info"
 
 id=1010
 timeout=5000

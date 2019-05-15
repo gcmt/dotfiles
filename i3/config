@@ -83,6 +83,10 @@ bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill 
 # Prevent/allow screen locking
 bindsym Pause exec --no-startup-id coffee
 
+# Sensors
+bindsym $mod+g exec --no-startup-id sensors-notify
+bindsym $mod+Shift+g exec --no-startup-id sensors-notify -pinned
+
 # Swap window
 bindsym $mod+Control+backslash exec --no-startup-id i3-swap
 

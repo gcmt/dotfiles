@@ -893,6 +893,12 @@
 		nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
 	end
 
+" Fzf
+" ----------------------------------------------------------------------------
+
+	nnoremap <silent> <bs> :exec 'Fzf' expand('%:p:h')<cr>
+	nnoremap <silent> <enter> :exec 'Fzf'<cr>
+
 " Objects
 " ----------------------------------------------------------------------------
 

@@ -73,11 +73,13 @@ def rofi(args, rofiargs):
     options += ['-theme-str', 'case-indicator { enabled: false; }']
     options += ['-theme-str', 'listview { fixed-height: false; scrollbar: false; }']
     options += ['-theme-str', 'window { location: north west; anchor: north west; }']
+    options += ['-theme-str', 'element { border: false; }']
 
     if args.maxlines:
         lines = min(len(input), args.maxlines)
     else:
         lines = len(input)
+
 
     options += ['-theme-str', f'listview {{ lines: {lines}; }}']
 

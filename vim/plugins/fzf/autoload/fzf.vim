@@ -8,15 +8,15 @@ let s:actions = {
 func! fzf#search_files(cwd)
 	let tmp_file = tempname()
 	let exit_cb_ctx = {
-				\ 'outfile': tmp_file,
-				\ 'curwin': winnr(),
-				\ 'cwd': a:cwd,
-				\ }
+		\ 'outfile': tmp_file,
+		\ 'curwin': winnr(),
+		\ 'cwd': a:cwd,
+	\ }
 	let job_opts = {
-				\ 'exit_cb': funcref('s:exit_cb', [], exit_cb_ctx),
-				\ 'term_finish': 'close',
-				\ 'term_kill': 'term',
-				\ }
+		\ 'exit_cb': funcref('s:exit_cb', [], exit_cb_ctx),
+		\ 'term_finish': 'close',
+		\ 'term_kill': 'term',
+	\ }
 	if !empty(a:cwd)
 		let job_opts['cwd'] = a:cwd
 	end

@@ -47,7 +47,7 @@ func! autotype#sh#space()
 	if line =~ '\v^\s*if$'
 		let seq = " ; then\<esc>F;i"
 		if next !~ '\v^\s{'.indent.'}(fi|else|elif)$' && !next_indented
-			return seq . "\<esc>ofi\<esc>k$F;i"
+			return seq . "\<esc>ofi\<esc>==k$F;i"
 		end
 		return seq
 	end

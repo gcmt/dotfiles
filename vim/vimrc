@@ -896,8 +896,8 @@
 " Fzf
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> <bs> :exec 'Fzf' expand('%:p:h')<cr>
-	nnoremap <silent> <enter> :exec 'Fzf'<cr>
+	nnoremap <silent> <bs> :exec 'Lines'<cr>
+	nnoremap <silent> <enter> :exec 'Files'<cr>
 
 " Objects
 " ----------------------------------------------------------------------------

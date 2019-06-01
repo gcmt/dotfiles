@@ -10,11 +10,10 @@ if exists('g:fzf_loaded') || !executable('fzf') || &cp
 end
 let g:fzf_loaded = 1
 
-command! -nargs=* Fzf call fzf#search_files(<q-args>)
+command! -nargs=* Files call fzf#files(<q-args>)
+command! -nargs=0 Lines call fzf#lines()
 
 let s:options = {
-	\ 'preview_treshold': 150,
-	\ 'preview_cmd': 'head -100 {}',
 \ }
 
 for [s:option, s:default] in items(s:options)

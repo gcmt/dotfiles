@@ -201,7 +201,9 @@ func! s:exit_cb(job, status) dict
 	exec self.curwin . 'wincmd w'
 
 	let selection = readfile(self.outfile)
+
 	call delete(self.outfile)
+	call delete(self.infile)
 
 	let ctx = {
 		\ 'status': a:status,

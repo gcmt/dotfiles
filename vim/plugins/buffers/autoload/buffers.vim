@@ -77,12 +77,17 @@ func! buffers#render()
 
 		let line .= tail
 		let group = buflisted(bufnr) ? 'BuffersListed' : 'BuffersUnlisted'
-		let group = getbufvar(bufnr, '&mod') ? 'BuffersMod' : group
+		let group = getbufvar(bufnr, '&mod') && getbufvar(bufnr, '&buftype') != 'terminal' ? 'BuffersMod' : group
 		call s:highlight(group, i, 0, len(line)+2)
 
+		call s:highlight('BuffersDim', i, len(line)+1)
+
 		if !empty(path) && path != tail
-			call s:highlight('BuffersDim', i, len(line)+1)
 			let line .= ' ' . path
+		end
+
+		if getbufvar(bufnr, '&buftype') == 'terminal'
+			let line .= ' [term]'
 		end
 
 		call setline(i, line)
@@ -98,15 +103,12 @@ func! buffers#render()
 endf
 
 " s:buffers([{all:number}]) -> list
-" Return a list of 'normal' buffers (for which the 'buftype' option is empty).
+" Return a list of 'normal' or 'terminal' buffers).
 " If {all} is given and it's true, unlisted buffers are also returned.
 func! s:buffers(...)
-	if a:0 > 0 && a:1
-		let Fn = {i, nr -> bufexists(nr) && empty(getbufvar(nr, '&buftype'))}
-	else
-		let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&buftype'))}
-	end
-	return filter(range(1, bufnr('$')), Fn)
+	let F1 = a:0 > 0 && a:1 ? function('bufexists') : function('buflisted')
+	let F2 = {i, nr -> F1(nr) && getbufvar(nr, '&buftype') =~ '\v^(terminal)?$'}
+	return filter(range(1, bufnr('$')), F2)
 endf
 
 " s:prettify_path({path:string}) -> string

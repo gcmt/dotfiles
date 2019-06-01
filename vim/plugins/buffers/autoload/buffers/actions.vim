@@ -13,8 +13,13 @@ func! buffers#actions#edit(...) abort
 	end
 	let mode = a:0 ? a:1 : ''
 	let map = {'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
-	sil exec get(map, mode, '')
-	sil exec 'edit' fnameescape(bufname(bufnr))
+	if getbufvar(bufnr, '&buftype') == 'terminal'
+		sil exec get(map, mode, 'split')
+		sil exec 'buffer' bufnr
+	else
+		sil exec get(map, mode, '')
+		sil exec 'edit' fnameescape(bufname(bufnr))
+	end
 endf
 
 " buffers#actions#delete({cmd:string}) -> 0

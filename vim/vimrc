@@ -813,12 +813,8 @@
 
 	nnoremap <silent> gl :Buffers<cr>
 	nnoremap <silent> gL :Buffers!<cr>
-
-" Finder
-" ----------------------------------------------------------------------------
-
-	nnoremap gp :Find<space>
-	nnoremap <silent> gP :Find<cr>
+	tnoremap <silent> <c-g>l <c-w>:Buffers<cr>
+	tnoremap <silent> <c-g>L <c-w>:Buffers!<cr>
 
 " Marks
 " ----------------------------------------------------------------------------

@@ -15,36 +15,52 @@ func! fzf#lines()
 		if empty(self.selection)
 			return
 		end
-		let [bufnr, _, linenr] = split(self.selection[0], "\t")[0:2]
+		let [bufnr, bufname, linenr] = split(self.selection[0])[0:2]
 		sil exec get(s:default_actions, self.key, '')
-		exec 'edit' bufname(bufnr)
+		exec 'buffer' bufnr
 		exec linenr
+		norm! zz
 	endf
 
 	let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&bt'))}
 	let buffers = filter(range(1, bufnr('$')), Fn)
 
+	let tails = {}
+	for bufnr in buffers
+		let tail = fnamemodify(bufname(bufnr), ':t')
+		let tails[tail] = get(tails, tail) + 1
+	endfo
+
+	let padding = 0
+	let bufnames = {}
+	for bufnr in buffers
+		let tail = fnamemodify(bufname(bufnr), ':t')
+		if get(tails, tail) > 1
+			let path = fnamemodify(bufname(bufnr), ':p')
+			let tail = join(split(path, '/')[-2:], '/')
+		end
+		let bufnames[bufnr] = tail
+		if len(tail) > padding
+			let padding = len(tail)
+		end
+	endfor
+
 	let lines = []
 	for bufnr in buffers
-		let i = 1
-		for line in getbufline(bufnr, 1, '$')
+		for [i, line] in map(getbufline(bufnr, 1, '$'), {i, v -> [i+1, v]})
 			if !empty(line)
-				call add(lines, printf("%s\t%s\t%s\t%s",
-					\ bufnr,
-					\ fnamemodify(bufname(bufnr), ':t'),
-					\ i,
-					\ substitute(line, "\t", repeat(' ', &ts), 'g'),
-				\ ))
+				call add(lines, printf("%s %".(padding)."s %4s  %s", bufnr, bufnames[bufnr], i, line))
 			end
-			let i += 1
 		endfor
 	endfor
 
 	let fzf_opts = [
 		\ '--tac',
-		\ "--expect", join(keys(s:default_actions), ','), '-d', '\t',
-		\ '--with-nth', '2,3,4',
-		\ '--nth', '3'
+		\ '--tabstop', &ts,
+		\ '--expect', join(keys(s:default_actions), ','),
+		\ '--delimiter', ' ',
+		\ '--with-nth', '2,3,4..-1',
+		\ '--nth', '1,3..-1'
 	\ ]
 
 	call s:run({

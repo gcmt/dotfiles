@@ -15,7 +15,6 @@ command! -nargs=* -bang Ranger call ranger#open(<q-args>, <q-bang> == '!')
 let s:options = {
 	\ 'preview_treshold': 150,
 	\ 'term_prg': 'TMUX= urxvt -name floating',
-	\ 'bindings': {'l': 'window', 'ee': 'window', 'es': 'split', 'ev': 'vsplit', 'et': 'tab'},
 \ }
 
 for [s:option, s:default] in items(s:options)

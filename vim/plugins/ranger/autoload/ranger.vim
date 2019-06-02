@@ -1,6 +1,15 @@
 
+
 " See ~/.config/ranger/plugins/choose.py
 let s:cmd = 'choose'
+
+
+let s:default_bindings = {
+	\ 'l': 'window', 'ee': 'window',
+	\ 'es': 'split', 'ev': 'vsplit',
+	\ 'et': 'tab'
+\ }
+
 
 let s:no_preview = [
 	\ "--cmd='set column_ratios 1'",
@@ -9,83 +18,140 @@ let s:no_preview = [
 	\ "--cmd='set collapse_preview true'",
 \ ]
 
+
 " ranger#open({target:string}[, {external:int}]) -> 0
 " Open the file/directory {target} in ranger. If {external} is given and it's
 " true, ranger is executed in an external terminal specified in the option
-" 'g:ranger_termprg', otherwise ranger is excuted in the current terminal.
+" 'g:ranger_termprg', otherwise ranger is excuted in a terminal using
+" term_start().
 func! ranger#open(target, ...)
+
 	let external = a:0 && a:1
-	let tmp = tempname()
+	let out_file = tempname()
+
 	let cmd  = ['ranger']
-	let cmd += ['--choosefiles='.tmp]
+	let cmd += ['--choosefiles='.out_file]
 	let cmd += s:bindings()
+
 	" Hide the preview column when the window is too small
-	if !external && &columns < g:ranger_preview_treshold
+	if &columns < g:ranger_preview_treshold
 		let cmd += s:no_preview
 	end
+
 	" Must be the last argument before executing the command
 	if filereadable(a:target)
 		let cmd += ['--selectfile='.shellescape(a:target)]
 	else
 		let cmd += [fnamemodify(a:target, ':p:h')]
 	end
+
+	let exit_cb_ctx = {
+		\ 'cmd': cmd,
+		\ 'callback': funcref('s:callback'),
+		\ 'out_file': out_file,
+		\ 'curwin': winnr(),
+		\ 'laststatus': &laststatus,
+	\ }
+
 	if external
+
 		sil call system(join([g:ranger_term_prg] + ['-e'] + cmd))
+		call call('s:exit_cb', [-1, v:shell_error], exit_cb_ctx)
+
 	else
-		sil exec '!' . join(cmd)
+
+		au TerminalOpen * ++once setl laststatus=0
+
+		let job_opts = {
+			\ 'exit_cb': funcref('s:exit_cb', [], exit_cb_ctx),
+			\ 'term_finish': 'close',
+			\ 'term_kill': 'term',
+		\ }
+
+		call term_start(['sh', '-c', join(cmd)], job_opts)
+
 	end
-	if v:shell_error
-		return s:err(printf("Command failed with error %d: %s", v:shell_error, join(cmd)))
-	end
-	if filereadable(tmp)
-		call s:open_files(tmp)
-		call delete(tmp)
-	end
-	redraw!
+
 endf
 
-" s:open_files({tmp:string}) -> 0
-" Open files written by ranger in the file {tmp}.
-" The first line will have the format '#mode mode' to indicate how the file (or
-" the first file of the selection) should be opened (see vim_edit function at
-" .config/ranger/commands.py)
-" Possible modes are: window, slit, vsplit, tab.
-func! s:open_files(tmp)
-	let mode = ''
-	let files = readfile(a:tmp)
-	if get(files, 0, '') =~ '\v^#meta'
-		let mode = matchstr(files[0], '\v<mode\=\zs\w+')
-		let files = files[1:]
+
+" s:exit_cb({job}, {status:int}) -> 0
+" Function responsible to parse the ranger output file and call the callback
+" function with the file selection and the opening mode.
+" The first line of the output file is expected to have the the format
+" '#meta mode=<mode>'.
+func! s:exit_cb(job, status) dict
+
+	let &laststatus = self.laststatus
+	exec self.curwin . 'wincmd w'
+
+	let ctx = {
+		\ 'cmd': self.cmd,
+		\ 'status': a:status,
+		\ 'selection': [],
+		\ 'mode': '',
+	\ }
+
+	if filereadable(self.out_file)
+		let lines = readfile(self.out_file)
+		if get(lines, 0, '') =~ '\v^#meta'
+			let ctx['mode'] = matchstr(lines[0], '\v<mode\=\zs\w+')
+			let lines = lines[1:]
+		end
+		let ctx['selection'] = lines
 	end
-	let files = map(files, {i, v -> fnameescape(v)})
-	if empty(files)
-		return s:err("No files to open.")
+
+	call funcref(self.callback, [], ctx)()
+
+endf
+
+
+" s:callback() -> 0
+" Callback function called to process the selected files.
+func! s:callback() dict
+
+	if self.status
+		return s:err("Command failed with error %d: %s", self.status, self.cmd)
 	end
-	if len(files) > 1
-		exec 'argadd' join(files)
+
+	if empty(self.selection)
+		return
 	end
+
+	call map(self.selection, {i, v -> fnameescape(v)})
+
+	if len(self.selection) > 1
+		exec 'argadd' join(self.selection)
+	end
+
 	let commands = {
 		\ 'window': '',
 		\ 'tab': 'tab split',
 		\ 'split': 'split',
 		\ 'vsplit': 'vsplit',
 	\ }
-	sil exec get(commands, mode, '')
-	exec 'edit' files[0]
+
+	sil exec get(commands, self.mode, '')
+	exec 'edit' self.selection[0]
+
+	redraw!
+
 endf
 
+
 " s:bindings() -> list
-" Return edit bindings.
+" Return custom ranger bindings.
 func! s:bindings()
 	let bindings = []
-	for [key, mode] in items(g:ranger_bindings)
-		call add(bindings, printf("--cmd='map %s %s mode=%s'", key, s:cmd, mode))
+	for [k, v] in items(s:default_bindings)
+		call add(bindings, printf("--cmd='map %s %s mode=%s'", k, s:cmd, v))
 	endfo
 	return bindings
 endf
 
-" s:err({msg:string}) -> 0
-" Display a simple error message.
-func! s:err(msg)
-	echohl WarningMsg | echo a:msg | echohl None
+
+" s:err({fmt:string}, [{expr1:any}, ...]) -> 0
+" Display a error message.
+func! s:err(fmt, ...)
+	echohl WarningMsg | echom call('printf', [a:fmt] + a:000)  | echohl None
 endf

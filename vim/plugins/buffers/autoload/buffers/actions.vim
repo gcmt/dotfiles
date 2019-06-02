@@ -69,8 +69,13 @@ func! buffers#actions#delete(cmd) abort
 	exec bufwinnr(s:bufname) 'wincmd w'
 	let b:buffers['current'] = current
 
+	let cmd = a:cmd
+	if getbufvar(bufnr, '&buftype') == 'terminal'
+		let cmd = 'bwipe!'
+	end
+
 	try
-		exec a:cmd bufnr
+		exec cmd bufnr
 	catch /E.*/
 		return s:err(matchstr(v:exception, '\vE\d+:.*'))
 	endtry

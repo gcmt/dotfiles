@@ -22,24 +22,60 @@ func! buffers#actions#edit(...) abort
 	sil exec 'buffer' bufnr
 endf
 
+
 " buffers#actions#delete({cmd:string}) -> 0
 " Delete/wipe/unload the buffer under cursor. {cmd} is expected to be one of
 " (bdelete|bwipe|bunload).
 func! buffers#actions#delete(cmd) abort
+
 	let bufnr = get(b:buffers.table, line('.'), -1)
 	if bufnr == -1
 		return
 	end
-	if bufnr == b:buffers.current
-		return s:err("Can't delete the current buffer")
-	end
+
+	let winnr = b:buffers.winnr
+	let close_win = 0
+
+	while bufwinnr(bufnr) > -1
+		exec bufwinnr(bufnr) 'wincmd w'
+		let replacement = -1
+		if buflisted(bufnr('#'))
+			let replacement = bufnr('#')
+		else
+			for b in range(1, bufnr('$'))
+				if buflisted(b) && b != bufnr
+					let replacement = b
+					break
+				end
+			endfo
+		end
+		if replacement >= 1
+			sil exec 'buffer' replacement
+		else
+			enew
+			let close_win = 1
+		end
+	endw
+
+	exec winnr 'wincmd w'
+	let current = bufnr('%')
+	exec bufwinnr(s:bufname) 'wincmd w'
+	let b:buffers['current'] = current
+
 	try
 		exec a:cmd bufnr
 	catch /E.*/
 		return s:err(matchstr(v:exception, '\vE\d+:.*'))
 	endtry
+
 	call buffers#render()
+
+	if close_win
+		close
+	end
+
 endf
+
 
 " buffers#actions#toggle_all() -> 0
 " Toggle visibility of unlisted buffers.

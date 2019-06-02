@@ -389,6 +389,49 @@
 		exec 'bwipe' bufnr
 	endf
 
+	command! -bang -nargs=0 Bdelete call <sid>bdelete('bdelete', <q-bang>)
+	nnoremap <silent> g! :Bdelete!<cr>
+
+	" delete the buffer without closing the window
+	func! s:bdelete(cmd, bang)
+
+		let winnr = winnr()
+		let bufnr = bufnr('%')
+
+		if &modified && empty(a:bang)
+			return s:err('E89 No write since last change for buffer %d (add ! to override)', bufnr)
+		end
+
+		while bufwinnr(bufnr) > -1
+			exec bufwinnr(bufnr) 'wincmd w'
+			let repl = -1
+			if buflisted(bufnr('#'))
+				let repl = bufnr('#')
+			else
+				for b in range(1, bufnr('$'))
+					if buflisted(b) && b != bufnr
+						let repl = b
+						break
+					end
+				endfo
+			end
+			if repl > -1
+				sil exec 'buffer' repl
+			else
+				enew
+			end
+		endw
+
+		exec winnr 'wincmd w'
+
+		try
+			exec a:cmd.a:bang bufnr
+		catch /E.*/
+			return s:err(matchstr(v:exception, '\vE\d+:.*'))
+		endtry
+
+	endf
+
 " QUICKFIX
 " ----------------------------------------------------------------------------
 
@@ -705,6 +748,10 @@
 		au BufWritePre /tmp/*,$TMPDIR/*,$TMP/*,$TEMP/*,*/shm/* setl noudf
 
 	aug END
+
+	func! s:err(fmt, ...)
+		echohl WarningMsg | echom call('printf', [a:fmt] + a:000)  | echohl None
+	endf
 
 	" Execute the :s command without messing jumps or cursor
 	func! _s(pattern, string, flags)

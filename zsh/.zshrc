@@ -263,7 +263,6 @@ alias mv='mv -iv'
 alias cp='cp -iv'
 alias mkdir='mkdir -pv'
 
-alias ls='l'
 alias la='l -A'
 alias ll='l -lh'
 alias lla='l -lhA'

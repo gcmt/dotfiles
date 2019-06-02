@@ -1,3 +1,6 @@
+
+let s:bufname = '__buffers__'
+
 " buffers#actions#edit([{mode:string}]) -> 0
 " Edit the buffer under cursor with the given {mode}. If no {mode} is given, the
 " buffer will be edited in the current window, otherwise {mode} is expected to
@@ -7,7 +10,8 @@ func! buffers#actions#edit(...) abort
 	if bufnr == -1
 		return
 	end
-	wincmd c
+	exec b:buffers.winnr 'wincmd w'
+	exec bufwinnr(s:bufname) 'wincmd c'
 	if bufnr == bufnr('%')
 		return
 	end
@@ -51,8 +55,9 @@ endf
 " buffers#open_explorer() -> 0
 " Close the window and open the explorer instead.
 func! buffers#actions#open_explorer()
-	let cmd = exists(':Ranger') ? 'Ranger!' : 'Explorer'
-	close
+	exec b:buffers.winnr 'wincmd w'
+	exec bufwinnr(s:bufname) 'wincmd c'
+	let cmd = exists(':Ranger') ? 'Ranger' : 'Explorer'
 	exec cmd expand('%:p:h')
 endf
 

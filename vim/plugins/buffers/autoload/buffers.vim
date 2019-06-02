@@ -15,8 +15,9 @@ func! buffers#view(all) abort
 	end
 
 	let current = bufnr('%')
+	let winnr = winnr()
 	exec 'sil keepj keepa botright 1new' s:bufname
-	let b:buffers = {'table': {}, 'current': current, 'all': a:all}
+	let b:buffers = {'table': {}, 'current': current, 'winnr': winnr, 'all': a:all}
 	setl filetype=buffers buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0

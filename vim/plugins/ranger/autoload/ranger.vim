@@ -68,7 +68,7 @@ func! ranger#open(target, ...)
 			\ 'term_kill': 'term',
 		\ }
 
-		call term_start(['sh', '-c', join(cmd)], job_opts)
+		bot call term_start(['sh', '-c', join(cmd)], job_opts)
 
 	end
 

@@ -200,7 +200,7 @@ func! s:run(opts)
 	au TerminalOpen * ++once setl laststatus=0
 
 	call map(fzf_opts, {i, v -> shellescape(v)})
-	call term_start(['sh', '-c', join(['fzf'] + fzf_opts)], job_opts)
+	bot call term_start(['sh', '-c', join(['fzf'] + fzf_opts)], job_opts)
 
 endf
 

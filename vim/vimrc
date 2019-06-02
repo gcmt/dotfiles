@@ -381,6 +381,14 @@
 	" switch to the alternate buffer
 	nnoremap <c-a> <c-^>
 
+	tnoremap <silent> <c-w>Q <c-w>:call <sid>kill_term()<cr>
+
+	func! s:kill_term()
+		let bufnr = bufnr('%')
+		quit!
+		exec 'bwipe' bufnr
+	endf
+
 " QUICKFIX
 " ----------------------------------------------------------------------------
 

@@ -22,37 +22,47 @@ func! fzf#lines()
 		norm! zz
 	endf
 
-	let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&bt'))}
-	let buffers = filter(range(1, bufnr('$')), Fn)
+	func! s:buffers()
+		let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&bt'))}
+		return filter(range(1, bufnr('$')), Fn)
+	endf
 
-	let tails = {}
-	for bufnr in buffers
-		let tail = fnamemodify(bufname(bufnr), ':t')
-		let tails[tail] = get(tails, tail) + 1
-	endfo
+	func! s:lines()
 
-	let padding = 0
-	let bufnames = {}
-	for bufnr in buffers
-		let tail = fnamemodify(bufname(bufnr), ':t')
-		if get(tails, tail) > 1
-			let path = fnamemodify(bufname(bufnr), ':p')
-			let tail = join(split(path, '/')[-2:], '/')
-		end
-		let bufnames[bufnr] = tail
-		if len(tail) > padding
-			let padding = len(tail)
-		end
-	endfor
+		let buffers = s:buffers()
 
-	let lines = []
-	for bufnr in buffers
-		for [i, line] in map(getbufline(bufnr, 1, '$'), {i, v -> [i+1, v]})
-			if !empty(line)
-				call add(lines, printf("%s %".(padding)."s %4s  %s", bufnr, bufnames[bufnr], i, line))
+		let tails = {}
+		for bufnr in buffers
+			let tail = fnamemodify(bufname(bufnr), ':t')
+			let tails[tail] = get(tails, tail) + 1
+		endfo
+
+		let padding = 0
+		let bufnames = {}
+		for bufnr in buffers
+			let tail = fnamemodify(bufname(bufnr), ':t')
+			if get(tails, tail) > 1
+				let path = fnamemodify(bufname(bufnr), ':p')
+				let tail = join(split(path, '/')[-2:], '/')
+			end
+			let bufnames[bufnr] = tail
+			if len(tail) > padding
+				let padding = len(tail)
 			end
 		endfor
-	endfor
+
+		let lines = []
+		for bufnr in buffers
+			for [i, line] in map(getbufline(bufnr, 1, '$'), {i, v -> [i+1, v]})
+				if !empty(line)
+					call add(lines, printf("%s %".(padding)."s %4s  %s", bufnr, bufnames[bufnr], i, line))
+				end
+			endfor
+		endfor
+
+		return lines
+
+	endf
 
 	let fzf_opts = [
 		\ '--tac',
@@ -64,7 +74,7 @@ func! fzf#lines()
 	\ ]
 
 	call s:run({
-		\ 'source': lines,
+		\ 'source': s:lines(),
 		\ 'callback': funcref('s:lines__cb'),
 		\ 'fzf_opts': fzf_opts,
 	\ })

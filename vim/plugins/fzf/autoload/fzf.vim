@@ -183,18 +183,18 @@ func! s:run(opts)
 	let $FZF_DEFAULT_OPTS = ''
 	let $FZF_DEFAULT_COMMAND = ''
 
+	if type(a:opts.source) == v:t_func
+		let a:opts.source = call(a:opts.source, [])
+	end
+
 	if type(a:opts.source) == v:t_string
 		let $FZF_DEFAULT_COMMAND = a:opts.source
 	elseif type(a:opts.source) == v:t_list
 		call writefile(a:opts.source, in_file, 's')
 		let job_opts['in_io'] = 'file'
 		let job_opts['in_name'] = in_file
-	elseif type(a:opts.source) == v:t_func
-		call writefile(a:opts.source(), in_file, 's')
-		let job_opts['in_io'] = 'file'
-		let job_opts['in_name'] = in_file
 	else
-		return s:err("invalid source: must be a string, list, or function: " . string(a:opts.source))
+		return s:err("invalid source: must be a string or list: " . string(a:opts.source))
 	end
 
 	au TerminalOpen * ++once setl laststatus=0

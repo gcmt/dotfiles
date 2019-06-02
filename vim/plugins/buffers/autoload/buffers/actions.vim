@@ -1,25 +1,32 @@
 
+
 let s:bufname = '__buffers__'
+
 
 " buffers#actions#edit([{mode:string}]) -> 0
 " Edit the buffer under cursor with the given {mode}. If no {mode} is given, the
 " buffer will be edited in the current window, otherwise {mode} is expected to
 " be one of (tab|split|vsplit).
 func! buffers#actions#edit(...) abort
+
 	let bufnr = get(b:buffers.table, line('.'), -1)
 	if bufnr == -1
 		return
 	end
+
 	exec b:buffers.winnr 'wincmd w'
 	exec bufwinnr(s:bufname) 'wincmd c'
+
 	if bufnr == bufnr('%')
 		return
 	end
+
 	let mode = a:0 ? a:1 : ''
 	let map = {'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
 	let default = getbufvar(bufnr, '&bt') == 'terminal' ? 'split' : ''
 	sil exec get(map, mode, default)
 	sil exec 'buffer' bufnr
+
 endf
 
 
@@ -84,6 +91,7 @@ func! buffers#actions#toggle_unlisted()
 	call buffers#render()
 endf
 
+
 " buffers#open_explorer() -> 0
 " Close the window and open the explorer instead.
 func! buffers#actions#open_explorer()
@@ -92,6 +100,7 @@ func! buffers#actions#open_explorer()
 	let cmd = exists(':Ranger') ? 'Ranger' : 'Explorer'
 	exec cmd expand('%:p:h')
 endf
+
 
 " s:err({msg:string}) -> 0
 " Display a simple error message.

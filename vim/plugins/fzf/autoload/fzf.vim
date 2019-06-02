@@ -194,7 +194,7 @@ func! s:run(opts)
 		let job_opts['in_io'] = 'file'
 		let job_opts['in_name'] = in_file
 	else
-		return s:err("invalid source: must be a string or list: " . string(a:opts.source))
+		return s:err("invalid source: must be a string or list. Got %s", a:opts.source)
 	end
 
 	au TerminalOpen * ++once setl laststatus=0
@@ -241,6 +241,6 @@ func! s:joinpaths(...)
 endf
 
 
-func! s:err(message)
-	echohl WarningMsg | echom a:message | echohl None
+func! s:err(fmt, ...)
+	echohl WarningMsg | echom call('printf', [a:fmt] + a:000)  | echohl None
 endf

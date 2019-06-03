@@ -62,33 +62,45 @@ func! buffers#render()
 
 		let b:buffers.table[i] = bufnr
 
-		let name = bufname(bufnr)
-		let path = empty(name) ? '' : s:prettify_path(fnamemodify(name, ':p'))
+		let is_terminal = getbufvar(bufnr, '&bt') == 'terminal'
+		let is_modified = getbufvar(bufnr, '&mod')
 
-		let line = ''
+		let name = bufname(bufnr)
 
 		if empty(name)
-			let tail = 'unnamed ('.bufnr.')'
+			let name = bufnr
+			let detail = '[unnamed buffer]'
+		elseif is_terminal
+			let detail = '[terminal]'
 		else
-			let tail =  fnamemodify(path, ':t')
-			if get(tails, tail) > 1
-				let tail = join(split(path, '/')[-2:], '/')
+			let detail = s:prettify_path(fnamemodify(name, ':p'))
+			let name =  fnamemodify(detail, ':t')
+			if get(tails, name) > 1
+				let name = join(split(detail, '/')[-2:], '/')
 			end
 		end
 
-		let line .= tail
-		let group = buflisted(bufnr) ? 'BuffersListed' : 'BuffersUnlisted'
-		let group = getbufvar(bufnr, '&mod') && getbufvar(bufnr, '&buftype') != 'terminal' ? 'BuffersMod' : group
+		let line  = ''
+		let line .= name
+
+		if buflisted(bufnr)
+			let group = 'BuffersListed'
+		else
+			let group = 'BuffersUnlisted'
+		end
+
+		if is_terminal
+			let group = 'BuffersTerminal'
+		elseif is_modified
+			let group = 'BuffersMod'
+		end
+
 		call s:highlight(group, i, 0, len(line)+2)
 
 		call s:highlight('BuffersDim', i, len(line)+1)
 
-		if !empty(path) && path != tail
-			let line .= ' ' . path
-		end
-
-		if getbufvar(bufnr, '&buftype') == 'terminal'
-			let line .= ' [term]'
+		if !empty(detail) && detail != name
+			let line .= ' ' . detail
 		end
 
 		if bufnr == b:buffers.current

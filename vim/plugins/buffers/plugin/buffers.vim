@@ -25,6 +25,7 @@ func s:setup_colors()
 	hi default link BuffersDim Comment
 	hi default link BuffersListed Normal
 	hi default link BuffersUnlisted FgDim
+	hi default link BuffersTerminal Blue
 endf
 
 call s:setup_colors()

@@ -1,5 +1,5 @@
 
-nnoremap <silent> <buffer> q :sil bdelete<cr>
+nnoremap <silent> <buffer> q :call explorer#actions#close()<cr>
 
 nnoremap <silent> <buffer> i :call explorer#actions#info()<cr>
 nnoremap <silent> <buffer> p :call explorer#actions#preview()<cr>

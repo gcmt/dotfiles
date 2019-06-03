@@ -10,7 +10,7 @@ if exists('g:explorer_loaded') || &cp
 end
 let g:explorer_loaded = 1
 
-command! -nargs=? Explorer call explorer#open(<q-args>)
+command! -bang -nargs=? Explorer call explorer#open(<q-args>, !empty(<q-bang>))
 
 let s:options = {
 	\ 'hidden_files': 1,

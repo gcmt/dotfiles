@@ -325,6 +325,18 @@ func! explorer#actions#bookmarks_set(mark)
 	end
 endf
 
+" explorer#actions#close() -> 0
+" Close the Explorer buffer.
+func! explorer#actions#close()
+	if get(w:, 'explorer', 0)
+		close
+	elseif buflisted(b:explorer.current)
+		exec 'buffer' b:explorer.current
+	else
+		enew
+	end
+endf
+
 " explorer#actions#help() -> 0
 " Show very basic help.
 func! explorer#actions#help()

@@ -93,7 +93,9 @@ endf
 " Toggle visibility of unlisted buffers.
 func! buffers#actions#toggle_unlisted()
 	let b:buffers.all = 1 - b:buffers.all
+	let line_save = getcurpos()[1]
 	call buffers#render()
+	exec line_save
 endf
 
 

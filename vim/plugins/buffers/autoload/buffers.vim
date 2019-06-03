@@ -45,8 +45,8 @@ func! buffers#render()
 
 	syntax clear
 	setl modifiable
+	let line_save = getcurpos()[1]
 	sil %delete _
-	let cursor_line = 1
 
 	let buffers = s:buffers(b:buffers.all)
 
@@ -103,10 +103,6 @@ func! buffers#render()
 			let line .= ' ' . detail
 		end
 
-		if bufnr == b:buffers.current
-			let cursor_line = i
-		end
-
 		call setline(i, line)
 		let i += 1
 
@@ -115,7 +111,7 @@ func! buffers#render()
 	setl nomodifiable
 	call s:resize_window()
 	norm! gg
-	exec cursor_line
+	exec line_save
 
 endf
 

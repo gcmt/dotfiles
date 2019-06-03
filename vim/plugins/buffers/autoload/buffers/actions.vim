@@ -101,9 +101,14 @@ endf
 " Toggle visibility of unlisted buffers.
 func! buffers#actions#toggle_unlisted()
 	let b:buffers.all = 1 - b:buffers.all
-	let line_save = getcurpos()[1]
+	let selected = get(b:buffers.table, line('.'), -1)
 	call buffers#render()
-	exec line_save
+	for [line, bufnr] in items(b:buffers.table)
+		if bufnr == selected
+			call cursor(line, 1)
+			break
+		end
+	endfor
 endf
 
 

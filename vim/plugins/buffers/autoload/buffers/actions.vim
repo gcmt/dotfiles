@@ -27,6 +27,9 @@ func! buffers#actions#edit(...) abort
 	if getbufvar(bufnr, '&bt') == 'terminal'
 		sil exec get(map, mode, 'split')
 		sil exec 'buffer' bufnr
+	elseif empty(bufname(bufnr))
+		sil exec get(map, mode, '')
+		sil exec 'buffer' bufnr
 	else
 		sil exec get(map, mode, '')
 		sil exec 'edit' fnameescape(bufname(bufnr))

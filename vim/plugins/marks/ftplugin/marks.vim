@@ -1,5 +1,5 @@
 
-nnoremap <silent> <buffer> q :close<cr>
+nnoremap <silent> <buffer> q :call <sid>close()<cr>
 
 nnoremap <silent> <buffer> <enter> :<c-u>call <sid>jump()<cr>
 nnoremap <silent> <buffer> <c-j> :<c-u>call <sid>jump()<cr>

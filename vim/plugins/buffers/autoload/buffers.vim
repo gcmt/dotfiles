@@ -99,7 +99,7 @@ func! buffers#render()
 
 		call s:highlight('BuffersDim', i, len(line)+1)
 
-		if !empty(detail) && detail != name
+		if len(split(detail, '/')) > 1
 			let line .= ' ' . detail
 		end
 

@@ -1,5 +1,5 @@
 
-let s:bufname = '__marks__'
+let g:marks#bufname = '__marks__'
 
 " Return all [a-zA-Z] marks.
 func! marks#marks()
@@ -44,7 +44,7 @@ endf
 " Open the buffer where marks will be displayed
 func! marks#view() abort
 
-	if bufwinnr(s:bufname) != -1
+	if bufwinnr(g:marks#bufname) != -1
 		return
 	end
 
@@ -53,9 +53,10 @@ func! marks#view() abort
 		return marks#err("No marks found")
 	end
 
+	let winnr = winnr()
 	let current = fnamemodify(bufname('%'), ':p')
-	exec 'sil keepa botright 1new' s:bufname
-	let b:marks = {'table': {}, 'buffer': current}
+	exec 'sil keepa botright 1new' g:marks#bufname
+	let b:marks = {'table': {}, 'from_buffer': current, 'from_winnr': winnr}
 	setl filetype=marks buftype=nofile bufhidden=hide nobuflisted
 	setl noundofile nobackup noswapfile nospell
 	setl nowrap nonumber norelativenumber nolist textwidth=0

@@ -38,7 +38,7 @@ func! marks#set_auto(local) abort
 			return
 		end
 	endfo
-	call s:err("No more marks available")
+	call marks#err("No more marks available")
 endf
 
 " Open the buffer where marks will be displayed
@@ -50,7 +50,7 @@ func! marks#view() abort
 
 	let marks = marks#marks()
 	if empty(marks)
-		return s:err("No marks found")
+		return marks#err("No marks found")
 	end
 
 	let current = fnamemodify(bufname('%'), ':p')
@@ -116,6 +116,11 @@ func! marks#render(marks)
 
 endf
 
+" Show error message.
+func! marks#err(fmt, ...)
+	echohl WarningMsg | echom call('printf', [a:fmt] + a:000)  | echohl None
+endf
+
 " Group marks by the file they belong to.
 func! s:group_marks_by_file(marks)
 	let groups = {}
@@ -140,8 +145,4 @@ endf
 func! s:prettify_path(path)
 	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
 	return substitute(path, '\V\^'.$HOME, '~', '')
-endf
-
-func! s:err(msg)
-	echohl WarningMsg | echo a:msg | echohl None
 endf

@@ -8,7 +8,7 @@
 if !has('job') || exists("g:loaded_ctags") || &cp
 	finish
 end
-if !executable('ctags') || !executable('uuidgen')
+if !executable('ctags')
 	finish
 end
 let g:loaded_ctags = 1

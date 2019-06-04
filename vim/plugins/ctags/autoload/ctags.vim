@@ -157,7 +157,7 @@ endf
 " s:id() -> string
 " Return a new unique id.
 func s:id()
-	return system('uuidgen')
+	return localtime()
 endf
 
 " s:err({message:string}) -> 0

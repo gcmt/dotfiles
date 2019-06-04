@@ -384,9 +384,11 @@
 	tnoremap <silent> <c-w>Q <c-w>:call <sid>kill_term()<cr>
 
 	func! s:kill_term()
-		let bufnr = bufnr('%')
-		quit!
-		exec 'bwipe' bufnr
+		if winnr('$') == 1
+			call s:bdelete('bwipe', '!')
+		else
+			bwipe!
+		end
 	endf
 
 	command! -bang -nargs=0 Bdelete call <sid>bdelete('bdelete', <q-bang>)

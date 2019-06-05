@@ -197,8 +197,9 @@ func s:id()
 	return localtime()
 endf
 
-" s:err({message:string}) -> 0
-" Display an error {message}.
-func s:err(message)
-	echohl WarningMsg | echom a:message | echohl None
+
+" s:err({fmt:string}, [{expr1:any}, ...]) -> 0
+" Display an error message. Arguments behave like printf.
+func! s:err(fmt, ...)
+	echohl WarningMsg | echom call('printf', [a:fmt] + a:000)  | echohl None
 endf

@@ -33,16 +33,46 @@ func ctags#run()
 	call s:run(getcwd(), tagfile, options)
 endf
 
-" s:load_options() -> 0
+
+" s:load_options({ctx:dict}) -> 0
 " Load options defined by the user via the g:ctags dictionary and merge them
-" with default options.
-" Doing this on every run allows the user to change options at runtime.
-func s:load_options()
+" with default options. {ctx} is dictionary passed as argument to all
+" function-type options.
+func s:load_options(ctx) abort
+
 	let g:ctags = extend(get(g:, 'ctags', {}), {
-		\ 'options': {-> ['-Rn', '--languages='.&filetype]},
-		\ 'tagfile': {-> isdirectory('.tags') ? printf('.tags/%s/0.project', &ft) : 'tags'},
+		\ 'options': {ctx -> ['-Rn', '--languages='.a:ctx.ft]},
+		\ 'tagfile': {ctx -> isdirectory('.tags') ? printf('.tags/%s/0.project', a:ctx.ft) : 'tags'},
 	\ }, 'force')
+
+	if type(g:ctags.tagfile) == v:t_func
+		let g:ctags.tagfile = call(g:ctags.tagfile, [a:ctx])
+	end
+
+	if type(g:ctags.tagfile) != v:t_string
+		 throw "Ctags: Invalid tagfile: " . string(g:ctags.tagfile)
+	end
+
+	if type(g:ctags.options) == v:t_func
+		let g:ctags.options = call(g:ctags.options, [a:ctx])
+	end
+
+	if type(g:ctags.options) != v:t_list
+		 throw "Ctags: Invalid options: " . string(g:ctags.options)
+	end
+
 endf
+
+
+" s:ctags_options({filetype:string}) -> list
+" Return all options for the ctags command.
+func s:ctags_options(filetype)
+	let options  = []
+	let options += get(g:ctags, 'options', [])
+	let options += get(g:ctags, a:filetype.'_options', [])
+	return options
+endf
+
 
 " s:run({dir:string}, {tagfile:string}, {options:list}) -> 0
 " Asynchronously generate tags for the directory {dir} and store
@@ -112,32 +142,6 @@ func s:err_cb(ch, message) dict
 	call add(s:jobs[self.id].errors, a:message)
 endf
 
-" s:ctags_options() -> list
-" Return all options for the ctags command.
-func s:ctags_options()
-	let options = []
-	let options += s:eval_options(get(g:ctags, 'options', []))
-	let options += s:eval_options(get(g:ctags, &filetype.'_options', []))
-	return options
-endf
-
-" s:eval_options({options:list|funcref|string}) -> list
-" Translate options to list type.
-func s:eval_options(options)
-	if type(a:options) == v:t_func
-		let options = call(a:options, [])
-	else
-		let options = a:options
-	end
-	if type(options) == v:t_list
-		return options
-	elseif type(options) == v:t_string
-		return split(options)
-	else
-		throw "Ctags: Bad options: " . string(options)
-	end
-	return []
-endf
 
 " s:joinpaths([{pathN:string}, ...]) -> string
 " Join paths. Trailing slashes are trimmed.

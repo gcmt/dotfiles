@@ -102,7 +102,11 @@ func taglist#render(...) abort
 	let i = 1
 	let b:taglist.table = {}
 	let groups = s:group_tags(tags)
-	for tagfile in sort(keys(groups))
+	for tagfile in s:tagfiles()
+
+		if !has_key(groups, tagfile)
+			continue
+		end
 
 		if g:taglist_visible_tagfiles
 			call s:highlight('TaglistTagfile', i)

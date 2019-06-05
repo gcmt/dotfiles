@@ -903,8 +903,8 @@
 " ----------------------------------------------------------------------------
 
 	let g:ctags = {
-		\ 'python_options': '--exclude=venv',
-		\ 'javascript_options': '--exclude=node_modules',
+		\ 'python_options': ['--exclude=venv'],
+		\ 'javascript_options': ['--exclude=node_modules'],
 	\ }
 
 " Spotter

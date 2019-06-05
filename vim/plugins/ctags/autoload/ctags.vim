@@ -1,4 +1,5 @@
 
+
 " All currently running jobs
 " {id: {pid, errors, tagfile}, ..}
 let s:jobs = {}
@@ -6,9 +7,10 @@ let s:jobs = {}
 " Anything logged
 let s:logs = []
 
-" ctags#log() -> string
+
+" ctags#logs() -> string
 " Print the logs.
-func ctags#print_log()
+func ctags#logs()
 	for entry in s:logs
 		let msg = printf("[%s] %s", entry.timestamp, entry.message)
 		let group = entry.lvl == 'error' ? 'ErrorMsg' : 'Normal'
@@ -110,7 +112,9 @@ endf
 " When trying to write to a tagfile a job is already trying to write to,
 " the current execution is queued.
 func s:run(dir, tagfile, options) abort
+
 	let dest = s:joinpaths(a:dir, a:tagfile)
+
 	for id in keys(s:jobs)
 		if s:jobs[id].tagfile == dest
 			" If a job running ctags is already trying to write to {dest},
@@ -120,8 +124,10 @@ func s:run(dir, tagfile, options) abort
 			return
 		end
 	endfo
+
 	let id = s:id()
 	let cmd = ['ctags'] + a:options + ['-f', dest, a:dir]
+
 	let exit_cb_ctx = {
 		\ 'id': id,
 		\ 'dir': a:dir,
@@ -129,9 +135,11 @@ func s:run(dir, tagfile, options) abort
 		\ 'tagfile': dest,
 		\ 'start_time': reltime(),
 	\ }
+
 	let err_cb_ctx = {
 		\ 'id': id,
 	\ }
+
 	let job = job_start(cmd, {
 		\ 'exit_cb': funcref('s:exit_cb', [], exit_cb_ctx),
 		\ 'err_cb': funcref('s:err_cb', [], err_cb_ctx),
@@ -140,7 +148,9 @@ func s:run(dir, tagfile, options) abort
 	let info = job_info(job)
 	let s:jobs[id] = {'pid': info.process, 'tagfile': dest, 'errors': []}
 	call s:log('info', "[%s] ctags started: %s", info.process, join(cmd))
+
 endf
+
 
 " s:exit_cb({job:job}, {status:number}) -> 0
 " Callback for when the ctags job ends. The arguments are the ctags {job} and
@@ -148,7 +158,9 @@ endf
 " If another execution has being queued, it is executed at the end.
 " This function is expected to be executed with a context.
 func s:exit_cb(job, status) dict
+
 	let pid = job_info(a:job).process
+
 	if a:status != 0
 		call s:log('error', "[%s] ctags failed (%s): %s", pid, a:status, self.cmd)
 		for err in s:jobs[self.id].errors
@@ -160,10 +172,13 @@ func s:exit_cb(job, status) dict
 		let seconds = substitute(reltimestr(elapsed), '\v\s+', '', 'g')
 		call s:log('info', "[%s] tags generated in %ss: %s", pid, seconds, self.tagfile)
 	end
+
 	let After = get(s:jobs[self.id], 'after', {->0})
 	unlet! s:jobs[self.id]
 	call After()
+
 endf
+
 
 " s:err_cb({ch:channel, {message:string}) -> 0
 " Callback for when there is something to read on stderr.
@@ -191,7 +206,8 @@ func s:log(lvl, fmt, ...)
 	call add(s:logs,  entry)
 endf
 
-" s:id() -> string
+
+" s:id() -> number
 " Return a new unique id.
 func s:id()
 	return localtime()

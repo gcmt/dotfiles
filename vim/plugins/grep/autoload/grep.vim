@@ -8,8 +8,7 @@ func! s:run(cmd, args)
 	let sp_save = &shellpipe
 	set shellpipe=>
 
-	let args = a:cmd =~ 'vim' ? a:args : join(map(split(a:args), 'shellescape(v:val)'))
-	sil! exec a:cmd args
+	sil! exec a:cmd a:args
 
 	let &shellpipe = sp_save
 	let &t_ti = t_ti_save

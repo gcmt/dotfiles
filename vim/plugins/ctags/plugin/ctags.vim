@@ -13,6 +13,8 @@ if !executable('ctags')
 end
 let g:loaded_ctags = 1
 
+command -nargs=* Ctags call ctags#run(<q-args>, 1)
+
 aug _ctags
-	au VimEnter,BufWritePost * call ctags#run()
+	au VimEnter,BufWritePost * call ctags#run('', 0)
 aug END

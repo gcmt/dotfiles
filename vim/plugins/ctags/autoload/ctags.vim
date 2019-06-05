@@ -16,21 +16,51 @@ func ctags#print_log()
 	endfo
 endf
 
-" ctags#run() -> 0
-" Automatically generate tags for the current working directory
-" if all the conditions are met.
-func ctags#run()
-	call s:load_options()
-	if empty(&filetype) || !empty(&buftype)
+" ctags#run({filetypes:string}, {force:bool}) -> 0
+" Generate tags for the current working directory for the given {filetypes}. If
+" no {filetypes} are given then use the current buffer filetype. If {Force} is
+" true, then an empty tag file is created and tags get generated.
+func ctags#run(filetypes, force) abort
+
+	let filetypes = split(a:filetypes)
+
+	if empty(filetypes) && !empty(&filetype) && empty(&buftype)
+		call add(filetypes, &filetype)
+	end
+
+	if empty(filetypes) && a:force
+		return s:err("Invalid buffer")
+	end
+
+	if empty(filetypes)
 		return
 	end
-	let dir = getcwd()
-	let tagfile = call(g:ctags.tagfile, [])
-	if !filereadable(s:joinpaths(dir, tagfile))
-		return
+
+	let ft_target = remove(filetypes, 0)
+	let ctx = {'ft': ft_target}
+	call s:load_options(ctx)
+
+	let cwd = getcwd()
+	let tagfile = s:joinpaths(cwd, g:ctags.tagfile)
+	if !filereadable(tagfile)
+		if a:force
+			if len(split(tagfile, '/')) > 1
+				call mkdir(fnamemodify(tagfile, ':h'), 'p')
+			end
+			call system('touch ' . shellescape(tagfile))
+			call s:log("info", "Created tagfile %s", tagfile)
+		else
+			return
+		end
 	end
-	let options = s:ctags_options()
-	call s:run(getcwd(), tagfile, options)
+
+	let options = s:ctags_options(ft_target)
+	call s:run(getcwd(), g:ctags.tagfile, options)
+
+	if !empty(filetypes)
+		call ctags#run(join(filetypes), a:force)
+	end
+
 endf
 
 

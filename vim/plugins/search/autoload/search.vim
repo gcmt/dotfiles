@@ -52,9 +52,6 @@ func! search#do(bufnr, pattern, search_bufname, search_options, view_options)
 	let b:search = {'s': s}
 	call s.render()
 
-	set hlsearch
-	autocmd WinLeave <buffer> set nohlsearch
-
 endf
 
 " s:search.new({bufnr:number}, {pattern:string}, {search_options:dict}, {view_options:dict}) -> dict
@@ -151,6 +148,7 @@ func! s:search.render(...)
 		call self.goto_closest_match()
 	end
 
+	call matchadd('Red', self.pattern)
 	setl nomodifiable
 
 endf

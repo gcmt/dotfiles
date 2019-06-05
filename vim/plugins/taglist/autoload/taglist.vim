@@ -144,7 +144,7 @@ func taglist#render(...) abort
 				let line = link . (k == len(groups[tagfile][file])-1 ? '└─' : '├─')
 				let b:taglist.table[i] = tag
 				if tag.address =~ '\v^\d+'
-					let linenr = ' ' . matchstr(tag.address, '\v\d+')
+					let linenr = printf(" %4d", matchstr(tag.address, '\v\d+'))
 					call s:highlight('TaglistLineNr', i, len(line)+1, len(line)+len(linenr)+2)
 					let line .= linenr
 				end

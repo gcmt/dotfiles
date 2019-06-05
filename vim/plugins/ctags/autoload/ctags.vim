@@ -55,7 +55,7 @@ func s:run(dir, tagfile, options) abort
 		if s:jobs[id].tagfile == dest
 			" If a job running ctags is already trying to write to {dest},
 			" then queue the current execution
-			call s:log('info', printf("ctags queued for %s (already writing to %s)", a:dir, dest))
+			call s:log('info', "ctags queued for %s (already writing to %s)", a:dir, dest)
 			let s:jobs[id].after = funcref('s:run', [a:dir, a:tagfile, a:options])
 			return
 		end
@@ -76,9 +76,10 @@ func s:run(dir, tagfile, options) abort
 		\ 'exit_cb': funcref('s:exit_cb', [], exit_cb_ctx),
 		\ 'err_cb': funcref('s:err_cb', [], err_cb_ctx),
 	\ })
+
 	let info = job_info(job)
 	let s:jobs[id] = {'pid': info.process, 'tagfile': dest, 'errors': []}
-	call s:log('info', printf("[%s] ctags started: %s", info.process, join(cmd)))
+	call s:log('info', "[%s] ctags started: %s", info.process, join(cmd))
 endf
 
 " s:exit_cb({job:job}, {status:number}) -> 0
@@ -89,15 +90,15 @@ endf
 func s:exit_cb(job, status) dict
 	let pid = job_info(a:job).process
 	if a:status != 0
-		call s:log('error', printf("[%s] ctags failed (%s): %s", pid, a:status, self.cmd))
+		call s:log('error', "[%s] ctags failed (%s): %s", pid, a:status, self.cmd)
 		for err in s:jobs[self.id].errors
-			call s:log('error', printf("[%s] error: %s", pid, err))
+			call s:log('error', "[%s] error: %s", pid, err)
 		endfo
-		call s:err("Failed to generate tags for " . self.dir)
+		call s:err("Failed to generate tags for %s", self.dir)
 	else
 		let elapsed = reltime(self.start_time)
 		let seconds = substitute(reltimestr(elapsed), '\v\s+', '', 'g')
-		call s:log('info', printf("[%s] tags generated in %ss: %s", pid, seconds, self.tagfile))
+		call s:log('info', "[%s] tags generated in %ss: %s", pid, seconds, self.tagfile)
 	end
 	let After = get(s:jobs[self.id], 'after', {->0})
 	unlet! s:jobs[self.id]
@@ -146,11 +147,13 @@ func s:joinpaths(...)
 	return substitute(path, '\v/+$', '', '')
 endf
 
-" s:log({lvl:string}, {message:string}) -> 0
-" Log a {message} with level {lvl}.
-func s:log(lvl, message)
+
+" s:log({lvl:string}, {fmt:string}, [{expr1:any}, ...]) -> 0
+" Log a {message} with level {lvl}. Arguments behave like printf.
+func s:log(lvl, fmt, ...)
 	let time = strftime('%T', reltimestr(reltime()))
-	let entry = {'timestamp': time, 'lvl': a:lvl, 'message': a:message}
+	let message = call('printf', [a:fmt] + a:000)
+	let entry = {'timestamp': time, 'lvl': a:lvl, 'message': message}
 	call add(s:logs,  entry)
 endf
 

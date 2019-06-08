@@ -631,11 +631,11 @@
 " ----------------------------------------------------------------------------
 
 	set tags=
-	let g:tags_common = ['tags']
+	let g:tags_common = []
 
 	aug _tags
 		au!
-		au FileType * if &ft != 'taglist' | call <sid>set_tagfiles() | end
+		au BufEnter * if &ft != 'taglist' | call <sid>set_tagfiles() | end
 		au User UpdateTagfiles call <sid>set_tagfiles()
 	aug END
 

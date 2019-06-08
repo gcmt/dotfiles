@@ -341,6 +341,6 @@ endf
 " Show very basic help.
 func! explorer#actions#help()
 	let mappings = sort(filter(split(execute('nmap'), "\n"), {-> v:val =~ '\vexplorer#'}))
-	call map(mappings, {-> substitute(v:val, '\V\(\^n  \|*@:call explorer#\(actions\|buffer\)#\|<CR>\$\)', '', 'g')})
+	call map(mappings, {-> substitute(v:val, '\V\(\^n  \|\(*@\)\?:\(<C-U>\)\?call explorer#\(actions\|buffer\)#\|<CR>\$\)', '', 'g')})
 	echo join(mappings, "\n")
 endf

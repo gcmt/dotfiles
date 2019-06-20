@@ -18,13 +18,13 @@ func ctags#logs()
 	endfo
 endf
 
-" ctags#run({filetypes:string}, {force:bool}) -> 0
+" ctags#run({force:bool}[, {filetypes:string}]) -> 0
 " Generate tags for the current working directory for the given {filetypes}. If
 " no {filetypes} are given then use the current buffer filetype. If {Force} is
 " true, then an empty tag file is created and tags get generated.
-func ctags#run(filetypes, force) abort
+func ctags#run(force, ...) abort
 
-	let filetypes = split(a:filetypes)
+	let filetypes = a:0 > 0 ? split(a:1) : []
 
 	if empty(filetypes) && !empty(&filetype) && empty(&buftype)
 		call add(filetypes, &filetype)
@@ -60,7 +60,7 @@ func ctags#run(filetypes, force) abort
 	call s:run(getcwd(), g:ctags.tagfile, options)
 
 	if !empty(filetypes)
-		call ctags#run(join(filetypes), a:force)
+		call ctags#run(a:force, join(filetypes))
 	end
 
 endf

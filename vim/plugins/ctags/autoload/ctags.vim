@@ -18,6 +18,7 @@ func ctags#logs()
 	endfo
 endf
 
+
 " ctags#run({force:bool}[, {filetypes:string}]) -> 0
 " Generate tags for the current working directory for the given {filetypes}. If
 " no {filetypes} are given then use the current buffer filetype. If {Force} is
@@ -207,10 +208,10 @@ func s:log(lvl, fmt, ...)
 endf
 
 
-" s:id() -> number
+" s:id() -> string
 " Return a new unique id.
-func s:id()
-	return localtime()
+func! s:id()
+	return reltimestr(reltime())
 endf
 
 

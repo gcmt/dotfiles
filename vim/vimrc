@@ -136,6 +136,22 @@
 " UI
 " ----------------------------------------------------------------------------
 
+	" Alacritty versions
+
+	" func! s:get_term_bg()
+		" let config = $XDG_CONFIG_HOME . '/alacritty/alacritty.yml'
+		" let bg = matchstr(system("grep -Po '^\w+(?=-theme: &theme)' " . config), '\v\w+')
+		" return empty(bg) ? 'dark' : bg
+	" endf
+
+	" func! s:toggle_bg()
+		" let prg = $XDG_CONFIG_HOME . '/alacritty/theme'
+		" let &bg = &bg == 'dark' ? 'light' : 'dark'
+		" if executable(prg)
+			" exec 'sil!' '!'.prg &bg
+		" end
+	" endf
+
 	func! s:get_term_bg()
 		let bg = matchstr(system('xrdb -query all | grep colorscheme | grep -o "\S\+$"'), '\v\w+')
 		return empty(bg) ? 'dark' : bg

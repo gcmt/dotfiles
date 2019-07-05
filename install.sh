@@ -118,6 +118,14 @@ if arg -urxvt || arg -all; then
 	fi
 fi
 
+if arg -alacritty || arg -all; then
+	if arg -all && ! arg -alacritty && ! installed urxvt; then
+		skip alacritty
+	else
+		link "$dotdir/alacritty" "$XDG_CONFIG_HOME/alacritty"
+	fi
+fi
+
 if arg -vim || arg -all; then
 	if arg -all && ! arg -vim && ! installed vim; then
 		skip vim

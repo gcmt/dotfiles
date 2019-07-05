@@ -1,0 +1,36 @@
+#!/bin/bash
+
+config="$XDG_CONFIG_HOME/alacritty/alacritty.yml"
+
+if [[ "$1" != 'dark' && "$1" != 'light' ]]; then
+	echo >&2 "Usage: theme (dark|light)"
+	exit 1
+fi
+
+case "$1" in
+	dark)
+		sed -i.bak 's/^dark-theme:.*/dark-theme: \&theme/; s/^light-theme:.*/light-theme:/' "$config"
+		;;
+	light)
+		sed -i.bak 's/^light-theme:.*/light-theme: \&theme/; s/^dark-theme:.*/dark-theme:/' "$config"
+		;;
+esac
+
+xrdb -load -D"$(tr /a-z/ /A-Z/ <<< "$1")" ~/.Xresources
+
+clear
+
+seq=
+
+theme="$(awk "/$1-theme/,/indexed/" "$config")"
+curColor=$(echo "$theme" | grep -A2 'cursor:$' | grep 'cursor:.\+' | grep -Po '(?<=0x)\w+')
+hlColor=$(echo "$theme" | grep -A2 'selection:$' | grep 'background:.\+' | grep -Po '(?<=0x)\w+')
+
+[[ -n "$curColor" ]] && seq+="\e]12;$curColor\a"
+[[ -n "$hlColor"  ]] && seq+="\e]17;$hlColor\a"
+
+if [[ -n "$TMUX" ]]; then
+	printf "\ePtmux;\e${seq//\\e/\\e\\e}\e\\"
+else
+	printf "$seq"
+fi

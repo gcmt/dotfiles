@@ -5,4 +5,5 @@ gtk-3.0/bookmarks
 .zcompdump
 *.old
 *.pyc
+*.bak
 tags

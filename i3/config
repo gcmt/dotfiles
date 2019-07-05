@@ -16,6 +16,9 @@ exec --no-startup-id tmux new -ds scratch
 # Variables
 # ----------------------------------------------------------------------------
 
+set $term_cls URxvt
+set $term_prg urxvt
+
 set $alt Mod1
 set $cmd Mod4
 set $mod Mod4
@@ -94,13 +97,13 @@ bindsym $mod+backslash exec --no-startup-id i3-rotate -next
 bindsym $mod+Shift+backslash exec --no-startup-id i3-rotate -prev
 
 # Open console calculator
-bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback 'urxvt -name calc -e calc-tmux'
+bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback '$term_prg -name calc -e calc-tmux'
 
 # Edit files
 bindsym $mod+e exec --no-startup-id rofi-edit
 
 # Shortcuts
-bindsym $mod+x exec --no-startup-id i3-focus -c URxvt -n ranger -fallback "urxvt -name ranger -title Ranger -e ranger"
+bindsym $mod+x exec --no-startup-id i3-focus -c $term_cls -n ranger -fallback "$term_prg -name ranger -title Ranger -e ranger"
 bindsym $mod+bracketleft exec --no-startup-id i3-focus -c Firefox -m - -fallback firefox
 bindsym $mod+apostrophe exec --no-startup-id i3-focus -m _mark
 bindsym $mod+Shift+apostrophe mark _mark
@@ -271,8 +274,8 @@ mode "i3" {
 	bindsym Shift+s exec --no-startup-id systemctl suspend, mode "default"
 	bindsym Shift+h exec --no-startup-id systemctl hibernate, mode "default"
 
-	bindsym c exec --no-startup-id urxvt -name floating -e vim .config/i3/config; mode "default"
-	bindsym t exec --no-startup-id urxvt -name floating -e vim .config/redshift/redshift.conf; mode "default"
+	bindsym c exec --no-startup-id $term_prg -name floating -e vim .config/i3/config; mode "default"
+	bindsym t exec --no-startup-id $term_prg -name floating -e vim .config/redshift/redshift.conf; mode "default"
 
 	# Reset workspace layout
 	bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
@@ -307,8 +310,8 @@ bindsym $mod+Tab mode "open"
 bindsym XF86AudioPlay exec --no-startup-id mpc toggle
 bindsym XF86AudioNext exec --no-startup-id mpc next
 bindsym XF86AudioPrev exec --no-startup-id mpc prev
-bindsym $mod+XF86AudioPlay exec --no-startup-id i3-focus -c URxvt -t '^ncmpcpp$' -kill -fallback 'urxvt -name floating -e ncmpcpp'
-bindsym $mod+F5 exec --no-startup-id i3-focus -c URxvt -t '^ncmpcpp$' -kill -fallback 'urxvt -name floating -e ncmpcpp'
+bindsym $mod+XF86AudioPlay exec --no-startup-id i3-focus -c $term_cls -t '^ncmpcpp$' -kill -fallback '$term_prg -name floating -e ncmpcpp'
+bindsym $mod+F5 exec --no-startup-id i3-focus -c $term_cls -t '^ncmpcpp$' -kill -fallback '$term_prg -name floating -e ncmpcpp'
 bindsym $mod+F6 exec --no-startup-id mpc toggle
 bindsym $mod+F7 exec --no-startup-id mpc prev
 bindsym $mod+F8 exec --no-startup-id mpc next

@@ -19,18 +19,3 @@ esac
 xrdb -load -D"$(tr /a-z/ /A-Z/ <<< "$1")" ~/.Xresources
 
 clear
-
-seq=
-
-theme="$(awk "/$1-theme/,/indexed/" "$config")"
-curColor=$(echo "$theme" | grep -A2 'cursor:$' | grep 'cursor:.\+' | grep -Po '(?<=0x)\w+')
-hlColor=$(echo "$theme" | grep -A2 'selection:$' | grep 'background:.\+' | grep -Po '(?<=0x)\w+')
-
-[[ -n "$curColor" ]] && seq+="\e]12;$curColor\a"
-[[ -n "$hlColor"  ]] && seq+="\e]17;$hlColor\a"
-
-if [[ -n "$TMUX" ]]; then
-	printf "\ePtmux;\e${seq//\\e/\\e\\e}\e\\"
-else
-	printf "$seq"
-fi

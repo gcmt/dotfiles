@@ -82,9 +82,6 @@ bindsym --whole-window button8 exec --no-startup-id i3-next-window -prev
 bindsym --whole-window $mod+button9 exec --no-startup-id i3-next-workspace -next
 bindsym --whole-window $mod+button8 exec --no-startup-id i3-next-workspace -prev
 
-# Keyboard cheatsheet
-bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
-
 # Prevent/allow screen locking
 bindsym Pause exec --no-startup-id coffee
 
@@ -297,6 +294,9 @@ mode "open" {
 
 	bindsym m exec --no-startup-id i3-focus -t "\| FastMail -" -fallback "firefox --no-remote -P Mail"; mode "default"
 	bindsym d exec --no-startup-id i3-focus -c Nemo -t "^Downloads" -fallback "nemo Downloads"; mode "default"
+
+	# Keyboard cheatsheet
+	bindsym k exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
 
 	bindsym q mode "default"
 	bindsym Return mode "default"

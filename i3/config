@@ -139,9 +139,6 @@ bindsym $alt+space exec --no-startup-id "rofi -show run -kb-accept-entry Control
 bindsym $mod+slash exec --no-startup-id i3-choose-window -no-inputbar
 bindsym $mod+Shift+slash exec --no-startup-id i3-choose-window
 
-bindsym Menu exec --no-startup-id i3-choose-window -no-inputbar
-bindsym Shift+Menu exec --no-startup-id i3-choose-window
-
 # Toggle Polybar visibility
 bindsym $mod+Return exec --no-startup-id polybar-toggle
 
@@ -264,6 +261,9 @@ bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
 bindsym $mod+Control+plus floating enable; resize grow right 40px; resize grow down 10px; move position center
 bindsym $mod+Control+minus floating enable; resize shrink right 40px; resize shrink down 10px; move position center
 
+# Keyboard cheatsheet
+bindsym Menu exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
+
 mode "i3" {
 
 	bindsym r reload
@@ -294,9 +294,6 @@ mode "open" {
 
 	bindsym m exec --no-startup-id i3-focus -t "\| FastMail -" -fallback "firefox --no-remote -P Mail"; mode "default"
 	bindsym d exec --no-startup-id i3-focus -c Nemo -t "^Downloads" -fallback "nemo Downloads"; mode "default"
-
-	# Keyboard cheatsheet
-	bindsym k exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
 
 	bindsym q mode "default"
 	bindsym Return mode "default"

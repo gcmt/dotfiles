@@ -9,7 +9,7 @@ def main():
     focused = i3.get_tree().find_focused()
     for w in focused.workspace().leaves():
         if w.window != focused.window:
-            run(['xkill', '-id', f'{w.window}'])
+            w.command('kill')
 
 
 if __name__ == '__main__':

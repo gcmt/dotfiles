@@ -4,6 +4,10 @@ state_file="/run/user/$UID/mediac.state"
 mpv_fifo="/tmp/mpv.fifo"
 profiles=(mpd mpv)
 
+_notify() {
+	dunstify -t 3000 -r 4234 "Mediakeys" "$1"
+}
+
 if [[ -f "$state_file" ]]; then
 	profile="$(cat "$state_file")"
 else
@@ -20,7 +24,7 @@ if [[ "$1" == cycle ]]; then
 		fi
 	done
 	echo "Active profile: $profile"
-	dunstify -t 3000 -r 4234 "Mediakeys" "Profile:  $profile"
+	_notify "Profile:  $profile"
 	exit
 fi
 
@@ -28,6 +32,7 @@ if [[ "$profile" == mpv ]]; then
 
 	if ! pgrep -x mpv >/dev/null; then
 		echo 1>&2 "mpv not running"
+		_notify "Mpv not running"
 		exit 1
 	fi
 

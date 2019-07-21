@@ -306,17 +306,12 @@ bindsym $mod+Tab mode "open"
 # Controls
 # ----------------------------------------------------------------------------
 
-# Music player
-bindsym XF86AudioPlay exec --no-startup-id mpc toggle
-bindsym XF86AudioNext exec --no-startup-id mpc next
-bindsym XF86AudioPrev exec --no-startup-id mpc prev
-bindsym $mod+XF86AudioPlay exec --no-startup-id i3-focus -c $term_cls -t '^ncmpcpp$' -kill -fallback '$term_prg -name floating -e ncmpcpp'
-bindsym $mod+F5 exec --no-startup-id i3-focus -c $term_cls -t '^ncmpcpp$' -kill -fallback '$term_prg -name floating -e ncmpcpp'
-bindsym $mod+F6 exec --no-startup-id mpc toggle
-bindsym $mod+F7 exec --no-startup-id mpc prev
-bindsym $mod+F8 exec --no-startup-id mpc next
-bindsym $mod+F9 exec --no-startup-id rofi-mpd
-bindsym $mod+Shift+F9 exec --no-startup-id rofi-mpd -add
+# Music player / Mpv controls
+bindsym $mod+F5 exec --no-startup-id mediac F5
+bindsym $mod+F6 exec --no-startup-id mediac F6
+bindsym $mod+F7 exec --no-startup-id mediac F7
+bindsym $mod+F8 exec --no-startup-id mediac F8
+bindsym $mod+F9 exec --no-startup-id mediac toggle
 
 # Screenshots (XF86LaunchA = F3)
 bindsym XF86LaunchA exec --no-startup-id capture -window root

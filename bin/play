@@ -1,0 +1,17 @@
+#!/bin/bash
+
+fifo=/tmp/mpv.fifo
+
+if [[ ! -p "$fifo" ]]; then
+	mkfifo "$fifo"
+fi
+
+_exit() {
+	if [[ "$(pgrep -c mpv)" -eq 0 ]]; then
+		rm -f "$fifo"
+	fi
+}
+
+trap "_exit" 0
+
+mpv --input-file="$fifo" --player-operation-mode=pseudo-gui "$@"

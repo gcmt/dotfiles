@@ -1,0 +1,48 @@
+#!/bin/bash
+
+state_file="/run/user/$UID/mediac.state"
+mpv_fifo="/tmp/mpv.fifo"
+
+if [[ -f "$state_file" ]]; then
+	profile="$(cat "$state_file")"
+else
+	echo mpd > "$state_file"
+	profile=mpd
+fi
+
+if [[ "$1" == toggle ]]; then
+	case "$profile" in
+		mpd) profile=mpv && echo "$profile" > "$state_file" ;;
+		mpv) profile=mpd && echo "$profile" > "$state_file" ;;
+	esac
+	echo "Active profile: $profile"
+	dunstify -t 3000 -r 4234 "Mediakeys" "Profile:  $profile"
+	exit
+fi
+
+if [[ "$profile" == mpv ]]; then
+
+	if [[ ! -p "$mpv_fifo" ]]; then
+		echo 1>&2 "mpv not running"
+		exit 1
+	fi
+
+	case "$1" in
+		F5) echo stop > "$mpv_fifo" ;;
+		F6) echo cycle pause > "$mpv_fifo" ;;
+		F7) echo seek -3 > "$mpv_fifo" ;;
+		F8) echo seek 3 > "$mpv_fifo" ;;
+		*) exit 1 ;;
+	esac
+
+elif [[ "$profile" == mpd ]]; then
+
+	case "$1" in
+		F5) i3-focus -c URxvt -t '^ncmpcpp$' -kill -fallback 'urxvt -name floating -e ncmpcpp' ;;
+		F6) i3-msg -- exec --no-startup-id mpc toggle ;;
+		F7) i3-msg -- exec --no-startup-id mpc prev ;;
+		F8) i3-msg -- exec --no-startup-id mpc next ;;
+		*) exit 1 ;;
+	esac
+
+fi

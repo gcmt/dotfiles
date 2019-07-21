@@ -7,7 +7,7 @@ if [[ ! -p "$fifo" ]]; then
 fi
 
 _exit() {
-	if [[ "$(pgrep -c mpv)" -eq 0 ]]; then
+	if ! pgrep -x mpv >/dev/null; then
 		rm -f "$fifo"
 	fi
 }

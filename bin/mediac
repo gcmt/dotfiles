@@ -39,9 +39,9 @@ elif [[ "$profile" == mpd ]]; then
 
 	case "$1" in
 		F5) i3-focus -c URxvt -t '^ncmpcpp$' -kill -fallback 'urxvt -name floating -e ncmpcpp' ;;
-		F6) i3-msg -- exec --no-startup-id mpc toggle ;;
-		F7) i3-msg -- exec --no-startup-id mpc prev ;;
-		F8) i3-msg -- exec --no-startup-id mpc next ;;
+		F6) mpc toggle ;;
+		F7) mpc prev ;;
+		F8) mpc next ;;
 		*) exit 1 ;;
 	esac
 

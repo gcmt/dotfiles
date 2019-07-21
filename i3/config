@@ -313,7 +313,7 @@ bindsym $mod+F5 exec --no-startup-id mediac F5
 bindsym $mod+F6 exec --no-startup-id mediac F6
 bindsym $mod+F7 exec --no-startup-id mediac F7
 bindsym $mod+F8 exec --no-startup-id mediac F8
-bindsym $mod+F9 exec --no-startup-id mediac toggle
+bindsym $mod+F9 exec --no-startup-id mediac cycle
 
 # Screenshots / Screen recording
 bindsym $mod+F1 exec --no-startup-id capture -window root

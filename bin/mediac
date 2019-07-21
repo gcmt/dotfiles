@@ -2,19 +2,23 @@
 
 state_file="/run/user/$UID/mediac.state"
 mpv_fifo="/tmp/mpv.fifo"
+profiles=(mpd mpv)
 
 if [[ -f "$state_file" ]]; then
 	profile="$(cat "$state_file")"
 else
-	echo mpd > "$state_file"
-	profile=mpd
+	profile="${profiles[0]}"
+	echo "$profile" > "$state_file"
 fi
 
-if [[ "$1" == toggle ]]; then
-	case "$profile" in
-		mpd) profile=mpv && echo "$profile" > "$state_file" ;;
-		mpv) profile=mpd && echo "$profile" > "$state_file" ;;
-	esac
+if [[ "$1" == cycle ]]; then
+	for i in "${!profiles[@]}"; do
+		if [[ "${profiles[$i]}" == "$profile" ]]; then
+			profile="${profiles[$(( (i+1) % ${#profiles[@]} ))]}"
+			echo "$profile" > "$state_file"
+			break
+		fi
+	done
 	echo "Active profile: $profile"
 	dunstify -t 3000 -r 4234 "Mediakeys" "Profile:  $profile"
 	exit

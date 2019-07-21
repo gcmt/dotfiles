@@ -363,6 +363,7 @@
 
 	" view current buffer in a new tab
 	nnoremap <c-w>t :tabe %<cr>
+	tnoremap <c-w>t <c-w>:tabe %<cr>
 
 	nnoremap <silent> <c-w>v <c-w>v:b#<cr>
 	nnoremap <silent> <c-w>s <c-w>s:b#<cr>

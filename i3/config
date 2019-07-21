@@ -313,11 +313,7 @@ bindsym $mod+F7 exec --no-startup-id mediac F7
 bindsym $mod+F8 exec --no-startup-id mediac F8
 bindsym $mod+F9 exec --no-startup-id mediac toggle
 
-# Screenshots (XF86LaunchA = F3)
-bindsym XF86LaunchA exec --no-startup-id capture -window root
-bindsym $mod+XF86LaunchA exec --no-startup-id capture
-bindsym $alt+XF86LaunchA exec --no-startup-id capture -wait -window root
-bindsym $alt+$mod+XF86LaunchA exec --no-startup-id capture -wait
+# Screenshots / Screen recording
 bindsym $mod+F1 exec --no-startup-id capture -window root
 bindsym $mod+Shift+F1 exec --no-startup-id capture -wait -window root
 bindsym $mod+F2 exec --no-startup-id capture
@@ -325,23 +321,9 @@ bindsym $mod+F3 exec --no-startup-id rec -root
 bindsym $mod+F4 exec --no-startup-id rec
 
 # Volume controls
-bindsym XF86AudioRaiseVolume exec --no-startup-id volume up
-bindsym XF86AudioLowerVolume exec --no-startup-id volume down
-bindsym XF86AudioMute exec --no-startup-id volume toggle
 bindsym $mod+F12 exec --no-startup-id volume up
 bindsym $mod+F11 exec --no-startup-id volume down
 bindsym $mod+F10 exec --no-startup-id volume toggle
-
-# Screen brightness controls
-bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 5
-bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 5
-
-# Keyboard backlight controls
-bindsym XF86KbdBrightnessUp exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -inc 5
-bindsym XF86KbdBrightnessDown exec --no-startup-id xbacklight -ctrl smc::kbd_backlight -dec 5
-
-# Timer
-bindsym XF86LaunchB exec --no-startup-id timer toggle 45m
 
 # Dark Colors
 # ----------------------------------------------------------------------------

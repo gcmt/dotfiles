@@ -18,6 +18,7 @@ exec --no-startup-id tmux new -ds scratch
 
 set $term_cls URxvt
 set $term_prg urxvt
+set $term_floating alacritty --class floating
 
 set $alt Mod1
 set $cmd Mod4
@@ -274,8 +275,9 @@ mode "i3" {
 	bindsym Shift+s exec --no-startup-id systemctl suspend, mode "default"
 	bindsym Shift+h exec --no-startup-id systemctl hibernate, mode "default"
 
-	bindsym c exec --no-startup-id $term_prg -name floating -e vim .config/i3/config; mode "default"
-	bindsym t exec --no-startup-id $term_prg -name floating -e vim .config/redshift/redshift.conf; mode "default"
+	bindsym c exec --no-startup-id $term_floating -e vim .config/i3/config; mode "default"
+	bindsym t exec --no-startup-id $term_floating -e vim .config/redshift/redshift.conf; mode "default"
+	bindsym m exec --no-startup-id $term_floating -e vim .config/mpv/input.conf; mode "default"
 
 	# Reset workspace layout
 	bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current

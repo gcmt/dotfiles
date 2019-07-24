@@ -256,6 +256,16 @@
 
 	let s:sep = ' ‹ '
 
+	func! _listchars_visibility()
+		" hide 'listchars' in visual mode
+		if mode() =~ 'v' && &list
+			set nolist
+		elseif mode() == 'n' && !&list
+			set list
+		end
+		return ''
+	endf
+
 	func! _current_buffer()
 		if empty(bufname('%'))
 			return '[no name]'
@@ -314,6 +324,7 @@
 	endf
 
 	let &stl  = ' '
+	let &stl .= '%{_listchars_visibility()}'
 	let &stl .= '%{_alternate_buffer()}'
 	let &stl .= '%(%w%r%h %)'
 	let &stl .= '%{&mod ? "" : _current_buffer()}'

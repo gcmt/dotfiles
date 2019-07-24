@@ -431,7 +431,7 @@
 		let bufnr = bufnr('%')
 
 		if &modified && empty(a:bang)
-			return s:err('E89 No write since last change for buffer %d (add ! to override)', bufnr)
+			return _errm('E89 No write since last change for buffer %d (add ! to override)', bufnr)
 		end
 
 		let prev_winnr = -1
@@ -465,7 +465,7 @@
 		try
 			exec a:cmd.a:bang bufnr
 		catch /E.*/
-			return s:err(matchstr(v:exception, '\vE\d+:.*'))
+			return _errm(matchstr(v:exception, '\vE\d+:.*'))
 		endtry
 
 	endf
@@ -787,7 +787,11 @@
 
 	aug END
 
-	func! s:err(fmt, ...)
+	func! _err(fmt, ...)
+		echohl WarningMsg | echo call('printf', [a:fmt] + a:000)  | echohl None
+	endf
+
+	func! _errm(fmt, ...)
 		echohl WarningMsg | echom call('printf', [a:fmt] + a:000)  | echohl None
 	endf
 

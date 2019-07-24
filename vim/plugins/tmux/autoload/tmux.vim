@@ -25,18 +25,21 @@ endf
 " is created first.
 " When {options} is not given, the variable b:tmux is looked for.
 func tmux#run_buffer(...)
-	let defaults = {'prg': '', 'args': [], 'pane': 'vim-tmux', 'focus': 0}
+	let defaults = {'prg': '', 'args': [], 'pane': 'vim-tmux', 'focus': 0, 'bg': 1}
 	let opts = extend(defaults, a:0 > 0 ? a:1 : get(b:, 'tmux', {}), 'force')
 	let file = shellescape(expand('%:p'))
 	let args = map(copy(opts.args), {i, val -> shellescape(val)})
 	let cmd = printf("'clear' Enter \"%s %s %s\" Enter", opts.prg, file, join(args, ' '))
-	if s:tmux('display -p "#{window_zoomed_flag}"') == 1
+	if s:tmux('display -p "#{window_zoomed_flag}"') == 1 && !opts.bg
 		call s:tmux('resizep -Z')
 	end
 	if s:tmux('display -p "#{window_panes}"') == 1
 		call s:tmux('splitw -v -p 25 -c "#{pane_current_path}"')
 		call s:tmux(printf('selectp -T "%s"', opts.pane))
 		call s:tmux('selectp -t :.! ')
+		if opts.bg
+			call s:tmux('resizep -Z')
+		end
 	end
 	let panes = s:tmux('lsp -F "#{pane_id}:#{pane_title}"', 1)
 	for [id, title] in map(panes, {i, line -> split(line, ':')})

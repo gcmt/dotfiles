@@ -42,9 +42,9 @@ nnoremap <silent> <buffer> <leader>o :Search! \v^\s*\zs(class\|def)><cr>
 " expand current name into a function definition
 inoremap <silent> <buffer> <c-g><c-s> <c-r>=python#snippets#func()<cr>
 
-" Yapf
-command! -range Yapf <line1>,<line2>call python#yapf#format()
-nnoremap <silent> <buffer> <f4> :Yapf<cr>
+" Foramt code
+command! Format call python#formatter#format_current_file()
+nnoremap <silent> <buffer> <f4> :Format<cr>
 
 " jedi integration
 " command! -buffer Usages call python#jedi#usages()

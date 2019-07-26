@@ -738,9 +738,6 @@
 		au CmdWinEnter * setl nonumber norelativenumber
 		au CmdWinEnter * resize 20 | keepj norm! ggG
 
-		" Keep clipboard content
-		au VimLeave * call system("xclip -sel clip -i", getreg('+'))
-
 		" Keep the help window to the bottom when there are multiple splits
 		au BufWinEnter * if &ft == 'help' | wincmd J | end
 		au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q <c-w>c | end

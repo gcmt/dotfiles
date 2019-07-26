@@ -12,6 +12,10 @@ func! s:after()
 	return strpart(getline('.'), col('.') - 1)
 endf
 
+func! s:cursyn()
+	return synIDattr(synIDtrans(synID(line('.'), col('.'), 0)), 'name')
+endf
+
 func! pairs#insert_paren(par)
 	if s:after() =~ "\\v^(\\w|\"|')"
 		return a:par
@@ -25,10 +29,10 @@ func! pairs#insert_quote(quote)
 	if &ft == 'vim' && a:quote == '"' && before =~ '\v^\s*$'
 		return a:quote
 	end
-	if a:quote == "'" && &ft == 'python' && before !~ '\v(f|b|r|u)$'
+	if a:quote == "'" && s:cursyn() == 'String' && before =~ '\v\a$'
 		return a:quote
 	end
-	if a:quote == "'" && &ft != 'python' && before =~ '\v\a$'
+	if a:quote == "'" && after =~ '\v^\a'
 		return a:quote
 	end
 	if count(getline('.'), a:quote) % 2 != 0

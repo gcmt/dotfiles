@@ -136,22 +136,6 @@
 " UI
 " ----------------------------------------------------------------------------
 
-	" Alacritty versions
-
-	" func! s:get_term_bg()
-		" let config = $XDG_CONFIG_HOME . '/alacritty/alacritty.yml'
-		" let bg = matchstr(system("grep -Po '^\w+(?=-theme: &theme)' " . config), '\v\w+')
-		" return empty(bg) ? 'dark' : bg
-	" endf
-
-	" func! s:toggle_bg()
-		" let prg = $XDG_CONFIG_HOME . '/alacritty/theme'
-		" let &bg = &bg == 'dark' ? 'light' : 'dark'
-		" if executable(prg)
-			" exec 'sil!' '!'.prg &bg
-		" end
-	" endf
-
 	func! s:get_term_bg()
 		let bg = matchstr(system('xrdb -query all | grep colorscheme | grep -o "\S\+$"'), '\v\w+')
 		return empty(bg) ? 'dark' : bg
@@ -385,20 +369,6 @@
 	nnoremap <silent> <right> 3<c-w>>
 	nnoremap <silent> <up> <c-w>+
 	nnoremap <silent> <down> <c-w>-
-
-	command! -nargs=0 Zoom call <sid>zoom_toggle()
-	nnoremap <silent> <c-w>_ :Zoom<cr>
-
-	func! s:zoom_toggle() abort
-		if exists('w:zoom')
-			exec w:zoom
-			unlet w:zoom
-		else
-			let w:zoom = winrestcmd()
-			wincmd _
-			wincmd |
-		end
-	endf
 
 " BUFFERS
 " ----------------------------------------------------------------------------

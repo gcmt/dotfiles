@@ -75,5 +75,5 @@ func! pairs#newline()
 	if !empty(opening) && closing == s:closing[opening]
 		return "\<c-g>u\<cr>\<esc>O"
 	end
-	return "\<c-]>\<cr>"
+	return "\<c-]>\<c-g>u\<cr>"
 endf

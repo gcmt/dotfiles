@@ -460,8 +460,8 @@
 " EDITING
 " ----------------------------------------------------------------------------
 
-	inoremap <c-e> <esc>O
-	inoremap <c-d> <esc>o
+	inoremap <c-e> <c-g>u<esc>O
+	inoremap <c-d> <c-g>u<esc>o
 	inoremap <c-w> <c-g>u<c-w>
 	inoremap <c-l> <right><bs>
 	cnoremap <c-l> <right><bs>
@@ -833,6 +833,9 @@
 	cnoremap <c-p> <up>
 
 	inoremap <c-c> <c-]><esc>
+
+	inoremap <c-j> <c-g>u<c-j>
+	inoremap <cr> <c-g>u<cr>
 
 	vnoremap C c
 

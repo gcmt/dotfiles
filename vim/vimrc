@@ -392,7 +392,7 @@
 	endf
 
 	command! -bang -nargs=0 Bdelete call <sid>bdelete('bdelete', <q-bang>)
-	nnoremap <silent> g! :Bdelete!<cr>
+	nnoremap <silent> <c-w>d :Bdelete!<cr>
 
 	" delete the buffer without closing the window
 	func! s:bdelete(cmd, bang)

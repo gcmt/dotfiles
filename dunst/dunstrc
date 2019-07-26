@@ -286,7 +286,4 @@
 	summary = "Caffeine"
 	format = "%b"
 
-[mediakeys]
-	summary = "Mediakeys"
-	format = "%b"
 # vim: ft=cfg cms=#\ %s

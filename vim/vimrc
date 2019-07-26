@@ -434,6 +434,7 @@
 
 		try
 			exec a:cmd.a:bang bufnr
+			echom a:cmd.a:bang bufname(bufnr)
 		catch /E.*/
 			return _errm(matchstr(v:exception, '\vE\d+:.*'))
 		endtry

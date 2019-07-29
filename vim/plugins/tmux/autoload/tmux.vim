@@ -25,11 +25,14 @@ endf
 " is created first.
 " When {options} is not given, the variable b:tmux is looked for.
 func tmux#run_buffer(...)
-	let defaults = {'prg': '', 'args': [], 'pane': 'vim-tmux', 'focus': 0, 'bg': 1}
+	let defaults = {'prg': '', 'args': [], 'pane': 'vim-tmux', 'focus': 0, 'bg': 0, 'eof': 0}
 	let opts = extend(defaults, a:0 > 0 ? a:1 : get(b:, 'tmux', {}), 'force')
 	let file = shellescape(expand('%:p'))
 	let args = map(copy(opts.args), {i, val -> shellescape(val)})
-	let cmd = printf("'clear' Enter \"%s %s %s\" Enter", opts.prg, file, join(args, ' '))
+	let cmd = printf("\"%s %s %s\" Enter", opts.prg, join(args, ' '), file)
+	if opts.eof
+		let cmd = "C-u C-d " . cmd
+	end
 	if s:tmux('display -p "#{window_zoomed_flag}"') == 1 && !opts.bg
 		call s:tmux('resizep -Z')
 	end
@@ -45,7 +48,7 @@ func tmux#run_buffer(...)
 		let id = matchstr(line, '\v^\%\d+')
 		let title = matchstr(line, '\v^\%\d+:\zs.*')
 		if title == opts.pane
-			call s:tmux(printf('send -t %s %s', id, cmd))
+			call s:tmux(printf('send -R -t %s %s', id, cmd))
 			if opts.focus
 				call s:tmux('selectp -t ' . id)
 			end

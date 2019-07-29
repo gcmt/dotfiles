@@ -3,9 +3,18 @@ iabbrev <buffer> none None
 iabbrev <buffer> true True
 iabbrev <buffer> false False
 
+func! s:run()
+	if &modified
+		write
+	end
+	call tmux#run_buffer()
+endf
+
 if exists('$TMUX')
-	let b:tmux = {'prg': 'python'}
-	nnoremap <silent> <buffer> <leader>r :call tmux#run_buffer()<cr>
+	let b:tmux = {'prg': 'python', 'args': ['-i'], 'eof': 1}
+	nnoremap <silent> <buffer> <leader>r :call <sid>run()<cr>
+	nnoremap <silent> <buffer> <F5> :call <sid>run()<cr>
+	inoremap <silent> <buffer> <F5> <esc>:call <sid>run()<cr>
 	nnoremap <silent> <buffer> <leader>z :call tmux#exec('resizep -Z')<cr>
 else
 	nnoremap <silent> <buffer> <leader>r :python %<cr>

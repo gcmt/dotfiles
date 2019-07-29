@@ -59,6 +59,7 @@ inoremap <silent> <buffer> <c-g><c-s> <c-r>=python#snippets#func()<cr>
 " Foramt code
 command! Format call python#formatter#format_current_file()
 nnoremap <silent> <buffer> <f4> :Format<cr>
+inoremap <silent> <buffer> <f4> <esc>:Format<cr>
 
 " jedi integration
 " command! -buffer Usages call python#jedi#usages()

@@ -3,6 +3,33 @@ iabbrev <buffer> none None
 iabbrev <buffer> true True
 iabbrev <buffer> false False
 
+func! s:adjust_indentation(lines)
+	let min_indent = -1
+	for line in a:lines
+		let indent = len(matchstr(line, '\v^\s*'))
+		if min_indent == -1 || indent < min_indent
+			let min_indent = indent
+		end
+	endfo
+	let patt = '\v^' . repeat(' ', min_indent)
+	return map(a:lines, {i, line -> substitute(line, patt, '', '')})
+endf
+
+func! s:run_selection() range
+	let lines = getline(a:firstline, a:lastline)
+	let lines = filter(lines, {i, line -> line !~ '\v^\s*$'})
+	let lines = s:adjust_indentation(lines)
+	let out = systemlist('python', join(lines, "\n"))
+	if v:shell_error
+		call _err(join(out, "\n"))
+	else
+		echo join(out, "\n")
+	end
+endf
+
+vnoremap <silent> <F5> :call <sid>run_selection()<cr>
+vnoremap <silent> <leader>r :call <sid>run_selection()<cr>
+
 func! s:run()
 	if &modified
 		write

@@ -241,9 +241,9 @@
 
 	func! _listchars_visibility()
 		" hide 'listchars' in visual mode
-		if mode() =~ 'v' && &list
+		if !empty(&bt) || mode() == 'v' && &list
 			set nolist
-		elseif mode() == 'n' && !&list
+		elseif mode()[0] == 'n' && !&list
 			set list
 		end
 		return ''

@@ -47,35 +47,13 @@ else
 	nnoremap <silent> <buffer> <leader>r :python %<cr>
 end
 
-let s:breakpoint = "import pudb; pudb.set_trace()"
-
-inoremap <silent> <buffer> <c-g><c-b> <c-r><c-o>=<sid>insert_breakpoint()<cr>
-nnoremap <silent> <buffer> <leader>B :call <sid>delete_breakpoints()<cr>
-nnoremap <silent> <buffer> <leader>b :call <sid>toggle_breakpoints()<cr>
-
-func! s:insert_breakpoint()
-	return s:breakpoint
-endf
-
-func! s:delete_breakpoints()
-   let view = winsaveview()
-	exec printf('keepj g/\V%s/del', s:breakpoint)
-	call winrestview(view)
-endf
-
-func! s:toggle_breakpoints()
-   let view = winsaveview()
-	exec printf('keepj g/\V%s/norm gcc', s:breakpoint)
-	call winrestview(view)
-endf
-
-" generate tags
+" Generate tags
 nnoremap <buffer> <f3> :Ctags --languages=python -f .tags/python/0.project<cr>
 
-" outline python module
+" Outline python module
 nnoremap <silent> <buffer> <leader>o :Search! \v^\s*\zs(class\|def)><cr>
 
-" expand current name into a function definition
+" Expand current name into a function definition
 inoremap <silent> <buffer> <c-g><c-s> <c-r>=python#snippets#func()<cr>
 
 " Foramt code

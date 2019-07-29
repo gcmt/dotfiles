@@ -41,8 +41,9 @@ func tmux#run_buffer(...)
 			call s:tmux('resizep -Z')
 		end
 	end
-	let panes = s:tmux('lsp -F "#{pane_id}:#{pane_title}"', 1)
-	for [id, title] in map(panes, {i, line -> split(line, ':')})
+	for line in s:tmux('lsp -F "#{pane_id}:#{pane_title}"', 1)
+		let id = matchstr(line, '\v^\%\d+')
+		let title = matchstr(line, '\v^\%\d+:\zs.*')
 		if title == opts.pane
 			call s:tmux(printf('send -t %s %s', id, cmd))
 			if opts.focus

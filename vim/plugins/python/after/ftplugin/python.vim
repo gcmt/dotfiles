@@ -52,6 +52,7 @@ nnoremap <buffer> <f3> :Ctags --languages=python -f .tags/python/0.project<cr>
 
 " Outline python module
 nnoremap <silent> <buffer> <leader>o :Search! \v^\s*\zs(class\|def)><cr>
+nnoremap <silent> <buffer> <leader>O :Search! \v^\s*\zs(class)><cr>
 
 " Expand current name into a function definition
 inoremap <silent> <buffer> <c-g><c-s> <c-r>=python#snippets#func()<cr>

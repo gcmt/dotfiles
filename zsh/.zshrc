@@ -325,6 +325,18 @@ accept-line-timestamp() {
 }
 zle -N accept-line-timestamp
 
+# FZF
+# ----------------------------------------------------------------------------
+
+if hash "fzf" 2>/dev/null; then
+	source /usr/share/fzf/key-bindings.zsh
+	source /usr/share/fzf/completion.zsh
+	export FZF_DEFAULT_OPTS="--multi --height 45% --reverse --preview 'head -100 {}' --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23"
+	export FZF_DEFAULT_COMMAND='rg --files'
+	export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
+	export FZF_CTRL_R_OPTS="--preview 'echo {}' --preview-window hidden"
+fi
+
 # BINDINGS
 # ----------------------------------------------------------------------------
 
@@ -368,17 +380,6 @@ for i in {1..4}; do
 	zle -N delete-argument-$i
 	bindkey "\\e$i" delete-argument-$i
 done
-
-# FZF
-# ----------------------------------------------------------------------------
-
-if hash "fzf" 2>/dev/null; then
-	source /usr/share/fzf/key-bindings.zsh
-	source /usr/share/fzf/completion.zsh
-	export FZF_DEFAULT_OPTS="--multi --height 45% --reverse --preview 'head -100 {}' --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23"
-	export FZF_DEFAULT_COMMAND='rg --files'
-	export FZF_ALT_C_OPTS="--preview 'tree -C {} | head -100'"
-fi
 
 # LOCAL RC
 # ----------------------------------------------------------------------------

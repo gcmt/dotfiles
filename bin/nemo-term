@@ -7,4 +7,4 @@ n="$(tmux list-windows -t "scratch" -F "#W" | grep -c '^nemo\b')"
 (( n == 0 )) && suffix= || suffix="-$(( n + 1 ))"
 tmux new-window -t "scratch" -n "nemo${suffix}" -c "$PWD"
 
-exec i3-t "scratch"
+exec i3-t -move "scratch"

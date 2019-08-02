@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# gsettings set org.cinnamon.desktop.default-applications.terminal exec nemo-term
+
+tmux new-session -d -s "scratch" 2>/dev/null
+n="$(tmux list-windows -t "scratch" -F "#W" | grep -c '^nemo-[0-9]\+$')"
+tmux new-window -t "scratch" -n "nemo-$(( n + 1 ))" -c "$PWD"
+
+exec i3-t "scratch"

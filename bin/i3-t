@@ -1,11 +1,11 @@
 #!/bin/bash
 
-move=0
+move=
 target=
 
 while (( $# )); do
 	if [[ "$1" == "-move" ]]; then
-		move=1
+		move="$1"
 	elif [[ ! "$1" =~ ^- ]]; then
 		target="$1"
 	else
@@ -21,8 +21,4 @@ if [[ -z "$session" ]]; then
 	exit 1
 fi
 
-if (( move == 1 )); then
-	exec i3-focus -c URxvt -t "^$session - Tmux$" -move
-else
-	exec i3-focus -c URxvt -t "^$session - Tmux$" -fallback "urxvt -e t $session"
-fi
+exec i3-focus -c URxvt -t "^$session - Tmux$" $move -fallback "urxvt -e t $session"

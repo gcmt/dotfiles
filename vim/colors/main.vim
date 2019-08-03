@@ -10,16 +10,16 @@ if &background == 'light'
 	let s:bg           =  ['#ffffff', 19]
 	let s:bg_accent    =  ['#f0f0f0', 21]
 	let s:fg           =  ['#575a60', 18]
-	let s:fg_dim       =  ['#868c93', 22]
-	let s:fg_very_dim  =  ['#a1a6ad', 23]
+	let s:fg_dim       =  ['#868b91', 22]
+	let s:fg_very_dim  =  ['#a5aab0', 23]
 	let s:fg_super_dim =  ['#d9d9d9', 24]
-	let s:red          =  ['#c9606e', 1]
-	let s:green        =  ['#5d996d', 2]
-	let s:yellow       =  ['#e0c87f', 3]
-	let s:blue         =  ['#5e7da8', 4]
-	let s:magenta      =  ['#b274a3', 5]
-	let s:cyan         =  ['#62adaf', 6]
-	let s:orange       =  ['#d6946b', 16]
+	let s:red          =  ['#c96674', 1]
+	let s:green        =  ['#5a916a', 2]
+	let s:yellow       =  ['#dbc172', 3]
+	let s:blue         =  ['#5b79a3', 4]
+	let s:magenta      =  ['#ab6f9c', 5]
+	let s:cyan         =  ['#5ba1a3', 6]
+	let s:orange       =  ['#d19169', 16]
 else
 	let s:bg           =  ['#1e222b', 19]
 	let s:bg_accent    =  ['#252933', 21]
@@ -27,10 +27,10 @@ else
 	let s:fg_dim       =  ['#636770', 22]
 	let s:fg_very_dim  =  ['#4a4e59', 23]
 	let s:fg_super_dim =  ['#353944', 24]
-	let s:red          =  ['#945F65', 1]
-	let s:green        =  ['#768A78', 2]
-	let s:yellow       =  ['#A39465', 3]
-	let s:blue         =  ['#657B99', 4]
+	let s:red          =  ['#945f65', 1]
+	let s:green        =  ['#768a78', 2]
+	let s:yellow       =  ['#a39465', 3]
+	let s:blue         =  ['#657b99', 4]
 	let s:magenta      =  ['#917086', 5]
 	let s:cyan         =  ['#739492', 6]
 	let s:orange       =  ['#998068', 16]
@@ -175,7 +175,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('PMenuSBar', s:bg_accent, s:bg_accent, 'none', '')
 	cal s:h('PMenuThumb', s:fg_dim, s:bg_accent, 'none', '')
 
-	cal s:h('TabLine', s:fg_super_dim, s:bg_accent, 'none', '')
+	cal s:h('TabLine', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('TabLineSel', s:fg_dim, s:bg, 'none', '')
 	cal s:h('TabLineFill', s:fg_dim, s:bg_accent, 'none', '')
 
@@ -210,7 +210,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Structure', s:cyan, '', '', '')
 	cal s:h('Typedef', s:cyan, '', '', '')
 	cal s:h('Special', s:fg_dim, '', '', '')
-	cal s:h('Underlined', s:fg_super_dim, '', 'underline', '')
+	cal s:h('Underlined', s:fg, '', 'underline', '')
 	cal s:h('Title', s:blue, '', 'none', '')
 	cal s:h('Error', s:bg, s:red, '', '')
 	cal s:h('Todo', s:red, s:bg, '', '')

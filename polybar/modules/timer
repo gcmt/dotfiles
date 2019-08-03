@@ -31,33 +31,33 @@ timer() {
 	done
 }
 
+timer_running() {
+	[[ "$(ps -p "$PID_TIMER" -o comm= 2>/dev/null)" == "timer" ]]
+}
+
+start_timer() {
+	if (( "$1" > 0 )); then
+		stop_timer
+		timer "$1" &
+		PID_TIMER=$!
+	fi
+}
+
+stop_timer() {
+	if timer_running; then
+		kill "$PID_TIMER" 2>/dev/null
+		echo
+		PID_TIMER=
+	fi
+}
+
 main() {
-	local pid
 	while true; do
 		if read -r cmd seconds < "$fifo"; then
 			case $cmd in
-				toggle)
-					if [[ "$pid" ]]; then
-						kill "$pid"
-						echo
-						pid=
-					elif (( seconds > 0 )); then
-						timer "$seconds" &
-						pid=$!
-					fi
-					;;
-				start)
-					[[ "$pid" ]] && kill "$pid"
-					if (( seconds > 0 )); then
-						timer "$seconds" &
-						pid=$!
-					fi
-					;;
-				stop)
-					[[ "$pid" ]] && kill "$pid"
-					echo
-					pid=
-					;;
+				toggle) timer_running && stop_timer || start_timer "$seconds" ;;
+				start) start_timer "$seconds" ;;
+				stop) stop_timer ;;
 			esac
 		fi
 	done
@@ -72,6 +72,8 @@ scriptpath="$(realpath -s "$0")"
 scriptname="$(basename "$scriptpath")"
 fifo="/tmp/polybar_timer.fifo"
 sound="/usr/share/sounds/freedesktop/stereo/alarm-clock-elapsed.oga"
+
+PID_TIMER=
 
 if (( $# == 0 )); then
 	if [[ -p "$fifo" ]]; then

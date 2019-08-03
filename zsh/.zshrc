@@ -83,19 +83,6 @@ set-title() {
 }
 add-zsh-hook precmd set-title
 
-forget-commands() {
-	if [[ "$1" =~ '^(sudo\s+)?(rm|mv|cp)\>' ]]; then
-		return 1
-	fi
-	if [[ "$1" =~ '^(fg|l|la|zs|ze|youtube-dl)\>' ]]; then
-		return 1
-	fi
-	if [[ "$1" =~ '^(cd|ll|lla|va|vim|python|py|ipy|pudb)\s*$' ]]; then
-		return 1
-	fi
-}
-add-zsh-hook zshaddhistory forget-commands
-
 # VI MODE
 # ----------------------------------------------------------------------------
 

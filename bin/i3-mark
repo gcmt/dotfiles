@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -o noglob
+
 opts="-dmenu -p 'Mark' -theme 'i3-input'"
 opts+=" -kb-custom-1 'Control+a,Control+Return'"
 

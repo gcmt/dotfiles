@@ -1,11 +1,11 @@
 
 #define _LIGHT_black rgb:57/5a/60
-#define _LIGHT_red rgb:c9/60/6e
-#define _LIGHT_green rgb:5d/99/6d
-#define _LIGHT_yellow rgb:e0/c8/7f
-#define _LIGHT_blue rgb:5e/7d/a8
-#define _LIGHT_magenta rgb:b2/74/a3
-#define _LIGHT_cyan rgb:62/ad/af
+#define _LIGHT_red rgb:c9/66/74
+#define _LIGHT_green rgb:5a/91/6a
+#define _LIGHT_yellow rgb:db/c1/72
+#define _LIGHT_blue rgb:5b/79/a3
+#define _LIGHT_magenta rgb:ab/6f/9c
+#define _LIGHT_cyan rgb:5b/a1/a3
 #define _LIGHT_white rgb:ff/ff/ff
 
 #define _LIGHT_black_bright _LIGHT_black
@@ -17,7 +17,7 @@
 #define _LIGHT_cyan_bright _LIGHT_cyan
 #define _LIGHT_white_bright _LIGHT_white
 
-#define _LIGHT_orange rgb:d6/94/6b
+#define _LIGHT_orange rgb:d1/91/69
 #define _LIGHT_orange_bright _LIGHT_orange
 
 #define _LIGHT_fg_color _LIGHT_black
@@ -25,6 +25,6 @@
 #define _LIGHT_cursor_color _LIGHT_magenta
 
 #define _LIGHT_bg_accent rgb:f0/f0/f0
-#define _LIGHT_fg_dim rgb:86/8c/93
-#define _LIGHT_fg_very_dim rgb:a1/a6/ad
+#define _LIGHT_fg_dim rgb:86/8b/91
+#define _LIGHT_fg_very_dim rgb:a5/aa/b0
 #define _LIGHT_fg_super_dim rgb:d9/d9/d9

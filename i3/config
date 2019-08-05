@@ -94,8 +94,8 @@ bindsym $mod+Shift+g exec --no-startup-id sensors-notify -pinned
 bindsym $mod+Control+backslash exec --no-startup-id i3-swap
 
 # Rotate windows
-bindsym $mod+backslash exec --no-startup-id i3-rotate -next
-bindsym $mod+Shift+backslash exec --no-startup-id i3-rotate -prev
+# bindsym $mod+backslash exec --no-startup-id i3-rotate -next
+# bindsym $mod+Shift+backslash exec --no-startup-id i3-rotate -prev
 
 # Open console calculator
 bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback '$term_prg -name calc -e calc-tmux'
@@ -103,11 +103,17 @@ bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback '$term_
 # Edit files
 bindsym $mod+e exec --no-startup-id rofi-edit
 
-# Shortcuts
-bindsym $mod+x exec --no-startup-id i3-focus -c $term_cls -n ranger -fallback "$term_prg -name ranger -title Ranger -e ranger"
-bindsym $mod+bracketleft exec --no-startup-id i3-focus -c Firefox -m - -fallback firefox
-bindsym $mod+apostrophe exec --no-startup-id i3-focus -m _mark
-bindsym $mod+Shift+apostrophe mark _mark
+# Mark/unmark window
+bindsym $mod+m exec --no-startup-id i3-mark
+bindsym $mod+Shift+m [con_id="__focused__"] unmark
+
+# Mark shortcut
+bindsym $mod+apostrophe exec --no-startup-id i3-focus -m "●"
+bindsym $mod+Shift+apostrophe mark "●"
+
+# Firefox shortcuts
+bindsym $mod+backslash exec --no-startup-id i3-focus -c firefox -m - -fallback firefox
+bindsym $mod+Shift+backslash exec --no-startup-id i3-focus -c firefox -m _docs
 
 # Kill window
 bindsym $mod+Shift+q kill
@@ -115,17 +121,14 @@ bindsym $mod+Shift+q kill
 # Kill other windows
 bindsym $mod+Shift+o exec --no-startup-id i3-only
 
-# Mark/unmark window
-bindsym $mod+m exec --no-startup-id i3-mark
-bindsym $mod+Shift+m [con_id="__focused__"] unmark
-
-# Open tmux
-bindsym $mod+u exec --no-startup-id i3-t
+# Tmux shortcuts
+bindsym $mod+bracketleft exec --no-startup-id i3-t
+bindsym $mod+Shift+bracketleft exec --no-startup-id i3-t -move
 bindsym $mod+bracketright exec --no-startup-id i3-t scratch
 bindsym $mod+Shift+bracketright exec --no-startup-id i3-t -move scratch
 
 # Pick tmux session
-bindsym $mod+Shift+u exec --no-startup-id rofi-tmux
+bindsym $mod+u exec --no-startup-id rofi-tmux
 
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace -menu
@@ -255,12 +258,14 @@ bindsym $mod+Shift+minus exec --no-startup-id i3-scratch -push
 # Toggle tiling / floating
 bindsym $mod+f floating toggle
 
+# Fast float resize
+bindsym $mod+Control+plus floating enable; resize grow right 40px; resize grow down 10px; move position center
+bindsym $mod+Control+minus floating enable; resize shrink right 40px; resize shrink down 10px; move position center
+
 # Suspend/Lock shortcuts
 bindsym Scroll_Lock exec --no-startup-id lock -force -blank 2
 bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
 
-bindsym $mod+Control+plus floating enable; resize grow right 40px; resize grow down 10px; move position center
-bindsym $mod+Control+minus floating enable; resize shrink right 40px; resize shrink down 10px; move position center
 # Change fn keys profile
 bindsym $mod+Escape exec --no-startup-id fnmux -next
 

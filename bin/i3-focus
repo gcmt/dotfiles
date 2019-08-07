@@ -4,7 +4,7 @@ import os
 import re
 import sys
 import argparse
-import i3ipc
+import i3pie
 import shlex
 from pathlib import Path
 from subprocess import run, Popen, PIPE
@@ -53,7 +53,7 @@ def parse_args():
 
 
 def match(args, win):
-    if args.m == "-" and win.marks:
+    if args.m == "-" and set(win.marks):
         return False
     if isinstance(args.m, set) and args.m and not args.m & set(win.marks):
         return False
@@ -77,7 +77,7 @@ def get_last_window(tree):
         return None
     try:
         id = int(id, 0)
-        return tree.find_by_window(id)
+        return tree.find(fn=lambda con: con.window_id == id)
     except ValueError:
         error(f"invalid window id '{id}'")
 
@@ -85,22 +85,21 @@ def get_last_window(tree):
 def focus(win, move=False):
     if win.workspace().name == '_scratch' or move:
         win.command('move to workspace current')
-    return 'True' in str(win.command('focus'))
+    return not win.command('focus').error
 
 
 def kill(win):
-    return 'True' in str(win.command('kill'))
+    return not win.command('kill').error
 
 
-def main():
+def main(i3):
 
     args = parse_args()
-    i3 = i3ipc.Connection()
     tree = i3.get_tree()
 
     if args.bounce and not (args.kill or args.move or args.id):
-        focused = tree.find_focused()
-        if focused.type == 'con' and match(args, focused):
+        focused = tree.focused_window()
+        if match(args, focused):
             last = get_last_window(tree)
             if not last:
                 sys.exit(1)
@@ -108,8 +107,8 @@ def main():
             sys.exit()
 
     success = False
-    for win in tree.leaves():
-        if args.id and args.id == win.window or not args.id and match(args, win):
+    for win in tree.windows():
+        if args.id and args.id == win.window_id or not args.id and match(args, win):
             if args.kill:
                 success = kill(win)
             else:
@@ -130,4 +129,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    with i3pie.Connection() as i3:
+        main(i3)

@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 
-import i3ipc
-from subprocess import run
+import i3pie
 
 
-def main():
-    i3 = i3ipc.Connection()
-    focused = i3.get_tree().find_focused()
-    for w in focused.workspace().leaves():
-        if w.window != focused.window:
-            w.command('kill')
+def main(i3):
+    tree = i3.get_tree()
+    focused = tree.focused_window()
+    windows = tree.current_workspace().windows()
+    windows = filter(lambda w: w.id != focused.id, windows)
+    i3.command("kill", *windows)
 
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    with i3pie.Connection() as i3:
+        main(i3)

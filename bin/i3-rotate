@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import i3ipc
+import i3pie
 import argparse
 
 
@@ -15,17 +15,16 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main(i3):
 
     args = parse_args()
-    i3 = i3ipc.Connection()
 
     tree = i3.get_tree()
-    focused = tree.find_focused()
-    workspace = focused.workspace()
+    focused = tree.focused_window()
+    workspace = tree.current_workspace()
 
-    ids = [w.window for w in workspace.leaves()]
-    curpos = ids.index(focused.window)
+    ids = [w.id for w in reversed(list(workspace.windows()))]
+    curpos = ids.index(focused.id)
 
     rotated = list(ids)
     if args.next:
@@ -36,13 +35,14 @@ def main():
     for i in range(len(ids)):
         if ids[i] == rotated[i]:
             continue
-        i3.command(f'[id="{ids[i]}"] swap container with id {rotated[i]}')
+        i3.command(f'[con_id="{ids[i]}"] swap container with con_id {rotated[i]}')
         k = ids.index(rotated[i])
         ids[i], ids[k] = ids[k], ids[i]
 
     if not args.follow:
-        i3.command(f'[id="{rotated[curpos]}"] focus')
+        i3.command(f'[con_id="{rotated[curpos]}"] focus')
 
 
 if __name__ == '__main__':
-    main()
+    with i3pie.Connection() as i3:
+        main(i3)

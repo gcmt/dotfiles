@@ -3,7 +3,7 @@
 import os
 import re
 import sys
-import i3ipc
+import i3pie
 import argparse
 from html import escape
 from operator import attrgetter, itemgetter
@@ -19,14 +19,13 @@ def error(msg):
 # Pango markup is supported if the '-markup-rows' Rofi option is used:
 # https://developer.gnome.org/pango/stable/PangoMarkupFormat.html
 def format_windows(windows, args):
-    dimcolor = '#797d84'
+    dim = '#797d84'
     for w in windows:
         row = ''
-        workspace = w.workspace().name
         if not args.hide_workspace:
-            row += f"<span foreground='{dimcolor}'>{escape(workspace)}</span>   "
-        if workspace == '_scratch':
-            row += f"<span foreground='{dimcolor}'>{escape(w.name)}</span>"
+            row += f"<span foreground='{dim}'>{escape(w.workspace_name)}</span>   "
+        if w.workspace_name == '_scratch':
+            row += f"<span foreground='{dim}'>{escape(w.name)}</span>"
         else:
             row += f"{escape(w.name)}" if w.focused else escape(w.name)
         yield row
@@ -38,11 +37,11 @@ def match(win, rules):
     results = []
     for rule in rules:
         try:
-            if re.match('!?\w+=', rule):
+            if re.match(r'!?\w+=', rule):
                 prop, string = rule.split('=', maxsplit=1)
                 prop_ = prop[1:] if prop.startswith('!') else prop
                 success = getattr(win, prop_) == string
-            elif re.match('!?\w+~', rule):
+            elif re.match(r'!?\w+~', rule):
                 prop, regex = rule.split('~', maxsplit=1)
                 prop_ = prop[1:] if prop.startswith('!') else prop
                 success = re.search(regex, getattr(win, prop_)) is not None
@@ -59,34 +58,30 @@ def match(win, rules):
 # Get windows.
 def get_windows(tree, args):
     windows, scratchpad = [], []
-    by_name = attrgetter('name')
     rules = list(map(itemgetter(0), args.g)) if args.g else []
-    for space in sorted(tree.workspaces(), key=by_name):
-        for win in sorted(space.leaves(), key=by_name):
-            win.window_name = win.name
-            win.workspace_name = space.name
-            win.workspace_num = space.num
+    for workspace in tree.workspaces():
+        for win in workspace.windows():
+            win = fix_window(win)
+            win.workspace_name = workspace.name
+            win.workspace_num = workspace.num
             if not match(win, rules):
                 continue
-            if space.name != '_scratch':
+            if workspace.name != '_scratch':
                 windows.append(win)
             elif args.scratchpad:
                 scratchpad.append(win)
-    windows += scratchpad
-    return windows
+    return windows + scratchpad
 
 
 # Fix various window properties.
-def fix_windows(windows):
-    for win in windows:
-        if win.window_class == 'Firefox' and win.name == 'Library':
-            win.name += ' - Mozilla Firefox'
-        elif win.window_class == 'Nemo':
-            win.name += ' - Nemo'
-        elif win.window_class == 'git-cola':
-            win.name += ' - Git Cola'
-        yield win
-
+def fix_window(win):
+    if win.window_class == 'Firefox' and win.name == 'Library':
+        win.name += ' - Mozilla Firefox'
+    elif win.window_class == 'Nemo':
+        win.name += ' - Nemo'
+    elif win.window_class == 'git-cola':
+        win.name += ' - Git Cola'
+    return win
 
 # Get the mause coordinates with xdotool
 def get_mouse_coordinates():
@@ -189,17 +184,14 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
+def main(i3):
 
     args = parse_args()
-    i3 = i3ipc.Connection()
     tree = i3.get_tree()
 
     windows = get_windows(tree, args)
     if not windows:
         sys.exit(0)
-
-    windows = list(fix_windows(windows))
 
     # 'choice' will be empty when pressing -kb-cancel but it will be -1 when
     # pressing -kb-accept-entry with nothing selected
@@ -238,7 +230,7 @@ def main():
     # -kb-custom-4
     if exitcode == 13:
         # kill selected window
-        run(['xkill', '-id', f"{win.window}"])
+        run(['xkill', '-id', f"{win.window_id}"])
         os.execv(sys.argv[0], sys.argv)
 
     # -kb-custom-5
@@ -257,4 +249,5 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    with i3pie.Connection() as i3:
+        main(i3)

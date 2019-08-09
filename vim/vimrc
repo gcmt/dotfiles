@@ -148,18 +148,18 @@
 " ----------------------------------------------------------------------------
 
 	func! s:get_term_bg()
-		let bg = matchstr(system('xrdb -query all | grep colorscheme | grep -o "\S\+$"'), '\v\w+')
+		let bg = trim(system('xrdb -query all | grep -Po "(?<=colorscheme.name:)\s+\w+"'))
 		return empty(bg) ? 'dark' : bg
 	endf
 
-	func! s:toggle_bg()
-		let &bg = &bg == 'dark' ? 'light' : 'dark'
-		if executable('colorscheme')
-			exec 'sil!' '!colorscheme' &bg
-		end
+	func! s:set_bg(bg)
+		let &background = a:bg
+		exec 'sil!' '!colorscheme' a:bg
+		redraw!
 	endf
 
-	nnoremap <silent> gob :call <sid>toggle_bg()<cr>
+	command! Light call <sid>set_bg('light')
+	command! Dark  call <sid>set_bg('dark')
 
 	let g:html_no_rendering = 1
 	let g:vim_json_warnings = 0

@@ -37,8 +37,8 @@ else
 	let s:fg_dim        = ['#636770', 22]
 	let s:fg_very_dim   = ['#4a4e59', 23]
 	let s:fg_super_dim  = ['#353944', 24]
-	let s:fg            = [s:white[0], 18]
-	let s:bg            = [s:black[0], 19]
+	let s:fg            = s:white
+	let s:bg            = s:black
 	let s:hl            = ['#a39465', 25]
 end
 

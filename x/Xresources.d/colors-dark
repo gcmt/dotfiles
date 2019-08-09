@@ -1,12 +1,12 @@
 
-#define _DARK_black rgb:1e/22/2b
-#define _DARK_red rgb:94/5f/65
-#define _DARK_green rgb:76/8a/78
-#define _DARK_yellow rgb:a3/94/65
-#define _DARK_blue rgb:65/7b/99
-#define _DARK_magenta rgb:91/70/86
-#define _DARK_cyan rgb:73/94/92
-#define _DARK_white rgb:8e/92/99
+#define _DARK_black #1e222b
+#define _DARK_red #945f65
+#define _DARK_green #768a78
+#define _DARK_yellow #a39465
+#define _DARK_blue #657b99
+#define _DARK_magenta #917086
+#define _DARK_cyan #739492
+#define _DARK_white #8e9299
 
 #define _DARK_black_bright _DARK_black
 #define _DARK_red_bright _DARK_red
@@ -17,14 +17,14 @@
 #define _DARK_cyan_bright _DARK_cyan
 #define _DARK_white_bright _DARK_white
 
-#define _DARK_orange rgb:99/80/68
+#define _DARK_orange #998068
 #define _DARK_orange_bright _DARK_orange
 
 #define _DARK_fg_color _DARK_white
 #define _DARK_bg_color _DARK_black
 #define _DARK_cursor_color _DARK_magenta
 
-#define _DARK_bg_accent rgb:25/29/33
-#define _DARK_fg_dim rgb:63/67/70
-#define _DARK_fg_very_dim rgb:4a/4e/59
-#define _DARK_fg_super_dim rgb:35/39/44
+#define _DARK_bg_accent #252933
+#define _DARK_fg_dim #636770
+#define _DARK_fg_very_dim #4a4e59
+#define _DARK_fg_super_dim #353944

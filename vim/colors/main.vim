@@ -20,8 +20,8 @@ if &background == 'light'
 	let s:fg_dim        = ['#6a737d', 22]
 	let s:fg_very_dim   = ['#a5aab0', 23]
 	let s:fg_super_dim  = ['#d9d9d9', 24]
-	let s:fg            = s:black
-	let s:bg            = s:white
+	let s:fg            = [s:black[0], 18]
+	let s:bg            = [s:white[0], 19]
 	let s:hl            = ['#f7f71b', 25]
 else
 	let s:black         = ['#1e222b', 0]
@@ -37,8 +37,8 @@ else
 	let s:fg_dim        = ['#636770', 22]
 	let s:fg_very_dim   = ['#4a4e59', 23]
 	let s:fg_super_dim  = ['#353944', 24]
-	let s:fg            = s:white
-	let s:bg            = s:black
+	let s:fg            = [s:white[0], 18]
+	let s:bg            = [s:black[0], 19]
 	let s:hl            = ['#a39465', 25]
 end
 

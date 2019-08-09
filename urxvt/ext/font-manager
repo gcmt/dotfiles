@@ -12,10 +12,10 @@ sub on_action {
 		reset_font_size($term);
 	}
 	elsif ($cmd eq "smaller") {
-		change_font_size($term, -1);
+		change_font_size($term, -0.5);
 	}
 	elsif ($cmd eq "larger") {
-		change_font_size($term, +1);
+		change_font_size($term, +0.5);
 	}
 	elsif ($cmd eq "next" || $cmd eq "prev") {
 		next_font($term, $cmd);
@@ -29,13 +29,13 @@ sub next_font {
 	my $step = $direction eq 'next' ? 1 : -1;
 	my $current_font = $term->resource('font');
 	my $current_font_name = $current_font =~ m/xft:([^:]+)/ && $1;
-	my $current_font_size = $current_font =~ m/size=(\d+)/ && $1;
+	my $current_font_size = $current_font =~ m/size=([0-9.]+)/ && $1;
 	my @fonts = get_font_list($term);
 	for my $i (0 .. $#fonts) {
 		my $font_name = $fonts[$i] =~ m/xft:([^:]+)/ && $1;
 		if ($font_name eq $current_font_name) {
 			my $new_font = $fonts[($i+$step) % @fonts];
-			$new_font =~ s/size=(\d+)/'size='.$current_font_size/e;
+			$new_font =~ s/size=([0-9.]+)/'size='.$current_font_size/e;
 			set_font($term, $new_font);
 			last;
 		}
@@ -49,8 +49,8 @@ sub reset_font_size {
 	for my $font (get_font_list($term)) {
 		my $font_name = $font =~ m/xft:([^:]+)/ && $1;
 		if ($font_name eq $current_font_name) {
-			my $default_size = $font =~ m/size=(\d+)/ && $1;
-			$current_font =~ s/size=(\d+)/'size='.$default_size/e;
+			my $default_size = $font =~ m/size=([0-9.]+)/ && $1;
+			$current_font =~ s/size=([0-9.]+)/'size='.$default_size/e;
 			set_font($term, $current_font);
 			last;
 		}
@@ -60,7 +60,7 @@ sub reset_font_size {
 sub change_font_size {
 	my ($term, $delta) = @_;
 	my $font = $term->resource('font');
-	$font =~ s/size=(\d+)/'size=' . ($1+$delta >= 5 ? $1+$delta : $1)/e;
+	$font =~ s/size=([0-9.]+)/'size=' . ($1+$delta >= 5 ? $1+$delta : $1)/e;
 	set_font($term, $font);
 }
 
@@ -83,7 +83,7 @@ sub get_font_list {
 sub display_font {
 	my ($term, $font) = @_;
 	my $font_name = $font =~ m/xft:([^:]+)/ && $1;
-	my $font_size = $font =~ m/size=(\d+)/ && $1;
+	my $font_size = $font =~ m/size=([0-9.]+)/ && $1;
 	$term->cmd_parse("\e]777;message;2;0;$font_name $font_size\a");
 }
 

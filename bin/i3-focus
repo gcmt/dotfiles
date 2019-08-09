@@ -99,7 +99,7 @@ def main(i3):
 
     if args.bounce and not (args.kill or args.move or args.id):
         focused = tree.focused_window()
-        if match(args, focused):
+        if focused and match(args, focused):
             last = get_last_window(tree)
             if not last:
                 sys.exit(1)

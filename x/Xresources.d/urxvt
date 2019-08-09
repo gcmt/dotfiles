@@ -32,16 +32,16 @@ URxvt.matcher.pattern.1: \\bwww\\.[\\w-]+\\.[\\w./?&@#-]*[\\w/-]
 URxvt.keysym.Shift-Control-S: matcher:select
 URxvt.keysym.Shift-Control-L: matcher:list
 
-URxvt.font: xft:Noto Mono Patched:size=10
-URxvt.boldFont:
+URxvt.font: xft:Noto Sans Mono:size=9.5
+URxvt.boldFont: xft:Noto Sans Mono:size=9.5:style=bold
 URxvt.letterSpace: 1
-URxvt.lineSpace: 2
+URxvt.lineSpace: 3
 
-URxvt.keysym.Control-plus: font-manager:larger
-URxvt.keysym.Control-minus: font-manager:smaller
 URxvt.keysym.Control-equal: font-manager:reset
-URxvt.keysym.Control-parenleft: font-manager:prev
-URxvt.keysym.Control-parenright: font-manager:next
+URxvt.keysym.Control-bracketleft: font-manager:smaller
+URxvt.keysym.Control-bracketright: font-manager:larger
+URxvt.keysym.Control-braceleft: font-manager:prev
+URxvt.keysym.Control-braceright: font-manager:next
 
 URxvt.font-manager.font.1: xft:Roboto Mono:size=10
 URxvt.font-manager.font.2: xft:SF Mono:size=10

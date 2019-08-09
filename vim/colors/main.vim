@@ -42,15 +42,47 @@ else
 	let s:hl            = ['#a39465', 25]
 end
 
-func! s:h(group, fg, bg, attr, sp)
-	if !empty(a:fg)
-		exec 'hi' a:group 'guifg='.a:fg[0] 'ctermfg='.a:fg[1]
+let g:minimal = get(g:, 'minimal', 0)
+
+" make these groups bold in minimal mode
+let s:bold = [
+	\ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception',
+	\ 'htmlTagName', 'htmlEndTag',
+	\ 'pythonInclude',
+\ ]
+let s:bold = '\v^(' . join(s:bold, '|') . ')$'
+
+" keep these groups colored in minimal mode
+let s:colored = [
+	\ 'Hidden', 'Normal.*', 'StatusLine.*', 'Fg.*',
+	\ 'Cyan.*', 'Green.*', 'Blue.*', 'Magenta.*', 'Red.*', 'Yellow.*', 'Orange.*',
+	\ 'Cursor', 'Comment', 'String', 'Visual', 'Linenr',
+	\ 'Cursor', 'NonText', 'SpecialKey', 'Conceal',
+	\ 'Search', 'IncSearch',
+	\ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded', 'WildMenu',
+	\ 'Linenr', 'CursorLineNr',
+	\ 'CursorLine', 'CursorColumn', 'ColorColumn',
+	\ 'SignColumn', 'FoldColumn',
+	\ 'WarningMsg', 'ErrorMsg', 'ModeMsg', 'MoreMsg', 'Question',
+	\ 'DiffAdd', 'DiffDelete', 'DiffChange', 'DiffText',
+	\ 'PMenu', 'PMenuSel', 'PMenuSBar', 'PMenuThumb',
+	\ 'TabLine', 'TabLineSel', 'TabLineFill',
+	\ 'SpellBad', 'SpellCap', 'SpellLocal', 'SpellRare',
+\ ]
+let s:colored = '\v^(' . join(s:colored, '|') . ')$'
+
+func! s:h(group, fg, bg, attr, sp) abort
+	let fg = !g:minimal || a:group =~ s:colored ? a:fg : s:fg
+	let bg = !g:minimal || a:group =~ s:colored ? a:bg : s:bg
+	let attr = g:minimal && a:group =~ s:bold ? 'bold' : a:attr
+	if !empty(fg)
+		exec 'hi' a:group 'guifg='.fg[0] 'ctermfg='.fg[1]
 	end
-	if !empty(a:bg)
-		exec 'hi' a:group 'guibg='.a:bg[0] 'ctermbg='.a:bg[1]
+	if !empty(bg)
+		exec 'hi' a:group 'guibg='.bg[0] 'ctermbg='.bg[1]
 	end
-	if !empty(a:attr)
-		 exec 'hi' a:group 'gui='.a:attr 'cterm='.a:attr
+	if !empty(attr)
+		 exec 'hi' a:group 'gui='.attr 'cterm='.attr
 	end
 	if !empty(a:sp)
 		 exec 'hi' a:group 'guisp='.a:sp[0]
@@ -118,7 +150,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
 	cal s:h('StatusLineNC', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
-	cal s:h('rStatusLineDim', s:fg_super_dim, s:bg_accent, 'none', '')
+	cal s:h('StatusLineDim', s:fg_super_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')
 	cal s:h('StatusLineMod', s:red, s:bg_accent, 'none', '')
 
@@ -151,11 +183,17 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Search', '', s:hl, '', '')
 	cal s:h('IncSearch', s:bg, s:red, 'none', '')
 	cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')
-	cal s:h('Visual', s:fg, &bg == 'dark' ? s:fg_super_dim : s:bg_accent, '', '')
 	cal s:h('MatchParen', s:bg, s:fg_very_dim, '', '')
 	cal s:h('Directory', s:blue, '', '', '')
 	cal s:h('Folded', s:fg_super_dim, s:bg, '', '')
-	cal s:h('WildMenu', s:bg, &bg == 'dark' ? s:blue : s:fg_very_dim, '', '')
+
+	if &bg == 'dark'
+		cal s:h('WildMenu', s:bg, s:blue, '', '')
+		cal s:h('Visual', s:fg, s:fg_super_dim, '', '')
+	else
+		cal s:h('WildMenu', s:bg, s:fg_very_dim, '', '')
+		cal s:h('Visual', s:fg, s:bg_accent, '', '')
+	end
 
 	cal s:h('Linenr', s:fg_very_dim, '', '', '')
 	cal s:h('CursorLineNr', s:red, '', 'none', '')
@@ -191,7 +229,6 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('SpellRare', '', '', 'underline', s:fg_dim)
 
 	cal s:h('Constant', s:fg_dim, '', '', '')
-	cal s:h('String', s:green, '', '', '')
 	cal s:h('Character', s:green, '', '', '')
 	cal s:h('Number', s:fg_dim, '', '', '')
 	cal s:h('Boolean', s:fg_dim, '', '', '')
@@ -199,13 +236,13 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Identifier', s:fg, '', 'none', '')
 	cal s:h('Function', s:fg, '', '', '')
 	cal s:h('Statement', s:blue, '', 'none', '')
-	cal s:h('Conditional', s:magenta, '', '', '')
-	cal s:h('Label', s:magenta, '', '', '')
-	cal s:h('Repeat', s:orange, '', '', '')
 	cal s:h('Comment', s:fg_dim, '', '', '')
+	cal s:h('Conditional', s:magenta, '', 'none', '')
+	cal s:h('Label', s:magenta, '', '', '')
+	cal s:h('Repeat', s:orange, '', 'none', '')
 	cal s:h('Operator', s:cyan, '', 'none', '')
 	cal s:h('Keyword', s:fg, '', '', '')
-	cal s:h('Exception', s:red, '', '', '')
+	cal s:h('Exception', s:red, '', 'none', '')
 	cal s:h('PreProc', s:cyan, '', '', '')
 	cal s:h('Include', s:magenta, '', '', '')
 	cal s:h('Define', s:blue, '', 'none', '')
@@ -221,6 +258,14 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Error', s:bg, s:red, '', '')
 	cal s:h('Todo', s:red, s:bg, '', '')
 	cal s:h('Noise', s:fg_dim, '', '', '')
+
+	if g:minimal && &bg == 'dark'
+		cal s:h('String', s:green, '', '', '')
+	elseif g:minimal && &bg == 'light'
+		cal s:h('String', s:cyan, '', '', '')
+	else
+		cal s:h('String', s:green, '', '', '')
+	end
 
 	cal s:h('qfError', s:fg_dim, '', '', '')
 	cal s:h('qfLineNr', s:fg_dim, '', '', '')

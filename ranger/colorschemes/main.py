@@ -48,6 +48,8 @@ class Scheme(Default):
             elif context.directory:
                 fg = foreground
 
+            attr = normal
+
         elif context.in_taskview:
             pass
 

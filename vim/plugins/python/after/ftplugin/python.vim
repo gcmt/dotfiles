@@ -48,7 +48,7 @@ else
 end
 
 " Generate tags
-nnoremap <buffer> <f3> :Ctags --languages=python -f .tags/python/0.project<cr>
+nnoremap <buffer> <F7> :Ctags --languages=python -f .tags/python/0.project<cr>
 
 " Outline python module
 nnoremap <silent> <buffer> <leader>o :Search! \v^\s*\zs(class\|def)><cr>
@@ -59,8 +59,8 @@ inoremap <silent> <buffer> <c-g><c-s> <c-r>=python#snippets#func()<cr>
 
 " Foramt code
 command! Format call python#formatter#format_current_file()
-nnoremap <silent> <buffer> <f4> :Format<cr>
-inoremap <silent> <buffer> <f4> <esc>:Format<cr>
+nnoremap <silent> <buffer> <F6> :Format<cr>
+inoremap <silent> <buffer> <F6> <esc>:Format<cr>
 
 " jedi integration
 " command! -buffer Usages call python#jedi#usages()

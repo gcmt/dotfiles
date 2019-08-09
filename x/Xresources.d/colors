@@ -35,6 +35,7 @@
 	*color22: _LIGHT_fg_dim
 	*color23: _LIGHT_fg_very_dim
 	*color24: _LIGHT_fg_super_dim
+	*color25: _LIGHT_hl_color
 
 #else
 

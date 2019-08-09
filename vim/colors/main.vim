@@ -7,33 +7,39 @@ end
 let g:colors_name = 'main'
 
 if &background == 'light'
-	let s:bg           =  ['#ffffff', 19]
-	let s:bg_accent    =  ['#f0f0f0', 21]
-	let s:fg           =  ['#575a60', 18]
-	let s:fg_dim       =  ['#868b91', 22]
-	let s:fg_very_dim  =  ['#a5aab0', 23]
-	let s:fg_super_dim =  ['#d9d9d9', 24]
-	let s:red          =  ['#c96674', 1]
-	let s:green        =  ['#5a916a', 2]
-	let s:yellow       =  ['#dbc172', 3]
-	let s:blue         =  ['#5b79a3', 4]
-	let s:magenta      =  ['#ab6f9c', 5]
-	let s:cyan         =  ['#5ba1a3', 6]
-	let s:orange       =  ['#d19169', 16]
+	let s:black         = ['#24292e', 0]
+	let s:red           = ['#c23b2f', 1]
+	let s:green         = ['#06803d', 2]
+	let s:yellow        = ['#dbc172', 3]
+	let s:blue          = ['#0862a8', 4]
+	let s:magenta       = ['#9441a6', 5]
+	let s:cyan          = ['#158cb0', 6]
+	let s:white         = ['#ffffff', 7]
+	let s:orange        = ['#c77408', 16]
+	let s:bg_accent     = ['#f0f0f0', 21]
+	let s:fg_dim        = ['#6a737d', 22]
+	let s:fg_very_dim   = ['#a5aab0', 23]
+	let s:fg_super_dim  = ['#d9d9d9', 24]
+	let s:fg            = s:black
+	let s:bg            = s:white
+	let s:hl            = ['#f7f71b', 25]
 else
-	let s:bg           =  ['#1e222b', 19]
-	let s:bg_accent    =  ['#252933', 21]
-	let s:fg           =  ['#8e9299', 18]
-	let s:fg_dim       =  ['#636770', 22]
-	let s:fg_very_dim  =  ['#4a4e59', 23]
-	let s:fg_super_dim =  ['#353944', 24]
-	let s:red          =  ['#945f65', 1]
-	let s:green        =  ['#768a78', 2]
-	let s:yellow       =  ['#a39465', 3]
-	let s:blue         =  ['#657b99', 4]
-	let s:magenta      =  ['#917086', 5]
-	let s:cyan         =  ['#739492', 6]
-	let s:orange       =  ['#998068', 16]
+	let s:black         = ['#1e222b', 0]
+	let s:red           = ['#945f65', 1]
+	let s:green         = ['#768a78', 2]
+	let s:yellow        = ['#a39465', 3]
+	let s:blue          = ['#657b99', 4]
+	let s:magenta       = ['#917086', 5]
+	let s:cyan          = ['#739492', 6]
+	let s:white         = ['#8e9299', 7]
+	let s:orange        = ['#998068', 16]
+	let s:bg_accent     = ['#252933', 21]
+	let s:fg_dim        = ['#636770', 22]
+	let s:fg_very_dim   = ['#4a4e59', 23]
+	let s:fg_super_dim  = ['#353944', 24]
+	let s:fg            = [s:white[0], 18]
+	let s:bg            = [s:black[0], 19]
+	let s:hl            = ['#a39465', 25]
 end
 
 func! s:h(group, fg, bg, attr, sp)
@@ -142,16 +148,16 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('NonText', s:bg_accent, '', 'none', '')
 	cal s:h('SpecialKey', s:bg_accent, '', 'none', '')
 	cal s:h('Conceal', s:fg_dim, s:bg, '', '')
-	cal s:h('Search', s:bg, s:yellow, '', '')
+	cal s:h('Search', '', s:hl, '', '')
 	cal s:h('IncSearch', s:bg, s:red, 'none', '')
 	cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')
-	cal s:h('Visual', s:fg, s:fg_super_dim, '', '')
-	cal s:h('MatchParen', s:bg, s:yellow, '', '')
+	cal s:h('Visual', s:fg, &bg == 'dark' ? s:fg_super_dim : s:bg_accent, '', '')
+	cal s:h('MatchParen', s:bg, s:fg_very_dim, '', '')
 	cal s:h('Directory', s:blue, '', '', '')
 	cal s:h('Folded', s:fg_super_dim, s:bg, '', '')
-	cal s:h('WildMenu', s:bg, s:blue, '', '')
+	cal s:h('WildMenu', s:bg, &bg == 'dark' ? s:blue : s:fg_very_dim, '', '')
 
-	cal s:h('Linenr', s:fg_super_dim, '', '', '')
+	cal s:h('Linenr', s:fg_very_dim, '', '', '')
 	cal s:h('CursorLineNr', s:red, '', 'none', '')
 	cal s:h('CursorLine', '', s:bg_accent, 'none', '')
 	cal s:h('CursorColumn', '', s:bg_accent, '', '')
@@ -196,7 +202,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Conditional', s:magenta, '', '', '')
 	cal s:h('Label', s:magenta, '', '', '')
 	cal s:h('Repeat', s:orange, '', '', '')
-	cal s:h('Comment', s:fg_very_dim, '', '', '')
+	cal s:h('Comment', s:fg_dim, '', '', '')
 	cal s:h('Operator', s:cyan, '', 'none', '')
 	cal s:h('Keyword', s:fg, '', '', '')
 	cal s:h('Exception', s:red, '', '', '')
@@ -305,9 +311,10 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('yamlKey', s:magenta, '', '', '')
 
 	cal s:h('markdownCode', s:fg_dim, '', '', '')
-	cal s:h('markdownURL', s:fg_dim, '', '', '')
+	cal s:h('markdownURL', s:fg_dim, '', 'underline', '')
+	cal s:h('markdownBold', s:blue, '', '', '')
 	for s:n in range(1, 6)
-		cal s:h('htmlH' . s:n, s:magenta, '', 'none', '')
+		cal s:h('markdownH' . s:n, s:fg, '', 'bold', '')
 	endfor
 
 end

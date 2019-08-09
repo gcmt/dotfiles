@@ -1,12 +1,17 @@
-
-#define _LIGHT_black #24292e
-#define _LIGHT_red #c23b2f
-#define _LIGHT_green #06803d
-#define _LIGHT_yellow #f7f71b
-#define _LIGHT_blue #0862a8
-#define _LIGHT_magenta #9441a6
-#define _LIGHT_cyan #158cb0
-#define _LIGHT_white #ffffff
+#define _LIGHT_black         #24292e
+#define _LIGHT_red           #c23b2f
+#define _LIGHT_green         #06803d
+#define _LIGHT_yellow        #dbc172
+#define _LIGHT_blue          #0862a8
+#define _LIGHT_magenta       #9441a6
+#define _LIGHT_cyan          #158cb0
+#define _LIGHT_white         #ffffff
+#define _LIGHT_orange        #c77408
+#define _LIGHT_bg_accent     #f0f0f0
+#define _LIGHT_fg_dim        #6a737d
+#define _LIGHT_fg_very_dim   #a5aab0
+#define _LIGHT_fg_super_dim  #d9d9d9
+#define _LIGHT_hl_color      #f7f71b
 
 #define _LIGHT_black_bright _LIGHT_black
 #define _LIGHT_red_bright _LIGHT_red
@@ -16,15 +21,8 @@
 #define _LIGHT_magenta_bright _LIGHT_magenta
 #define _LIGHT_cyan_bright _LIGHT_cyan
 #define _LIGHT_white_bright _LIGHT_white
-
-#define _LIGHT_orange #c77408
 #define _LIGHT_orange_bright _LIGHT_orange
 
 #define _LIGHT_fg_color _LIGHT_black
 #define _LIGHT_bg_color _LIGHT_white
-#define _LIGHT_cursor_color _LIGHT_magenta
-
-#define _LIGHT_bg_accent #f0f0f0
-#define _LIGHT_fg_dim #6a737d
-#define _LIGHT_fg_very_dim #a5aab0
-#define _LIGHT_fg_super_dim #d9d9d9
+#define _LIGHT_cursor_color _LIGHT_cyan

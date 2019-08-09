@@ -111,10 +111,10 @@ _prompt_meta() {
 	local meta=()
 	local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 	if [[ -n "$VIRTUAL_ENV" ]]; then
-		meta+=("%F{22}py:%F{18}$(basename "$VIRTUAL_ENV")%f")
+		meta+=("%F{22}py:%f$(basename "$VIRTUAL_ENV")")
 	fi
 	if [[ -n "$branch" ]]; then
-		meta+=("%F{22}git:%F{18}$branch%f")
+		meta+=("%F{22}git:%f$branch")
 	fi
 	if (( ${#meta[@]} > 0 )); then
 		echo -n "[ ${meta[*]} ] "
@@ -122,14 +122,14 @@ _prompt_meta() {
 }
 
 _prompt_user() {
-	echo -n "%F{18}$(whoami)@$(hostname)%f"
+	echo -n "$(whoami)@$(hostname)"
 }
 
 _prompt_cwd() {
 	if (( DIRTRIM == 1 )); then
-		echo -n "%F{18}%(4~|../%3~|%~)%f"
+		echo -n "%(3~|../%2~|%~)"
 	else
-		echo -n "%F{18}%~%f"
+		echo -n "%~"
 	fi
 }
 
@@ -137,8 +137,7 @@ DIRTRIM=1
 
 PROMPT=
 PROMPT+='%F{red}%(?..%? )%f%(1j.%jj .)'
-PROMPT+='$(_prompt_meta)$(_prompt_user)${22},%f $(_prompt_cwd) '
-PROMPT+='%F{22}$%f '
+PROMPT+='$(_prompt_meta)$(_prompt_user)%F{22},%f $(_prompt_cwd) %F{22}$%f '
 
 # FUNCTIONS
 # ----------------------------------------------------------------------------
@@ -305,7 +304,7 @@ zle -N delete-argument
 
 # add timestamp every time a command is executed
 accept-line-timestamp() {
-	RPROMPT='$(date +%T)'
+	RPROMPT='%F{22}%*%f'
 	zle reset-prompt
 	zle accept-line
 	RPROMPT=

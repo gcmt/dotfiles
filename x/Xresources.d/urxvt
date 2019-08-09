@@ -1,12 +1,12 @@
 
 #ifdef LIGHT
-	URxvt.foreground: _LIGHT_fg_dim
+	URxvt.foreground: _LIGHT_fg_color
 	URxvt.background: _LIGHT_bg_color
 	URxvt.borderColor: _LIGHT_bg_color
 	URxvt.cursorColor: _LIGHT_cursor_color
 	URxvt.highlightColor: _LIGHT_fg_super_dim
 #else
-	URxvt.foreground: _DARK_fg_dim
+	URxvt.foreground: _DARK_fg_color
 	URxvt.background: _DARK_bg_color
 	URxvt.borderColor: _DARK_bg_color
 	URxvt.cursorColor: _DARK_cursor_color

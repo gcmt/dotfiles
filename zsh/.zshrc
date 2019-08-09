@@ -91,12 +91,12 @@ bindkey -v
 # use different colors for each mode
 zle-keymap-select() {
 	case $KEYMAP in
-		viins|main) zle_highlight=(default:fg=magenta) ;;
-		vicmd) zle_highlight=(default:fg=22) ;;
+		viins|main) zle_highlight=(default:bold) ;;
+		vicmd) zle_highlight=(default:bold,fg=22) ;;
 	esac
 }
 
-zle_highlight=(default:fg=magenta)
+zle_highlight=(default:bold)
 zle -N zle-keymap-select
 
 # PROMPT

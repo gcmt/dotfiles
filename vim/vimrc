@@ -131,6 +131,17 @@
 	set incsearch
 	set nohlsearch
 
+	set clipboard=
+	nnoremap <silent> goc :call <sid>toggle_clipboard()<cr>
+
+	func! s:toggle_clipboard()
+		if empty(&clipboard)
+			set clipboard=unnamedplus
+		else
+			set clipboard=
+		end
+	endf
+
 	let mapleader = "\<space>"
 
 " UI
@@ -277,7 +288,15 @@
 	func! _git_branch()
 		let branch = exists('*fugitive#head') ? fugitive#head() : ''
 		if !&diff && !empty(branch) && winwidth(0) > 60
-			return 'git:'.branch . s:sep
+			return 'branch:'.branch . s:sep
+		end
+		return ''
+	endf
+
+	func! _clipboard()
+		if !empty(&clipboard)
+			let clip = substitute(&clipboard, '\vplus$', '+', '')
+			return 'clip:' . clip . s:sep
 		end
 		return ''
 	endf
@@ -313,6 +332,7 @@
 	let &stl .= '%{&mod ? "" : _current_buffer()}'
 	let &stl .= '%#StatusLineMod#%{&mod ? _current_buffer() : ""}%*'
 	let &stl .= '%='
+	let &stl .= '%{_clipboard()}'
 	let &stl .= '%{_git_branch()}'
 	let &stl .= '%{_venv()}'
 	let &stl .= '%{_meta()}'

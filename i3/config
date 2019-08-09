@@ -94,8 +94,10 @@ bindsym $mod+Shift+g exec --no-startup-id sensors-notify -pinned
 bindsym $mod+Control+backslash exec --no-startup-id i3-swap
 
 # Rotate windows
-# bindsym $mod+backslash exec --no-startup-id i3-rotate -next
-# bindsym $mod+Shift+backslash exec --no-startup-id i3-rotate -prev
+bindsym $mod+Next exec --no-startup-id i3-rotate -next
+bindsym $mod+Shift+Next exec --no-startup-id i3-rotate -next -follow
+bindsym $mod+Prior exec --no-startup-id i3-rotate -prev
+bindsym $mod+Shift+Prior exec --no-startup-id i3-rotate -prev -follow
 
 # Open console calculator
 bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback '$term_prg -name calc -e calc-tmux'

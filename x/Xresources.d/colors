@@ -70,5 +70,6 @@
 	*color22: _DARK_fg_dim
 	*color23: _DARK_fg_very_dim
 	*color24: _DARK_fg_super_dim
+	*color25: _DARK_hl_color
 
 #endif

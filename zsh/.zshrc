@@ -208,22 +208,6 @@ va() {
 	[ $# -eq 0 ] && vagrant status || vagrant "$@"
 }
 
-l() {
-	local colors
-	if [[ "$DISPLAY" ]]; then
-		if [[ "$(_colorscheme)" == "dark" ]]; then
-			colors='fi=97'
-		else
-			colors='fi=90'
-		fi
-	fi
-	LS_COLORS="$colors" ls --color=auto --group-directories-first --quoting-style=literal "$@"
-}
-
-_colorscheme() {
-	xrdb -query all | grep colorscheme | grep -o '\w\+$'
-}
-
 # ALIASES
 # ----------------------------------------------------------------------------
 
@@ -249,9 +233,11 @@ alias mv='mv -iv'
 alias cp='cp -iv'
 alias mkdir='mkdir -pv'
 
-alias la='l -A'
-alias ll='l -lh'
-alias lla='l -lhA'
+export LS_COLORS="di=34:ln=36:so=32:pi=35:ex=31"
+alias ls='ls --color=auto --group-directories-first --quoting-style=literal'
+alias la='ls -A'
+alias ll='ls -lh'
+alias lla='ls -lhA'
 
 alias py="python"
 alias ipy="ipython"

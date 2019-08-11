@@ -111,33 +111,34 @@ _prompt_meta() {
 	local meta=()
 	local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 	if [[ -n "$VIRTUAL_ENV" ]]; then
-		meta+=("%F{22}py:%f$(basename "$VIRTUAL_ENV")")
+		meta+=("%F{21}py:%f$(basename "$VIRTUAL_ENV")")
 	fi
 	if [[ -n "$branch" ]]; then
-		meta+=("%F{22}git:%f$branch")
+		meta+=("%F{21}git:%f$branch")
 	fi
 	if (( ${#meta[@]} > 0 )); then
 		echo -n "[ ${meta[*]} ] "
 	fi
 }
 
-_prompt_user() {
-	echo -n "$(whoami)@$(hostname)"
+_prompt() {
+	local cwd
+	case $PROMPT_TRIMDIR in
+		0) cwd="%3~" ;;
+		1) cwd="%~" ;;
+	esac
+	local user="%n@%m%F{21},%f "
+	local meta="$(_prompt_meta)"
+	eval echo -n "${PROMPT_STYLES[$PROMPT_STYLE+1]}"
 }
 
-_prompt_cwd() {
-	if (( DIRTRIM == 1 )); then
-		echo -n "%(3~|../%2~|%~)"
-	else
-		echo -n "%~"
-	fi
-}
-
-DIRTRIM=1
+PROMPT_STYLES=('${meta}${cwd}' '${meta}${user}${cwd}')
+PROMPT_STYLE=0
+PROMPT_TRIMDIR=0
 
 PROMPT=
-PROMPT+='%F{red}%(?..%? )%f%(1j.%jj .)'
-PROMPT+='$(_prompt_meta)$(_prompt_user)%F{22},%f $(_prompt_cwd) %F{22}$%f '
+PROMPT+='%B%F{red}%(?..%? )%f%(1j.%jj .)'
+PROMPT+='$(_prompt) $%b '
 
 # FUNCTIONS
 # ----------------------------------------------------------------------------
@@ -265,10 +266,16 @@ toggle-sudo() {
 zle -N toggle-sudo
 
 trim-prompt-cwd() {
-	DIRTRIM=$((1 - DIRTRIM))
+	PROMPT_TRIMDIR=$((1 - PROMPT_TRIMDIR))
 	zle reset-prompt
 }
 zle -N trim-prompt-cwd
+
+change-prompt-style() {
+	PROMPT_STYLE=$(( (PROMPT_STYLE+1) % ${#PROMPT_STYLES[@]} ))
+	zle reset-prompt
+}
+zle -N change-prompt-style
 
 # delete Nth command line argument
 delete-argument() {
@@ -342,8 +349,10 @@ bindkey '^q' push-line-or-edit
 bindkey '^s' toggle-sudo
 bindkey -M vicmd '^s' toggle-sudo
 
-bindkey '^t' trim-prompt-cwd
-bindkey -M vicmd '^t' trim-prompt-cwd
+bindkey '\et' trim-prompt-cwd
+bindkey -M vicmd '\et' trim-prompt-cwd
+bindkey '\ey' change-prompt-style
+bindkey -M vicmd '\ey' change-prompt-style
 
 bindkey "^M" accept-line-timestamp
 

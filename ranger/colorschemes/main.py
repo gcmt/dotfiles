@@ -10,10 +10,10 @@ foreground = 18
 background = 19
 cursor = 20
 
-bg_accent = 21
-fg_dim = 22
-fg_very_dim = 23
-fg_super_dim = 24
+fg_dim = 21
+fg_very_dim = 22
+fg_super_dim = 23
+bg_accent = 24
 
 
 class Scheme(Default):

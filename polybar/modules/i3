@@ -132,20 +132,19 @@ def main(conn):
 
     draw(None, conn, Event.NONE, {})
 
-    def listen(conn):
-        conn.subscribe(Event.WORKSPACE | Event.WINDOW | Event.MODE, draw)
-        conn.listen()
+    def listen_fifo(conn):
+        while True:
+            msg = FIFO.read_text().strip()
+            if msg == "visible":
+                draw(None, conn, Event.NONE, {}, all=False)
+            elif msg == "all":
+                draw(None, conn, Event.NONE, {}, all=True)
 
-    thread = threading.Thread(target=listen, args=(conn,), daemon=True)
+    thread = threading.Thread(target=listen_fifo, args=(conn,), daemon=True)
     thread.start()
 
-    while True:
-        msg = FIFO.read_text().strip()
-        if msg == "visible":
-            draw(None, conn, Event.NONE, {}, all=False)
-        elif msg == "all":
-            draw(None, conn, Event.NONE, {}, all=True)
-
+    conn.subscribe(Event.WORKSPACE | Event.WINDOW | Event.MODE, draw)
+    conn.listen()
 
 if __name__ == "__main__":
     with i3pie.Connection() as conn:

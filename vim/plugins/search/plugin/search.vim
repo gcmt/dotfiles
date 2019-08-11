@@ -24,3 +24,13 @@ func! s:search(bang, pattern)
 		call search#do(bufnr('%'), a:pattern, bufname, search_options, {})
 	end
 endf
+
+func s:setup_colors()
+	hi default link SearchMatch RedBold
+endf
+
+call s:setup_colors()
+
+aug _spotter
+	au Colorscheme * call <sid>setup_colors()
+aug END

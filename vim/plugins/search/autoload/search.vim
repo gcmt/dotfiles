@@ -148,7 +148,7 @@ func! s:search.render(...)
 		call self.goto_closest_match()
 	end
 
-	call matchadd('Red', self.pattern)
+	call matchadd('SearchMatch', self.pattern)
 	setl nomodifiable
 
 endf

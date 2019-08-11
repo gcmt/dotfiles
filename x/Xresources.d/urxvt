@@ -45,10 +45,10 @@ URxvt.letterSpace: 1
 URxvt.lineSpace: 3
 
 URxvt.keysym.Control-equal: font-manager:reset
-URxvt.keysym.Control-bracketleft: font-manager:smaller
-URxvt.keysym.Control-bracketright: font-manager:larger
-URxvt.keysym.Control-braceleft: font-manager:prev
-URxvt.keysym.Control-braceright: font-manager:next
+URxvt.keysym.Control-underscore: font-manager:smaller
+URxvt.keysym.Control-plus: font-manager:larger
+URxvt.keysym.Control-parenleft: font-manager:prev
+URxvt.keysym.Control-parenright: font-manager:next
 
 URxvt.font-manager.font.1: xft:Roboto Mono:size=10
 URxvt.font-manager.font.2: xft:SF Mono:size=10

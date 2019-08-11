@@ -26,20 +26,20 @@ visualizer_color = blue, cyan, green, yellow, magenta, red
 ##############################################################################
 
 song_list_format = {%a - %t}|{$(19)%f}$R{%l}
-song_status_format = {$(23)%a, %t}|{%f}
+song_status_format = {$(24)%a, %t}|{%f}
 song_library_format = {%n - }{%t}|{$(19)%f}
 song_columns_list_format = (30)[]{a:Artist} (42)[]{t|f:Title} (20)[]{bE:Album} (5f)[]{yE:Year} (7f)[]{lr:Length}
 
 alternative_header_first_line_format = $(25)$aqqu  $/a$9$(19){%t}|{%f}$9  $(25)$atqq$/a$9
 alternative_header_second_line_format = $(19){%a}{ — %b{ (%y)}}$9
 
-current_item_prefix = $(19_22)
+current_item_prefix = $(19_24)
 current_item_suffix = $(end)
 
-current_item_inactive_column_prefix = $(23_22)
+current_item_inactive_column_prefix = $(19_24)
 current_item_inactive_column_suffix = $(end)
 
-now_playing_prefix = $(6_22)
+now_playing_prefix = $(19_25)
 now_playing_suffix = $(end)
 
 browser_playlist_prefix = "$2playlist$9 "
@@ -176,22 +176,22 @@ main_window_color = default
 window_border_color = default
 active_window_border = default
 
-header_window_color = 24
+header_window_color = 23
 
 state_line_color = 25
 alternative_ui_separator_color = 25
 
-volume_color = 24
-player_state_color = 24
-state_flags_color = 24
+volume_color = 23
+player_state_color = 23
+state_flags_color = 23
 
-progressbar_color = 22
+progressbar_color = 25
 progressbar_elapsed_color = 24
 
-statusbar_color = 24
-statusbar_time_color = 24
+statusbar_color = 23
+statusbar_time_color = 23
 
 color1 = default
-color2 = 24
+color2 = 23
 
-empty_tag_color = 24
+empty_tag_color = 23

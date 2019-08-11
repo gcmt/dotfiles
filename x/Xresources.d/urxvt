@@ -21,6 +21,13 @@ URxvt.saveLines: 8192
 URxvt.iso14755: false
 URxvt.pointerBlank: true
 
+!URxvt.keysym.Control-Tab: eval:system('tmux select-window -t +')
+!URxvt.keysym.Shift-Control-ISO_Left_Tab: eval:system('tmux select-window -t -')
+
+URxvt.keysym.Shift-Control-H: eval:system('tmux select-window -t -')
+URxvt.keysym.Shift-Control-L: eval:system('tmux select-window -t +')
+URxvt.keysym.Shift-Control-O: eval:system('tmux select-pane -t +')
+
 URxvt.keysym.Shift-Control-V: eval:paste_clipboard
 URxvt.keysym.Shift-Control-C: eval:selection_to_clipboard
 URxvt.keysym.Shift-Control-K: eval:scroll_up_pages 1
@@ -30,7 +37,7 @@ URxvt.url-launcher: /usr/bin/xdg-open
 URxvt.matcher.button: S 1
 URxvt.matcher.pattern.1: \\bwww\\.[\\w-]+\\.[\\w./?&@#-]*[\\w/-]
 URxvt.keysym.Shift-Control-S: matcher:select
-URxvt.keysym.Shift-Control-L: matcher:list
+URxvt.keysym.Shift-Control-M: matcher:list
 
 URxvt.font: xft:Noto Sans Mono:size=9.5
 URxvt.boldFont: xft:Noto Sans Mono:size=9.5:style=bold

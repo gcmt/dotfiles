@@ -150,7 +150,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
 	cal s:h('StatusLineNC', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
-	cal s:h('StatusLineDim', s:fg_super_dim, s:bg_accent, 'none', '')
+	cal s:h('StatusLineDim', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')
 	cal s:h('StatusLineMod', s:red, s:bg_accent, 'none', '')
 

@@ -249,96 +249,140 @@
 " STATUSLINE
 " ----------------------------------------------------------------------------
 
-	let s:sep = ' ‹ '
-
-	func! _listchars_visibility()
-		" hide 'listchars' in visual mode
-		if !empty(&bt) || mode() == 'v' && &list
-			set nolist
-		elseif mode()[0] == 'n' && !&list
-			set list
+	func! _stl_buffer(win, sep)
+		let bnum = a:win.bufnr
+		let bname = bufname(bnum)
+		let bt = getbufvar(bnum, '&buftype')
+		let ft = getbufvar(bnum, '&filetype')
+		let flags = ''
+		if !empty(bt)
+			let flags .= '[' . bt . ']'
 		end
-		return ''
+		if getbufvar(bnum, '&previewwindow')
+			let flags .= '[preview]'
+		end
+		if getbufvar(bnum, '&readonly')
+			let flags .= '[ro]'
+		end
+		let name = ''
+		if empty(bname)
+			let name = '[no name]'
+		elseif !empty(bt) || a:win.width < 80 || ft == 'notes'
+			let name = fnamemodify(bname, ':t')
+		else
+			let name = join(split(fnamemodify(bname, ':p:~'), '/')[-2:], '/')
+		end
+		if getbufvar(bnum, '&modified')
+			let name = '** ' . name . ' **'
+		end
+		if !empty(flags)
+			let name = '%#StatusLineDim#' . flags . '%*' . a:sep . name
+		end
+		return name
 	endf
 
-	func! _current_buffer()
-		if empty(bufname('%'))
-			return '[no name]'
-		end
-		if !empty(&bt) || winwidth(0) < 80 || &ft == 'notes'
-			return expand('%:t')
-		end
-		return join(split(expand('%:p:~'), '/')[-2:], '/')
-	endf
-
-	func! _alternate_buffer()
-		let alt = expand('#:t')
-		if empty(&bt) && winwidth(0) > 80 && !empty(alt) && expand('#:p') != expand('%:p')
-			return '[' . alt . '] '
-		end
-		return ''
-	endf
-
-	func! _venv()
-		if !&diff && &ft == 'python' && !empty($VIRTUAL_ENV)
-			return 'py:' . fnamemodify($VIRTUAL_ENV, ':t') . s:sep
-		end
-		return ''
-	endf
-
-	func! _git_branch()
-		let branch = exists('*fugitive#head') ? fugitive#head() : ''
-		if !&diff && !empty(branch) && winwidth(0) > 60
-			return 'branch:'.branch . s:sep
-		end
-		return ''
-	endf
-
-	func! _clipboard()
-		if !empty(&clipboard)
-			let clip = substitute(&clipboard, '\vplus$', '+', '')
-			return 'clip:' . clip . s:sep
-		end
-		return ''
-	endf
-
-	func! _meta()
-		let items = []
-		let enc = printf('%s:%s', &fenc ? &fenc : &enc, &ff)
-		if empty(&bt) && winwidth(0) > 80
-			call add(items, &ft)
-		end
-		call filter(items, 'len(v:val)')
-		return empty(items) ? '' : join(items, s:sep) . s:sep
-	endf
-
-	func! _flags()
-		if winwidth(0) < 80
+	func! _stl_alternate(win)
+		if win_getid() != a:win.winid
 			return ''
+		end
+		let bnum = a:win.bufnr
+		let bname = bufname(bnum)
+		let alt = expand('#:t')
+		if !empty(alt) && expand('#:p') != fnamemodify(bname, ':p') && a:win.width > 80
+			return '%#StatusLineDim#[' . alt . ']%*'
+		end
+		return ''
+	endf
+
+	func! _stl_flags(win)
+		if a:win.width < 80
+			return []
 		end
 		let flags = []
 		if !empty(getqflist())
 			call add(flags, '[QF]')
 		end
-		if !empty(getloclist(0))
+		if !empty(getloclist(a:win.winid))
 			call add(flags, '[LOC]')
 		end
-		return empty(flags) ? '' : '‹ ' . join(flags, '') . ' '
+		return join(flags, ' ')
 	endf
 
-	let &stl  = ' '
-	let &stl .= '%{_listchars_visibility()}'
-	let &stl .= '%{_alternate_buffer()}'
-	let &stl .= '%(%w%r%h %)'
-	let &stl .= '%{&mod ? "" : _current_buffer()}'
-	let &stl .= '%#StatusLineMod#%{&mod ? _current_buffer() : ""}%*'
-	let &stl .= '%='
-	let &stl .= '%{_clipboard()}'
-	let &stl .= '%{_git_branch()}'
-	let &stl .= '%{_venv()}'
-	let &stl .= '%{_meta()}'
-	let &stl .= '%1lL %02cC (%P) '
-	let &stl .= '%{_flags()}'
+	func! _stl_meta(win, sep)
+		let items = []
+		let bnum = a:win.bufnr
+		let bt = getbufvar(bnum, '&buftype')
+		let ft = getbufvar(bnum, '&filetype')
+		let ff = getbufvar(bnum, '&fileformat')
+		let fenc = getbufvar(bnum, '&fileencoding')
+		let enc = getbufvar(bnum, '&encoding')
+		let enc = printf('%s:%s', fenc ? fenc : enc, ff)
+		if !empty(ft) && empty(bt) && a:win.width > 80
+			call add(items, ft)
+		end
+		call filter(items, 'len(v:val)')
+		return join(items, a:sep)
+	endf
+
+	func! _stl_branch(win)
+		if win_getid() != a:win.winid
+			return ''
+		end
+		let bnum = a:win.bufnr
+		let diff = getbufvar(bnum, '&diff')
+		let branch = exists('*fugitive#head') ? fugitive#head() : ''
+		if !diff && !empty(branch) && a:win.width > 60
+			return 'git:' . branch
+		end
+		return ''
+	endf
+
+	func! _stl_venv(win)
+		let bnum = a:win.bufnr
+		let diff = getbufvar(bnum, '&diff')
+		if !diff && &ft == 'python' && !empty($VIRTUAL_ENV) && a:win.width > 60
+			return 'venv:' . fnamemodify($VIRTUAL_ENV, ':t')
+		end
+		return ''
+	endf
+
+	func! _stl_clip(win)
+		if !empty(&clipboard) && a:win.width > 60
+			return 'clip:' . substitute(&clipboard, '\vplus$', '+', '')
+		end
+		return ''
+	endf
+
+	func! _stl()
+		let ret = ''
+
+		let win = getwininfo(g:statusline_winid)[0]
+		let sep = win.width < 100 ? ' ' : '   '
+
+		let items = []
+		call add(items, _stl_alternate(win))
+		call add(items, _stl_buffer(win, sep))
+
+		call filter(items, 'len(v:val)')
+		let ret .= ' ' . join(items, sep)
+
+		let ret .= '%='
+
+		let items = []
+		call add(items, _stl_clip(win))
+		call add(items, _stl_venv(win))
+		call add(items, _stl_branch(win))
+		call add(items, _stl_meta(win, sep))
+		call add(items, '%1lL %02cC (%P)')
+		call add(items, _stl_flags(win))
+
+		call filter(items, 'len(v:val)')
+		let ret .= join(items, sep) . ' '
+
+		return ret
+	endf
+
+	set stl=%!_stl()
 
 " TABS
 " ----------------------------------------------------------------------------

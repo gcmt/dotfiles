@@ -606,10 +606,16 @@
 	endf
 
 	" jump after given characters without leaving insert mode
-	inoremap <silent> <c-f> <c-r>=_jump_after("\\v[])}>\"']")<cr>
+	inoremap <silent> <c-f> <c-r>=_jump_after("\\v[])}>`\"']", 1)<cr>
 
-	func! _jump_after(pattern)
-		return search(a:pattern, 'Wce') ? "\<right>" : ''
+	func! _jump_after(pattern, ...)
+		let sameline = a:0 && a:1
+		let pos = searchpos(a:pattern, 'Wcen')
+		if pos == [0, 0] || sameline && pos[0] != line('.')
+			return ''
+		end
+		call cursor(pos)
+		return "\<right>"
 	endf
 
 " SEARCH AND SUBSTITUTE

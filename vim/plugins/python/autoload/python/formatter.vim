@@ -7,11 +7,11 @@ func python#formatter#format_current_file()
 	let out = systemlist(cmd, content)
 	if v:shell_error == 123
 		let cmd = 'black --quiet --check -'
-		call _err(trim(system(cmd, content)))
+		call util#err(trim(system(cmd, content)))
 		return
 	end
 	if v:shell_error
-		call _err(join(out, "\n"))
+		call util#err(join(out, "\n"))
 		return
 	end
 	sil %delete _

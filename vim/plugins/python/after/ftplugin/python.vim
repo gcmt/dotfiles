@@ -21,7 +21,7 @@ func! s:run_selection() range
 	let lines = s:adjust_indentation(lines)
 	let out = systemlist('python', join(lines, "\n"))
 	if v:shell_error
-		call _err(join(out, "\n"))
+		call util#err(join(out, "\n"))
 	else
 		echo join(out, "\n")
 	end

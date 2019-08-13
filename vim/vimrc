@@ -148,7 +148,7 @@
 " ----------------------------------------------------------------------------
 
 	func! s:get_term_bg()
-		let bg = trim(system('xrdb -query all | grep -Po "(?<=colorscheme.name:)\s+\w+"'))
+		let bg = matchstr(system('xrdb -query all'), '\v<colorscheme.name:\s+\zs\w+')
 		return empty(bg) ? 'dark' : bg
 	endf
 

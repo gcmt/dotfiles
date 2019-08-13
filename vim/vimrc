@@ -682,7 +682,7 @@
 		call timer_start(300, {-> call('matchdelete', [id])})
 	endf
 
-" MACROS
+" REGISTERS
 " ----------------------------------------------------------------------------
 
 	vnoremap @ :norm! @
@@ -690,8 +690,26 @@
 	nnoremap Q @q
 	vnoremap <silent> Q :norm! @q<cr>
 
-	" edit register q
-	nnoremap <silent> gQ :<c-r><c-r>='let @q = '.string(getreg('q'))<cr><c-f><left>:res 1<cr>
+	" edit registers
+	command! -nargs=? Regedit call <sid>regedit(<q-args>)
+	nnoremap <silent> gQ :Regedit q<cr>
+
+	func! s:regedit(reg)
+		let reg = empty(a:reg) ? '"' : a:reg
+		exec "sil keepj keepa botright 1new __regedit__"
+		setl ft=regedit bt=nofile bh=wipe nobl
+		call setwinvar(winnr(), "&stl", " [Register " . reg . "]")
+		let reg_content = getreg(reg, 1, 1)
+		call append(0, reg_content)
+		sil norm! G_ddgg
+		exec "resize" min([max([len(reg_content), 5]), float2nr(&lines * 50 / 100)])
+		nno <silent> <buffer> q <c-w>c
+		nno <silent> <buffer> <cr> :let b:regedit_save = 1<bar>close<cr>
+		nno <silent> <buffer> <c-j> :let b:regedit_save = 1<bar>close<cr>
+		let b:regedit_reg = reg
+		au BufWipeout <buffer> if get(b:, "regedit_save") |
+			\ call setreg(b:regedit_reg, join(getline(0, "$"), "\n")) | end
+	endf
 
 " TAGS
 " ----------------------------------------------------------------------------

@@ -44,4 +44,4 @@ if [[ "${files[$idx]}" == "logs" ]]; then
 
 fi
 
-exec alacritty --class floating -e vim "${files[$idx]}" +'cd %:p:h'
+exec urxvt -name floating -e vim "${files[$idx]}" +'cd %:p:h'

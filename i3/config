@@ -18,7 +18,7 @@ exec --no-startup-id tmux new -ds scratch
 
 set $term_cls URxvt
 set $term_prg urxvt
-set $term_floating alacritty --class floating
+set $term_floating urxvt -name floating
 
 set $alt Mod1
 set $cmd Mod4
@@ -55,9 +55,6 @@ for_window [floating] move position center
 
 for_window [class="URxvt" instance="floating"] floating enable, $float_m, move position center
 for_window [class="URxvt" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
-
-for_window [class="Alacritty" instance="floating"] floating enable, $float_m, move position center
-for_window [class="Alacritty" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
 
 for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable

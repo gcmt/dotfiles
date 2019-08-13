@@ -15,6 +15,7 @@
 
 URxvt.perl-ext-common: default,matcher,font-manager,message,focus
 
+URxvt.termName: xterm-256color
 URxvt.internalBorder: 5
 URxvt.scrollBar: false
 URxvt.saveLines: 8192

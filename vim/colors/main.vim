@@ -8,7 +8,7 @@ let g:colors_name = 'main'
 
 if &background == 'light'
 	let s:black         = ['#24292e', 0]
-	let s:red           = ['#c23b2f', 1]
+	let s:red           = ['#ad2f3b', 1]
 	let s:green         = ['#06803d', 2]
 	let s:yellow        = ['#dbc172', 3]
 	let s:blue          = ['#0862a8', 4]
@@ -16,13 +16,14 @@ if &background == 'light'
 	let s:cyan          = ['#158cb0', 6]
 	let s:white         = ['#ffffff', 7]
 	let s:orange        = ['#c77408', 16]
-	let s:bg_accent     = ['#f0f0f0', 21]
-	let s:fg_dim        = ['#6a737d', 22]
-	let s:fg_very_dim   = ['#a5aab0', 23]
-	let s:fg_super_dim  = ['#d9d9d9', 24]
+	let s:fg_dim        = ['#6a737d', 21]
+	let s:fg_very_dim   = ['#97a1ad', 22]
+	let s:fg_super_dim  = ['#c8d1db', 23]
+	let s:bg_accent     = ['#f5f6f7', 24]
+	let s:hl            = ['#f7f71b', 25]
+	let s:select        = ['#c8c8fa', 26]
 	let s:fg            = [s:black[0], 18]
 	let s:bg            = [s:white[0], 19]
-	let s:hl            = ['#f7f71b', 25]
 else
 	let s:black         = ['#1e222b', 0]
 	let s:red           = ['#945f65', 1]
@@ -33,13 +34,14 @@ else
 	let s:cyan          = ['#739492', 6]
 	let s:white         = ['#8e9299', 7]
 	let s:orange        = ['#998068', 16]
-	let s:bg_accent     = ['#252933', 21]
-	let s:fg_dim        = ['#636770', 22]
-	let s:fg_very_dim   = ['#4a4e59', 23]
-	let s:fg_super_dim  = ['#353944', 24]
+	let s:fg_dim        = ['#636770', 21]
+	let s:fg_very_dim   = ['#4a4e59', 22]
+	let s:fg_super_dim  = ['#353944', 23]
+	let s:bg_accent     = ['#252933', 24]
+	let s:hl            = ['#a39465', 25]
+	let s:select        = ['#c8c8fa', 26]
 	let s:fg            = [s:white[0], 18]
 	let s:bg            = [s:black[0], 19]
-	let s:hl            = ['#a39465', 25]
 end
 
 let g:minimal = get(g:, 'minimal', 0)
@@ -68,6 +70,7 @@ let s:colored = [
 	\ 'PMenu', 'PMenuSel', 'PMenuSBar', 'PMenuThumb',
 	\ 'TabLine', 'TabLineSel', 'TabLineFill',
 	\ 'SpellBad', 'SpellCap', 'SpellLocal', 'SpellRare',
+	\ 'Yank', 'Spotter',
 \ ]
 let s:colored = '\v^(' . join(s:colored, '|') . ')$'
 
@@ -94,105 +97,41 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Hidden', s:bg, s:bg, '', '')
 
 	cal s:h('Normal', s:fg, s:bg, '', '')
-	cal s:h('NormalBold', s:fg, s:bg, 'bold', '')
-	cal s:h('NormalReverse', s:bg, s:fg, '', '')
-	cal s:h('NormalBoldReverse', s:bg, s:fg, 'bold', '')
-
 	cal s:h('Blue', s:blue, '', 'none', '')
-	cal s:h('BlueReverse', s:blue, '', 'reverse', '')
-	cal s:h('BlueBold', s:blue, '', 'bold', '')
-	cal s:h('BlueBoldReverse', s:blue, '', 'reverse,bold', '')
-
 	cal s:h('Cyan', s:cyan, '', 'none', '')
-	cal s:h('CyanReverse', s:cyan, '', 'reverse', '')
-	cal s:h('CyanBold', s:cyan, '', 'bold', '')
-	cal s:h('CyanBoldReverse', s:cyan, '', 'reverse,bold', '')
-
 	cal s:h('Green', s:green, '', 'none', '')
-	cal s:h('GreenReverse', s:green, '', 'reverse', '')
-	cal s:h('GreenBold', s:green, '', 'bold', '')
-	cal s:h('GreenBoldReverse', s:green, '', 'reverse,bold', '')
-
 	cal s:h('Red', s:red, '', 'none', '')
-	cal s:h('RedReverse', s:red, '', 'reverse', '')
-	cal s:h('RedBold', s:red, '', 'bold', '')
-	cal s:h('RedBoldReverse', s:red, '', 'reverse,bold', '')
-
 	cal s:h('Orange', s:orange, '', 'none', '')
-	cal s:h('OrangeReverse', s:orange, '', 'reverse', '')
-	cal s:h('OrangeBold', s:orange, '', 'bold', '')
-	cal s:h('OrangeBoldReverse', s:orange, '', 'reverse,bold', '')
-
 	cal s:h('Magenta', s:magenta, '', 'none', '')
-	cal s:h('MagentaReverse', s:magenta, '', 'reverse', '')
-	cal s:h('MagentaBold', s:magenta, '', 'bold', '')
-	cal s:h('MagentaBoldReverse', s:magenta, '', 'reverse,bold', '')
-
 	cal s:h('Yellow', s:yellow, '', 'none', '')
-	cal s:h('YellowReverse', s:yellow, '', 'reverse', '')
-	cal s:h('YellowBold', s:yellow, '', 'bold', '')
-	cal s:h('YellowBoldReverse', s:yellow, '', 'reverse,bold', '')
-
 	cal s:h('Fg', s:fg, '', 'none', '')
-	cal s:h('FgReverse', s:fg, '', 'reverse', '')
-	cal s:h('FgBold', s:fg, '', 'bold', '')
-	cal s:h('FgBoldReverse', s:fg, '', 'reverse', '')
-
 	cal s:h('FgDim', s:fg_dim, '', 'none', '')
-	cal s:h('FgDimReverse', s:fg_dim, '', 'reverse', '')
-	cal s:h('FgDimBold', s:fg_dim, '', 'bold', '')
-	cal s:h('FgDimBoldReverse', s:fg_dim, '', 'reverse', '')
-
-	cal s:h('FgVeryDim', s:fg_super_dim, '', 'none', '')
-	cal s:h('FgVeryDimReverse', s:fg_super_dim, '', 'reverse', '')
-	cal s:h('FgVeryDimBold', s:fg_super_dim, '', 'bold', '')
-	cal s:h('FgVeryDimBoldReverse', s:fg_super_dim, '', 'reverse', '')
+	cal s:h('FgVeryDim', s:fg_very_dim, '', 'none', '')
 
 	cal s:h('StatusLineNC', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
-	cal s:h('StatusLineDim', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')
+	cal s:h('StatusLineDim', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineMod', s:red, s:bg_accent, 'none', '')
-
 	cal s:h('StatusLineTermNC', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLineTerm', s:fg_dim, s:bg_accent, 'none', '')
 
-	cal s:h('StatusLineBlue', s:blue, s:bg_accent, 'none', '')
-	cal s:h('StatusLineBlueBold', s:blue, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineCyan', s:cyan, s:bg_accent, 'none', '')
-	cal s:h('StatusLineCyanBold', s:cyan, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineGreen', s:green, s:bg_accent, 'none', '')
-	cal s:h('StatusLineGreenBold', s:green, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineRed', s:red, s:bg_accent, 'none', '')
-	cal s:h('StatusLineRedBold', s:red, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineMagenta', s:magenta, s:bg_accent, 'none', '')
-	cal s:h('StatusLineMagentaBold', s:magenta, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineOrange', s:orange, s:bg_accent, 'none', '')
-	cal s:h('StatusLineOrangeBold', s:orange, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineYellow', s:yellow, s:bg_accent, 'none', '')
-	cal s:h('StatusLineYellowBold', s:yellow, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineFgDim', s:fg_dim, s:bg_accent, 'none', '')
-	cal s:h('StatusLineFgDimBold', s:fg_dim, s:bg_accent, 'bold', '')
-	cal s:h('StatusLineFgVeryDim', s:fg_very_dim, s:bg_accent, 'none', '')
-	cal s:h('StatusLineFgVeryDimBold', s:fg_very_dim, s:bg_accent, 'bold', '')
-
 	cal s:h('Cursor', '', s:magenta, '', '')
-	cal s:h('NonText', s:bg_accent, '', 'none', '')
-	cal s:h('SpecialKey', s:bg_accent, '', 'none', '')
-	cal s:h('Conceal', s:fg_dim, s:bg, '', '')
+	cal s:h('NonText', s:fg_super_dim, '', 'none', '')
+	cal s:h('SpecialKey', s:fg_very_dim, '', 'none', '')
+	cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
 	cal s:h('Search', '', s:hl, '', '')
 	cal s:h('IncSearch', s:bg, s:red, 'none', '')
 	cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')
 	cal s:h('MatchParen', s:bg, s:fg_very_dim, '', '')
 	cal s:h('Directory', s:blue, '', '', '')
 	cal s:h('Folded', s:fg_super_dim, s:bg, '', '')
+	cal s:h('Visual', s:fg, s:select, '', '')
 
 	if &bg == 'dark'
 		cal s:h('WildMenu', s:bg, s:blue, '', '')
-		cal s:h('Visual', s:fg, s:fg_super_dim, '', '')
 	else
 		cal s:h('WildMenu', s:bg, s:fg_very_dim, '', '')
-		cal s:h('Visual', s:fg, s:bg_accent, '', '')
 	end
 
 	cal s:h('Linenr', s:fg_very_dim, '', '', '')
@@ -260,7 +199,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Noise', s:fg_dim, '', '', '')
 
 	if g:minimal && &bg == 'dark'
-		cal s:h('String', s:green, '', '', '')
+		cal s:h('String', s:magenta, '', '', '')
 	elseif g:minimal && &bg == 'light'
 		cal s:h('String', s:cyan, '', '', '')
 	else
@@ -268,7 +207,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	end
 
 	cal s:h('qfError', s:fg_dim, '', '', '')
-	cal s:h('qfLineNr', s:fg_dim, '', '', '')
+	cal s:h('qfLineNr', s:fg_very_dim, '', '', '')
 	cal s:h('QuickFixLine', s:bg, s:fg_dim, '', '')
 
 	cal s:h('Yank', '', s:bg_accent, '', '')

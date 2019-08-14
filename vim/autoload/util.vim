@@ -28,9 +28,12 @@ func! util#regedit(reg)
 	call setwinvar(winnr(), "&stl", " [Register " . reg . "]")
 
 	let reg_content = getreg(reg, 1, 1)
-	call append(0, reg_content)
-	sil norm! G_ddgg
-	exec "resize" min([max([len(reg_content), 5]), float2nr(&lines * 50 / 100)])
+	call append(1, reg_content)
+	sil norm! "_dd
+
+	let min_size = 5
+	let max_size = float2nr(&lines * 50 / 100)
+	exec "resize" min([max([len(reg_content), min_size]), max_size])
 
 	nno <silent> <buffer> q <c-w>c
 	nno <silent> <buffer> <cr> :let b:regedit_save = 1<bar>close<cr>

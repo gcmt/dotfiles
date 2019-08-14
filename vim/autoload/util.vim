@@ -24,7 +24,7 @@ func! util#regedit(reg)
 	let reg = empty(a:reg) ? '"' : a:reg
 
 	exec "sil keepj keepa botright 1new __regedit__"
-	setl ft=regedit bt=nofile bh=wipe nobl
+	setl ft=regedit bt=nofile bh=wipe nobl noudf nobk noswf nospell
 	call setwinvar(winnr(), "&stl", " [Register " . reg . "]")
 
 	let reg_content = getreg(reg, 1, 1)

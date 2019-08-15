@@ -932,19 +932,17 @@
 
 	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
 
-" Explorer/Ranger
+" Explorer/Ranger/Vifm
 " ----------------------------------------------------------------------------
 
-	let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
+	nnoremap <silent> g. :exec 'Fm!' expand('%:p')<cr>
+	nnoremap <silent> g: :exec 'Fm!' getcwd()<cr>
 
-	if executable('ranger')
-		nnoremap <silent> g. :exec 'Ranger' expand('%:p')<cr>
-		nnoremap <silent> g: :exec 'Ranger' getcwd()<cr>
-	else
-		nnoremap <silent> gy :Explorer<cr>
-		nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
-		nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
-	end
+	" let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
+
+	" nnoremap <silent> gy :Explorer<cr>
+	" nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
+	" nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
 
 " Fzf
 " ----------------------------------------------------------------------------

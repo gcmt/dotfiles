@@ -357,7 +357,7 @@
 		let ret = ''
 
 		let win = getwininfo(g:statusline_winid)[0]
-		let sep = win.width < 100 ? ' ' : '   '
+		let sep = win.width < 110 ? '  ' : '   '
 
 		let items = []
 		call add(items, _stl_alternate(win))

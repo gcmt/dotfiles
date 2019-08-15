@@ -1,35 +1,76 @@
 
 let s:Commenter = {}
 
-func s:Commenter.New()
-	let obj = copy(self)
+func! s:Commenter(start, end)
+	let obj = copy(s:Commenter)
+	let obj.start = a:start
+	let obj.end = a:end
 	let obj.wrappers = split(&cms, '\v\s*\%s\s*')
 	return obj
 endf
 
-func commenter#do(type, ...) abort range
-	let commenter = s:Commenter.New()
+func! commenter#toggle_op(type, ...) abort range
 	if a:type ==# 'V' || a:type == 'n'
-		call commenter.do(a:firstline, a:lastline)
+		call commenter#toggle(a:firstline, a:lastline)
 	elseif a:type == 'line'
-		call commenter.do(line("'["), line("']"))
+		call commenter#toggle(line("'["), line("']"))
 	end
 endf
 
-" Comment or uncomment the given range of lines.
-func s:Commenter.do(start, end) abort
-	let lines = map(range(a:start, a:end), '[v:val, getline(v:val)]')
-	let lines = filter(lines, "v:val[1] !~ '\\v^\\s*$'")
-	let mixed = self.mixed_comments(lines)
+func! commenter#toggle(start, end) abort
+	call s:Commenter(a:start, a:end).toggle()
+endf
+
+func! commenter#comment(start, end) abort
+	call s:Commenter(a:start, a:end).comment()
+endf
+
+func! commenter#uncomment(start, end) abort
+	call s:Commenter(a:start, a:end).uncomment()
+endf
+
+func! s:Commenter.comment() abort
+	let lines = self.lines()
+	let mixed = self.mixed(lines)
 	for [nr, line] in lines
-		let line = !mixed && self.commented(line) ? self.uncomment(line) : self.comment(line)
-		call setline(nr, line)
-	endfor
+		if self.commented(line)
+			if mixed
+				call setline(nr, self.comment_line(line))
+			end
+		else
+			call setline(nr, self.comment_line(line))
+		end
+	endfo
+endf
+
+func! s:Commenter.uncomment() abort
+	let lines = self.lines()
+	for [nr, line] in lines
+		call setline(nr, self.uncomment_line(line))
+	endfo
+endf
+
+func! s:Commenter.toggle() abort
+	let lines = self.lines()
+	let mixed = self.mixed(lines)
+	for [nr, line] in lines
+		if !mixed && self.commented(line)
+			call setline(nr, self.uncomment_line(line))
+		else
+			call setline(nr, self.comment_line(line))
+		end
+	endfo
+endf
+
+" Get list of lines to comment as [ [linenr, line], .. ]
+func! s:Commenter.lines()
+	let lines = map(range(self.start, self.end), {i, val -> [v:val, getline(v:val)]})
+	let lines = filter(lines, {i, val -> val[1] !~ '\v^\s*$'})
+	return lines
 endf
 
 " Check if the are commented lines mixed with uncommented lines.
-" If this is the case, everything is commented, even already commented lines.
-func s:Commenter.mixed_comments(lines)
+func! s:Commenter.mixed(lines)
 	let commented = 0
 	for [nr, line] in a:lines
 		let commented += self.commented(line) ? 1 : 0
@@ -37,21 +78,21 @@ func s:Commenter.mixed_comments(lines)
 	return commented != len(a:lines) && commented != 0
 endf
 
-func s:Commenter.lwrapper()
+func! s:Commenter.lwrapper()
 	return escape(get(self.wrappers, 0, ''), '\')
 endf
 
-func s:Commenter.rwrapper()
+func! s:Commenter.rwrapper()
 	return escape(get(self.wrappers, 1, ''), '\')
 endf
 
 " Check if a line is commented.
-func s:Commenter.commented(line)
+func! s:Commenter.commented(line)
 	return a:line =~ '\V\^\s\*'.self.lwrapper().'\.\*'.self.rwrapper().'\s\*\$'
 endf
 
 " Comment a single line.
-func s:Commenter.comment(line)
+func! s:Commenter.comment_line(line)
 	let indent = matchstr(a:line, '\v^\s*')
 	let code = matchstr(a:line, '\v^\s*\zs.*')
 	return indent . printf(&cms, code)
@@ -60,7 +101,7 @@ endf
 " Uncomment a single line.
 " If there are multiple spaces between the comment leader and the
 " first non-blank character, don't strip spaces
-func s:Commenter.uncomment(line)
+func! s:Commenter.uncomment_line(line)
 	let indent = matchstr(a:line, '\v^\s*')
 	let code = matchstr(a:line, '\v^\s*\zs.*')
 	if code =~ '\V\^ \*\t\+'

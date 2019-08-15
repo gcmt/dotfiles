@@ -7,5 +7,22 @@ fi
 
 xrdb -load -D$(echo $1 | tr /a-z/ /A-Z/) ~/.Xresources
 
+i3_config="$HOME/.config/i3/config"
+if [[ "$1" == 'light' ]]; then
+	vim -E "${i3_config}" <<-EOF
+	/=light colors=/+1;/\v^$/-1s/\v^#\s*//
+	/=dark colors=/+1;\$s/\v^\ze\w/# /
+	wq
+	EOF
+else
+	vim -E "${i3_config}" <<-EOF
+	/=light colors=/+1;/\v^$/-1s/\v^\ze\w/# /
+	/=dark colors=/+1;\$s/\v^#\s*//
+	wq
+	EOF
+fi
+
 clear
 init-colors
+
+i3-msg  reload >/dev/null

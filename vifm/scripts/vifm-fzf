@@ -1,8 +1,5 @@
 #!/bin/bash
 
-export FZF_DEFAULT_OPTS="--height 100% --layout=reverse \
- --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:23"
-
 if [[ "$1" == '-cd' ]]; then
 	shift
 	FZF_DEFAULT_OPTS+=" --preview 'tree {} -L 1'"

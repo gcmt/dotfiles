@@ -37,6 +37,10 @@ set grepprg='rg -S --vimgrep %i %a %s'
 
 let $VIFM_ = 1
 
+let $FZF_DEFAULT_OPTS = "--bind 'ctrl-l:accept'" .
+	\ " --height 100% --layout=reverse" .
+	\ " --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:23"
+
 " Marks
 " ------------------------------------------------------------------------------
 

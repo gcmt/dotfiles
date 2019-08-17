@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [[ -n "$1" ]]; then
+	header="$(tput bold)$(tput setaf 5)$1$(tput sgr0)"
+	FZF_DEFAULT_OPTS+=" --header='${header}'"
+fi
+
+FZF_DEFAULT_OPTS+=" --color prompt:19,info:19,pointer:24"
+FZF_DEFAULT_OPTS+=" --ansi --inline-info --no-bold --bind 'tab:down,shift-tab:up'"
+FZF_DEFAULT_OPTS+=" --preview '[ -d {} ] && tree {} -L 1 || head -100 {}'"
+
+target="$(LC_COLLATE=C ls -A1p --color=always --group-directories-first | fzf 2>/dev/tty)"
+if [[ -n "${target}" ]]; then
+	echo ":goto \"${target}\" | norm! l"
+fi

@@ -41,6 +41,8 @@ let $FZF_DEFAULT_OPTS = "--bind 'ctrl-l:accept'" .
 	\ " --height 100% --layout=reverse" .
 	\ " --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:23"
 
+let $LS_COLORS = "di=34:ln=36:so=32:pi=35:ex=31"
+
 " Marks
 " ------------------------------------------------------------------------------
 
@@ -70,6 +72,7 @@ command! tshell vifm-tmux %i
 let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')
 
+command! ff :execute term('vifm-fzf-filter %"d:~')
 command! fzf :execute term('vifm-fzf %a')
 command! fzfd :execute term('vifm-fzf -cd %a')
 
@@ -78,6 +81,7 @@ command! fzfd :execute term('vifm-fzf -cd %a')
 
 nnoremap ~ :cd<cr>
 
+nnoremap f :ff<cr>
 nnoremap <c-f> :fzf<cr>
 nnoremap <c-d> :fzfd<cr>
 

@@ -1,0 +1,19 @@
+#!/usr/bin/env python
+
+import os
+
+
+def find_root(path):
+    if not path or path == "/":
+        return ""
+    if set(os.listdir(path)) & markers:
+        return path
+    return find_root(os.path.dirname(path))
+
+
+markers = set(os.environ.get("VIFM_ROOT_MARKERS", "").split(","))
+root = find_root(os.getcwd())
+if root:
+    print("cd " + repr(root))
+else:
+    print("echo " + repr("Unable to find root folder"))

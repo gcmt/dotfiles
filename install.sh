@@ -71,6 +71,10 @@ if _should_install ranger; then
 	link "$dotdir/ranger" "$XDG_CONFIG_HOME/ranger"
 fi
 
+if _should_install vifm; then
+	link "$dotdir/vifm" "$XDG_CONFIG_HOME/vifm"
+fi
+
 if _should_install rofi; then
 	link "$dotdir/rofi" "$XDG_CONFIG_HOME/rofi"
 fi

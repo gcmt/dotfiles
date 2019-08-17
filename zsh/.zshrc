@@ -76,7 +76,7 @@ stty -ixon
 autoload -U add-zsh-hook
 
 set-title() {
-	if [[ -n "$TMUX" || -n "$RANGER_LEVEL" ]]; then
+	if [[ -n "$TMUX" || -n "$RANGER_LEVEL" || -n "$VIFM_" ]]; then
 		return
 	fi
 	print -n "\e]2;$PWD - Terminal\a"
@@ -112,6 +112,9 @@ setopt prompt_subst
 
 _prompt_info() {
 	local info=()
+	if [[ -n "$VIFM_" ]]; then
+		info+=("[vifm]")
+	fi
 	if [[ -n "${VIRTUAL_ENV}" ]]; then
 		info+=("[%F{21}py:%f$(basename "${VIRTUAL_ENV}")]")
 	fi

@@ -1,0 +1,30 @@
+
+highlight clear
+
+highlight Win cterm=none ctermfg=18 ctermbg=none
+highlight StatusLine cterm=none ctermfg=21 ctermbg=24
+highlight CmdLine cterm=none ctermfg=18 ctermbg=none
+highlight TopLine cterm=bold ctermfg=21 ctermbg=none
+highlight TopLineSel cterm=bold ctermfg=magenta ctermbg=none
+highlight Selected cterm=none ctermfg=none ctermbg=26
+highlight CurrLine cterm=none ctermfg=none ctermbg=24
+highlight Border cterm=none ctermfg=21 ctermbg=none
+highlight ErrorMsg cterm=none ctermfg=red ctermbg=none
+highlight TabLine cterm=none ctermfg=white ctermbg=blue
+highlight TabLineSel cterm=bold ctermfg=default ctermbg=red
+highlight WildMenu cterm=none ctermfg=18 ctermbg=23
+" highlight JobLine cterm=bold,reverse ctermfg=black ctermbg=white
+" highlight SuggestBox cterm=bold ctermfg=default ctermbg=default
+" highlight CmpMismatch cterm=bold ctermfg=white ctermbg=red
+" highlight AuxWin cterm=bold,underline,reverse,standout,italic ctermfg=default ctermbg=default
+" highlight OtherWin cterm=bold,underline,reverse,standout,italic ctermfg=default ctermbg=default
+
+highlight Directory cterm=none ctermfg=blue ctermbg=none
+highlight Socket cterm=none ctermfg=green ctermbg=none
+highlight Executable cterm=none ctermfg=red ctermbg=none
+highlight Fifo cterm=none ctermfg=magenta ctermbg=none
+highlight Link cterm=none ctermfg=cyan ctermbg=none
+highlight BrokenLink cterm=bold ctermfg=cyan ctermbg=none
+highlight Device cterm=none ctermfg=21 ctermbg=none
+
+" vim: ft=vim

@@ -1,0 +1,19 @@
+#!/bin/bash
+
+FZF_DEFAULT_OPTS="--height 100% --layout=reverse \
+ --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:23"
+
+if [[ "$1" == '-cd' ]]; then
+	shift
+	FZF_DEFAULT_OPTS+=" --preview 'tree {} -L 1'"
+	target="$(fd -td --hidden -E .git -E __pycache__ "$@" | fzf 2>/dev/tty)"
+	cmd='goto'
+else
+	FZF_DEFAULT_OPTS+=" --preview 'head -100 {}'"
+	target="$(rg --files --hidden -g "!.git/" -g "!*.pyc" "$@" | fzf 2>/dev/tty)"
+	cmd='edit'
+fi
+
+if [[ -n "${target}" ]]; then
+	echo "${cmd} \"${target}\""
+fi

@@ -46,7 +46,6 @@ let $LS_COLORS = "di=34:ln=36:so=32:pi=35:ex=31"
 " Marks
 " ------------------------------------------------------------------------------
 
-mark a ~/.dotfiles/
 mark d ~/Downloads/
 mark m ~/Music/
 
@@ -80,6 +79,7 @@ command! fzfd :execute term('vifm-fzf -cd %a')
 " ------------------------------------------------------------------------------
 
 nnoremap ~ :cd<cr>
+nnoremap '. :cd ~/.dotfiles<cr>
 
 nnoremap f :ff<cr>
 nnoremap <c-f> :fzf<cr>

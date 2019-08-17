@@ -102,43 +102,41 @@ zle -N zle-keymap-select
 # PROMPT
 # ----------------------------------------------------------------------------
 
-autoload -U colors
+autoload -Uz colors vcs_info
 colors
+
+zstyle ':vcs_info:*' enable git
+zstyle ':vcs_info:git*' formats "%F{21}%s:%f%b"
 
 setopt prompt_subst
 
-_prompt_meta() {
-	local meta=()
-	local branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
-	if [[ -n "$VIRTUAL_ENV" ]]; then
-		meta+=("%F{21}py:%f$(basename "$VIRTUAL_ENV")")
+_prompt_info() {
+	local info=()
+	if [[ -n "${VIRTUAL_ENV}" ]]; then
+		info+=("[%F{21}py:%f$(basename "${VIRTUAL_ENV}")]")
 	fi
-	if [[ -n "$branch" ]]; then
-		meta+=("%F{21}git:%f$branch")
+	vcs_info
+	local vcs="${vcs_info_msg_0_}"
+	if [[ -n "${vcs}" ]]; then
+		info+=("[${vcs}]")
 	fi
-	if (( ${#meta[@]} > 0 )); then
-		echo -n "[ ${meta[*]} ] "
+	if (( ${#info[@]} > 0 )); then
+		echo -n "${info[*]} "
 	fi
 }
 
-_prompt() {
-	local cwd
+_prompt_cwd() {
 	case $PROMPT_TRIMDIR in
-		0) cwd="%3~" ;;
-		1) cwd="%~" ;;
+		0) echo -n "%3~" ;;
+		1) echo -n "%~" ;;
 	esac
-	local user="%n@%m%F{21},%f "
-	local meta="$(_prompt_meta)"
-	eval echo -n "${PROMPT_STYLES[$PROMPT_STYLE+1]}"
 }
 
-PROMPT_STYLES=('${meta}${cwd}' '${meta}${user}${cwd}')
-PROMPT_STYLE=0
 PROMPT_TRIMDIR=0
 
 PROMPT=
 PROMPT+='%B%F{red}%(?..%? )%f%(1j.%jj .)'
-PROMPT+='$(_prompt) $%b '
+PROMPT+='$(_prompt_info)$(_prompt_cwd) $%b '
 
 # FUNCTIONS
 # ----------------------------------------------------------------------------
@@ -271,12 +269,6 @@ trim-prompt-cwd() {
 }
 zle -N trim-prompt-cwd
 
-change-prompt-style() {
-	PROMPT_STYLE=$(( (PROMPT_STYLE+1) % ${#PROMPT_STYLES[@]} ))
-	zle reset-prompt
-}
-zle -N change-prompt-style
-
 # delete Nth command line argument
 delete-argument() {
 	local words=(${(z)BUFFER})
@@ -351,8 +343,6 @@ bindkey -M vicmd '^s' toggle-sudo
 
 bindkey '\et' trim-prompt-cwd
 bindkey -M vicmd '\et' trim-prompt-cwd
-bindkey '\ey' change-prompt-style
-bindkey -M vicmd '\ey' change-prompt-style
 
 bindkey "^M" accept-line-timestamp
 

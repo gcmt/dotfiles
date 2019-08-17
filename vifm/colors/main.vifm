@@ -2,22 +2,22 @@
 highlight clear
 
 highlight Win cterm=none ctermfg=18 ctermbg=none
+highlight OtherWin cterm=italic ctermfg=none ctermbg=none
 highlight StatusLine cterm=none ctermfg=21 ctermbg=24
 highlight CmdLine cterm=none ctermfg=18 ctermbg=none
 highlight TopLine cterm=bold ctermfg=21 ctermbg=none
 highlight TopLineSel cterm=bold ctermfg=magenta ctermbg=none
 highlight Selected cterm=none ctermfg=none ctermbg=26
 highlight CurrLine cterm=none ctermfg=none ctermbg=24
-highlight Border cterm=none ctermfg=21 ctermbg=none
+highlight Border cterm=none ctermfg=24 ctermbg=none
 highlight ErrorMsg cterm=none ctermfg=red ctermbg=none
-highlight TabLine cterm=none ctermfg=white ctermbg=blue
-highlight TabLineSel cterm=bold ctermfg=default ctermbg=red
+highlight TabLine cterm=none ctermfg=21 ctermbg=23
+highlight TabLineSel cterm=bold ctermfg=18 ctermbg=19
 highlight WildMenu cterm=none ctermfg=18 ctermbg=23
-" highlight JobLine cterm=bold,reverse ctermfg=black ctermbg=white
-" highlight SuggestBox cterm=bold ctermfg=default ctermbg=default
-" highlight CmpMismatch cterm=bold ctermfg=white ctermbg=red
-" highlight AuxWin cterm=bold,underline,reverse,standout,italic ctermfg=default ctermbg=default
-" highlight OtherWin cterm=bold,underline,reverse,standout,italic ctermfg=default ctermbg=default
+highlight JobLine cterm=reverse ctermfg=18 ctermbg=default
+highlight SuggestBox cterm=none ctermfg=default ctermbg=default
+highlight CmpMismatch cterm=none ctermfg=19 ctermbg=red
+highlight AuxWin cterm=none ctermfg=none ctermbg=none
 
 highlight Directory cterm=none ctermfg=blue ctermbg=none
 highlight Socket cterm=none ctermfg=green ctermbg=none

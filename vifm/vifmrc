@@ -4,47 +4,42 @@
 
 set syscalls
 set trash
-
+set vimhelp
 set history=100
 set undolevels=100
-set nofollowlinks
+set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,phistory,fhistory,dirstack,registers,bookmarks,bmarks
 
+set nofollowlinks
 set dotfiles
+set dotdirs
 set sortnumbers
 set timefmt=%m/%d\ %H:%M
+set dirsize=nitems
+set dotdirs=rootparent
+set scrolloff=4
+set fillchars=vborder:┃
+set tuioptions="p"
+set statusline="  %A  %u:%g  %5E  %d%=%D "
+set rulerformat="%2l-%S%[ (+%x)%] "
+set timefmt="%m/%d/%y %H:%M"
+colorscheme main
 
-set vimhelp
 set fastrun
-
 set wildmenu
 set wildstyle=popup
 set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
 
-set ignorecase
-set smartcase
-
 set nohlsearch
 set incsearch
-
-set scrolloff=4
-
-colorscheme main
-
-set statusline="  %A %10u:%-7g %15E %20d%="
-
-set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,
-	\phistory,fhistory,dirstack,registers,bookmarks,bmarks
+set smartcase
 
 set grepprg='rg -S --vimgrep %i %a %s'
-
-view
 
 let $VIFM_ = 1
 
 " Marks
 " ------------------------------------------------------------------------------
 
-mark h ~/
 mark a ~/.dotfiles/
 mark d ~/Downloads/
 mark m ~/Music/
@@ -54,29 +49,34 @@ nnoremap m, :marks<cr>
 " Commands
 " ------------------------------------------------------------------------------
 
-command! df df -h %m 2>/dev/null
-command! diff vim -d %f %F
-command! run !! ./%f %a
-command! mcd :mkdir %a | cd %a
-command! vimg vim "+Grep %a"
 command! reload :write | restart
+
+command! run !! ./%f %a
+
+command! diff vim -d %f %F
+command! vimg vim "+Grep %a"
+
+command! df df -h %S 2>/dev/null
 command! ncdu ncdu %d
+
+command! mcd :mkdir %a | cd %a
+command! link ln -s %d/%f %D
 
 let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')
 
-command! fzf :set noquickview | :execute system('vifm-fzf %a') . '%IU' | redraw
-command! fzfd :set noquickview | :execute system('vifm-fzf -cd %a') . '%IU' | redraw
+command! fzf :execute term('vifm-fzf %a')
+command! fzfd :execute term('vifm-fzf -cd %a')
 
 " Mappings
 " ------------------------------------------------------------------------------
+
+nnoremap ~ :cd<cr>
 
 nnoremap <c-f> :fzf<cr>
 nnoremap <c-d> :fzfd<cr>
 
 nnoremap gb :file &<cr>l
-
-nnoremap a :set dotfiles!<cr>
 
 nnoremap s :shell<cr>
 
@@ -112,6 +112,12 @@ filextype ?*/
 	\ nemo %f &,
 
 fileview ?*/ tree %c -L 1
+
+" Text files
+" --------------------------------------
+
+fileviewer *.html
+	\ w3m %c
 
 " Pdf
 " --------------------------------------

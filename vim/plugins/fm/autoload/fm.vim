@@ -77,8 +77,6 @@ func! s:run(cmd, external, exit_cb_ctx)
 			\ tnoremap <silent> <buffer> <c-w>q <c-w>:bwipe!<cr> |
 			\ au BufWinLeave <buffer=abuf> ++once set laststatus=2
 
-
-
 	let job_opts = {
 		\ 'exit_cb': funcref('s:exit_cb', [], a:exit_cb_ctx),
 		\ 'term_finish': 'close',
@@ -86,6 +84,7 @@ func! s:run(cmd, external, exit_cb_ctx)
 	\ }
 
 	bot call term_start(['sh', '-c', join(a:cmd)], job_opts)
+
 endf
 
 

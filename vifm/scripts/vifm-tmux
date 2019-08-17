@@ -1,0 +1,6 @@
+#!/bin/bash
+
+unset VIFM_
+tmux new-session -d -s "scratch" 2>/dev/null
+tmux new-window -t "scratch" -c "$PWD"
+exec i3-t -move "scratch"

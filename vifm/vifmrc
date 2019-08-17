@@ -61,6 +61,7 @@ command! ncdu ncdu %d
 
 command! mcd :mkdir %a | cd %a
 command! link ln -s %d/%f %D
+command! tshell vifm-tmux %i
 
 let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')
@@ -79,8 +80,7 @@ nnoremap <c-d> :fzfd<cr>
 nnoremap gb :file &<cr>l
 
 nnoremap s :shell<cr>
-
-nnoremap S :sort<cr>
+nnoremap S :tshell<cr>
 
 nnoremap w :view<cr>
 vnoremap w :view<cr>gv

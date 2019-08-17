@@ -947,8 +947,7 @@
 " Fzf
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> <bs> :exec 'Lines'<cr>
-	nnoremap <silent> <enter> :exec 'Files'<cr>
+	nnoremap <silent> <c-f> :Files!<cr>
 
 " Objects
 " ----------------------------------------------------------------------------

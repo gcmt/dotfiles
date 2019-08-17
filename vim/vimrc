@@ -734,6 +734,8 @@
 	aug _misc
 		au!
 
+		au BufEnter * if isdirectory(expand('%:p')) | exec 'Explorer!' expand('%:p') | end
+
 		au BufWritePost *vimrc source $MYVIMRC
 		au BufWritePost */vim/colors/*.vim nested exec 'colorscheme' g:colors_name
 		au BufWritePost */*Xresources.d/* call <sid>set_bg(&background)

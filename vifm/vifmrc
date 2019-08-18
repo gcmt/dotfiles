@@ -11,7 +11,6 @@ set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,phistory,fhistory,dir
 
 set nofollowlinks
 set dotfiles
-set dotdirs
 set sortnumbers
 set timefmt=%m/%d\ %H:%M
 set dirsize=nitems

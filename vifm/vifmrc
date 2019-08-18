@@ -71,7 +71,8 @@ command! tshell vifm-tmux %i
 let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')
 
-command! ff :execute term('vifm-fzf-filter %"d:~')
+command! fa :execute term('vifm-fzf-filter')
+command! ff :execute term('vifm-fzf-filter %f')
 command! fzf :execute term('vifm-fzf %a')
 command! fzfd :execute term('vifm-fzf -cd %a')
 
@@ -81,7 +82,8 @@ command! fzfd :execute term('vifm-fzf -cd %a')
 nnoremap ~ :cd<cr>
 nnoremap '. :cd ~/.dotfiles<cr>
 
-nnoremap f :ff<cr>
+nnoremap f :%ff<cr>
+nnoremap F :fa<cr>
 nnoremap <c-f> :fzf<cr>
 nnoremap <c-d> :fzfd<cr>
 

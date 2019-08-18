@@ -34,7 +34,7 @@ set smartcase
 
 set grepprg='rg -S --vimgrep %i %a %s'
 
-let $VIFM_ = 1
+let $VIFM_SERVER_NAME = v:servername
 
 let $FZF_DEFAULT_OPTS = "--bind 'ctrl-l:accept'" .
 	\ " --height 100% --layout=reverse" .
@@ -70,10 +70,10 @@ command! tshell vifm-tmux %i
 let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')
 
-command! fa :execute term('vifm-fzf-filter')
-command! ff :execute term('vifm-fzf-filter %f')
-command! fzf :execute term('vifm-fzf %a')
-command! fzfd :execute term('vifm-fzf -cd %a')
+command! fa vifm-fzf-filter
+command! ff vifm-fzf-filter %f
+command! fzf vifm-fzf %a
+command! fzfd vifm-fzf -cd %a
 
 " Mappings
 " ------------------------------------------------------------------------------

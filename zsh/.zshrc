@@ -76,7 +76,7 @@ stty -ixon
 autoload -U add-zsh-hook
 
 set-title() {
-	if [[ -n "$TMUX" || -n "$RANGER_LEVEL" || -n "$VIFM_" ]]; then
+	if [[ -n "$TMUX" || -n "$RANGER_LEVEL" || -n "$VIFM_SERVER_NAME" ]]; then
 		return
 	fi
 	print -n "\e]2;$PWD - Terminal\a"

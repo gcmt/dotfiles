@@ -15,5 +15,5 @@ fi
 
 target="$(LC_COLLATE=C ls -A1p $d --color=always --group-directories-first "$@" | fzf 2>/dev/tty)"
 if [[ -n "${target}" ]]; then
-	echo "goto \"${target}\" | norm! l"
+	vifm --server-name "$VIFM_SERVER_NAME" --remote +"goto \"${target}\""  +"norm! l"
 fi

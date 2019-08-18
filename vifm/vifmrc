@@ -71,7 +71,7 @@ let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')
 
 command! fa vifm-fzf-filter
-command! ff vifm-fzf-filter %f
+command! ff :%%select | !vifm-fzf-filter %%f
 command! fzf vifm-fzf %a
 command! fzfd vifm-fzf -cd %a
 
@@ -81,7 +81,7 @@ command! fzfd vifm-fzf -cd %a
 nnoremap ~ :cd<cr>
 nnoremap '. :cd ~/.dotfiles<cr>
 
-nnoremap f :%ff<cr>
+nnoremap f :ff<cr>
 nnoremap F :fa<cr>
 nnoremap <c-f> :fzf<cr>
 nnoremap <c-d> :fzfd<cr>

@@ -158,50 +158,57 @@ nnoremap ,C :write | edit $VIFM/colors/main.vifm | restart<cr>
 " --------------------------------------
 
 filextype ?*/
-	\ {View in nemo}
+	\ {Open in nemo}
 	\ nemo %f &,
 
-fileview ?*/ tree %c -L 1
+fileview ?*/
+	\ tree %c -L 1
 
-" Text files
+" Text
 " --------------------------------------
 
 fileviewer *.html
 	\ w3m %c
 
+fileviewer *.json
+	\ jq . %c
+
 " Pdf
 " --------------------------------------
 
 filextype *.pdf
-	\ {View in qpdfview}
+	\ {Open in qpdfview}
 	\ qpdfview --quiet %c 2>/dev/null &
-
-fileviewer *.pdf
-	\ pdftotext -nopgbrk %c -
 
 " Media
 " --------------------------------------
 
-filextype *.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus
-	\ {Play using mpv player gui}
-	\ play %f &,
-
-filextype *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
-		\*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,*.as[fx]
-	\ {View using mpv player}
-	\ play %f &,
-
-fileviewer *.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
-		\*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,*.as[fx],
+filextype
 		\*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus
-	\ ffprobe -pretty -hide_banner %c 2>&1
+	\ {Play with mpv player}
+	\ play --script-opts=osc-visibility=always %f &,
+
+filextype
+		\*.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
+		\*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,*.as[fx]
+	\ {Play with mpv player}
+	\ play %f &,
 
 filextype *.jpg,*.jpeg,*.png,*.gif
 	 \ {View in feh}
-	 \ feh %c &
+	 \ feh --start-at %d/%c %f &,
+	 \ {Open in sxiv}
+	 \ sxiv %f &,
 
-fileviewer *.jpg,*.jpeg,*.png,*.gif
-	 \ identify -ping %c
+fileviewer
+		\*.avi,*.mp4,*.wmv,*.dat,*.3gp,*.ogv,*.mkv,*.mpg,*.mpeg,*.vob,
+		\*.fl[icv],*.m2v,*.mov,*.webm,*.ts,*.mts,*.m4v,*.r[am],*.qt,*.divx,*.as[fx],
+		\*.wav,*.mp3,*.flac,*.m4a,*.wma,*.ape,*.ac3,*.og[agx],*.spx,*.opus
+	\ mediainfo %c
+
+fileviewer
+		\*.jpg,*.jpeg,*.png,*.gif
+	\ mediainfo %c
 
 " Archives
 " --------------------------------------
@@ -210,7 +217,7 @@ filetype *.7z,*.bz2,*.cab,*.cpio,*.deb,*.gz,*.msi,*.pkg,*.rar,*.tar,*.tgz,*.xz,*
 	\ als %f | less
 
 fileviewer *.7z,*.bz2,*.cab,*.cpio,*.deb,*.gz,*.msi,*.pkg,*.rar,*.tar,*.tgz,*.xz,*.zip
-	\ als %f 2>/dev/null | head -100
+	\ als %f 2>/dev/null
 
 " Other
 " --------------------------------------
@@ -238,8 +245,8 @@ filetype *.asc
 " Fallback
 " --------------------------------------
 
-filetype * xdg-open %c &
+" filetype * xdg-open %c &
 
-fileview * head -100 %c
+fileview * xdg-mime query filetype %c | grep -q ^text && head -1000 %c
 
 " vim: ft=vim

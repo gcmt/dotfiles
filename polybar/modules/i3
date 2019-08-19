@@ -42,26 +42,29 @@ def colored(s, fg=None, bg=None):
     return ret
 
 
+MODE = None
+
 def draw(sub, conn, event, data, all=False):
 
-    mode = None
+    global MODE
     if event == Event.MODE:
-        mode = data["change"]
+        MODE = data["change"]
 
     out = ""
     hidden = []
-    mode = mode != "default" and mode
+    MODE = MODE != "default" and MODE
     menu_cmd = "i3-choose-window -no-inputbar -tiny -mouse"
 
     # disable clicks when a mode is active
     def _clickable(string, **kwargs):
-        if not mode:
+        if not MODE:
             return clickable(string, **kwargs)
         return string
 
     tree = conn.get_tree()
     active = tree.current_workspace()
     workspaces = list(tree.workspaces())
+    focused = tree.focused_window()
 
     # move the scratchpad to the very end
     for i, w in enumerate(workspaces):
@@ -104,11 +107,17 @@ def draw(sub, conn, event, data, all=False):
 
     out += indicator
 
-    if mode:
-        out += colored(padded(mode), **Colors.mode)
+    if MODE:
+        out += colored(padded(MODE), **Colors.mode)
 
     out = _clickable(out, btn=2, cmd=f"{menu_cmd}")
     out += _clickable("     ", btn=1, cmd="i3-new-workspace")
+
+    if focused:
+        map_ = {'splith': 'split |', 'splitv': 'split —', 'stacked': 'stack', 'tabbed': 'tabs'}
+        orientation = map_.get(focused.parent.layout, "")
+        out += colored(f"{padded(orientation)}", **Colors.dim)
+
     print(out)
 
 
@@ -143,7 +152,8 @@ def main(conn):
     thread = threading.Thread(target=listen_fifo, args=(conn,), daemon=True)
     thread.start()
 
-    conn.subscribe(Event.WORKSPACE | Event.WINDOW | Event.MODE, draw)
+    mask = Event.WORKSPACE | Event.WINDOW | Event.MODE | Event.BINDING
+    conn.subscribe(mask, draw)
     conn.listen()
 
 if __name__ == "__main__":

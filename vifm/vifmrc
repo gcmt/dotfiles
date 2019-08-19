@@ -17,8 +17,9 @@ set dirsize=nitems
 set dotdirs=rootparent
 set scrolloff=4
 set fillchars=vborder:┃
+set tabstop=3
 set tuioptions="p"
-set statusline="  %A  %u:%g  %5E  %d%=%D "
+set statusline="  %A  %u:%g  %5E  %d  %[→ %T%]%=%D "
 set rulerformat="%2l-%S%[ (+%x)%] "
 set timefmt="%m/%d/%y %H:%M"
 colorscheme main
@@ -56,53 +57,95 @@ nnoremap m, :marks<cr>
 command! reload :write | restart
 
 command! run !! ./%f %a
-
 command! diff vim -d %f %F
-command! vimg vim "+Grep %a"
-
 command! df df -h %S 2>/dev/null
 command! ncdu ncdu %d
-
-command! mcd :mkdir %a | cd %a
+command! tar tar cf %c.tar %c
+command! tgz tar czf %c.tar.gz %c
+command! mcd :mkdir! %a | cd %a
 command! link ln -s %d/%f %D
-command! tshell vifm-tmux %i
+
 
 let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')
 
-command! fa vifm-fzf-filter
-command! ff :%%select | !vifm-fzf-filter %%f
-command! fzf vifm-fzf %a
-command! fzfd vifm-fzf -cd %a
+" The %n macro make sure env variables set here are visible in child processes
+" when using vifm inside tmux
+command! fa vifm-fzf-filter %%n
+command! ff :%%select | !vifm-fzf-filter %%f %%n
+command! fzf vifm-fzf %%a %%n
+command! fzfd vifm-fzf -cd %%a %%n
+
+if $TMUX == ''
+	" command! tmux vifm-tmux %i
+	command! tmux tmux neww -t "scratch" -c "$PWD" && exec i3-t -move "scratch" &
+endif
+
+" Tabs
+" ------------------------------------------------------------------------------
+
+command! tabfmt :execute 'tabname ' . expand('%%d:' . expand('%a'))
+
+autocmd DirEnter ** :tabfmt ~
+nnoremap <c-t> :tabnew | tabfmt ~<cr>
 
 " Mappings
 " ------------------------------------------------------------------------------
 
 nnoremap ~ :cd<cr>
 nnoremap '. :cd ~/.dotfiles<cr>
+nnoremap cd :cd<space>
 
 nnoremap f :ff<cr>
 nnoremap F :fa<cr>
 nnoremap <c-f> :fzf<cr>
 nnoremap <c-d> :fzfd<cr>
 
-nnoremap gb :file &<cr>l
+nnoremap o :file <tab>
+nnoremap O :file<cr>
 
-nnoremap s :shell<cr>
-nnoremap S :tshell<cr>
+nnoremap S :sort<cr>
+nnoremap ss :set sort=+name<cr>
+nnoremap sS :set sort=-name<cr>
+nnoremap sn :set sort=+name<cr>
+nnoremap sN :set sort=-name<cr>
+nnoremap st :set sort=+type<cr>
+nnoremap sT :set sort=-type<cr>
+nnoremap sz :set sort=+size<cr>
+nnoremap sZ :set sort=-size<cr>
+nnoremap sa :set sort=+atime<cr>
+nnoremap sA :set sort=-atime<cr>
+nnoremap sc :set sort=+ctime<cr>
+nnoremap sC :set sort=-ctime<cr>
+nnoremap sm :set sort=+mtime<cr>
+nnoremap sM :set sort=-mtime<cr>
 
-nnoremap w :view<cr>
-vnoremap w :view<cr>gv
+nnoremap <silent> w :if layoutis('only') | vsplit | view! | else | view | endif<cr>
+vnoremap w :norm w<cr>gv
+nnoremap W :set wrap!<cr>
 
 nnoremap Q :quit<cr>
 nnoremap qq :quit<cr>
+nnoremap <c-w>q :quit<cr>
 
 nnoremap J 3j
 nnoremap K 3k
+vnoremap J 3j
+vnoremap K 3k
+
+nnoremap t tj
+nnoremap T tk
+
+nnoremap vv :%select<cr>
 
 nnoremap I cw<c-a>
 nnoremap cc cw<c-u>
 nnoremap A cw
+
+nnoremap < 3<c-w><
+nnoremap > 3<c-w>>
+
+nnoremap <silent> L :if &previewprg == '' | set previewprg='git log --color -- %c 2>&1' | view! | else | set previewprg='' | view | endif<cr>
 
 nnoremap yd :!echo %d | xclip %i && notify-send "Copied to clipboard" "%d"<cr>
 nnoremap yp :!echo %c:p | xclip %i && notify-send "Copied to clipboard" "%c:p"<cr>

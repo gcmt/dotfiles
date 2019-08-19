@@ -2,7 +2,7 @@
 highlight clear
 
 highlight Win cterm=none ctermfg=18 ctermbg=none
-highlight OtherWin cterm=italic ctermfg=none ctermbg=none
+highlight OtherWin cterm=none ctermfg=none ctermbg=none
 highlight StatusLine cterm=none ctermfg=21 ctermbg=24
 highlight CmdLine cterm=none ctermfg=18 ctermbg=none
 highlight TopLine cterm=bold ctermfg=21 ctermbg=none

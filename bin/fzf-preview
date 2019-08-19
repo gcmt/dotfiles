@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [[ -d "$1" ]]; then
+	tree "$1" -L 1
+	exit
+fi
+
+case "${1#*.}" in
+	avi|mp4|wmv|mkv|mpg|mpeg|webm|m4v|flv|wav|mp3|flac|m4a|wma|mov)
+		mediainfo "$1"
+		;;
+	json)
+		jq . "$1"
+		;;
+	*)
+		if [[ "$(xdg-mime query filetype "$1")" =~ ^text/ ]]; then
+			head -100 "$1"
+		fi
+		;;
+esac

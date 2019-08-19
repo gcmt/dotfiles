@@ -38,7 +38,7 @@ set grepprg='rg -S --vimgrep %i %a %s'
 let $VIFM_SERVER_NAME = v:servername
 
 let $FZF_DEFAULT_OPTS = "--bind 'ctrl-l:accept'" .
-	\ " --height 100% --layout=reverse" .
+	\ " --height 100% --layout=reverse --preview 'fzf-preview {}'" .
 	\ " --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:23"
 
 let $LS_COLORS = "di=34:ln=36:so=32:pi=35:ex=31"
@@ -65,7 +65,6 @@ command! tgz tar czf %c.tar.gz %c
 command! mcd :mkdir! %a | cd %a
 command! link ln -s %d/%f %D
 
-
 let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')
 
@@ -77,7 +76,6 @@ command! fzf vifm-fzf %%a %%n
 command! fzfd vifm-fzf -cd %%a %%n
 
 if $TMUX == ''
-	" command! tmux vifm-tmux %i
 	command! tmux tmux neww -t "scratch" -c "$PWD" && exec i3-t -move "scratch" &
 endif
 

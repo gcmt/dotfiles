@@ -4,11 +4,9 @@ clear
 
 if [[ "$1" == '-cd' ]]; then
 	shift
-	FZF_DEFAULT_OPTS+=" --preview 'tree {} -L 1'"
 	target="$(fd -td --hidden -E .git -E __pycache__ "$@" | fzf 2>/dev/tty)"
 	cmd='goto'
 else
-	FZF_DEFAULT_OPTS+=" --preview 'head -100 {}'"
 	target="$(rg --files --hidden -g "!.git/" -g "!*.pyc" "$@" | fzf 2>/dev/tty)"
 	cmd='edit'
 fi

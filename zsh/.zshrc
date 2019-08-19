@@ -88,6 +88,8 @@ add-zsh-hook precmd set-title
 
 bindkey -v
 
+zle_highlight=(default:bold)
+
 # use different colors for each mode
 zle-keymap-select() {
 	case $KEYMAP in
@@ -95,9 +97,12 @@ zle-keymap-select() {
 		vicmd) zle_highlight=(default:bold,fg=22) ;;
 	esac
 }
-
-zle_highlight=(default:bold)
 zle -N zle-keymap-select
+
+zle-line-init() {
+  zle -K viins
+}
+zle -N zle-line-init
 
 # PROMPT
 # ----------------------------------------------------------------------------

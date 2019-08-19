@@ -2,6 +2,9 @@
 
 clear
 
+FZF_DEFAULT_OPTS+=" --color prompt:19,info:19,pointer:24,info:22"
+FZF_DEFAULT_OPTS+=" --bind 'tab:down,shift-tab:up'"
+
 if [[ "$1" == '-cd' ]]; then
 	shift
 	target="$(fd -td --hidden -E .git -E __pycache__ "$@" | fzf 2>/dev/tty)"

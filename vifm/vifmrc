@@ -72,8 +72,8 @@ command! root :execute system('vifm-root')
 " when using vifm inside tmux
 command! fa vifm-fzf-filter %n
 command! ff :%%select | !vifm-fzf-filter %%f %%n
-command! fzf vifm-fzf %%a %%n
-command! fzfd vifm-fzf -cd %%a %%n
+command! fzf vifm-fzf %a %n
+command! fzfd vifm-fzf -cd %a %n
 
 if $TMUX == ''
 	command! tmux tmux neww -t "scratch" -c "$PWD" && exec i3-t -move "scratch" &

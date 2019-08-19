@@ -70,7 +70,7 @@ command! root :execute system('vifm-root')
 
 " The %n macro make sure env variables set here are visible in child processes
 " when using vifm inside tmux
-command! fa vifm-fzf-filter %%n
+command! fa vifm-fzf-filter %n
 command! ff :%%select | !vifm-fzf-filter %%f %%n
 command! fzf vifm-fzf %%a %%n
 command! fzfd vifm-fzf -cd %%a %%n

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+clear
+
 if [[ "$1" == '-cd' ]]; then
 	shift
 	FZF_DEFAULT_OPTS+=" --preview 'tree {} -L 1'"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+clear
+
 cwd="${PWD/#$HOME/\~}"
 header="$(tput bold)$(tput setaf 5)${cwd}$(tput sgr0)"
 FZF_DEFAULT_OPTS+=" --header='${header}'"

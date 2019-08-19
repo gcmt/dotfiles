@@ -236,7 +236,7 @@ alias cp='cp -iv'
 alias mkdir='mkdir -pv'
 
 export LS_COLORS="di=34:ln=36:so=32:pi=35:ex=31"
-alias ls='ls --color=auto --group-directories-first --quoting-style=literal'
+alias ls='LC_COLLATE=C ls --color=auto --group-directories-first --quoting-style=literal'
 alias la='ls -A'
 alias ll='ls -lh'
 alias lla='ls -lhA'

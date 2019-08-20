@@ -102,10 +102,10 @@ nnoremap ~ :cd<cr>
 nnoremap '. :cd ~/.dotfiles<cr>
 nnoremap cd :cd<space>
 
+nnoremap <c-s> :shell<cr>
+
 nnoremap <c-a> :cd -<cr>
 nnoremap <c-x> <nop>
-
-nnoremap R :last 50<cr>
 
 nnoremap f :ff<cr>
 nnoremap F :fa<cr>
@@ -134,6 +134,10 @@ nnoremap sM :set sort=-mtime<cr>
 nnoremap <silent> w :if layoutis('only') | vsplit | view! | else | view | endif<cr>
 vnoremap w :norm w<cr>gv
 nnoremap W :set wrap!<cr>
+
+nnoremap R :last 50<cr>
+
+nnoremap H :root<cr>
 
 nnoremap <silent> L :if &previewprg == '' | logview | else | set previewprg='' | view | endif<cr>
 nnoremap <silent> M :if &viewcolumns == '' | details | else | set viewcolumns='' | endif<cr>

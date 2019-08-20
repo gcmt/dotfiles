@@ -60,10 +60,11 @@ command! run !! ./%f %a
 command! diff vim -d %f %F
 command! df df -h %S 2>/dev/null
 command! ncdu ncdu %d
-command! tar tar cf %c.tar %c
-command! tgz tar czf %c.tar.gz %c
 command! mcd :mkdir! %a | cd %a
 command! link ln -s %d/%f %D
+
+command! pack apack %a %f &
+command! unpack aunpack %a %f 2>/dev/null &
 
 let $VIFM_ROOT_MARKERS = ".git"
 command! root :execute system('vifm-root')

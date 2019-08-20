@@ -95,6 +95,9 @@ nnoremap ~ :cd<cr>
 nnoremap '. :cd ~/.dotfiles<cr>
 nnoremap cd :cd<space>
 
+nnoremap <c-a> :cd -<cr>
+nnoremap <c-x> <nop>
+
 nnoremap f :ff<cr>
 nnoremap F :fa<cr>
 nnoremap <c-f> :fzf<cr>
@@ -123,8 +126,9 @@ nnoremap <silent> w :if layoutis('only') | vsplit | view! | else | view | endif<
 vnoremap w :norm w<cr>gv
 nnoremap W :set wrap!<cr>
 
+nnoremap <silent> L :if &previewprg == '' | set previewprg='git log --color -- %c 2>&1' | view! | else | set previewprg='' | view | endif<cr>
+
 nnoremap Q :quit<cr>
-nnoremap qq :quit<cr>
 nnoremap <c-w>q :quit<cr>
 
 nnoremap J 3j
@@ -143,8 +147,6 @@ nnoremap A cw
 
 nnoremap < 3<c-w><
 nnoremap > 3<c-w>>
-
-nnoremap <silent> L :if &previewprg == '' | set previewprg='git log --color -- %c 2>&1' | view! | else | set previewprg='' | view | endif<cr>
 
 nnoremap yd :!echo %d | xclip %i && notify-send "Copied to clipboard" "%d"<cr>
 nnoremap yp :!echo %c:p | xclip %i && notify-send "Copied to clipboard" "%c:p"<cr>

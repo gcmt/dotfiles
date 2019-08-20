@@ -1,18 +1,16 @@
 #!/bin/bash
 
-markers=("$@")
+markers="$(IFS=$'\n'; echo "$*")"
 
 find_root() {
 	if [[ "$1" == '/' || -z "$1" ]]; then
 		return 1
 	fi
-	cd "$1" || exit 1
-	for marker in "${markers[@]}"; do
-		if ls -Ap | grep -Fxq -- "$marker"; then
-			vifm --server-name "$VIFM_SERVER_NAME" --remote +"cd \"$1\""
-			return $?
-		fi
-	done
+	cd "$1" || return 1
+	if ls -Ap | grep -Fxq -f <(echo "$markers"); then
+		vifm --server-name "$VIFM_SERVER_NAME" --remote +"cd \"$1\""
+		return $?
+	fi
 	find_root "$(dirname "$1")"
 }
 

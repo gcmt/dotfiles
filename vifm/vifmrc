@@ -62,6 +62,7 @@ command! df df -h %S 2>/dev/null
 command! ncdu ncdu %d
 command! mcd :mkdir! %a | cd %a
 command! link ln -s %d/%f %D
+command! last :set sort=-mtime | !rg --files --hidden -g '!.git/*' -0 | xargs -0 ls -tr | tail -%a | tac %%U
 
 command! pack apack %a %f &
 command! unpack aunpack %a %f 2>/dev/null &
@@ -97,6 +98,8 @@ nnoremap cd :cd<space>
 
 nnoremap <c-a> :cd -<cr>
 nnoremap <c-x> <nop>
+
+nnoremap R :last 50<cr>
 
 nnoremap f :ff<cr>
 nnoremap F :fa<cr>

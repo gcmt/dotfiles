@@ -24,7 +24,7 @@ highlight Socket cterm=none ctermfg=green ctermbg=none
 highlight Executable cterm=none ctermfg=red ctermbg=none
 highlight Fifo cterm=none ctermfg=magenta ctermbg=none
 highlight Link cterm=none ctermfg=cyan ctermbg=none
-highlight BrokenLink cterm=bold ctermfg=cyan ctermbg=none
+highlight BrokenLink cterm=none ctermfg=22 ctermbg=none
 highlight Device cterm=none ctermfg=21 ctermbg=none
 
 " vim: ft=vim

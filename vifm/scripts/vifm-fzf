@@ -7,13 +7,13 @@ FZF_DEFAULT_OPTS+=" --bind 'tab:down,shift-tab:up'"
 
 if [[ "$1" == '-cd' ]]; then
 	shift
-	cmd='goto'
 	target="$(fd -td --hidden -E ".git/" "$@" | fzf 2>/dev/tty)"
+	cmd="cd \"${target}\""
 else
-	cmd='edit'
 	target="$(rg --files --hidden -g "!.git/" "$@" | fzf 2>/dev/tty)"
+	cmd="edit \"${target}\""
 fi
 
 if [[ -n "${target}" ]]; then
-	vifm --server-name "$VIFM_SERVER_NAME" --remote +"${cmd} \"${target}\""
+	vifm --server-name "$VIFM_SERVER_NAME" --remote +"${cmd}"
 fi

@@ -67,6 +67,9 @@ command! last :set sort=-mtime | !rg --files --hidden -g '!.git/*' -0 | xargs -0
 command! details :set viewcolumns=-{name}..,-10{size},-18{mtime},10{uname},-10{gname},12{perms}
 command! details! :set viewcolumns=
 
+command! logview :set previewprg='git log -- %%c 2>&1' | view!
+command! logview! :set previewprg=
+
 command! pack apack %a %f &
 command! unpack aunpack %a %f 2>/dev/null &
 
@@ -132,7 +135,7 @@ nnoremap <silent> w :if layoutis('only') | vsplit | view! | else | view | endif<
 vnoremap w :norm w<cr>gv
 nnoremap W :set wrap!<cr>
 
-nnoremap <silent> L :if &previewprg == '' | set previewprg='git log --color -- %c 2>&1' | view! | else | set previewprg='' | view | endif<cr>
+nnoremap <silent> L :if &previewprg == '' | logview | else | set previewprg='' | view | endif<cr>
 nnoremap <silent> M :if &viewcolumns == '' | details | else | set viewcolumns='' | endif<cr>
 
 nnoremap Q :quit<cr>

@@ -64,6 +64,9 @@ command! mcd :mkdir! %a | cd %a
 command! link ln -s %d/%f %D
 command! last :set sort=-mtime | !rg --files --hidden -g '!.git/*' -0 | xargs -0 ls -tr | tail -%a | tac %%U
 
+command! details :set viewcolumns=-{name}..,-10{size},-18{mtime},10{uname},-10{gname},12{perms}
+command! details! :set viewcolumns=
+
 command! pack apack %a %f &
 command! unpack aunpack %a %f 2>/dev/null &
 
@@ -130,6 +133,7 @@ vnoremap w :norm w<cr>gv
 nnoremap W :set wrap!<cr>
 
 nnoremap <silent> L :if &previewprg == '' | set previewprg='git log --color -- %c 2>&1' | view! | else | set previewprg='' | view | endif<cr>
+nnoremap <silent> M :if &viewcolumns == '' | details | else | set viewcolumns='' | endif<cr>
 
 nnoremap Q :quit<cr>
 nnoremap <c-w>q :quit<cr>

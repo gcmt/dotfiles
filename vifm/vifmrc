@@ -21,7 +21,7 @@ set tabstop=3
 set tuioptions="p"
 set statusline="  %A  %u:%g  %5E  %d  %[→ %T%]%=%D "
 set rulerformat="%2l-%S%[ (+%x)%] "
-set timefmt="%m/%d/%y %H:%M"
+set timefmt="%Y-%m-%d %H:%M"
 colorscheme main
 
 set fastrun

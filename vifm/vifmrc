@@ -76,7 +76,7 @@ command! fzf vifm-fzf %a %n
 command! fzfd vifm-fzf -cd %a %n
 
 if $TMUX == ''
-	command! tmux tmux neww -t "scratch" -c "$PWD" && exec i3-t -move "scratch" &
+	command! tmux cd && tmux neww -t "scratch" -c "%d" && exec i3-t -move "scratch" &
 endif
 
 " Tabs

@@ -117,7 +117,7 @@ setopt prompt_subst
 
 _prompt_info() {
 	local info=()
-	if [[ -n "$VIFM_" ]]; then
+	if [[ -n "$VIFM_SERVER_NAME" ]]; then
 		info+=("[vifm]")
 	fi
 	if [[ -n "${VIRTUAL_ENV}" ]]; then

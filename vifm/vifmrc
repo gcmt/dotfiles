@@ -73,8 +73,7 @@ command! logview! :set previewprg=
 command! pack apack %a %f &
 command! unpack aunpack %a %f 2>/dev/null &
 
-let $VIFM_ROOT_MARKERS = ".git"
-command! root :execute system('vifm-root')
+command! root :!vifm-root .git/ &
 
 " The %n macro make sure env variables set here are visible in child processes
 " when using vifm inside tmux

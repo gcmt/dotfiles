@@ -7,11 +7,11 @@ FZF_DEFAULT_OPTS+=" --bind 'tab:down,shift-tab:up'"
 
 if [[ "$1" == '-cd' ]]; then
 	shift
-	target="$(fd -td --hidden -E .git -E __pycache__ "$@" | fzf 2>/dev/tty)"
 	cmd='goto'
+	target="$(fd -td --hidden -E ".git/" "$@" | fzf 2>/dev/tty)"
 else
-	target="$(rg --files --hidden -g "!.git/" -g "!*.pyc" "$@" | fzf 2>/dev/tty)"
 	cmd='edit'
+	target="$(rg --files --hidden -g "!.git/" "$@" | fzf 2>/dev/tty)"
 fi
 
 if [[ -n "${target}" ]]; then

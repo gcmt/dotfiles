@@ -2,38 +2,38 @@
 " Settings
 " ------------------------------------------------------------------------------
 
+colorscheme main
+
 set syscalls
 set trash
 set vimhelp
 set history=100
 set undolevels=100
 set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,phistory,fhistory,dirstack,registers,bookmarks,bmarks
-
-set nofollowlinks
+set followlinks
 set dotfiles
 set sortnumbers
-set timefmt=%m/%d\ %H:%M
-set dirsize=nitems
-set dotdirs=rootparent
 set scrolloff=4
-set fillchars=vborder:┃
+set fastrun
+set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
+set dirsize=nitems
 set tabstop=3
+set dotdirs=rootparent
 set tuioptions="p"
+set fillchars=vborder:┃
 set statusline="  %A  %u:%g  %5E  %d  %[→ %T%]%=%D "
 set rulerformat="%2l-%S%[ (+%x)%] "
 set timefmt="%Y-%m-%d %H:%M"
-colorscheme main
 
-set fastrun
 set wildmenu
 set wildstyle=popup
-set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
 
 set nohlsearch
 set incsearch
+set ignorecase
 set smartcase
 
-set grepprg='rg -S --vimgrep %i %a %s'
+set grepprg="rg -S --vimgrep %i %a %s"
 
 let $VIFM_SERVER_NAME = v:servername
 

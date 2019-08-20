@@ -97,10 +97,6 @@ if _should_install urxvt; then
 	link "$dotdir/urxvt" "$HOME/.urxvt"
 fi
 
-if _should_install alacritty; then
-	link "$dotdir/alacritty" "$XDG_CONFIG_HOME/alacritty"
-fi
-
 if _should_install vim; then
 	mkdir -p "$XDG_DATA_HOME/vim"
 	mkdir -p "$XDG_CACHE_HOME/vim/undo"

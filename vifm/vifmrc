@@ -35,7 +35,7 @@ set smartcase
 
 set grepprg="rg -S --vimgrep %i %a %s"
 
-let $VIFM_SERVER_NAME = v:servername
+let $VIFM_SERVER = v:servername
 
 let $FZF_DEFAULT_OPTS = "--bind 'ctrl-l:accept'" .
 	\ " --height 100% --layout=reverse --preview 'fzf-preview {}'" .

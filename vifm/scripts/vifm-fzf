@@ -15,5 +15,5 @@ else
 fi
 
 if [[ -n "${target}" ]]; then
-	vifm --server-name "$VIFM_SERVER_NAME" --remote +"${cmd}"
+	vifm --server-name "$VIFM_SERVER" --remote +"${cmd}"
 fi

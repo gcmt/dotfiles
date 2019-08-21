@@ -76,7 +76,7 @@ stty -ixon
 autoload -U add-zsh-hook
 
 set-title() {
-	if [[ -n "$TMUX" || -n "$RANGER_LEVEL" || -n "$VIFM_SERVER_NAME" ]]; then
+	if [[ -n "$TMUX" || -n "$RANGER_LEVEL" || -n "$VIFM_SERVER" ]]; then
 		return
 	fi
 	print -n "\e]2;$PWD - Terminal\a"
@@ -117,7 +117,7 @@ setopt prompt_subst
 
 _prompt_info() {
 	local info=()
-	if [[ -n "$VIFM_SERVER_NAME" ]]; then
+	if [[ -n "$VIFM_SERVER" ]]; then
 		info+=("[vifm]")
 	fi
 	if [[ -n "${VIRTUAL_ENV}" ]]; then

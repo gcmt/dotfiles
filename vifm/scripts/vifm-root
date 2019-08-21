@@ -8,7 +8,7 @@ find_root() {
 	fi
 	cd "$1" || return 1
 	if ls -Ap | grep -Fxq -f <(echo "$markers"); then
-		vifm --server-name "$VIFM_SERVER_NAME" --remote +"cd \"$1\""
+		vifm --server-name "$VIFM_SERVER" --remote +"cd \"$1\""
 		return $?
 	fi
 	find_root "$(dirname "$1")"

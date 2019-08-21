@@ -261,8 +261,7 @@ filetype *.asc
 " Fallback
 " --------------------------------------
 
-" filetype * xdg-open %c &
-
-fileview * xdg-mime query filetype %c | grep -q ^text && head -1000 %c
+filetype * vifm-default-opener
+fileview * vifm-default-viewer
 
 " vim: ft=vim

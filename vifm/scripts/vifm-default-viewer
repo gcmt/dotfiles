@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [[ "$(xdg-mime query filetype "$1")" =~ ^text/ ]]; then
+	head -1000 "$1"
+else
+	echo "Preview unavailable"
+fi

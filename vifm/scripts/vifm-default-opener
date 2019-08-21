@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [[ "$(xdg-mime query filetype "$1")" =~ ^text/ ]]; then
+	vifm --server-name "$VIFM_SERVER_NAME" --remote +"edit"
+else
+	xdg-open "$1" &
+fi

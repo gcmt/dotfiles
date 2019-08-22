@@ -3,5 +3,5 @@
 if [[ "$(xdg-mime query filetype "$1")" =~ ^text/ ]]; then
 	vifm --server-name "$VIFM_SERVER" --remote +"edit"
 else
-	xdg-open "$1" &
+	xdg-open "$1"
 fi

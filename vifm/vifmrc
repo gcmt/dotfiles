@@ -261,7 +261,7 @@ filetype *.asc
 " Fallback
 " --------------------------------------
 
-filetype * vifm-default-opener
-fileview * vifm-default-viewer
+filetype * vifm-default-opener %c %n &
+fileview * vifm-default-viewer %c
 
 " vim: ft=vim

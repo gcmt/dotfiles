@@ -73,6 +73,8 @@ command! logview! :set previewprg=
 command! pack apack %a %f &
 command! unpack aunpack %a %f 2>/dev/null &
 
+command! dev :!blkmenu --border -p "name == 'sda'" --vifm $VIFM_SERVER %%n
+
 command! root :!vifm-root .git/ &
 
 " The %n macro make sure env variables set here are visible in child processes

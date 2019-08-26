@@ -13,7 +13,7 @@ case "${1#*.}" in
 		jq . "$1"
 		;;
 	*)
-		if [[ "$(xdg-mime query filetype "$1")" =~ ^text/ ]]; then
+		if [[ "$(file -bL --mime-type "$1")" =~ ^text/ ]]; then
 			head -100 "$1"
 		fi
 		;;

@@ -2,6 +2,7 @@
 
 import i3pie
 import argparse
+from collections import deque
 
 
 def parse_args():
@@ -26,11 +27,8 @@ def main(i3):
     ids = [w.id for w in reversed(list(workspace.windows()))]
     curpos = ids.index(focused.id)
 
-    rotated = list(ids)
-    if args.next:
-        rotated.insert(0, rotated.pop())
-    else:
-        rotated.append(rotated.pop(0))
+    rotated = deque(ids)
+    rotated.rotate(-1 if args.next else 1)
 
     for i in range(len(ids)):
         if ids[i] == rotated[i]:

@@ -8,11 +8,12 @@
 #define _DARK_cyan          #739492
 #define _DARK_white         #8e9299
 #define _DARK_orange        #998068
+#define _DARK_fg_dim        #6d717a
+#define _DARK_fg_very_dim   #565a66
+#define _DARK_fg_super_dim  #2f333d
 #define _DARK_bg_accent     #252933
-#define _DARK_fg_dim        #636770
-#define _DARK_fg_very_dim   #4a4e59
-#define _DARK_fg_super_dim  #353944
 #define _DARK_hl_color      #a39465
+#define _DARK_select_color  _DARK_fg_super_dim
 
 #define _DARK_black_bright _DARK_black
 #define _DARK_red_bright _DARK_red

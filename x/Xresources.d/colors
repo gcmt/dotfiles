@@ -31,11 +31,13 @@
 	*color19: _LIGHT_bg_color
 	*color20: _LIGHT_cursor_color
 
-	*color21: _LIGHT_bg_accent
-	*color22: _LIGHT_fg_dim
-	*color23: _LIGHT_fg_very_dim
-	*color24: _LIGHT_fg_super_dim
+	*color21: _LIGHT_fg_dim
+	*color22: _LIGHT_fg_very_dim
+	*color23: _LIGHT_fg_super_dim
+	*color24: _LIGHT_bg_accent
+
 	*color25: _LIGHT_hl_color
+	*color26: _LIGHT_select_color
 
 #else
 
@@ -66,10 +68,12 @@
 	*color19: _DARK_bg_color
 	*color20: _DARK_cursor_color
 
-	*color21: _DARK_bg_accent
-	*color22: _DARK_fg_dim
-	*color23: _DARK_fg_very_dim
-	*color24: _DARK_fg_super_dim
+	*color21: _DARK_fg_dim
+	*color22: _DARK_fg_very_dim
+	*color23: _DARK_fg_super_dim
+	*color24: _DARK_bg_accent
+
 	*color25: _DARK_hl_color
+	*color26: _DARK_select_color
 
 #endif

@@ -239,6 +239,7 @@ alias rm='rm -Iv'
 alias mv='mv -iv'
 alias cp='cp -iv'
 alias mkdir='mkdir -pv'
+alias mktree='mktree -v'
 
 export LS_COLORS="di=34:ln=36:so=32:pi=35:ex=31"
 alias ls='LC_COLLATE=C ls --time-style=long-iso --color=auto --group-directories-first --quoting-style=literal'

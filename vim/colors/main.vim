@@ -48,9 +48,10 @@ let g:minimal = get(g:, 'minimal', 0)
 
 " make these groups bold in minimal mode
 let s:bold = [
-	\ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception',
+	\ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception', 'StorageClass',
 	\ 'htmlTagName', 'htmlEndTag',
 	\ 'pythonInclude',
+	\ 'jsFunction',
 \ ]
 let s:bold = '\v^(' . join(s:bold, '|') . ')$'
 
@@ -118,7 +119,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
 	cal s:h('Cursor', '', s:magenta, '', '')
 	cal s:h('NonText', s:fg_super_dim, '', 'none', '')
-	cal s:h('SpecialKey', s:fg_very_dim, '', 'none', '')
+	cal s:h('SpecialKey', s:fg_super_dim, '', 'none', '')
 	cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
 	cal s:h('Search', '', s:hl, '', '')
 	cal s:h('IncSearch', s:bg, s:red, 'none', '')

@@ -32,7 +32,7 @@ endf
 func! s:select(wanted, options, visual, count)
 
 	let curpos = getcurpos()[1:2]
-	let skip = "objects#synat('.') =~ '\\v^(String|Comment)$'"
+	let skip = "objects#synat(line('.'), col('.')) =~ '\\v^(String|Comment)$'"
 	let match = s:empty_match()
 
 	for i in range(1, a:count)
@@ -90,7 +90,7 @@ func! s:select(wanted, options, visual, count)
 				" Find the class start
 				call cursor(candidate.body_start)
 				if search('\v(<export\s+(default\s+)?)?<class>', 'Wb', line('.'))
-					\ && objects#synat('.') != 'String'
+					\ && objects#synat(line('.'), col('.')) != 'String'
 					\ && (curpos[0] != line('.') || curpos[0] == line('.') && curpos[1] >= col('.'))
 					let candidate.func_start = getcurpos()[1:2]
 					break
@@ -230,7 +230,7 @@ func! s:detect_inline_arrow_function()
 	norm! 0
 	while search('\V=>', '', line('.'))
 
-		if objects#synat('.') == 'String'
+		if objects#synat(line('.'), col('.')) == 'String'
 			continue
 		end
 
@@ -275,7 +275,7 @@ func! s:detect_inline_arrow_function()
 		call cursor(candidate.body_start)
 		if search('\V\(\w\+\|)\)\s\*=>', 'Wb', line('.'))
 			if getline('.')[col('.')-1] == ')'
-				let skip = "objects#synat('.') == 'String'"
+				let skip = "objects#synat(line('.'), col('.')) == 'String'"
 				call searchpair('(', '', ')', 'Wb', skip)
 			end
 			let candidate.func_start = getcurpos()[1:2]

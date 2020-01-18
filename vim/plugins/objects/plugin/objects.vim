@@ -26,3 +26,8 @@ if objects#enabled('items#dict')
 	call objects#map('ak', 'objects#items#dict')
 	call objects#map('ik', 'objects#items#dict', {'inner': 1})
 end
+
+if objects#enabled('comments')
+	call objects#map('ac', 'objects#comments#select')
+	call objects#map('ic', 'objects#comments#select')
+end

@@ -29,5 +29,6 @@ end
 
 if objects#enabled('comments')
 	call objects#map('ac', 'objects#comments#select')
-	call objects#map('ic', 'objects#comments#select', {'inner': 1})
+	call objects#map('ic', 'objects#comments#select', {'content': 1})
+	call objects#map('iC', 'objects#comments#select', {'inner': 1})
 end

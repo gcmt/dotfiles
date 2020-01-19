@@ -5,6 +5,7 @@
 
 let s:default_options = {
 	\ 'inner': 0,
+	\ 'content': 0,
 \ }
 
 
@@ -37,21 +38,52 @@ func! objects#comments#select(options, visual, count)
 	end
 
 	call cursor(start)
+
 	if start[0] == end[0] && options.inner
 		" don't select any space preceding the comment
 		call search('\S', "Wc", start[0])
 	end
-	if start[0] == end[0] && (start[1] != 1 || options.inner)
-		norm! v
-	else
-		norm! V
+
+	if options.content
+		" select only the comment content
+		if search('\v\s*\S+', "Wce", start[0])
+			if col('.') != col('$')-1
+				call search('\S', "We", start[0])
+			else
+				norm! +
+			end
+		end
 	end
+
+	if !options.content && start[1] == 1 && end[1] == strchars(getline(end[0]))
+		norm! V
+	else
+		norm! v
+	end
+
 	call cursor(end)
-	if start[0] != end[0] && !options.inner
+
+	if start[0] != end[0] && !options.inner && !options.content
 		" select all empty lines after the comment block
 		let line = nextnonblank(end[0]+1)
 		let line = line ? line-1 : line('$')
 		call cursor([line, 1])
+	end
+
+	if options.content && search('\V*/', 'Wncb', end[0])
+		" handle multiline comments ending
+		if search('\v\s*\*/', "Wcb", end[0])
+			if col('.') != 1
+				call search('\S', 'Wb', end[0])
+			else
+				norm! kg_
+			end
+		end
+	end
+
+	if a:visual && options.content
+		" move the cursor at the start of the comment
+		norm! o
 	end
 
 endf

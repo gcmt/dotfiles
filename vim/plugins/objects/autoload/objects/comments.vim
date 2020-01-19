@@ -29,13 +29,13 @@ func! objects#comments#select(options, visual, count)
 		return
 	end
 
-	let end = s:find_end(curpos, start)
+	let end = s:find_end(curpos)
 	if end == [0, 0]
 		return
 	end
 
 	call cursor(start)
-	if start[0] == end[0] && start[1] != 1 && getline(start[0])[:start[1]-2] !~ '\v^\s*$'
+	if start[0] == end[0] && start[1] != 1
 		norm! v
 	else
 		norm! V
@@ -44,64 +44,68 @@ func! objects#comments#select(options, visual, count)
 
 endf
 
+" s:search_comment({linenr:number}, {inline:bool}) -> [colnr, colnr]
+" Search for comments on the target line. If {inline} is false, the search is
+" aborted as soon as a non comment character is encountered.
+func! s:search_comment(linenr, inline)
+	let columns = split(getline(a:linenr), '\zs')
+	if empty(columns)
+		return [0, 0]
+	end
+	let col = 1
+	let j = 0
+	while col <= len(columns)
+		if columns[col-1] =~ '\s'
+			" consider any space before the comment as part of the comment
+			" itself
+			let j = j ? j : col
+		elseif objects#synat(a:linenr, col) == 'Comment'
+			return [(j ? j : col), len(columns)]
+		elseif !a:inline
+			return [0, 0]
+		else
+			let j = 0
+		end
+		let col += 1
+	endw
+endf
 
 " s:find_start({curpos:list}) -> [linenr, colnr]
 " Returns comment starting position.
 func! s:find_start(curpos)
 	let start = [0, 0]
-	for line in reverse(range(1, a:curpos[0]))
-		if line == a:curpos[0]
-			let columns = reverse(range(1, a:curpos[1]))
-		else
-			let columns = reverse(range(1, strchars(getline(line))))
+	let line = a:curpos[0]
+	while line > 0
+		let inline = line == a:curpos[0]
+		let edges = s:search_comment(line, inline)
+		if edges[0] == 0
+			break
 		end
-		if empty(columns)
-			return start
+		let start = [line, edges[0]]
+		if inline && edges[0] != 1
+			break
 		end
-		for col in columns
-			if objects#synat(line, col) != 'Comment' && s:charat(getline(line), col-1) !~ '\s'
-				if start[0] != a:curpos[0] && start[1] != 1
-					let start = [start[0]+1, 1]
-				end
-				return start
-			end
-			let start = [line, col]
-		endfo
-	endfo
+		let line -= 1
+	endw
 	return start
 endf
 
-
-" s:find_end({curpos:list}, {start:list}) -> [linenr, colnr]
+" s:find_end({curpos:list}) -> [linenr, colnr]
 " Returns comment ending position.
-func! s:find_end(curpos, start)
-	if a:curpos[0] == a:start[0] && a:start[1] != 1
-		" inline comment does not span the whole line
-		return [a:start[0], strchars(getline(a:curpos[0]))]
-	end
+func! s:find_end(curpos)
 	let end = [0, 0]
-	for line in range(a:curpos[0], line('$'))
-		if line == a:curpos[0]
-			let columns = range(a:curpos[1], strchars(getline(a:curpos[0])))
-		else
-			let columns = reverse(range(1, strchars(getline(line))))
+	let line = a:curpos[0]
+	while line <= line('$')
+		let inline = line == a:curpos[0]
+		let edges = s:search_comment(line, inline)
+		if edges[0] == 0
+			break
 		end
-		if empty(columns)
-			return end
+		let end = [line, edges[1]]
+		if inline && edges[0] != 1
+			break
 		end
-		for col in columns
-			if objects#synat(line, col) != 'Comment' && s:charat(getline(line), col-1) !~ '\s'
-				return end
-			end
-		endfo
-		let end = [line, strchars(getline(line))]
-	endfo
+		let line += 1
+	endw
 	return end
-endf
-
-
-" s:charat({line:string}, {col:number}) -> char
-" Returns the character at `col` column.
-func! s:charat(line, col)
-	return nr2char(strgetchar(a:line, a:col))
 endf

@@ -4,6 +4,7 @@
 
 
 let s:default_options = {
+	\ 'inner': 0,
 \ }
 
 
@@ -17,6 +18,7 @@ endf
 " Selects the comment at the current cursor position.
 func! objects#comments#select(options, visual, count)
 
+	let options = s:options(a:options)
 	let curpos = getcurpos()[1:2]
 
 	" check for a comment at the end of the line
@@ -35,12 +37,22 @@ func! objects#comments#select(options, visual, count)
 	end
 
 	call cursor(start)
-	if start[0] == end[0] && start[1] != 1
+	if start[0] == end[0] && options.inner
+		" don't select any space preceding the comment
+		call search('\S', "Wc", start[0])
+	end
+	if start[0] == end[0] && (start[1] != 1 || options.inner)
 		norm! v
 	else
 		norm! V
 	end
 	call cursor(end)
+	if start[0] != end[0] && !options.inner
+		" select all empty lines after the comment block
+		let line = nextnonblank(end[0]+1)
+		let line = line ? line-1 : line('$')
+		call cursor([line, 1])
+	end
 
 endf
 

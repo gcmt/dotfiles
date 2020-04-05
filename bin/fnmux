@@ -50,10 +50,10 @@ _default_profile() {
 		mod+F2) capture ;;
 		mod+F3) exec rec -root ;;
 		mod+F4) exec rec ;;
-		mod+F5) exec i3-focus -c URxvt -t '^ncmpcpp$' -kill -fallback 'urxvt -name floating -e ncmpcpp' ;;
-		mod+F6) mpc toggle ;;
-		mod+F7) mpc prev ;;
-		mod+F8) mpc next ;;
+		mod+F5) exec i3-focus -c URxvt -t '^Cmus$' -kill -fallback 'urxvt -name floating -title Cmus -e cmus-tmux' ;;
+		mod+F6) cmus-remote --pause ;;
+		mod+F7) cmus-remote --prev ;;
+		mod+F8) cmus-remote --next ;;
 		mod+F10) volume toggle ;;
 		mod+F11) volume down ;;
 		mod+F12) volume up ;;

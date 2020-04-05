@@ -8,6 +8,7 @@ exec_always --no-startup-id ~/.config/compton/start.sh
 exec_always --no-startup-id ~/.config/redshift/start.sh
 exec_always --no-startup-id ~/.config/dunst/start.sh
 exec_always --no-startup-id ~/.config/mpd/start.sh
+exec_always --no-startup-id ~/.config/imwheel/start.sh
 exec_always --no-startup-id ~/.local/bin/autolock
 exec_always --no-startup-id i3-history -monitor
 exec_always --no-startup-id parcellite

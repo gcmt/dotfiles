@@ -177,3 +177,8 @@ fi
 if _should_install sxiv; then
 	link "$dotdir/sxiv" "$XDG_CONFIG_HOME/sxiv"
 fi
+
+if _should_install imwheel; then
+	link "$dotdir/imwheel/imwheelrc" "$HOME/.imwheelrc"
+	link "$dotdir/imwheel" "$XDG_CONFIG_HOME/imwheel"
+fi

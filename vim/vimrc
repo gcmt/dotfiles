@@ -445,7 +445,17 @@
 	aug END
 
 	" switch to the alternate buffer
-	nnoremap <c-a> <c-^>
+	nnoremap <silent> <c-a> :call <sid>goto_alternate()<cr>
+
+	func! s:goto_alternate()
+		if buflisted(@#)
+			buffer #
+		elseif !empty(@#)
+			call util#err("The alternate buffer has been unlisted")
+		else
+			call util#err("No alternate buffer")
+		end
+	endf
 
 	tnoremap <silent> <c-w>Q <c-w>:call <sid>kill_term()<cr>
 

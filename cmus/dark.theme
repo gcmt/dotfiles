@@ -19,8 +19,8 @@ set color_statusline_fg=18
 set color_statusline_attr=default
 
 # Sticky line at the bottom displaying the currently playing track.
-set color_titleline_bg=21
-set color_titleline_fg=1
+set color_titleline_bg=22
+set color_titleline_fg=19
 set color_titleline_attr=default
 
 # Window bg/fg colors.
@@ -32,22 +32,22 @@ set color_win_attr=default
 set color_win_cur=1
 
 # Selected row which is also the currently playing track in active window.
-set color_win_cur_sel_bg=21
+set color_win_cur_sel_bg=23
 set color_win_cur_sel_fg=1
 set color_win_cur_sel_attr=default
 
 # Selected row which is also the currently playing track in inactive window.
-set color_win_inactive_cur_sel_bg=21
-set color_win_inactive_cur_sel_fg=22
+set color_win_inactive_cur_sel_bg=23
+set color_win_inactive_cur_sel_fg=1
 set color_win_inactive_cur_sel_attr=default
 
 # Selected row in the inactive window.
-set color_win_inactive_sel_bg=21
-set color_win_inactive_sel_fg=22
+set color_win_inactive_sel_bg=24
+set color_win_inactive_sel_fg=18
 set color_win_inactive_sel_attr=default
 
 # Selected row in active window.
-set color_win_sel_bg=21
+set color_win_sel_bg=23
 set color_win_sel_fg=18
 set color_win_sel_attr=default
 

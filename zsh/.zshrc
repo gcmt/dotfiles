@@ -231,6 +231,7 @@ alias ..=' ..'
 alias ...=' ../..'
 alias ....=' ../../..'
 
+alias tree="tree -I 'node_modules|cache|__pycache__|venv|*.egg-info'"
 alias tree1='tree -L 1'
 alias tree2='tree -L 2'
 alias tree3='tree -L 3'
@@ -252,6 +253,7 @@ alias ipy="ipython"
 alias pudb="pudb3"
 alias pypath='python -c "import sys; [print(p) for p in filter(None, sys.path)]"'
 
+alias whose='pacman -Qo'
 alias open='xdg-open'
 alias rg="rg --color=never -S"
 alias http="http --style=algol"

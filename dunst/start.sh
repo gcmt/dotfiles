@@ -1,8 +1,6 @@
 #!/bin/bash
 
-pkill -x dunst
-while pgrep -x dunst >/dev/null; do sleep 1; done
-
+killall -qw dunst
 dunst &
 
 if [[ "$1" == "-test" ]]; then

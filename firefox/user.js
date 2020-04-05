@@ -20,6 +20,6 @@ user_pref("browser.urlbar.oneOffSearches", false);
 user_pref("findbar.highlightAll", true);
 user_pref("findbar.modalHighlight", true);
 
-user_pref("mousewheel.acceleration.factor", 5);
-user_pref("mousewheel.acceleration.start", 1);
-user_pref("mousewheel.default.delta_multiplier_y", 200);
+// user_pref("mousewheel.acceleration.factor", 5); // 10
+// user_pref("mousewheel.acceleration.start", 1); // -1
+// user_pref("mousewheel.default.delta_multiplier_y", 200); // 100

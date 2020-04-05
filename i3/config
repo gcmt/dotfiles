@@ -53,7 +53,7 @@ gaps outer 1
 # ----------------------------------------------------------------------------
 
 for_window [floating] move position center
-
+for_window [class="Sxiv" instance="floating"] floating enable
 for_window [class="URxvt" instance="floating"] floating enable, $float_m, move position center
 for_window [class="URxvt" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
 for_window [class="URxvt" instance="vim-popup"] border pixel 1, floating enable, $float_m, move position center

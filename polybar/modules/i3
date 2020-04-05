@@ -3,15 +3,24 @@
 import os
 import atexit
 import signal
-import pathlib
 import threading
+import logging
+from pathlib import Path
+from logging.handlers import RotatingFileHandler
 
 import i3pie
 from i3pie import Event
 
 
-FIFO = pathlib.Path("/tmp/polybar_i3.fifo")
+FIFO = Path("/tmp/polybar_i3.fifo")
+LOGFILE = Path("/tmp/polybar_i3.log")
 
+logging.basicConfig(
+    handlers=[RotatingFileHandler(LOGFILE, maxBytes=1000000, backupCount=1)],
+    level=logging.DEBUG,
+    format="[%(asctime)s] %(levelname)s %(message)s",
+    datefmt='%Y-%m-%d:%M:%S'
+)
 
 class Colors:
 
@@ -31,7 +40,7 @@ def padded(s):
 
 
 def clickable(s, btn=1, cmd=""):
-    cmd = cmd.replace(":", "\:")
+    cmd = cmd.replace(":", r"\:")
     return f"%{{A{btn}:{cmd}:}}{s}%{{A}}"
 
 
@@ -64,7 +73,7 @@ def draw(sub, conn, event, data, all=False):
     tree = conn.get_tree()
     active = tree.current_workspace()
     workspaces = list(tree.workspaces())
-    focused = tree.focused_window()
+    # focused = tree.focused_window()
 
     # move the scratchpad to the very end
     for i, w in enumerate(workspaces):
@@ -113,11 +122,12 @@ def draw(sub, conn, event, data, all=False):
     out = _clickable(out, btn=2, cmd=f"{menu_cmd}")
     out += _clickable("     ", btn=1, cmd="i3-new-workspace")
 
-    if focused:
-        map_ = {'splith': 'split |', 'splitv': 'split —', 'stacked': 'stack', 'tabbed': 'tabs'}
-        orientation = map_.get(focused.parent.layout, "")
-        out += colored(f"{padded(orientation)}", **Colors.dim)
+    # if focused:
+        # map_ = {'splith': 'split |', 'splitv': 'split —', 'stacked': 'stack', 'tabbed': 'tabs'}
+        # orientation = map_.get(focused.parent.layout, "")
+        # out += colored(f"{padded(orientation)}", **Colors.dim)
 
+    logging.debug(out)
     print(out)
 
 

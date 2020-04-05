@@ -77,10 +77,6 @@ for_window [class="Firefox" instance="Places"] title_format " %title - Mozilla F
 # Mouse bindings
 bindsym --release button3 exec --no-startup-id i3-titlebar-menu
 bindsym --whole-window button2 exec --no-startup-id i3-choose-window -no-inputbar -mouse y
-bindsym --whole-window button9 exec --no-startup-id i3-next-window -next
-bindsym --whole-window button8 exec --no-startup-id i3-next-window -prev
-bindsym --whole-window $mod+button9 exec --no-startup-id i3-next-workspace -next
-bindsym --whole-window $mod+button8 exec --no-startup-id i3-next-workspace -prev
 
 # Prevent/allow screen locking
 bindsym Pause exec --no-startup-id coffee

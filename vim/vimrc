@@ -354,6 +354,16 @@
 		return ''
 	endf
 
+	func! _stl_regtee()
+		let reg = get(g:, 'regtee_register', '')
+		if empty(reg)
+			return ''
+		end
+		let lines = len(getreg(reg)) ? len(getreg(reg, 1, 1)) : 0
+		let chars = strchars(getreg(reg))
+		return printf("@%s|%dL|%dc", reg, lines, chars)
+	endf
+
 	func! _stl()
 		let ret = ''
 
@@ -370,6 +380,7 @@
 		let ret .= '%='
 
 		let items = []
+		call add(items, _stl_regtee())
 		call add(items, _stl_clip(win))
 		call add(items, _stl_venv(win))
 		call add(items, _stl_branch(win))
@@ -643,7 +654,9 @@
 
 	" edit registers
 	command! -nargs=? Regedit call util#regedit(<q-args>)
-	nnoremap <silent> gQ :Regedit q<cr>
+
+	" tee yanks to a sticky register
+	nnoremap <expr> gQ ":Regtee ".nr2char(getchar())."<cr>"
 
 " TAGS
 " ----------------------------------------------------------------------------

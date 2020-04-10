@@ -25,7 +25,7 @@ print_label() {
 		label="%{F#ce7d86} Backup%{F-}"
 	elif [[ "$archive" =~ ^rsync\.net ]]; then
 		label=" Backup"
-	elif [[ "$archive" =~ MyPassport ]]; then
+	elif [[ "$archive" =~ ^/run/media/ ]]; then
 		label=" Backup"
 	fi
 	echo "%{A3:$scriptpath clickright:}%{A1:$scriptpath clickleft:}$label%{A}%{A}"

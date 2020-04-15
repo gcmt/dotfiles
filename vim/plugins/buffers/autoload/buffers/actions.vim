@@ -14,7 +14,7 @@ func! buffers#actions#edit(...) abort
 		return
 	end
 
-	exec b:buffers.winnr 'wincmd w'
+	exec b:buffers.current_winnr 'wincmd w'
 	exec bufwinnr(s:bufname) 'wincmd c'
 
 	if bufnr == bufnr('%')
@@ -48,7 +48,7 @@ func! buffers#actions#delete(cmd) abort
 		return
 	end
 
-	let winnr = b:buffers.winnr
+	let winnr = b:buffers.current_winnr
 	let close_win = 0
 
 	while bufwinnr(bufnr) > -1
@@ -75,7 +75,7 @@ func! buffers#actions#delete(cmd) abort
 	exec winnr 'wincmd w'
 	let current = bufnr('%')
 	exec bufwinnr(s:bufname) 'wincmd w'
-	let b:buffers['current'] = current
+	let b:buffers['current_bufnr'] = current
 
 	let cmd = a:cmd
 	if getbufvar(bufnr, '&buftype') == 'terminal'
@@ -88,7 +88,7 @@ func! buffers#actions#delete(cmd) abort
 		return s:err(matchstr(v:exception, '\vE\d+:.*'))
 	endtry
 
-	call buffers#render()
+	call s:render()
 
 	if close_win
 		close
@@ -102,7 +102,7 @@ endf
 func! buffers#actions#toggle_unlisted()
 	let b:buffers.all = 1 - b:buffers.all
 	let selected = get(b:buffers.table, line('.'), -1)
-	call buffers#render()
+	call s:render()
 	for [line, bufnr] in items(b:buffers.table)
 		if bufnr == selected
 			call cursor(line, 1)
@@ -115,10 +115,23 @@ endf
 " buffers#open_explorer() -> 0
 " Close the window and open the explorer instead.
 func! buffers#actions#open_explorer()
-	exec b:buffers.winnr 'wincmd w'
+	exec b:buffers.current_winnr 'wincmd w'
 	exec bufwinnr(s:bufname) 'wincmd c'
 	let cmd = exists(':Ranger') ? 'Ranger' : 'Explorer'
 	exec cmd expand('%:p:h')
+endf
+
+
+" s:render() -> 0
+" Render the buffers list in the current buffer and saves the current cursor
+" position.
+func! s:render()
+	let line_save = getcurpos()[1]
+	let [table, matches] = buffers#render(bufnr('%'), b:buffers.all)
+	let b:buffers["table"] = table
+	let b:buffers["matches"] = matches
+	call setmatches(matches)
+	exec line_save
 endf
 
 

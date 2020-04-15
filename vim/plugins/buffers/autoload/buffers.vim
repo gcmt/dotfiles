@@ -138,6 +138,8 @@ endf
 " which is expected to be expressed as a percentage of the Vim window
 func s:resize_window() abort
 	let max = float2nr(&lines * g:buffers_max_winsize / 100)
+func s:resize_window(max_height) abort
+	let max = float2nr(&lines * a:max_height / 100)
 	exec 'resize' min([line('$'), max])
 endf
 

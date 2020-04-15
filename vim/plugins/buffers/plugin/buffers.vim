@@ -13,7 +13,7 @@ let g:buffers_loaded = 1
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
 let s:options = {
-	\ 'max_winsize': 50,
+	\ 'max_height': 20,
 \ }
 
 for [s:option, s:default] in items(s:options)

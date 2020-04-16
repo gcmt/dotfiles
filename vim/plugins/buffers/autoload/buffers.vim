@@ -48,8 +48,6 @@ func! buffers#view(all) abort
 	exec 'sil keepj keepa botright 1new' s:bufname
 	let winid = bufwinid(s:bufname)
 
-	call s:resize_window(g:buffers_max_height)
-
 	call setwinvar(winid, '&cursorline', 1)
 	call setwinvar(winid, '&cursorcolumn', 0)
 	call setwinvar(winid, '&colorcolumn', 0)
@@ -66,6 +64,8 @@ func! buffers#view(all) abort
 	" hide statusbar
 	exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winid, "&laststatus")
 	call setwinvar(winid, '&laststatus', '0')
+
+	call s:resize_window(g:buffers_max_height)
 
 	call setmatches(matches)
 

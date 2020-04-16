@@ -30,6 +30,11 @@ func! buffers#view(all) abort
 	let bufnr = bufnr(s:bufname, 1)
 	call bufload(bufnr)
 
+	call setbufvar(bufnr, '&filetype', 'buffers')
+	call setbufvar(bufnr, '&buftype', 'nofile')
+	call setbufvar(bufnr, '&bufhidden', 'hide')
+	call setbufvar(bufnr, '&buflisted', 0)
+
 	let [table, matches] = buffers#render(bufnr, a:all)
 
 	call setbufvar(bufnr, "buffers", {
@@ -41,17 +46,28 @@ func! buffers#view(all) abort
 	\})
 
 	exec 'sil keepj keepa botright 1new' s:bufname
+	let winid = bufwinid(s:bufname)
 
-	setl filetype=buffers buftype=nofile bufhidden=hide nobuflisted
-	setl noundofile nobackup noswapfile nospell
-	setl nowrap nonumber norelativenumber nolist textwidth=0
-	setl cursorline nocursorcolumn colorcolumn=0
-	exec 'au BufHidden <buffer> let &laststatus = ' &laststatus
-	setl laststatus=0
-	echo
-
-	call setmatches(b:buffers.matches)
 	call s:resize_window(g:buffers_max_height)
+
+	call setwinvar(winid, '&cursorline', 1)
+	call setwinvar(winid, '&cursorcolumn', 0)
+	call setwinvar(winid, '&colorcolumn', 0)
+	call setwinvar(winid, '&wrap', 0)
+	call setwinvar(winid, '&number', 0)
+	call setwinvar(winid, '&relativenumber', 0)
+	call setwinvar(winid, '&list', 0)
+	call setwinvar(winid, '&textwidth', 0)
+	call setwinvar(winid, '&undofile', 0)
+	call setwinvar(winid, '&backup', 0)
+	call setwinvar(winid, '&swapfile', 0)
+	call setwinvar(winid, '&spell', 0)
+
+	" hide statusbar
+	exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winid, "&laststatus")
+	call setwinvar(winid, '&laststatus', '0')
+
+	call setmatches(matches)
 
 	" push the last line to the bottom in order to not have any empty space
 	call cursor(1, line('$'))

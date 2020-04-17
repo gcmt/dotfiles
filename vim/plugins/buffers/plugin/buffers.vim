@@ -20,17 +20,10 @@ for [s:option, s:default] in items(s:options)
 	let g:buffers_{s:option} = get(g:, 'buffers_'.s:option, s:default)
 endfo
 
-func s:setup_colors()
-	hi default link BuffersMod Red
-	hi default link BuffersDim Comment
-	hi default link BuffersListed Normal
-	hi default link BuffersUnlisted FgDim
-	hi default link BuffersTerminal Blue
-endf
-
-call s:setup_colors()
-
-aug _buffers
-	au BufWritePost .vimrc call <sid>setup_colors()
-	au Colorscheme * call <sid>setup_colors()
-aug END
+if has('textprop')
+	call prop_type_add('buffers_mod', {'highlight': 'Red'})
+	call prop_type_add('buffers_dim', {'highlight': 'Comment'})
+	call prop_type_add('buffers_listed', {'highlight': 'Normal'})
+	call prop_type_add('buffers_unlisted', {'highlight': 'FgDim'})
+	call prop_type_add('buffers_terminal', {'highlight': 'Blue'})
+end

@@ -35,14 +35,13 @@ func! buffers#view(all) abort
 	call setbufvar(bufnr, '&bufhidden', 'hide')
 	call setbufvar(bufnr, '&buflisted', 0)
 
-	let [table, matches] = buffers#render(bufnr, a:all)
+	let table = buffers#render(bufnr, a:all)
 
 	call setbufvar(bufnr, "buffers", {
 		\ 'table': table,
 		\ 'current_bufnr': bufnr('%'),
 		\ 'current_winnr': winnr(),
 		\ 'all': a:all,
-		\ 'matches': matches
 	\})
 
 	exec 'sil keepj keepa botright 1new' s:bufname
@@ -67,8 +66,6 @@ func! buffers#view(all) abort
 
 	call s:resize_window(g:buffers_max_height)
 
-	call setmatches(matches)
-
 	" push the last line to the bottom in order to not have any empty space
 	call cursor(1, line('$'))
 	norm! zb
@@ -88,8 +85,7 @@ func! buffers#view(all) abort
 
 endf
 
-
-" s:buffers#render({bufnr}, {all}) -> [{table}, {matches}]
+" s:buffers#render({bufnr}, {all}) -> {table}
 " Render the buffers list in the given buffer.
 "
 " Args:
@@ -98,7 +94,6 @@ endf
 "
 " Returns:
 "   - table (dict): a dictionary that maps buffer numbers to buffer lines
-"   - matches (list): a list of matches to be set with `setmatches()`
 "
 func! buffers#render(bufnr, all)
 
@@ -114,7 +109,6 @@ func! buffers#render(bufnr, all)
 	endfo
 
 	let table = {}
-	let matches = []
 
 	let i = 1
 	for b in buffers
@@ -142,32 +136,28 @@ func! buffers#render(bufnr, all)
 		let line  = ''
 		let line .= name
 
-		if buflisted(b)
-			let group = 'BuffersListed'
-		else
-			let group = 'BuffersUnlisted'
-		end
-		if is_terminal
-			let group = 'BuffersTerminal'
-		elseif is_modified
-			let group = 'BuffersMod'
-		end
-
-		call add(matches, s:match_create(group, i, 0, len(line)+2))
-		call add(matches, s:match_create('BuffersDim', i, len(line)+1))
-
 		if len(split(detail, '/')) > 1
 			let line .= ' ' . detail
 		end
 
 		call setbufline(a:bufnr, i, line)
+
+		if has('textprop')
+			let path_prop = 'buffers_dim'
+			let name_prop = buflisted(b) ? 'buffers_listed' : 'buffers_unlisted'
+			let name_prop = is_modified ? 'buffers_mod' : name_prop
+			let name_prop = is_terminal ? 'buffers_terminal' : name_prop
+			call prop_add(i, 1, {'end_col': len(name)+1, 'type': name_prop, 'bufnr': a:bufnr})
+			call prop_add(i, len(name)+1, {'end_col': len(line)+1, 'type': path_prop, 'bufnr': a:bufnr})
+		end
+
 		let i += 1
 
 	endfo
 
 	call setbufvar(a:bufnr, "&modifiable", 0)
 
-	return [table, matches]
+	return table
 
 endf
 
@@ -214,30 +204,6 @@ endf
 func s:resize_window(max_height) abort
 	let max = float2nr(&lines * a:max_height / 100)
 	exec 'resize' min([line('$'), max])
-endf
-
-
-" s:match_create({group}, {line}, [, {start}, [, {end}]]) -> dict
-" Create a match for highlighting a {line} with the given highlight {group}.
-" If neither {start} or {end} are given, the whole line is highlighted. If both
-" {start} and {end} are given, the line is highlighted from column {start} to
-" {end}. If only {start} is given, the line is highlighted starting from the
-" column {start}.
-"
-" Args:
-"   - group (string): the highlighting syntax group
-"   - line (number): line to be highlighted
-"   - start (number): start column
-"   - end (number): end column
-"
-" Returns:
-"   - match (dict): a single match dictionary as returned by `getmatches()`
-"
-func! s:match_create(group, line, ...)
-	let start = a:0 > 0 && type(a:1) == v:t_number ? '%>'.a:1.'c.*' : ''
-	let end = a:0 > 1 && type(a:2) == v:t_number ? '%<'.a:2.'c' : ''
-	let line = '%'.a:line.'l' . (empty(start.end) ? '.*' : '')
-	return {'group': a:group, "pattern": printf('\v%s%s%s', line, start, end), "priority": "", "id": s:id()}
 endf
 
 

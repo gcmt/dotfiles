@@ -127,10 +127,7 @@ endf
 " position.
 func! s:render()
 	let line_save = getcurpos()[1]
-	let [table, matches] = buffers#render(bufnr('%'), b:buffers.all)
-	let b:buffers["table"] = table
-	let b:buffers["matches"] = matches
-	call setmatches(matches)
+	let b:buffers["table"] = buffers#render(bufnr('%'), b:buffers.all)
 	exec line_save
 endf
 

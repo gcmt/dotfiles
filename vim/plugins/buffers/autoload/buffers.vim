@@ -83,6 +83,8 @@ func! buffers#view(all) abort
 		norm! zz
 	end
 
+	echo
+
 endf
 
 " s:buffers#render({bufnr}, {all}) -> {table}

@@ -80,19 +80,23 @@ func! s:open_popup(bufnr, selected, ctx)
 	" filter and handler. The action is reset for when the popup re-created with
 	" an existing context.
 	let ctx = extend(a:ctx, #{action: ''})
+	" In order to have the highlight of the current line span the whole popup
+	" width, we manage the horizontal padding ourselves (see buffers#render())
+	let padding = [g:buffers_padding[0], 0, g:buffers_padding[2], 0]
 	let winid = popup_menu(a:bufnr, #{
 		\ filter: function('s:popup_filter', ctx),
 		\ callback: function('s:popup_handler', ctx),
-		\ borderchars: ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
-		\ padding: [0, 0, 0, 0],
+		\ borderchars: g:buffers_popup_borderchars,
+		\ padding: padding,
 		\ borderhighlight: g:buffers_popup_borderhl,
 		\ highlight: g:buffers_popup_hl,
 		\ maxwidth: float2nr(&columns * g:buffers_maxwidth / 100),
 		\ maxheight: float2nr(&lines * g:buffers_maxheight / 100),
-		\ minwidth: 20,
+		\ minwidth: g:buffers_minwidth,
 		\ scrollbar: g:buffers_popup_scrollbar,
 		\ scrollbarhighlight: g:buffers_popup_scrollbarhl,
 		\ thumbhighlight: g:buffers_popup_thumbhl,
+		\ cursorline: g:buffers_cursorline,
 		\ wrap: 0,
 	\ })
 	" move the cursor on the nth line
@@ -162,7 +166,7 @@ func! s:open_window(bufnr, selected, ctx)
 	exec 'sil keepj keepa botright 1new' s:bufname
 	let winnr = bufwinnr(s:bufname)
 
-	call setwinvar(winnr, '&cursorline', 1)
+	call setwinvar(winnr, '&cursorline', g:buffers_cursorline)
 	call setwinvar(winnr, '&cursorcolumn', 0)
 	call setwinvar(winnr, '&colorcolumn', 0)
 	call setwinvar(winnr, '&wrap', 0)
@@ -249,28 +253,32 @@ func! buffers#render(bufnr, all)
 			end
 		end
 
-		let hpadding = 1
+		let lpadding = g:buffers_padding[3]
+		let rpadding = g:buffers_padding[1]
 
-		let line  = repeat(' ', hpadding)
+		let line  = repeat(' ', lpadding)
+
+		let name_startcol = len(line) + 1
+		let name_endcol = name_startcol + len(name)
 		let line .= name
 
+		let detail_startcol = len(line) + 2
+		let detail_endcol = detail_startcol + len(detail)
 		if len(split(detail, '/')) > 1 || is_terminal || is_unnamed
 			let line .= ' ' . detail
 		end
 
-		let line .= repeat(' ', hpadding)
+		let line .= repeat(' ', rpadding)
 
 		call setbufline(a:bufnr, i, line)
 
 		if has('textprop')
-			let path_prop = 'buffers_dim'
+			let detail_prop = 'buffers_dim'
 			let name_prop = buflisted(b) ? 'buffers_listed' : 'buffers_unlisted'
 			let name_prop = is_modified ? 'buffers_mod' : name_prop
 			let name_prop = is_terminal ? 'buffers_terminal' : name_prop
-			let name_endcol = len(name) + len(hpadding) + 1
-			let path_endcol = len(line) + len(hpadding)
-			call prop_add(i, 1, {'end_col': name_endcol, 'type': name_prop, 'bufnr': a:bufnr})
-			call prop_add(i, name_endcol+1, {'end_col': path_endcol, 'type': path_prop, 'bufnr': a:bufnr})
+			call prop_add(i, name_startcol, {'end_col': name_endcol, 'type': name_prop, 'bufnr': a:bufnr})
+			call prop_add(i, detail_startcol, {'end_col': detail_endcol, 'type': detail_prop, 'bufnr': a:bufnr})
 		end
 
 		let i += 1

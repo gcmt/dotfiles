@@ -13,11 +13,15 @@ let g:buffers_loaded = 1
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
 let s:options = #{
+	\ cursorline: 1,
 	\ maxheight: 80,
 	\ maxwidth: 80,
+	\ minwidth: 20,
+	\ padding: [0, 1, 0, 1],
 	\ popup: 1,
+	\ popup_borderchars: ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
 	\ popup_hl: 'Bg',
-	\ popup_borderhl: ['FgVeryDim'],
+	\ popup_borderhl: ['LineNr'],
 	\ popup_scrollbar: 1,
 	\ popup_scrollbarhl: 'PMenuSBar',
 	\ popup_thumbhl: 'PMenuThumb',

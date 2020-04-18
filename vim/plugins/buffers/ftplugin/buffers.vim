@@ -1,20 +1,25 @@
 
+func! s:ctx(action)
+	return extend(b:buffers, #{
+		\ action: a:action,
+		\ selected: line('.'),
+	\ })
+endf
+
 nnoremap <silent> <buffer> q :close<cr>
 
-nnoremap <silent> <buffer> a :call buffers#actions#toggle_unlisted()<cr>
+nnoremap <silent> <buffer> a :call buffers#toggle_unlisted(<sid>ctx('toggle_unlisted'))<cr>
 
-nnoremap <silent> <buffer> <enter> :call buffers#actions#edit()<cr>
-nnoremap <silent> <buffer> <c-j> :call buffers#actions#edit()<cr>
-nnoremap <silent> <buffer> l :call buffers#actions#edit()<cr>
-nnoremap <silent> <buffer> t :call buffers#actions#edit('tab')<cr>
-nnoremap <silent> <buffer> s :call buffers#actions#edit('split')<cr>
-nnoremap <silent> <buffer> v :call buffers#actions#edit('vsplit')<cr>
+nnoremap <silent> <buffer> <enter> :call buffers#edit(<sid>ctx('edit'))<cr>
+nnoremap <silent> <buffer> <c-j> :call buffers#edit(<sid>ctx('edit'))<cr>
+nnoremap <silent> <buffer> l :call buffers#edit(<sid>ctx('edit'))<cr>
+nnoremap <silent> <buffer> t :call buffers#edit(<sid>ctx('tab'))<cr>
+nnoremap <silent> <buffer> s :call buffers#edit(<sid>ctx('split'))<cr>
+nnoremap <silent> <buffer> v :call buffers#edit(<sid>ctx('vsplit'))<cr>
 
-nnoremap <silent> <buffer> d :call buffers#actions#delete('bdelete')<cr>
-nnoremap <silent> <buffer> D :call buffers#actions#delete('bdelete!')<cr>
-nnoremap <silent> <buffer> w :call buffers#actions#delete('bwipe')<cr>
-nnoremap <silent> <buffer> W :call buffers#actions#delete('bwipe!')<cr>
-nnoremap <silent> <buffer> u :call buffers#actions#delete('bunload')<cr>
-nnoremap <silent> <buffer> U :call buffers#actions#delete('bunload!')<cr>
-
-nnoremap <silent> <buffer> . :call buffers#actions#open_explorer()<cr>
+nnoremap <silent> <buffer> d :call buffers#delete(<sid>ctx('bdelete'))<cr>
+nnoremap <silent> <buffer> D :call buffers#delete(<sid>ctx('bdelete!'))<cr>
+nnoremap <silent> <buffer> w :call buffers#delete(<sid>ctx('bwipe'))<cr>
+nnoremap <silent> <buffer> W :call buffers#delete(<sid>ctx('bwipe!'))<cr>
+nnoremap <silent> <buffer> u :call buffers#delete(<sid>ctx('bunload'))<cr>
+nnoremap <silent> <buffer> U :call buffers#delete(<sid>ctx('bunload!'))<cr>

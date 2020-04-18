@@ -18,6 +18,8 @@ let s:options = #{
 	\ maxwidth: 80,
 	\ minwidth: 20,
 	\ padding: [0, 1, 0, 1],
+	\ label_unnamed: '[no name]',
+	\ label_terminal: '[terminal]',
 	\ popup: 1,
 	\ popup_borderchars: ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
 	\ popup_hl: 'Bg',
@@ -25,8 +27,31 @@ let s:options = #{
 	\ popup_scrollbar: 1,
 	\ popup_scrollbarhl: 'PMenuSBar',
 	\ popup_thumbhl: 'PMenuThumb',
-	\ label_unnamed: '[no name]',
-	\ label_terminal: '[terminal]',
+	\ mappings: {
+		\ 'q': '@quit',
+		\ 'Q': '@quit',
+		\ 't': '@tab',
+		\ 's': '@split',
+		\ 'v': '@vsplit',
+		\ 'a': '@toggle_unlisted',
+		\ 'd': '@bdelete',
+		\ 'D': '@bdelete!',
+		\ 'w': '@bwipe',
+		\ 'W': '@wipe!',
+		\ 'u': '@bunload',
+		\ 'U': '@bunload!',
+		\ 'l': '@edit',
+		\ "\<cr>": '@edit',
+	\ },
+	\ popup_mappings: {
+		\ 'K': ':norm! kk',
+		\ 'J': ':norm! jj',
+		\ 'g': ':norm! gg',
+		\ 'G': ':norm! G',
+	\ },
+	\ window_mappings: {
+		\ 'f': ':norm! gg',
+	\ },
 \ }
 
 for [s:option, s:default] in items(s:options)

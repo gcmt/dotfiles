@@ -1,23 +1,6 @@
 
 let s:bufname = '__buffers__'
 
-let s:actions = {
-	\ "\<cr>": 'edit',
-	\ 'l': 'edit',
-	\ 'q': 'quit',
-	\ 't': 'tab',
-	\ 's': 'split',
-	\ 'v': 'vsplit',
-	\ 'a': 'toggle_unlisted',
-	\ 'd': 'bdelete',
-	\ 'D': 'bdelete!',
-	\ 'w': 'bwipe',
-	\ 'W': 'wipe!',
-	\ 'u': 'bunload',
-	\ 'U': 'bunload!',
-\ }
-
-
 " View loaded buffers in window/popup.
 "
 " Args:
@@ -48,6 +31,7 @@ func! buffers#view(all) abort
 		\ selected: 1,
 		\ is_popup: g:buffers_popup,
 		\ action: '',
+		\ mappings: {},
 	\ }
 
 	" position the cursor to the current buffer
@@ -58,6 +42,14 @@ func! buffers#view(all) abort
 			break
 		end
 	endfor
+
+	if g:buffers_popup
+		let ctx.mappings = extend(copy(g:buffers_mappings),
+			\ get(g:, 'buffers_popup_mappings', {}))
+	else
+		let ctx.mappings = extend(copy(g:buffers_mappings),
+			\ get(g:, 'buffers_window_mappings', {}))
+	end
 
 	let Open = g:buffers_popup ? function('s:open_popup') : function('s:open_window')
 	return Open(bufnr, selected, ctx)
@@ -79,7 +71,7 @@ func! s:open_popup(bufnr, selected, ctx)
 	" Create a shared context dictionary that will be accessible in both the
 	" filter and handler. The action is reset for when the popup re-created with
 	" an existing context.
-	let ctx = extend(a:ctx, #{action: ''})
+	let ctx = extend(copy(a:ctx), #{action: ''})
 	" In order to have the highlight of the current line span the whole popup
 	" width, we manage the horizontal padding ourselves (see buffers#render())
 	let padding = [g:buffers_padding[0], 0, g:buffers_padding[2], 0]
@@ -116,15 +108,15 @@ endf
 func! s:popup_handler(id, selected) dict
 	let self.selected = a:selected
 	if self.action =~ '\v^(edit|tab|split|vsplit)$'
-		call buffers#edit(self)
+		call s:buf_edit(self)
 	elseif self.action =~ '\v^(bdelete|bwipe|bunload)!?$'
-		call buffers#delete(self)
+		call s:buf_delete(self)
 		if len(self.table) > 0
 			" keep the popup open
 			call s:open_popup(self.bufnr, self.selected, self)
 		end
 	elseif self.action == 'toggle_unlisted'
-		call buffers#toggle_unlisted(self)
+		call s:toggle_unlisted(self)
 		if len(self.table) > 0
 			" keep the popup open
 			call s:open_popup(self.bufnr, self.selected, self)
@@ -142,11 +134,18 @@ endf
 "   - key (string): the pressed key
 "
 func! s:popup_filter(id, key) dict
-	let self.action = get(s:actions, a:key, '')
-	" Make sure the popup is closed and the selected line number gets
-	" passed to the handler. XXX: Need to figure out how to retrieve the
-	" selected line number here...
-	let key = empty(self.action) ? a:key : "\<cr>"
+	let key = a:key
+	if has_key(self.mappings, key)
+		let command = self.mappings[key]
+		if command =~ '\v^\@'
+			let self.action = command[1:]
+			" Makes sure the line number is always passed to the handler
+			let key = "\<cr>"
+		elseif command =~ '\v^:'
+			call win_execute(a:id, command[1:])
+			return 1
+		end
+	end
 	return popup_filter_menu(a:id, key)
 endf
 
@@ -183,8 +182,7 @@ func! s:open_window(bufnr, selected, ctx)
 	exec 'au BufHidden <buffer='.a:bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
 	call setwinvar(winnr, '&laststatus', '0')
 
-	call setbufvar(a:bufnr, "buffers", a:ctx)
-
+	call s:setup_mappings(a:ctx.mappings, a:ctx)
 	call s:resize_window(winnr, g:buffers_maxheight)
 
 	" push the last line to the bottom in order to not have any empty space
@@ -204,6 +202,50 @@ func! s:open_window(bufnr, selected, ctx)
 	return win_getid(winnr)
 
 endf
+
+
+" Setup mappings from the current window.
+"
+" Args:
+"  - mappings (dict): a dictionary of mappings {lhs: rhs}
+"  - ctx (dict): context info
+"
+func! s:setup_mappings(mappings, ctx)
+
+	let ctx = a:ctx
+	func! s:_do(action) closure
+		let _ctx = extend(ctx, #{action: a:action, selected: line('.')})
+		if a:action =~ '\v^(edit|tab|split|vsplit)$'
+			call s:buf_edit(_ctx)
+		elseif a:action =~ '\v^(bdelete|bwipe|bunload)!?$'
+			call s:buf_delete(_ctx)
+		elseif a:action == 'toggle_unlisted'
+			call s:toggle_unlisted(_ctx)
+		end
+	endf
+
+	func! s:_nnoremap(lhs, rhs)
+		exec "nnoremap" "<nowait> <silent> <buffer>" a:lhs a:rhs . "<cr>"
+	endf
+
+	mapclear <buffer>
+
+	for [char, action] in items(a:mappings)
+		if char =~ '\v^\\'
+			let char = char[1:]
+		end
+		if action == '@quit'
+			let action = ':close'
+		end
+		if action =~ '\v^\@'
+			call s:_nnoremap(char, ":call <sid>_do('".action[1:]."')")
+		elseif action =~ '\v^:'
+			call s:_nnoremap(char, action)
+		end
+	endfo
+
+endf
+
 
 " Render the buffers list in the given buffer.
 "
@@ -298,7 +340,7 @@ endf
 " Args:
 "  - ctx (dict): context info
 "
-func! buffers#edit(ctx) abort
+func! s:buf_edit(ctx) abort
 
 	" close the buffer list
 	exec 'bdelete' a:ctx.bufnr
@@ -331,7 +373,7 @@ endf
 " Args:
 "  - ctx (dict): context info
 "
-func! buffers#delete(ctx) abort
+func! s:buf_delete(ctx) abort
 
 	let target = get(a:ctx.table, string(a:ctx.selected), '')
 	let buffers = sort(values(a:ctx.table), 'n')
@@ -376,7 +418,7 @@ endf
 " Args:
 "  - ctx (dict): context info
 "
-func! buffers#toggle_unlisted(ctx)
+func! s:toggle_unlisted(ctx)
 
 	let selected_bufnr = get(a:ctx.table, string(a:ctx.selected), '')
 

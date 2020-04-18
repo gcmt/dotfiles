@@ -52,9 +52,6 @@ let s:options = #{
 		\ 'g': ':norm! gg',
 		\ 'G': ':norm! G',
 	\ },
-	\ window_mappings: {
-		\ 'f': ':norm! gg',
-	\ },
 \ }
 
 for [s:option, s:default] in items(s:options)

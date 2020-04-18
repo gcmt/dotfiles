@@ -68,18 +68,27 @@ endf
 "   - winid (number): the popup window id
 "
 func! s:open_popup(bufnr, selected, ctx)
+
 	" Create a shared context dictionary that will be accessible in both the
 	" filter and handler. The action is reset for when the popup re-created with
 	" an existing context.
 	let ctx = extend(copy(a:ctx), #{action: ''})
+
 	" In order to have the highlight of the current line span the whole popup
-	" width, we manage the horizontal padding ourselves (see buffers#render())
+	" width, we manage the horizontal padding ourselves (see s:render())
 	let padding = [g:buffers_padding[0], 0, g:buffers_padding[2], 0]
-	let winid = popup_menu(a:bufnr, #{
+
+	let winid = popup_create(a:bufnr, #{
 		\ filter: function('s:popup_filter', ctx),
 		\ callback: function('s:popup_handler', ctx),
-		\ borderchars: g:buffers_popup_borderchars,
+		\ pos: 'center',
+		\ zindex: 200,
+		\ wrap: 0,
+		\ mapping: 0,
+		\ border: [],
 		\ padding: padding,
+		\ cursorline: 1,
+		\ borderchars: g:buffers_popup_borderchars,
 		\ borderhighlight: g:buffers_popup_borderhl,
 		\ highlight: g:buffers_popup_hl,
 		\ maxwidth: float2nr(&columns * g:buffers_maxwidth / 100),
@@ -88,11 +97,24 @@ func! s:open_popup(bufnr, selected, ctx)
 		\ scrollbar: g:buffers_popup_scrollbar,
 		\ scrollbarhighlight: g:buffers_popup_scrollbarhl,
 		\ thumbhighlight: g:buffers_popup_thumbhl,
-		\ cursorline: g:buffers_cursorline,
-		\ wrap: 0,
 	\ })
-	" move the cursor on the nth line
+
+	" `popup-<winid>` is the sign name used by vim to highlight the selected line
+	let attrs = #{linehl: g:buffers_cursorline ? g:buffers_popup_cursorlinehl : ''}
+	if !empty(g:buffers_popup_indicator)
+		let attrs['text'] = g:buffers_popup_indicator
+		let attrs['texthl'] = g:buffers_popup_indicatorhl
+	end
+	call sign_define('popup-'.winid, attrs)
+
+	" The indicator is automatically placed with a sign by vim
+	if !empty(g:buffers_popup_indicator)
+		call win_execute(winid, 'setl signcolumn=yes')
+	end
+
+	" Move the cursor on the nth line
 	call win_execute(winid, a:selected)
+
 	return winid
 endf
 
@@ -297,6 +319,14 @@ func! buffers#render(bufnr, all)
 
 		let lpadding = g:buffers_padding[3]
 		let rpadding = g:buffers_padding[1]
+
+		" When an indicator is used, the sign column is set for the popup, but
+		" only after its creation. This causes the text to shift to the right by
+		" 2 columns (sign column width). This fixes the issue.
+		" See s:open_popup() function.
+		if !empty(g:buffers_popup_indicator)
+			let rpadding += 2
+		end
 
 		let line  = repeat(' ', lpadding)
 

@@ -499,18 +499,25 @@ func! s:toggle_unlisted(ctx)
 endf
 
 
-" Return a list of loaded buffers.
+" Return a list of all loaded or listed buffers.
+" Buffers are sorted according to the value of g:buffers_sorting. Sorting
+" defaults to numerical.
 "
 " Args:
-"   - all (bool): if it's given and it's true, unlisted buffers are also returned
+"   - all (bool): if it's true, unlisted buffers are also returned
 "
 " Returns:
 "   - buffers (list): a list of buffer numbers
 "
-func! s:get_buffers(...)
-	let F1 = a:0 > 0 && a:1 ? function('bufexists') : function('buflisted')
+func! s:get_buffers(all)
+	let F1 = a:all ? function('bufexists') : function('buflisted')
 	let F2 = {i, nr -> F1(nr) && getbufvar(nr, '&buftype') =~ '\v^(terminal)?$'}
-	return filter(range(1, bufnr('$')), F2)
+	let buffers = filter(range(1, bufnr('$')), F2)
+	call map(buffers, {i, b -> [b, fnamemodify(bufname(b), ':t')]})
+	if g:buffers_sorting == 'alphabetical'
+		call sort(buffers, {a, b -> char2nr(a[1]) - char2nr(b[1])})
+	end
+	return map(buffers, {i, v -> v[0]})
 endf
 
 

@@ -13,6 +13,7 @@ let g:buffers_loaded = 1
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
 let s:options = #{
+	\ sorting: 'alphabetical',
 	\ cursorline: 1,
 	\ maxheight: 80,
 	\ maxwidth: 80,

@@ -20,6 +20,7 @@ let s:options = #{
 	\ padding: [0, 1, 0, 1],
 	\ label_unnamed: '[no name]',
 	\ label_terminal: '[terminal]',
+	\ line_format: '{bufname} {bufdetails}',
 	\ popup: 1,
 	\ popup_borderchars: ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
 	\ popup_hl: 'Normal',
@@ -58,10 +59,8 @@ for [s:option, s:default] in items(s:options)
 	let g:buffers_{s:option} = get(g:, 'buffers_'.s:option, s:default)
 endfo
 
-if has('textprop')
-	call prop_type_add('buffers_mod', {'highlight': 'Red', 'combine': 1})
-	call prop_type_add('buffers_dim', {'highlight': 'Comment', 'combine': 1})
-	call prop_type_add('buffers_listed', {'highlight': 'Normal', 'combine': 1})
-	call prop_type_add('buffers_unlisted', {'highlight': 'Comment', 'combine': 1})
-	call prop_type_add('buffers_terminal', {'highlight': 'Directory', 'combine': 1})
-end
+call prop_type_add('buffers_mod', {'highlight': 'Red'})
+call prop_type_add('buffers_dim', {'highlight': 'Comment'})
+call prop_type_add('buffers_listed', {'highlight': 'Normal'})
+call prop_type_add('buffers_unlisted', {'highlight': 'Comment'})
+call prop_type_add('buffers_terminal', {'highlight': 'Directory'})

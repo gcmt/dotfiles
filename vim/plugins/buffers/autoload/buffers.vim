@@ -292,9 +292,33 @@ func! buffers#render(bufnr, all)
 		let tails[tail] = get(tails, tail) + 1
 	endfo
 
-	let table = {}
+	let lpadding = g:buffers_padding[3]
+	let rpadding = g:buffers_padding[1]
 
+	" When an indicator is used, the sign column is set for the popup, but
+	" only after its creation. This causes the text to shift to the right by
+	" 2 columns (sign column width). This fixes the issue.
+	" See s:open_popup() function.
+	if !empty(g:buffers_popup_indicator)
+		let rpadding += 2
+	end
+
+	let fmt = repeat(' ', lpadding) . g:buffers_line_format . repeat(' ', rpadding)
+
+	" Find placeholders
+	let placements = [
+		\ matchstrpos(fmt, "{bufname}"),
+		\ matchstrpos(fmt, "{bufdetails}"),
+	\ ]
+
+	" Remove not-found placeholders
+	call filter(placements, {i, v -> v[1] > -1})
+	" Sort placeholders by their position (0-9)
+	call sort(placements, {a, b -> a[1] - b[1]})
+
+	let table = {}
 	let i = 1
+
 	for b in buffers
 
 		let table[i] = b
@@ -303,56 +327,58 @@ func! buffers#render(bufnr, all)
 		let is_terminal = getbufvar(b, '&bt') == 'terminal'
 		let is_modified = getbufvar(b, '&mod')
 
-		let name = bufname(b)
+		let bufname = bufname(b)
+		let bufdetails = ""
 
 		if is_unnamed
-			let name = b
-			let detail = g:buffers_label_unnamed
+			let bufname = b
+			let bufdetails = g:buffers_label_unnamed
 		elseif is_terminal
-			let detail = g:buffers_label_terminal
+			let bufdetails = g:buffers_label_terminal
 		else
-			let detail = s:prettify_path(fnamemodify(name, ':p'))
-			let name =  fnamemodify(detail, ':t')
-			if get(tails, name) > 1
-				let name = join(split(detail, '/')[-2:], '/')
+			let bufdetails = s:prettify_path(fnamemodify(bufname, ':p'))
+			let bufname =  fnamemodify(bufdetails, ':t')
+			if get(tails, bufname) > 1
+				let bufname = join(split(bufdetails, '/')[-2:], '/')
 			end
 		end
 
-		let lpadding = g:buffers_padding[3]
-		let rpadding = g:buffers_padding[1]
-
-		" When an indicator is used, the sign column is set for the popup, but
-		" only after its creation. This causes the text to shift to the right by
-		" 2 columns (sign column width). This fixes the issue.
-		" See s:open_popup() function.
-		if !empty(g:buffers_popup_indicator)
-			let rpadding += 2
+		if len(split(bufdetails, '/')) <= 1 && !is_terminal && !is_unnamed
+			let bufdetails = ""
 		end
 
-		let line  = repeat(' ', lpadding)
+		let bufdetails_prop = 'buffers_dim'
+		let bufname_prop = buflisted(b) ? 'buffers_listed' : 'buffers_unlisted'
+		let bufname_prop = is_modified ? 'buffers_mod' : bufname_prop
+		let bufname_prop = is_terminal ? 'buffers_terminal' : bufname_prop
 
-		let name_startcol = len(line) + 1
-		let name_endcol = name_startcol + len(name)
-		let line .= name
+		let repl = {
+			\ '{bufname}': [bufname, bufname_prop],
+			\ '{bufdetails}': [bufdetails, bufdetails_prop],
+		\ }
 
-		let detail_startcol = len(line) + 2
-		let detail_endcol = detail_startcol + len(detail)
-		if len(split(detail, '/')) > 1 || is_terminal || is_unnamed
-			let line .= ' ' . detail
-		end
+		let line = fmt
 
-		let line .= repeat(' ', rpadding)
+		" Replace placeholders with their value and prepare text properties for
+		" later (they need to be set after the line has been set in the buffer)
+		let props = []
+		let offset = 0
+		for [name, start, end] in placements
+			let [value, prop] = get(repl, name)
+			call add(props, [i, start+offset+1, {
+				\ 'length': len(value),
+				\ 'type': prop,
+				\ 'bufnr': a:bufnr
+			\ }])
+			let line = substitute(line, name, value, '')
+			let offset += len(value) - len(name)
+		endfo
 
 		call setbufline(a:bufnr, i, line)
 
-		if has('textprop')
-			let detail_prop = 'buffers_dim'
-			let name_prop = buflisted(b) ? 'buffers_listed' : 'buffers_unlisted'
-			let name_prop = is_modified ? 'buffers_mod' : name_prop
-			let name_prop = is_terminal ? 'buffers_terminal' : name_prop
-			call prop_add(i, name_startcol, {'end_col': name_endcol, 'type': name_prop, 'bufnr': a:bufnr})
-			call prop_add(i, detail_startcol, {'end_col': detail_endcol, 'type': detail_prop, 'bufnr': a:bufnr})
-		end
+		for args in props
+			call call('prop_add', args)
+		endfo
 
 		let i += 1
 

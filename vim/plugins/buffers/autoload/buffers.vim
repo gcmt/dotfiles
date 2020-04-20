@@ -80,7 +80,6 @@ func! s:open_popup(bufnr, selected, ctx)
 
 	let winid = popup_create(a:bufnr, #{
 		\ filter: function('s:popup_filter', ctx),
-		\ callback: function('s:popup_handler', ctx),
 		\ pos: 'center',
 		\ zindex: 200,
 		\ wrap: 0,
@@ -119,56 +118,45 @@ func! s:open_popup(bufnr, selected, ctx)
 endf
 
 
-" Callback handler. Handles actions triggered by keypresses.
-" Actions are set in s:popup_filter() and accessed through the shared context
-" dictionary.
-"
-" Args:
-"   - id (number): the popup id
-"   - selected (number): the selected line
-"
-func! s:popup_handler(id, selected) dict
-	let self.selected = a:selected
-	if self.action =~ '\v^(edit|tab|split|vsplit)$'
-		call s:buf_edit(self)
-	elseif self.action =~ '\v^(bdelete|bwipe|bunload)!?$'
-		call s:buf_delete(self)
-		if len(self.table) > 0
-			" keep the popup open
-			call s:open_popup(self.bufnr, self.selected, self)
-		end
-	elseif self.action == 'toggle_unlisted'
-		call s:toggle_unlisted(self)
-		if len(self.table) > 0
-			" keep the popup open
-			call s:open_popup(self.bufnr, self.selected, self)
-		end
-	end
-endf
-
-
 " Handle popup keypresses.
-" Set the action property in the shared context dictionary so that it can picked
-" up by the callback handler.
 "
 " Args:
 "   - id (number): the popup id
 "   - key (string): the pressed key
 "
 func! s:popup_filter(id, key) dict
-	let key = a:key
-	if has_key(self.mappings, key)
-		let command = self.mappings[key]
-		if command =~ '\v^\@'
-			let self.action = command[1:]
-			" Makes sure the line number is always passed to the handler
-			let key = "\<cr>"
-		elseif command =~ '\v^:'
-			call win_execute(a:id, command[1:])
-			return 1
-		end
+	let self.selected = getbufinfo(self.bufnr)[0].signs[0].lnum
+	if !has_key(self.mappings, a:key)
+		return popup_filter_menu(a:id, a:key)
 	end
-	return popup_filter_menu(a:id, key)
+	let action = self.mappings[a:key]
+	if action =~ '\v^\@'
+		let self.action = action[1:]
+		if self.action =~ '\v^(edit|tab|split|vsplit)$'
+			if s:buf_edit(self)
+				call popup_close(a:id)
+			end
+		elseif self.action =~ '\v^(bdelete|bwipe|bunload)!?$'
+			call s:buf_delete(self)
+			if empty(self.table)
+				call popup_close(a:id)
+			end
+		elseif self.action == 'toggle_unlisted'
+			call s:toggle_unlisted(self)
+			if empty(self.table)
+				call popup_close(a:id)
+			end
+		elseif self.action == 'quit'
+			call popup_close(a:id)
+		else
+			call s:err("Unknown action: " . self.action)
+		end
+	elseif action =~ '\v^:'
+		call win_execute(a:id, action[1:])
+	else
+		call s:err("Unknown action: " . action)
+	end
+	return 1
 endf
 
 
@@ -407,7 +395,7 @@ func! s:buf_edit(ctx) abort
 
 	let target = get(a:ctx.table, string(a:ctx.selected) , '')
 	if target == a:ctx.user_bufnr
-		return
+		return 1
 	end
 
 	let winid = win_getid(a:ctx.user_winnr)
@@ -422,6 +410,7 @@ func! s:buf_edit(ctx) abort
 		sil exec 'edit' fnameescape(bufname(target))
 	end
 
+	return 1
 endf
 
 

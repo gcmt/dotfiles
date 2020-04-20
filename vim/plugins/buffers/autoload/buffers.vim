@@ -267,7 +267,7 @@ endf
 "
 func! s:render(bufnr, all)
 
-	let buffers = s:get_buffers(a:all)
+	let buffers = s:get_buffers(a:all, g:buffers_sorting)
 
 	call setbufvar(a:bufnr, "&modifiable", 1)
 	sil! call deletebufline(a:bufnr, 1, "$")
@@ -493,12 +493,12 @@ endf
 " Returns:
 "   - buffers (list): a list of buffer numbers
 "
-func! s:get_buffers(all)
+func! s:get_buffers(all, sorting = 'numerical')
 	let F1 = a:all ? function('bufexists') : function('buflisted')
 	let F2 = {i, nr -> F1(nr) && getbufvar(nr, '&buftype') =~ '\v^(terminal)?$'}
 	let buffers = filter(range(1, bufnr('$')), F2)
 	call map(buffers, {i, b -> [b, fnamemodify(bufname(b), ':t')]})
-	if g:buffers_sorting == 'alphabetical'
+	if a:sorting == 'alphabetical'
 		call sort(buffers, {a, b -> char2nr(a[1]) - char2nr(b[1])})
 	end
 	return map(buffers, {i, v -> v[0]})

@@ -20,7 +20,7 @@ func! buffers#view(all) abort
 	call setbufvar(bufnr, '&bufhidden', 'hide')
 	call setbufvar(bufnr, '&buflisted', 0)
 
-	let table = buffers#render(bufnr, a:all)
+	let table = s:render(bufnr, a:all)
 
 	let ctx = #{
 		\ bufnr: bufnr,
@@ -265,7 +265,7 @@ endf
 " Returns:
 "   - table (dict): a dictionary that maps buffer numbers to buffer lines
 "
-func! buffers#render(bufnr, all)
+func! s:render(bufnr, all)
 
 	let buffers = s:get_buffers(a:all)
 
@@ -444,7 +444,7 @@ func! s:buf_delete(ctx) abort
 		return s:err(matchstr(v:exception, '\vE\d+:.*'))
 	endtry
 
-	let a:ctx.table = buffers#render(a:ctx.bufnr, a:ctx.all)
+	let a:ctx.table = s:render(a:ctx.bufnr, a:ctx.all)
 
 	if !a:ctx.is_popup
 		call s:resize_window(a:ctx, g:buffers_maxheight)
@@ -463,7 +463,7 @@ func! s:toggle_unlisted(ctx)
 	let selected_bufnr = get(a:ctx.table, string(a:ctx.selected), '')
 
 	let a:ctx.all = 1 - a:ctx.all
-	let a:ctx.table = buffers#render(a:ctx.bufnr, a:ctx.all)
+	let a:ctx.table = s:render(a:ctx.bufnr, a:ctx.all)
 
 	" Follow the previously selected buffer
 	for [line, bufnr] in items(a:ctx.table)

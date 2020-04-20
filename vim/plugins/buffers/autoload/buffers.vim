@@ -208,18 +208,7 @@ func! s:open_window(bufnr, selected, ctx)
 	call setwinvar(winnr, '&laststatus', '0')
 
 	call s:setup_mappings(a:ctx.mappings, a:ctx)
-	call s:resize_window(winnr, g:buffers_maxheight)
-
-	" push the last line to the bottom in order to not have any empty space
-	call cursor(1, line('$'))
-	norm! zb
-
-	call cursor(a:selected, 1)
-
-	" unless at the very bottom, center the cursor position
-	if line('.') < (line('$') - winheight(0)/2)
-		norm! zz
-	end
+	call s:resize_window(a:ctx, g:buffers_maxheight)
 
 	" wipe any message
 	echo
@@ -458,8 +447,7 @@ func! s:buf_delete(ctx) abort
 	let a:ctx.table = buffers#render(a:ctx.bufnr, a:ctx.all)
 
 	if !a:ctx.is_popup
-		call s:resize_window(bufwinnr(a:ctx.bufnr), g:buffers_maxheight)
-		call cursor(a:ctx.selected, 1)
+		call s:resize_window(a:ctx, g:buffers_maxheight)
 	end
 
 endf
@@ -489,7 +477,7 @@ func! s:toggle_unlisted(ctx)
 	call win_execute(bufwinid(a:ctx.bufnr), 'norm! 0')
 
 	if !a:ctx.is_popup
-		call s:resize_window(bufwinnr(a:ctx.bufnr), g:buffers_maxheight)
+		call s:resize_window(a:ctx, g:buffers_maxheight)
 	end
 
 endf
@@ -533,16 +521,32 @@ func! s:prettify_path(path)
 endf
 
 
-" Resize a window to fit exactly the buffer content.
+" Resize the buffers window to fit exactly the content.
 "
 " Args:
-"   - winnr (number): the target window number
+"   - ctx (dict): context info
 "   - max_height (number): window height as percentage of the Vim window
 "
-func! s:resize_window(winnr, max_height)
-	let winid = win_getid(a:winnr)
+func! s:resize_window(ctx, max_height) abort
+
+	if winnr() != bufwinnr(a:ctx.bufnr)
+		return
+	end
+
 	let max = float2nr(&lines * a:max_height / 100)
-	call win_execute(winid, 'resize ' . min([line('$'), max]), 1)
+	sil exec 'resize ' . min([line('$'), max])
+
+	" push the last line to the bottom in order to not have any empty space
+	call cursor(1, line('$'))
+	norm! zb
+
+	call cursor(a:ctx.selected, 1)
+
+	" unless at the very bottom, center the cursor position
+	if line('.') < (line('$') - winheight(0)/2)
+		norm! zz
+	end
+
 endf
 
 

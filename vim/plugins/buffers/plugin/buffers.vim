@@ -34,7 +34,6 @@ let s:options = #{
 	\ popup_cursorlinehl: 'PopupSelected',
 	\ mappings: {
 		\ 'q': '@quit',
-		\ 'Q': '@quit',
 		\ 't': '@tab',
 		\ 's': '@split',
 		\ 'v': '@vsplit',

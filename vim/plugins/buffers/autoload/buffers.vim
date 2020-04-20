@@ -131,32 +131,46 @@ func! s:popup_filter(id, key) dict
 	end
 	let action = self.mappings[a:key]
 	if action =~ '\v^\@'
-		let self.action = action[1:]
-		if self.action =~ '\v^(edit|tab|split|vsplit)$'
-			if s:buf_edit(self)
-				call popup_close(a:id)
-			end
-		elseif self.action =~ '\v^(bdelete|bwipe|bunload)!?$'
-			call s:buf_delete(self)
-			if empty(self.table)
-				call popup_close(a:id)
-			end
-		elseif self.action == 'toggle_unlisted'
-			call s:toggle_unlisted(self)
-			if empty(self.table)
-				call popup_close(a:id)
-			end
-		elseif self.action == 'quit'
-			call popup_close(a:id)
-		else
-			call s:err("Unknown action: " . self.action)
-		end
+		call s:do_action(action[1:], self, function('popup_close', [a:id]))
 	elseif action =~ '\v^:'
 		call win_execute(a:id, action[1:])
 	else
 		call s:err("Unknown action: " . action)
 	end
 	return 1
+endf
+
+
+" Execute the given action.
+"
+" Args:
+"   - action (string): the action to perform
+"   - ctx (dict): context info
+"   - close_fn (func): function used to close the buffers list window or popup
+
+func s:do_action(action, ctx, close_fn = v:none)
+	let a:ctx.action = a:action
+	if a:action =~ '\v^(edit|tab|split|vsplit)$'
+		if s:buf_edit(a:ctx) && type(a:close_fn) == v:t_func
+			call a:close_fn()
+		end
+	elseif a:action =~ '\v^(bdelete|bwipe|bunload)!?$'
+		call s:buf_delete(a:ctx)
+		if empty(a:ctx.table) && type(a:close_fn) == v:t_func
+			call a:close_fn()
+		end
+	elseif a:action == 'toggle_unlisted'
+		call s:toggle_unlisted(a:ctx)
+		if empty(a:ctx.table) && type(a:close_fn) == v:t_func
+			call a:close_fn()
+		end
+	elseif a:action == 'quit'
+		if type(a:close_fn) == v:t_func
+			call a:close_fn()
+		end
+	else
+		call s:err("Unknown action: " . a:action)
+	end
 endf
 
 
@@ -225,14 +239,9 @@ func! s:setup_mappings(mappings, ctx)
 
 	let ctx = a:ctx
 	func! s:_do(action) closure
-		let _ctx = extend(ctx, #{action: a:action, selected: line('.')})
-		if a:action =~ '\v^(edit|tab|split|vsplit)$'
-			call s:buf_edit(_ctx)
-		elseif a:action =~ '\v^(bdelete|bwipe|bunload)!?$'
-			call s:buf_delete(_ctx)
-		elseif a:action == 'toggle_unlisted'
-			call s:toggle_unlisted(_ctx)
-		end
+		let _ctx = extend(ctx, #{selected: line('.')})
+		let Close_fn = function('win_execute', [bufwinid(_ctx.bufnr), 'close'])
+		return s:do_action(a:action, _ctx, Close_fn)
 	endf
 
 	func! s:_nnoremap(lhs, rhs)
@@ -386,9 +395,6 @@ endf
 "  - ctx (dict): context info
 "
 func! s:buf_edit(ctx) abort
-
-	" close the buffer list
-	exec 'bdelete' a:ctx.bufnr
 
 	" move to the window the user came from
 	exec a:ctx.user_winnr 'wincmd w'

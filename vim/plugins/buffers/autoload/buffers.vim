@@ -485,7 +485,8 @@ func! s:toggle_unlisted(ctx)
 		end
 	endfo
 
-	call win_execute(bufwinid(a:ctx.bufnr), a:ctx.selected."|norm! 0")
+	call win_execute(bufwinid(a:ctx.bufnr), a:ctx.selected)
+	call win_execute(bufwinid(a:ctx.bufnr), 'norm! 0')
 
 	if !a:ctx.is_popup
 		call s:resize_window(bufwinnr(a:ctx.bufnr), g:buffers_maxheight)

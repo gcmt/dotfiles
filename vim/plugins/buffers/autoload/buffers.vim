@@ -8,7 +8,8 @@ let s:bufname = '__buffers__'
 "
 func! buffers#view(all) abort
 
-	if bufwinnr(s:bufname) != -1 || !len(s:get_buffers(a:all))
+	let buffers = s:get_buffers(a:all, g:buffers_sorting)
+	if bufwinnr(s:bufname) != -1 || !len(buffers)
 		return
 	end
 
@@ -20,7 +21,7 @@ func! buffers#view(all) abort
 	call setbufvar(bufnr, '&bufhidden', 'hide')
 	call setbufvar(bufnr, '&buflisted', 0)
 
-	let table = s:render(bufnr, a:all)
+	let table = s:render(bufnr, buffers)
 
 	let ctx = #{
 		\ bufnr: bufnr,
@@ -260,20 +261,18 @@ endf
 "
 " Args:
 "  - bufnr (number): the buffer number where buffers need to be rendered
-"  - all (bool): whether or not to also display unlisted buffers
+"  - buffers (list): list of buffers to render
 "
 " Returns:
 "   - table (dict): a dictionary that maps buffer numbers to buffer lines
 "
-func! s:render(bufnr, all)
-
-	let buffers = s:get_buffers(a:all, g:buffers_sorting)
+func! s:render(bufnr, buffers)
 
 	call setbufvar(a:bufnr, "&modifiable", 1)
 	sil! call deletebufline(a:bufnr, 1, "$")
 
 	let tails = {}
-	for bufnr in buffers
+	for bufnr in a:buffers
 		let tail = fnamemodify(bufname(bufnr), ':t')
 		let tails[tail] = get(tails, tail) + 1
 	endfo
@@ -305,7 +304,7 @@ func! s:render(bufnr, all)
 	let table = {}
 	let i = 1
 
-	for b in buffers
+	for b in a:buffers
 
 		let table[i] = b
 
@@ -444,7 +443,8 @@ func! s:buf_delete(ctx) abort
 		return s:err(matchstr(v:exception, '\vE\d+:.*'))
 	endtry
 
-	let a:ctx.table = s:render(a:ctx.bufnr, a:ctx.all)
+	let buffers = s:get_buffers(a:ctx.all, g:buffers_sorting)
+	let a:ctx.table = s:render(a:ctx.bufnr, buffers)
 
 	if !a:ctx.is_popup
 		call s:resize_window(a:ctx, g:buffers_maxheight)
@@ -463,7 +463,8 @@ func! s:toggle_unlisted(ctx)
 	let selected_bufnr = get(a:ctx.table, string(a:ctx.selected), '')
 
 	let a:ctx.all = 1 - a:ctx.all
-	let a:ctx.table = s:render(a:ctx.bufnr, a:ctx.all)
+	let buffers = s:get_buffers(a:ctx.all, g:buffers_sorting)
+	let a:ctx.table = s:render(a:ctx.bufnr, buffers)
 
 	" Follow the previously selected buffer
 	for [line, bufnr] in items(a:ctx.table)

@@ -14,7 +14,7 @@ command! -nargs=* -bang Files call fzf#files(<q-args>, <q-bang> == '!')
 command! -nargs=0 -bang Lines call fzf#lines(<q-bang> == '!')
 
 let s:options = {
-	\ 'default_opts': "--multi --preview 'head -100 {}' --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:19",
+	\ 'default_opts': "--multi --preview 'head -100 {}' --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:19,gutter:-1",
 	\ 'preview_treshold': 150,
 	\ 'term_prg': 'TMUX= urxvt -name vim-popup',
 \ }

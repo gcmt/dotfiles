@@ -16,7 +16,8 @@ let s:options = #{
 	\ maxwidth: 80,
 	\ minwidth: 20,
 	\ padding: [0, 1, 0, 1],
-	\ line_format: '{link} {mark} {linenr} {line}',
+	\ mark_format: '%{link} %{mark} %{linenr} %{line}',
+	\ file_format: '%{file}',
 	\ popup: 1,
 	\ popup_borderchars: ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
 	\ popup_hl: 'Normal',
@@ -57,4 +58,5 @@ call prop_type_add('marks_letter', {'highlight': 'Blue'})
 call prop_type_add('marks_file', {'highlight': 'Magenta'})
 call prop_type_add('marks_line', {'highlight': 'Normal'})
 call prop_type_add('marks_linenr', {'highlight': 'LineNr'})
+call prop_type_add('marks_colnr', {'highlight': 'LineNr'})
 call prop_type_add('marks_link', {'highlight': 'Comment'})

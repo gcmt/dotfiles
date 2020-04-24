@@ -290,17 +290,6 @@ func! s:render(bufnr, buffers)
 
 	let fmt = repeat(' ', lpadding) . g:buffers_line_format . repeat(' ', rpadding)
 
-	" Find placeholders
-	let placements = [
-		\ matchstrpos(fmt, "{bufname}"),
-		\ matchstrpos(fmt, "{bufdetails}"),
-	\ ]
-
-	" Remove not-found placeholders
-	call filter(placements, {i, v -> v[1] > -1})
-	" Sort placeholders by their position (0-9)
-	call sort(placements, {a, b -> a[1] - b[1]})
-
 	let table = {}
 	let i = 1
 
@@ -337,32 +326,13 @@ func! s:render(bufnr, buffers)
 		let bufname_prop = is_modified ? 'buffers_mod' : bufname_prop
 		let bufname_prop = is_terminal ? 'buffers_terminal' : bufname_prop
 
-		let repl = {
-			\ '{bufname}': [bufname, bufname_prop],
-			\ '{bufdetails}': [bufdetails, bufdetails_prop],
-		\ }
-
-		let line = fmt
-
-		" Replace placeholders with their value and prepare text properties for
-		" later (they need to be set after the line has been set in the buffer)
-		let props = []
-		let offset = 0
-		for [name, start, end] in placements
-			let [value, prop] = get(repl, name)
-			call add(props, [i, start+offset+1, {
-				\ 'length': len(value),
-				\ 'type': prop,
-				\ 'bufnr': a:bufnr
-			\ }])
-			let line = substitute(line, name, value, '')
-			let offset += len(value) - len(name)
-		endfo
-
+		let repl = #{bufname: bufname, bufdetails: bufdetails}
+		let [line, positions] = util#fmt(fmt, repl, 1)
 		call setbufline(a:bufnr, i, line)
 
-		for args in props
-			call call('prop_add', args)
+		let props = #{bufname: bufname_prop, bufdetails: bufdetails_prop}
+		for pos in positions
+			call prop_add(i, pos[1]+1, #{end_col: pos[2]+2, type: props[pos[0]], bufnr: a:bufnr})
 		endfo
 
 		let i += 1

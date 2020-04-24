@@ -274,88 +274,6 @@ func s:setup_mappings(ctx) abort
 endf
 
 
-" Search where placeholders are located in the format string and return an
-" object containing the format string itself and a list of placeholders
-" positions.
-"
-" Args:
-"  - fmt (string): the line format string (eg. '{mark} {linenr} {line}')
-"  - items (list): list placeholders to search in the format string
-"
-"  Returns:
-"  A dictionary containing:
-"  - A list of all ordered placeholders locations in format string
-"  - The padded format string itself (we handle the horizontal padding ourselves
-"  in order to have the highlighting of the current window span the whole popup
-"  window width)
-"
-func s:fmt_compile(fmt, items) abort
-
-	let lpadding = repeat(' ', g:marks_padding[3])
-	let rpadding = repeat(' ', g:marks_padding[1])
-
-	" When an indicator is used, the sign column is set for the popup, but
-	" only after its creation. This causes the text to shift to the right by
-	" 2 columns (sign column width). This fixes the issue.
-	if !empty(g:marks_popup_indicator)
-		let rpadding .= '  '
-	end
-
-	let fmt = lpadding . a:fmt . rpadding
-	let placements = []
-
-	for item in a:items
-		call add(placements, #{
-			\ item: item,
-			\ pos: matchstrpos(fmt, item)[1:],
-		\ })
-	endfo
-
-	" Remove not-found items
-	call filter(placements, {i, v -> v.pos[1] > -1})
-
-	" Sort items by their position (0-9)
-	call sort(placements, {a, b -> a.pos[1] - b.pos[1]})
-
-	return #{str: fmt, placements: placements}
-endf
-
-
-" Set a line with the given text properties
-"
-" Args:
-"   - bufnr (number): the buffer number where the line needs to be set
-"   - i (number): set the line to this line number
-"   - fmt (dict): the compiled format string
-"   - repl (dict): a dictionary mapping placeholders to their replacement value
-"   and text property used to highlight the value
-"
-func s:setline(bufnr, linenr, fmt, repl) abort
-
-	let props = []
-	let offset = 0
-	let line = a:fmt.str
-
-	for p in a:fmt.placements
-		let repl = a:repl[p.item]
-		call add(props, [a:linenr, p.pos[0]+offset+1, {
-			\ 'length': len(repl.value),
-			\ 'type': repl.hl,
-			\ 'bufnr': a:bufnr,
-		\ }])
-		let line = strpart(line, 0, p.pos[0]+offset) . repl.value . strpart(line, p.pos[1]+offset)
-		let offset += len(repl.value) - (p.pos[1]-p.pos[0])
-	endfo
-
-	call setbufline(a:bufnr, a:linenr, line)
-
-	for args in props
-		call call('prop_add', args)
-	endfo
-
-endf
-
-
 " Render marks in the given buffer.
 "
 " Args:
@@ -372,14 +290,24 @@ func s:render(bufnr, marks) abort
 	call setbufvar(a:bufnr, "&modifiable", 1)
 	sil! call deletebufline(a:bufnr, 1, "$")
 
+	let lpadding = g:buffers_padding[3]
+	let rpadding = g:buffers_padding[1]
+
+	" When an indicator is used, the sign column is set for the popup, but
+	" only after its creation. This causes the text to shift to the right by
+	" 2 columns (sign column width). This fixes the issue.
+	" See s:open_popup() function.
+	if !empty(g:buffers_popup_indicator)
+		let rpadding += 2
+	end
+
 	if empty(a:marks)
-		let padding = repeat(' ', g:marks_padding[3])
-		call setbufline(a:bufnr, 1, padding . "No marks set")
+		call setbufline(a:bufnr, 1, repeat(' ', lpadding) . "No marks set")
 		return {}
 	end
 
-	let fmt = s:fmt_compile(g:marks_line_format, ["{link}", "{mark}", "{linenr}", "{line}"])
-	let fmtfile = s:fmt_compile("{file}", ["{file}"])
+	let fmtmark = repeat(' ', lpadding) . g:marks_mark_format . repeat(' ', rpadding)
+	let fmtfile = repeat(' ', lpadding) . g:marks_file_format . repeat(' ', rpadding)
 
 	let table = {}
 	let i = 1
@@ -387,24 +315,45 @@ func s:render(bufnr, marks) abort
 	for [path, marks] in items(s:group_by_file(a:marks))
 
 		let table[i] = path
-		let path = s:prettify_path(path)
-		call s:setline(a:bufnr, i, fmtfile, {
-			\ '{file}': #{value: path, hl: 'marks_file'},
-		\ })
+		let repl = #{file: s:prettify_path(path)}
+		let [line, positions] = util#fmt(fmtfile, repl, 1)
+		call setbufline(a:bufnr, i, line)
+		let props = #{
+			\ file: 'marks_file',
+		\ }
+		for pos in positions
+			call prop_add(i, pos[1]+1, #{end_col: pos[2]+2, type: props[pos[0]], bufnr: a:bufnr})
+		endfo
 
 		let i += 1
-
 		let k = 0
-		let width = len(max(map(copy(marks), {k, v -> v.linenr})))
+
+		let ln_width = len(max(map(copy(marks), {k, v -> v.linenr})))
+		let col_width = len(max(map(copy(marks), {k, v -> v.colnr})))
+
 		for mark in sort(marks, {a, b -> a.linenr - b.linenr})
 			let table[i] = mark
-			let link = k == len(marks)-1 ? links[1]..links[2] : links[0]..links[2]
-			call s:setline(a:bufnr, i, fmt, {
-				\ '{link}': #{value: link, hl: 'marks_link'},
-				\ '{mark}': #{value: mark.letter, hl: 'marks_letter'},
-				\ '{linenr}': #{value: printf('%'.width.'S', mark.linenr), hl: 'marks_linenr'},
-				\ '{line}': #{value: printf('%s', trim(mark.line)), hl: 'marks_line'},
-			\ })
+			let repl = #{
+				\ link: k == len(marks)-1 ? links[1].links[2] : links[0].links[2],
+				\ mark: mark.letter,
+				\ linenr: printf('%'.ln_width.'S', mark.linenr),
+				\ colnr: printf('%'.col_width.'S', mark.colnr),
+				\ line: printf('%s', trim(mark.line)),
+			\ }
+			let [line, positions] = util#fmt(fmtmark, repl, 1)
+			call setbufline(a:bufnr, i, line)
+
+			let props = #{
+				\ link: 'marks_link',
+				\ mark: 'marks_letter',
+				\ linenr: 'marks_linenr',
+				\ colnr: 'marks_colnr',
+				\ line: 'marks_line',
+			\ }
+			for pos in positions
+				call prop_add(i, pos[1]+1, #{end_col: pos[2]+2, type: props[pos[0]], bufnr: a:bufnr})
+			endfo
+
 			let i += 1
 			let k += 1
 		endfo

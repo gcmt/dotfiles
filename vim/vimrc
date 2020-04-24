@@ -468,6 +468,14 @@
 		end
 	endf
 
+	command! -bang -nargs=0 Bdelete call util#bdelete('bdelete', <q-bang>)
+	nnoremap <silent> <c-w>d :Bdelete!<cr>
+
+" TERMINAL
+" ----------------------------------------------------------------------------
+
+	tnoremap <silent> <ScrollWheelUp> <c-w>N
+
 	tnoremap <silent> <c-w>Q <c-w>:call <sid>kill_term()<cr>
 
 	func! s:kill_term()
@@ -477,9 +485,6 @@
 			bwipe!
 		end
 	endf
-
-	command! -bang -nargs=0 Bdelete call util#bdelete('bdelete', <q-bang>)
-	nnoremap <silent> <c-w>d :Bdelete!<cr>
 
 " QUICKFIX
 " ----------------------------------------------------------------------------
@@ -512,8 +517,8 @@
 	nnoremap <silent> <c-d> :<c-u>call append(line('.'), map(range(v:count1), "''"))<cr>
 
 	" toggle case or capitalization of the previous word
-	inoremap <c-t>c <esc>m`b~``a
-	inoremap <c-t>u <esc>m`bg~iw``a
+	" inoremap <c-t>c <esc>m`b~``a
+	" inoremap <c-t>u <esc>m`bg~iw``a
 
 	" buffer text object
 	vnoremap a% GoggV
@@ -530,12 +535,10 @@
 	" select the last changed text
 	nnoremap <expr> gV '`[' . strpart(getregtype(), 0, 1) . '`]'
 
-	" indent the last changed text
 	nmap g= gV=
 
-	" paste and indent (improved)
-	nmap ]P Pg=
-	nmap ]p pg=
+	nmap <silent> ]P Pg=gqac
+	nmap <silent> ]p pg=gqac
 
 	" replace selection without side effects
 	vmap <expr> P '_d"' . v:register . 'P'
@@ -568,6 +571,9 @@
 
 	noremap J 3gj
 	noremap K 3gk
+
+	noremap <c-j> 5<c-e>
+	noremap <c-k> 5<c-y>
 
 	noremap <silent> gw :<c-u>call <sid>next_word(0)<cr>
 	noremap <silent> gb :<c-u>call <sid>next_word(1)<cr>
@@ -815,6 +821,8 @@
 		end
 		call system('i3-msg "exec --no-startup-id firefox --new-tab ' . shellescape(url) . '"')
 	endf
+	inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+	inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 	" Clear undo history (:h clear-undo)
 	command! -nargs=0 ClearUndo call util#clear_undo()
@@ -839,15 +847,24 @@
 		return synIDattr(synIDtrans(synID(line('.'), col('.'), 0)), 'name')
 	endf
 
+	comm -bang -nargs=0 Quit quit<bang>
+
 	nnoremap <2-RightMouse> <nop>
 	nnoremap <3-RightMouse> <nop>
+	nnoremap <right> l
+	nnoremap <left> h
+
+	nnoremap <F2> :w<cr>
+	inoremap <F2> <esc>:w<cr>
 
 	cnoremap <c-n> <down>
 	cnoremap <c-p> <up>
 
 	inoremap <c-c> <c-]><esc>
+	inoremap <c-u> <c-g>u<c-u>
 
-	inoremap <c-j> <c-g>u<c-j>
+	inoremap <c-a> <down>
+	inoremap <c-j> <c-g>u<c->
 	inoremap <cr> <c-g>u<cr>
 
 	vnoremap C c

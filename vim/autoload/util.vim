@@ -324,4 +324,4 @@ func! util#test_fmt() abort
 
 endf
 
-nnoremap <buffer> <enter> :so %<cr>:call util#test_fmt()<cr>
+" nnoremap <buffer> <enter> :so %<cr>:call util#test_fmt()<cr>

@@ -218,12 +218,10 @@ func! util#fmt(fmt, repl, positions = 0) abort
 		end
 
 		if s[i] == '%' && empty(placeholder)
-			if !magic
-				let magic = 1
+			" When %% is used, a single % is inserted
+			let magic = !magic
+			if magic
 				continue
-			else
-				" When using %% an single % is inserted
-				let magic = 0
 			end
 		end
 

@@ -274,6 +274,25 @@ func s:setup_mappings(ctx) abort
 endf
 
 
+" Set text properties for the given positions
+"
+" Args:
+"  - bufnr (number): the buffer where text properties needs to be attached
+"  - marks (dict): the line number where text properties needs to be attached
+"  - positions (list): list text property types/positions
+"    eg. [prop_type, start_col, end_col]
+"  - prefix (string): string used for prefixing text property types
+"
+func! s:setprops(bufnr, linenr, positions, prefix = "marks_")
+	for pos in a:positions
+		call prop_add(a:linenr, pos[1]+1, #{
+			\ end_col: pos[2]+2, type: a:prefix..pos[0],
+			\ bufnr: a:bufnr
+		\ })
+	endfo
+endf
+
+
 " Render marks in the given buffer.
 "
 " Args:
@@ -318,12 +337,7 @@ func s:render(bufnr, marks) abort
 		let repl = #{file: s:prettify_path(path)}
 		let [line, positions] = util#fmt(fmtfile, repl, 1)
 		call setbufline(a:bufnr, i, line)
-		let props = #{
-			\ file: 'marks_file',
-		\ }
-		for pos in positions
-			call prop_add(i, pos[1]+1, #{end_col: pos[2]+2, type: props[pos[0]], bufnr: a:bufnr})
-		endfo
+		call s:setprops(a:bufnr, i, positions)
 
 		let i += 1
 		let k = 0
@@ -342,17 +356,7 @@ func s:render(bufnr, marks) abort
 			\ }
 			let [line, positions] = util#fmt(fmtmark, repl, 1)
 			call setbufline(a:bufnr, i, line)
-
-			let props = #{
-				\ link: 'marks_link',
-				\ mark: 'marks_letter',
-				\ linenr: 'marks_linenr',
-				\ colnr: 'marks_colnr',
-				\ line: 'marks_line',
-			\ }
-			for pos in positions
-				call prop_add(i, pos[1]+1, #{end_col: pos[2]+2, type: props[pos[0]], bufnr: a:bufnr})
-			endfo
+			call s:setprops(a:bufnr, i, positions)
 
 			let i += 1
 			let k += 1

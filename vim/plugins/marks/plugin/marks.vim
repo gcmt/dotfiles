@@ -54,7 +54,7 @@ command! -nargs=0 Marks call marks#view()
 command! -nargs=0 Mark call marks#set_auto(1)
 command! -nargs=0 Markg call marks#set_auto(0)
 
-call prop_type_add('marks_letter', {'highlight': 'Blue'})
+call prop_type_add('marks_mark', {'highlight': 'Blue'})
 call prop_type_add('marks_file', {'highlight': 'Magenta'})
 call prop_type_add('marks_line', {'highlight': 'Normal'})
 call prop_type_add('marks_linenr', {'highlight': 'LineNr'})

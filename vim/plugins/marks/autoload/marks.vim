@@ -378,7 +378,7 @@ endf
 func s:mark_jump(ctx) abort
 
 	let mark = s:get_selected_mark(a:ctx)
-	if empty(mark) || type(mark) == v:t_string
+	if empty(mark)
 		return 0
 	end
 
@@ -391,7 +391,12 @@ func s:mark_jump(ctx) abort
 		exec 'tab split'
 	end
 
-	exec 'norm! `' . mark.letter
+ 	if type(mark) == v:t_string
+		exec 'buffer' bufnr(mark)
+	else
+		exec 'norm! `' . mark.letter
+	end
+
 	norm! zz
 
 	return 1

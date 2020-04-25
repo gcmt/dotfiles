@@ -300,6 +300,7 @@ func! s:render(bufnr, buffers)
 		let is_unnamed = empty(bufname(b))
 		let is_terminal = getbufvar(b, '&bt') == 'terminal'
 		let is_modified = getbufvar(b, '&mod')
+		let is_directory = isdirectory(bufname(b))
 
 		let bufname = bufname(b)
 		let bufdetails = ""
@@ -325,6 +326,7 @@ func! s:render(bufnr, buffers)
 		let bufname_prop = buflisted(b) ? 'buffers_listed' : 'buffers_unlisted'
 		let bufname_prop = is_modified ? 'buffers_mod' : bufname_prop
 		let bufname_prop = is_terminal ? 'buffers_terminal' : bufname_prop
+		let bufname_prop = is_directory ? 'buffers_directory' : bufname_prop
 
 		let repl = #{bufname: bufname, bufdetails: bufdetails}
 		let [line, positions] = util#fmt(fmt, repl, 1)
@@ -486,7 +488,9 @@ endf
 "   - path (string): the prettified path
 "
 func! s:prettify_path(path)
-	let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
+	let repl = getcwd() != $HOME ? '\V\^'.getcwd().'/' : ''
+	let path = substitute(a:path, repl, '', '')
+	let path = substitute(path, '\v/$', '', '')
 	let path = substitute(path, '\V\^'.$HOME, '~', '')
 	return path
 endf

@@ -21,7 +21,7 @@ let s:options = #{
 	\ padding: [0, 1, 0, 1],
 	\ label_unnamed: '[no name]',
 	\ label_terminal: '[terminal]',
-	\ line_format: '%{bufname} %{bufdetails}',
+	\ line_format: '%{bufname} ‣ %{bufdetails}',
 	\ popup: 1,
 	\ popup_borderchars: ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
 	\ popup_hl: 'Normal',
@@ -61,7 +61,7 @@ endfo
 
 call prop_type_add('buffers_mod', {'highlight': 'Red'})
 call prop_type_add('buffers_dim', {'highlight': 'Comment'})
-call prop_type_add('buffers_listed', {'highlight': 'Normal'})
+call prop_type_add('buffers_listed', {'highlight': 'Fg'})
 call prop_type_add('buffers_unlisted', {'highlight': 'Comment'})
 call prop_type_add('buffers_terminal', {'highlight': 'Magenta'})
 call prop_type_add('buffers_directory', {'highlight': 'Directory'})

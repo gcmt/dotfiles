@@ -117,7 +117,7 @@ if _should_install bash; then
 fi
 
 if _should_install tmux; then
-	link "$dotdir/tmux/tmux.conf" "$HOME/.tmux.conf"
+	link "$dotdir/tmux" "$XDG_CONFIG_HOME/tmux"
 fi
 
 if _should_install git; then

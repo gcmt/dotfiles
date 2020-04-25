@@ -425,7 +425,8 @@
 	endf
 
 	" when there is only one tab, open a new one
-	nnoremap <silent> gt :exec tabpagenr('$') == 1 ? 'tab split' : 'norm! gt'<cr>
+	nnoremap <silent> <expr> gt tabpagenr('$') == 1 ? ':$tab split<cr>' : '<c-u>:norm! '.v:count.'gt<cr>'
+	nnoremap <silent> <expr> gT tabpagenr('$') == 1 ? ':0tab split<cr>' : '<c-u>:norm! '.v:count.'gT<cr>'
 
 " WINDOWS
 " ----------------------------------------------------------------------------

@@ -340,7 +340,7 @@
 		end
 		let bnum = a:win.bufnr
 		let diff = getbufvar(bnum, '&diff')
-		let branch = exists('*fugitive#head') ? fugitive#head() : ''
+		let branch = exists('*FugitiveHead') ? FugitiveHead() : ''
 		if !diff && !empty(branch) && a:win.width > 60
 			return 'git:' . branch
 		end

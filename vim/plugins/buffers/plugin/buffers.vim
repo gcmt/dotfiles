@@ -21,7 +21,7 @@ let s:options = #{
 	\ padding: [0, 1, 0, 1],
 	\ label_unnamed: '[no name]',
 	\ label_terminal: '[terminal]',
-	\ line_format: '%{bufname} ‣ %{bufdetails}',
+	\ line_format: '%{bufname}%( ‣ %{bufdetails}%)',
 	\ popup: 1,
 	\ popup_borderchars: ['─', '│', '─', '│', '┌', '┐', '┘', '└'],
 	\ popup_hl: 'Normal',

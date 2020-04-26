@@ -268,10 +268,18 @@
 		let name = ''
 		if empty(bname)
 			let name = '[no name]'
-		elseif !empty(bt) || a:win.width < 80 || ft == 'notes'
+		elseif !empty(bt) || ft == 'notes'
 			let name = fnamemodify(bname, ':t')
 		else
-			let name = join(split(fnamemodify(bname, ':p:~'), '/')[-2:], '/')
+			if winwidth(a:win.winid) < 60
+				let name = fnamemodify(bname, ':t')
+			elseif winwidth(a:win.winid) > 100
+				let name = fnamemodify(bname, ':p')
+				let name = substitute(name, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
+				let name = substitute(name, '\V\^'.$HOME, '~', '')
+			else
+				let name = join(split(fnamemodify(bname, ':p:~'), '/')[-2:], '/')
+			end
 		end
 		if getbufvar(bnum, '&modified')
 			let name = '** ' . name . ' **'
@@ -364,34 +372,36 @@
 		return printf("@%s|%dL|%dc", reg, lines, chars)
 	endf
 
+	func! _stl_mode(win)
+		let map = {'n': 'normal', 'v': 'visual', 'V': 'visual', 'i': 'insert', 'c': 'cmd'}
+		return toupper('--'.get(map, mode(), mode()).'--')
+	endf
+
 	func! _stl()
 		let ret = ''
 
 		let win = getwininfo(g:statusline_winid)[0]
 		let sep = win.width < 110 ? '  ' : '   '
 
-		let items = []
-		call add(items, _stl_alternate(win))
-		call add(items, _stl_buffer(win, sep))
+		try
+			let items = []
+			" call add(items, _stl_mode(win))
+			call add(items, _stl_alternate(win))
+			call add(items, _stl_buffer(win, sep))
+			call add(items, '%=')
+			call add(items, _stl_regtee())
+			call add(items, _stl_clip(win))
+			call add(items, _stl_venv(win))
+			call add(items, _stl_branch(win))
+			call add(items, _stl_meta(win, sep))
+			call add(items, '%1lL %02cC (%P)')
+			call add(items, _stl_flags(win))
+			call filter(items, {_, v -> !empty(v)})
+			return ' ' . join(items, sep) . ' '
+		catch /.*/
+			return matchstr(v:exception, '\vE\d+:.*')
+		endtry
 
-		call filter(items, 'len(v:val)')
-		let ret .= ' ' . join(items, sep)
-
-		let ret .= '%='
-
-		let items = []
-		call add(items, _stl_regtee())
-		call add(items, _stl_clip(win))
-		call add(items, _stl_venv(win))
-		call add(items, _stl_branch(win))
-		call add(items, _stl_meta(win, sep))
-		call add(items, '%1lL %02cC (%P)')
-		call add(items, _stl_flags(win))
-
-		call filter(items, 'len(v:val)')
-		let ret .= join(items, sep) . ' '
-
-		return ret
 	endf
 
 	set stl=%!_stl()

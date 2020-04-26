@@ -27,72 +27,73 @@
 		let $VIMDATA = $XDG_DATA_HOME.'/vim'
 	end
 
-	if !exists('$VIMPLUGS')
-		let $VIMPLUGS = join([$VIMDATA.'/plugins', $VIMHOME.'/plugins'], ':')
-	end
+	let g:plugins = []
 
-	func! s:find_plugins()
-		let plugins = []
-		for path in split($VIMPLUGS, ':')
-			call extend(plugins, filter(glob(path.'/[^_]*', 1, 1), 'isdirectory(v:val)'))
-		endfor
-		return plugins
-	endf
+	comm! -nargs=1 Plug call add(g:plugins, $VIMDATA . '/plugins/' . <q-args>)
+	comm! -nargs=1 Plugl call add(g:plugins, $VIMHOME . '/plugins/' . <q-args>)
+
+	Plugl autotype
+	Plugl bookmarks
+	Plugl buffers
+	Plugl commenter
+	Plugl ctags
+	Plugl explorer
+	Plugl finder
+	Plugl fm
+	Plugl fzf
+	Plugl grep
+	Plugl marks
+	Plugl objects
+	Plugl pairs
+	Plugl python
+	Plugl quickfix
+	Plugl regtee
+	Plugl search
+	Plugl spotter
+	Plugl taggify
+	Plugl taglist
+	Plugl term
+	Plugl tmux
+
+	Plug YouCompleteMe
+	Plug ale
+	Plug vim-fugitive
+	Plug gv.vim
+	Plug vim-gitgutter
+	Plug ultisnips
+	Plug vim-css-color
+	Plug vim-vue
+	Plug vim-javascript
+	Plug css.vim
+	Plug html5.vim
+	Plug vim-elixir
+	Plug vim-markdown
+	Plug vim-yaml
+
+	delcomm Plug
+	delcomm Plugl
 
 	func! s:set_rtp()
 		let rtp = []
-		let plugins = s:find_plugins()
 		call add(rtp, $VIMHOME)
-		call extend(rtp, plugins)
+		call extend(rtp, g:plugins)
 		call add(rtp, $VIM.'/vimfiles')
 		call add(rtp, $VIMRUNTIME)
 		call add(rtp, $VIM.'/vimfiles/after')
-		call extend(rtp, globpath(join(plugins, ','), 'after', 1, 1))
+		call extend(rtp, globpath(join(g:plugins, ','), 'after', 1, 1))
 		call add(rtp, $VIMHOME.'/after')
 		let &rtp = join(rtp, ',')
 	endf
 
 	func! s:helptags()
-		for docdir in globpath(join(s:find_plugins(), ','), 'doc', 1, 1)
+		for docdir in globpath(join(g:plugins, ','), 'doc', 1, 1)
 			exec 'helptags' docdir
 		endfor
 	endf
 
-	if !empty($VIMHOME)
+	call s:set_rtp()
 
-		aug _rtp
-			au!
-			au User UpdateRtp call <sid>set_rtp()
-		aug END
-
-		call s:set_rtp()
-
-		comm! Helptags call <sid>helptags()
-
-	end
-
-" PLUGINS
-" ----------------------------------------------------------------------------
-
-	if !empty($VIMDATA)
-		let g:plugs_path = $VIMDATA.'/plugins'
-	end
-
-	let g:plugs_list = [
-		\ 'https://github.com/w0rp/ale',
-		\ 'https://github.com/tpope/vim-fugitive',
-		\ 'https://github.com/junegunn/gv.vim',
-		\ 'https://github.com/airblade/vim-gitgutter',
-		\ 'https://github.com/SirVer/ultisnips',
-		\ 'https://github.com/ap/vim-css-color',
-		\ 'https://github.com/posva/vim-vue',
-		\ 'https://github.com/pangloss/vim-javascript',
-		\ 'https://github.com/JulesWang/css.vim',
-		\ 'https://github.com/othree/html5.vim',
-		\ 'https://github.com/elixir-lang/vim-elixir',
-		\ 'https://github.com/tpope/vim-markdown',
-		\ 'https://github.com/stephpy/vim-yaml',
-	\ ]
+	comm! Helptags call <sid>helptags()
 
 " OPTIONS
 " ----------------------------------------------------------------------------

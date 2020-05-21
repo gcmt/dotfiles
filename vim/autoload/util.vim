@@ -49,48 +49,42 @@ endf
 
 
 " Delete the buffer without closing the window
+"
 func! util#bdelete(cmd, bang)
 
-	let winnr = winnr()
-	let bufnr = bufnr('%')
+	let target = bufnr("%")
 
 	if &modified && empty(a:bang)
-		return util#errm('E89 No write since last change for buffer %d (add ! to override)', bufnr)
+		return util#errm('E89 No write since last change for buffer %d (add ! to override)', target)
 	end
 
-	let prev_winnr = -1
-	while 1
-		let cur_winnr = bufwinnr(bufnr)
-		if cur_winnr == -1 || cur_winnr == prev_winnr
-			break
-		end
-		exec cur_winnr 'wincmd w'
-		let prev_winnr = cur_winnr
-		let repl = -1
-		if buflisted(bufnr('#'))
-			let repl = bufnr('#')
-		else
-			for b in range(1, bufnr('$'))
-				if buflisted(b) && b != bufnr
-					let repl = b
-					break
-				end
-			endfo
-		end
-		if repl > -1
-			sil exec 'buffer' repl
-		else
-			enew
-		end
-	endw
+	let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&bt'))}
+	let buffers = filter(range(1, bufnr('$')), Fn)
 
-	exec winnr 'wincmd w'
+	" select the next buffer as a replacement buffer
+	let repl = buffers[(index(buffers, target)+1) % len(buffers)]
+
+	if repl == target
+		if empty(bufname(target))
+			" there are no more named buffers to switch to
+			return
+		end
+		call win_execute(bufwinid(target), 'enew')
+	else
+		while bufwinid(target) != -1
+			call win_execute(bufwinid(target), 'buffer ' . repl)
+		endw
+	end
+
+	let cmd = a:cmd
+	if getbufvar(target, '&buftype') == 'terminal'
+		let cmd = 'bwipe!'
+	end
 
 	try
-		exec a:cmd.a:bang bufnr
-		echom a:cmd.a:bang bufname(bufnr)
+		exec cmd target
 	catch /E.*/
-		return util#errm(matchstr(v:exception, '\vE\d+:.*'))
+		return s:err(matchstr(v:exception, '\vE\d+:.*'))
 	endtry
 
 endf

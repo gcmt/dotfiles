@@ -778,6 +778,8 @@
 
 		au BufEnter * if isdirectory(expand('%:p')) | exec 'Explorer!' expand('%:p') | end
 
+		au FocusGained,BufEnter,CursorHold * sil! checktime
+
 		au BufWritePost *vimrc source $MYVIMRC | set ft=vim
 		au BufWritePost */vim/colors/*.vim nested exec 'colorscheme' g:colors_name
 		au BufWritePost */*Xresources.d/* call <sid>set_bg(&background)

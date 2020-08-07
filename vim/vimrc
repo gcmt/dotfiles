@@ -835,7 +835,9 @@
 
 	" Write helpers
 	command! -nargs=0 SudoWrite exec 'write !sudo tee % > /dev/null'
-	command! -nargs=* Write write <args>
+	command! -bang -nargs=* W write<bang> <args>
+	command! -bang Wq wq<bang>
+	command! -bang Q q<bang>
 
 	" Returns the syntax group under the cursor
 	func! _cursyn()

@@ -728,6 +728,7 @@
 		if !empty(path)
 			let cd = empty(a:bang) ? 'cd' : 'lcd'
 			exec cd fnameescape(path)
+			doau User UpdateTagfiles
 			pwd
 		end
 	endf

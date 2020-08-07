@@ -158,7 +158,7 @@ func! util#fmt(fmt, repl, positions = 0) abort
 		end
 
 		" A group as started
-		if s[i] == '(' && empty(placeholder) && magic
+		if s[i] == '(' && magic
 			let magic = 0
 			call add(repls, 0)
 			call add(groups, "")

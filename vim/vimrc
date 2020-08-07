@@ -197,7 +197,7 @@
 	set scrolloff=0
 	set sidescrolloff=0
 
-	set virtualedit=block,onemore
+	set virtualedit=block
 	set mouse=a
 	set ttymouse=xterm2
 
@@ -239,7 +239,7 @@
 	set list
 	set fillchars=vert:┃
 	let g:listchars = ',trail:·,precedes:‹,extends:›'
-	let &listchars = 'tab:  ' . listchars
+	let &listchars = 'tab:│ ' . listchars
 
 	nnoremap <silent> goi :call <sid>toggle_indent_guides("│")<cr>
 	nnoremap <silent> goI :call <sid>toggle_indent_guides("┃")<cr>
@@ -946,7 +946,7 @@
 
 	let g:spotter_banned_filetypes = {
 		\ 'html':1, 'jinja':1, 'htmldjango':1, "json":1,
-	   \ 'text':1, 'markdown':1, 'notes':1,
+		\ 'text':1, 'markdown':1, 'notes':1,
 	\ }
 
 	let g:spotter_banned_syntax_elixir = {
@@ -971,6 +971,8 @@
 	let g:ale_open_list = 0
 
 	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
+	let g:ale_python_pylint_options = '--disable=C0111,C0103'
+	let g:ale_python_flake8_options = '--ignore=E501,E302,E305,E265,E266,E231,E116,E117,E226,E241'
 
 " Explorer/Ranger/Vifm
 " ----------------------------------------------------------------------------
@@ -1015,6 +1017,12 @@
 	let g:UltiSnipsJumpForwardTrigger = '<c-s>'
 	let g:UltiSnipsJumpBackwardTrigger = '<c-b>'
 	let g:UltiSnipsSnippetsDir = $VIMHOME . '/UltiSnips'
+
+" YouCompleteMe
+" ----------------------------------------------------------------------------
+
+	let g:ycm_min_num_of_chars_for_completion = 3
+	let g:ycm_filetype_whitelist = #{python: 1, javascript: 1, cs: 0}
 
 " GitGutter
 " ----------------------------------------------------------------------------

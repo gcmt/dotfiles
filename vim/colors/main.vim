@@ -64,7 +64,7 @@ let s:colored = [
 	\ 'Search', 'IncSearch',
 	\ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded', 'WildMenu',
 	\ 'Linenr', 'CursorLineNr',
-	\ 'CursorLine', 'CursorColumn', 'ColorColumn',
+	\ 'PopupSelected', 'CursorLine', 'CursorColumn', 'ColorColumn',
 	\ 'SignColumn', 'FoldColumn',
 	\ 'WarningMsg', 'ErrorMsg', 'ModeMsg', 'MoreMsg', 'Question',
 	\ 'DiffAdd', 'DiffDelete', 'DiffChange', 'DiffText',
@@ -106,8 +106,10 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Magenta', s:magenta, '', 'none', '')
 	cal s:h('Yellow', s:yellow, '', 'none', '')
 	cal s:h('Fg', s:fg, '', 'none', '')
+	cal s:h('Bg', '', s:bg, 'none', '')
 	cal s:h('FgDim', s:fg_dim, '', 'none', '')
 	cal s:h('FgVeryDim', s:fg_very_dim, '', 'none', '')
+	cal s:h('FgSuperDim', s:fg_super_dim, '', 'none', '')
 
 	cal s:h('StatusLineNC', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
@@ -138,9 +140,10 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('Linenr', s:fg_very_dim, '', '', '')
 	cal s:h('CursorLineNr', s:red, '', 'none', '')
 	cal s:h('CursorLine', '', s:bg_accent, 'none', '')
+	cal s:h('PopupSelected', '', s:bg_accent, 'bold', '')
 	cal s:h('CursorColumn', '', s:bg_accent, '', '')
 	cal s:h('ColorColumn', '', s:bg_accent, '', '')
-	cal s:h('SignColumn', '', s:bg, '', '')
+	cal s:h('SignColumn', '', s:bg_accent, '', '')
 	cal s:h('FoldColumn', s:bg, s:bg, '', '')
 
 	cal s:h('WarningMsg', s:red, s:bg, '', '')
@@ -156,8 +159,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
 	cal s:h('PMenu', s:fg_dim, s:bg_accent, 'none', '')
 	cal s:h('PMenuSel', s:bg_accent, s:fg_dim, '', '')
-	cal s:h('PMenuSBar', s:bg_accent, s:bg_accent, 'none', '')
-	cal s:h('PMenuThumb', s:fg_dim, s:bg_accent, 'none', '')
+	cal s:h('PMenuSBar', '', s:bg_accent, 'none', '')
+	cal s:h('PMenuThumb', '', s:fg_super_dim, 'none', '')
 
 	cal s:h('TabLine', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('TabLineSel', s:fg_dim, s:bg, 'none', '')
@@ -202,7 +205,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	if g:minimal && &bg == 'dark'
 		cal s:h('String', s:magenta, '', '', '')
 	elseif g:minimal && &bg == 'light'
-		cal s:h('String', s:cyan, '', '', '')
+		cal s:h('String', s:blue, '', '', '')
 	else
 		cal s:h('String', s:green, '', '', '')
 	end
@@ -212,7 +215,14 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('QuickFixLine', s:bg, s:fg_dim, '', '')
 
 	cal s:h('Yank', '', s:bg_accent, '', '')
-	cal s:h('Spotter', '', s:bg_accent, '', '')
+
+	if g:minimal && &bg == 'dark'
+		cal s:h('Spotter', '', s:bg_accent, '', '')
+	elseif g:minimal && &bg == 'light'
+		cal s:h('Spotter', '', s:fg_super_dim, '', '')
+	else
+		cal s:h('Spotter', '', s:bg_accent, '', '')
+	end
 
 	cal s:h('GitGutterAdd', s:green, '', '', '')
 	cal s:h('GitGutterChange', s:orange, '', '', '')

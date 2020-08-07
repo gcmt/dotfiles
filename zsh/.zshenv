@@ -17,3 +17,5 @@ export BROWSER=firefox
 export LANG=en_US.UTF-8
 
 export RANGER_LOAD_DEFAULT_RC=FALSE
+
+export DOTNET_CLI_TELEMETRY_OPTOUT=1

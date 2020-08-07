@@ -201,8 +201,8 @@
 	set mouse=a
 	set ttymouse=xterm2
 
-	set noexpandtab
-	set tabstop=3
+	set expandtab
+	set tabstop=4
 	set shiftwidth=0
 	set softtabstop=0
 	set autoindent

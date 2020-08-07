@@ -1,5 +1,8 @@
 
 setl commentstring=//\ %s
+setl noexpandtab
+setl tabstop=3
+setl shiftwidth=0
 
 nnoremap <buffer> <f5> :!node %<cr>
 inoremap <buffer> <f5> <esc>:!node %<cr>

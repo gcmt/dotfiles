@@ -1,4 +1,7 @@
 
+setl noexpandtab
+setl tabstop=3
+
 setl keywordprg=:help
 call setbufvar(bufnr('%'), '&cms', '" %s')
 

@@ -12,9 +12,13 @@ func! autotype#python#esc_o()
 
 	let line = getline('.')
 
-	let keywords = '(def|class|if|elif|else|for|while|try|except|with)'
+	let keywords = '(async|def|class|if|elif|else|for|while|try|except|with)'
 	if line =~ '\v^\s*'.keywords.'>' && line !~ '\v:$'
-		call setline(line('.'), substitute(line, '\v\s*$', ':', ''))
+		if line =~ '\vwhile$'
+			let line .= " True"
+		end
+		let line = substitute(line, '\v\s*$', ':', '')
+		call setline(line('.'), line)
 	end
 
 	return "\<esc>o"

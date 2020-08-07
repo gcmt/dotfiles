@@ -757,6 +757,8 @@
 		au BufEnter,BufNewFile * let b:strip_spaces = 1
 		au BufEnter,BufNewFile *.py let b:strip_lines = 1
 
+		au BufEnter,BufNewFile *.adoc let b:strip_spaces = 0
+
 	aug END
 
 	func! s:strip_trailing_spaces()

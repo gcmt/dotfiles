@@ -848,8 +848,6 @@
 
 	nnoremap <2-RightMouse> <nop>
 	nnoremap <3-RightMouse> <nop>
-	nnoremap <right> l
-	nnoremap <left> h
 
 	nnoremap <F2> :w<cr>
 	inoremap <F2> <esc>:w<cr>
@@ -908,6 +906,7 @@
 " Buffers
 " ----------------------------------------------------------------------------
 
+	nnoremap <silent> <c-b> :Buffers<cr>
 	nnoremap <silent> gl :Buffers<cr>
 	nnoremap <silent> gL :Buffers!<cr>
 	tnoremap <silent> <c-g>l <c-w>:Buffers<cr>

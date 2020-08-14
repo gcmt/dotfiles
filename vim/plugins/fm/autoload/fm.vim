@@ -97,18 +97,15 @@ func! s:exit_cb(job, status) dict
 	end
 	let lines = readfile(self.out_file)
 	call delete(self.out_file)
-	let ctx = {'status': a:status, 'selection': lines}
+	let ctx = {'status': a:status, 'selection': lines, 'cmd': self.cmd}
 	call funcref(self.callback, [], ctx)()
 endf
 
 
 " s:vifm_callback() -> 0
 func! s:vifm_callback() dict
-	if self.status
-		return s:err("Command failed with error %d: %s", self.status, self.cmd)
-	end
 	if empty(self.selection)
-		return
+		return s:err("Command failed with error %d: %s", self.status, self.cmd)
 	end
 	call map(self.selection, {i, v -> fnameescape(v)})
 	if len(self.selection) > 1

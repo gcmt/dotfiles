@@ -1,23 +1,22 @@
 
-func! autotype#elixir#setup()
-	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#elixir#space()<cr>
-	inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=autotype#elixir#esc_o()<cr>
+func! flow#elixir#setup()
+	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=flow#elixir#space()<cr>
+	inoremap <silent> <buffer> <c-d> <c-]><c-g>u<c-r>=flow#elixir#esco()<cr>
 endf
 
-func! autotype#elixir#space()
+func! flow#elixir#space()
 	let line = getline('.')
-	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
-	if g:autotype_disabled || autotype#inside('String', 'Comment') || s:nextline_indented()
-		return Space()
+	if g:flow_disabled || flow#inside('String', 'Comment') || s:nextline_indented()
+		return flow#common#space()
 	end
-	let after = autotype#after()
+	let after = flow#after()
 	if line =~ '\v^\s*def' && line =~ '\v,$' && after =~ '\v^\s*$'
 		return ' do: '
 	end
-	return Space()
+	return flow#common#space()
 endf
 
-fun! autotype#elixir#esc_o()
+fun! flow#elixir#esco()
 	let line = getline('.')
 	if line =~ '\v^\s*def' && line !~ '\v<do$' && !s:is_inline_function()
 		call setline(line('.'), substitute(line, '\v\s*$', ' do', ''))

@@ -32,7 +32,7 @@
 	comm! -nargs=1 Plug call add(g:plugins, $VIMDATA . '/plugins/' . <q-args>)
 	comm! -nargs=1 Plugl call add(g:plugins, $VIMHOME . '/plugins/' . <q-args>)
 
-	Plugl autotype
+	Plugl flow
 	Plugl bookmarks
 	Plugl buffers
 	Plugl commenter
@@ -44,7 +44,6 @@
 	Plugl grep
 	Plugl marks
 	Plugl objects
-	Plugl pairs
 	Plugl python
 	Plugl quickfix
 	Plugl regtee

@@ -1,20 +1,19 @@
 
-func! autotype#sh#setup()
-	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=autotype#sh#space()<cr>
-	inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=autotype#sh#outward_parenthesis()<cr>
+func! flow#sh#setup()
+	inoremap <silent> <buffer> <space> <c-]><c-g>u<c-r>=flow#sh#space()<cr>
+	inoremap <silent> <buffer> ( <c-]><c-g>u<c-r>=flow#sh#paren()<cr>
 endf
 
-func! autotype#sh#outward_parenthesis()
-	let Paren = {-> exists('*pairs#insert_paren') ? pairs#insert_paren('(') : '('}
+func! flow#sh#paren()
 
-	if g:autotype_disabled || autotype#inside('String', 'Comment')
-		return Paren()
+	if g:flow_disabled || flow#inside('String', 'Comment')
+		return flow#common#paren()
 	end
 
 	let line = getline('.')
 	let next = getline(nextnonblank(line('.')+1))
-	let indent = autotype#indent('.')
-	let next_indented = indent < autotype#indent(next)
+	let indent = flow#indent('.')
+	let next_indented = indent < flow#indent(next)
 
 	if line =~ '\v\c^\s*[a-z0-9:_-]+$'
 		let seq = "() {\<esc>F)i"
@@ -24,21 +23,20 @@ func! autotype#sh#outward_parenthesis()
 		return seq
 	end
 
-	return Paren()
+	return flow#common#paren()
 endf
 
 
-func! autotype#sh#space()
-	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
+func! flow#sh#space()
 
-	if g:autotype_disabled || autotype#inside('String', 'Comment')
-		return Space()
+	if g:flow_disabled || flow#inside('String', 'Comment')
+		return flow#common#space()
 	end
 
 	let line = getline('.')
 	let next = getline(nextnonblank(line('.')+1))
-	let indent = autotype#indent(line)
-	let next_indented = indent < autotype#indent(next)
+	let indent = flow#indent(line)
+	let next_indented = indent < flow#indent(next)
 
 	if line =~ '\v^\s*elif$'
 		return " ; then\<esc>F;i"
@@ -68,5 +66,5 @@ func! autotype#sh#space()
 		return seq
 	end
 
-	return Space()
+	return flow#common#space()
 endf

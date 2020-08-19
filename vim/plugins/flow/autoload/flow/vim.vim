@@ -1,17 +1,17 @@
 
-func! autotype#vim#setup()
-	inoremap <silent> <buffer> <space> <c-]><c-r>=autotype#vim#space()<cr>
+func! flow#vim#setup()
+	inoremap <silent> <buffer> <space> <c-]><c-r>=flow#vim#space()<cr>
+	inoremap <silent> <buffer> <c-t> <c-]><c-r>=flow#common#skipto('\v(end%[if]\|endf%[untion]\|endfo%[r]\|endw%[hile])', 1)<cr>
 endf
 
-func! autotype#vim#space()
-	let Space = {-> exists('*pairs#space') ? pairs#space() : ' '}
+func! flow#vim#space()
 
 	let line = getline('.')
 	let next = getline(nextnonblank(line('.')+1))
-	let indent = autotype#indent(line)
+	let indent = flow#indent(line)
 
-	if g:autotype_disabled || autotype#inside('String', 'Comment') || indent < autotype#indent(next)
-		return Space()
+	if g:flow_disabled || flow#inside('String', 'Comment') || indent < flow#indent(next)
+		return flow#common#space()
 	end
 
 	if line =~ '\v^\s*if$' && next !~ '\v^\s{'.indent.'}(else|end%[if])>'
@@ -30,5 +30,5 @@ func! autotype#vim#space()
 		return " \<cr>endw\<esc>kA"
 	end
 
-	return Space()
+	return flow#common#space()
 endf

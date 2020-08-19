@@ -45,6 +45,7 @@ let s:options = #{
 		\ 'u': '@bunload',
 		\ 'U': '@bunload!',
 		\ 'l': '@edit',
+		\ '.': '@fzf',
 		\ "\<cr>": '@edit',
 	\ },
 	\ popup_mappings: {

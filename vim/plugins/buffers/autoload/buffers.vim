@@ -165,9 +165,12 @@ func s:do_action(action, ctx, close_fn = v:none)
 		if empty(a:ctx.table) && type(a:close_fn) == v:t_func
 			call a:close_fn()
 		end
-	elseif a:action == 'quit'
+	elseif a:action =~ 'quit' || a:action =~ 'fzf'
 		if type(a:close_fn) == v:t_func
 			call a:close_fn()
+		end
+		if a:action =~ 'fzf'
+			exec ":Files!"
 		end
 	else
 		call s:err("Unknown action: " . a:action)
@@ -246,6 +249,8 @@ func! s:setup_mappings(mappings, ctx)
 		end
 		if action == '@quit'
 			let action = ':close'
+		elseif action == '@quit'
+			let action = ':close<cr>:Files!'
 		end
 		if action =~ '\v^\@'
 			call s:_nnoremap(char, ":call <sid>_do('".action[1:]."')")

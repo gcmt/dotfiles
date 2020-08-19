@@ -300,7 +300,9 @@ zle -N delete-argument
 
 # add timestamp every time a command is executed
 accept-line-timestamp() {
-	RPROMPT='%F{22}%*%f'
+    if [[ -n $BUFFER ]]; then
+        RPROMPT='%F{22}%*%f'
+    fi
 	zle reset-prompt
 	zle accept-line
 	RPROMPT=

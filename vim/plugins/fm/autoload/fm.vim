@@ -105,7 +105,7 @@ endf
 " s:vifm_callback() -> 0
 func! s:vifm_callback() dict
 	if empty(self.selection)
-		return s:err("Command failed with error %d: %s", self.status, self.cmd)
+		return
 	end
 	call map(self.selection, {i, v -> fnameescape(v)})
 	if len(self.selection) > 1

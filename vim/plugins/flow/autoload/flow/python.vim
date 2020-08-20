@@ -6,7 +6,7 @@ endf
 func! flow#python#esco()
 
 	if g:flow_disabled || flow#inside('Comment')
-		return "\<esc>o"
+		return flow#common#esco()
 	end
 
 	let line = getline('.')
@@ -20,5 +20,5 @@ func! flow#python#esco()
 		call setline(line('.'), line)
 	end
 
-	return "\<esc>o"
+	return flow#common#esco()
 endf

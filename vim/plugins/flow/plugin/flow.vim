@@ -30,7 +30,7 @@ aug _flow
 
 	au BufEnter * call flow#common#setup()
 
-	au BufEnter *.js,*.jsx call flow#javascript#setup()
+	au BufEnter *.js,*.jsx,*.ts,*.tsx call flow#javascript#setup()
 
 	au BufEnter *.js,*.jsx,*.ts,*.tsx,*.html call flow#tag#setup()
 

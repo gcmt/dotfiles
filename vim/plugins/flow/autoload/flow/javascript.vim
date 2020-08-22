@@ -46,7 +46,7 @@ endf
 
 func! flow#javascript#paren()
 	if g:flow_disabled || flow#inside('String', 'Comment') || indent(line('.')) < indent(nextnonblank(line('.')+1))
-		return flow#autoclose('(', ')')
+		return flow#common#autoclose('(', ')')
 	end
 	let before = flow#before()
 	let after = flow#after()
@@ -60,19 +60,19 @@ func! flow#javascript#paren()
 			return "() {\<cr>}\<esc>kg_F(a"
 		end
 	end
-	return flow#autoclose('(', ')')
+	return flow#common#autoclose('(', ')')
 endf
 
 func! flow#javascript#brace()
 	if g:flow_disabled || flow#inside('String', 'Comment')
-		return flow#autoclose('{', '}')
+		return flow#common#autoclose('{', '}')
 	end
 	let before = flow#before()
 	if before =~ '\v<(else|) ?$'
 		let space = before !~ ' $' ? ' ' : ''
 		return space . "{}\<left>\<cr>\<esc>O"
 	end
-	return flow#autoclose('{', '}')
+	return flow#common#autoclose('{', '}')
 endf
 
 func! flow#javascript#complete_line()

@@ -32,6 +32,8 @@ aug _flow
 
 	au BufEnter *.js,*.jsx call flow#javascript#setup()
 
+	au BufEnter *.js,*.jsx,*.ts,*.tsx,*.html call flow#tag#setup()
+
 	au BufEnter *.css,*.scss call flow#css#setup()
 
 	au BufEnter *.html call flow#html#setup()

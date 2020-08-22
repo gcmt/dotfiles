@@ -1,8 +1,11 @@
 
+func! flow#tag#setup()
+	inoremap <silent> <buffer> > <c-]><c-r>=flow#tag#autoclose()<cr>
+endf
+
 let s:self_closing_tags = {
 	\ "img":1, "style":1, "meta": 1, "area": 1, "input": 1, "link": 1
 \ }
-
 
 func! s:find_tag_name(linenr, colnr)
 	let braces = 0
@@ -37,7 +40,7 @@ func! s:find_tag_name(linenr, colnr)
 endf
 
 func! flow#tag#autoclose()
-	if &ft !~ '\v(html|javascript)' || flow#synat(line('.'), col('.')) =~ 'string'
+	if &ft !~ '\v(html|javascript|typescript)' || flow#synat(line('.'), col('.')) =~ 'string'
 		return ">"
 	end
 	let before = split(flow#before(), '\zs')

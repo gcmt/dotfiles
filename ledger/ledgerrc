@@ -1,0 +1,4 @@
+--input-date-format %Y-%m-%d
+--date-format %Y-%m-%d
+--no-pager
+--strict

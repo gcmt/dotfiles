@@ -1,24 +1,13 @@
 
-/* Fonts
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-prompt, entry, element {
-	font: "Noto Sans Regular 10";
-}
-
-textbox {
-	font: "Noto Sans Regular 8";
-}
-
 /* Containers
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 window {
+	font: "Noto Sans Regular 10";
 	location: center;
 	anchor: center;
 	width: 40%;
 }
-
 
 mainbox {
 }

@@ -14,4 +14,4 @@ _exit() {
 
 trap "_exit" 0
 
-mpv --input-file="$fifo" --player-operation-mode=pseudo-gui "$@"
+mpv --input-ipc-server="$fifo" --player-operation-mode=pseudo-gui "$@"

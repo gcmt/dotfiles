@@ -182,3 +182,7 @@ if _should_install imwheel; then
 	link "$dotdir/imwheel/imwheelrc" "$HOME/.imwheelrc"
 	link "$dotdir/imwheel" "$XDG_CONFIG_HOME/imwheel"
 fi
+
+if _should_install ledger; then
+	link "$dotdir/ledger/ledgerrc" "$HOME/.ledgerrc"
+fi

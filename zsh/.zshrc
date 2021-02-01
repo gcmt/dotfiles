@@ -215,6 +215,15 @@ va() {
 	[ $# -eq 0 ] && vagrant status || vagrant "$@"
 }
 
+ledger() {
+    if [[ -n "${LEDGER_FILE}" ]]; then
+        echo "Using ${LEDGER_FILE}" >&2
+        command ledger -f "${LEDGER_FILE}" "$@"
+    else
+        command ledger "$@"
+    fi
+}
+
 # ALIASES
 # ----------------------------------------------------------------------------
 

@@ -1,0 +1,8 @@
+[Nemo Action]
+Active=true
+Name=Convert to PDF
+Comment=Convert to PDF
+Exec=<convert-to-pdf.sh %F>
+Selection=any
+Extensions=any
+Quote=double

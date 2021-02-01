@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -e
+
+trap '_err' ERR
+
+_err() {
+    dunstify -t 5000 -u critical -r "${ID}" "Scanning Failed"
+}
+
+ID=8899
+
+fname="Scan_$(date +%Y-%m-%d-%T).png"
+dest="${HOME}/Downloads/${fname}"
+
+dunstify -t 100000 -r "${ID}" "Scanning..."
+scanimage --format png --output-file "${dest}"
+dunstify -r "${ID}" "Scanning OK" "${fname}"

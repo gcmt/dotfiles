@@ -13,10 +13,10 @@ fi
 
 entries=(notes logbook logs todo)
 files=(
-    "$HOME/Docs/notes/wall.md"
-    "$HOME/Docs/logbook/$(date '+%Y-%m-%d').txt"
+    "$HOME/Documents/notes/wall.md"
+    "$HOME/Documents/logbook/$(date '+%Y-%m-%d').txt"
 	 "logs"
-    "$HOME/Docs/todo.md"
+    "$HOME/Documents/todo.md"
 )
 
 idx=$(IFS=$'\n'; echo "${entries[*]}" | eval "rofi $opts")
@@ -31,7 +31,7 @@ if [[ "${files[$idx]}" == "logs" ]]; then
 
 	while read -r file; do
 		files+=("$file")
-	done < <(find ~/Docs/logs/ -type f -name '[^_]*')
+	done < <(find ~/Documents/logs/ -type f -name '[^_]*')
 
 	for file in "${files[@]}"; do
 		entries+=("$(basename "${file%.*}")")

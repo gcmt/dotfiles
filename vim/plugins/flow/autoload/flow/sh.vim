@@ -7,7 +7,7 @@ endf
 func! flow#sh#paren()
 
 	if g:flow_disabled || flow#inside('String', 'Comment')
-		return flow#common#paren()
+		return flow#common#autoclose('(', ')')
 	end
 
 	let line = getline('.')
@@ -23,7 +23,7 @@ func! flow#sh#paren()
 		return seq
 	end
 
-	return flow#common#paren()
+	return flow#common#autoclose('(', ')')
 endf
 
 

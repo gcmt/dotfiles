@@ -3,3 +3,5 @@
 
 #include ".Xresources.d/urxvt"
 #include ".Xresources.d/calc"
+
+Xcursor.size: 16

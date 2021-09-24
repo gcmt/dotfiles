@@ -33,7 +33,7 @@ fun! flow#javascript#space()
 		" return " {\<cr>}\<esc>O"
 	" end
 	if before =~ '\v<class$'
-		return " {\<cr>}\<esc>O\<esc>kg_hi"
+		return "  {\<cr>}\<esc>O\<esc>kg_hi"
 	end
 	if before =~ '\v<(try|finally)$'
 		return " {\<cr>}\<esc>O"

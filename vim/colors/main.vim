@@ -48,7 +48,7 @@ let g:minimal = get(g:, 'minimal', 0)
 
 " make these groups bold in minimal mode
 let s:bold = [
-	\ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception', 'StorageClass',
+	\ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception', 'StorageClass', 'Bold',
 	\ 'htmlTagName', 'htmlEndTag',
 	\ 'pythonInclude',
 	\ 'jsFunction',
@@ -110,6 +110,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 	cal s:h('FgDim', s:fg_dim, '', 'none', '')
 	cal s:h('FgVeryDim', s:fg_very_dim, '', 'none', '')
 	cal s:h('FgSuperDim', s:fg_super_dim, '', 'none', '')
+	cal s:h('Bold', s:fg, '', 'bold', '')
 
 	cal s:h('StatusLineNC', s:fg_very_dim, s:bg_accent, 'none', '')
 	cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')

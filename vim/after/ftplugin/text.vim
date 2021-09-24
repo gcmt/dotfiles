@@ -1,5 +1,6 @@
 
 setl wrap
+setl textwidth=0
 setl linebreak
 setl showbreak=
 setl nolist

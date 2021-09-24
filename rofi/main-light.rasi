@@ -11,6 +11,7 @@
 
 	prompt-background: rgba(225, 228, 232, 100%);
 	prompt-color: rgba(103, 107, 114, 100%);
+	text-color: rgba(103, 107, 114, 100%);
 
 	normal-foreground: @foreground;
 	normal-background: @background;

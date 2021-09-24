@@ -2,6 +2,10 @@
 /* Containers
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
+* {
+    highlight: none;
+}
+
 window {
 	font: "Noto Sans Regular 10";
 	location: center;

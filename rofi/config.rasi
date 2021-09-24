@@ -20,7 +20,6 @@ configuration {
 	threads: 0;
 	scroll-method: 0;
 	click-to-exit: true;
-	show-match: false;
 	theme: "main-light";
 	pid: "/run/user/1000/rofi.pid";
 	display-run: "";

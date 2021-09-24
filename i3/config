@@ -58,6 +58,7 @@ for_window [class="URxvt" instance="floating"] floating enable, $float_m, move p
 for_window [class="URxvt" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
 for_window [class="URxvt" instance="vim-popup"] border pixel 1, floating enable, $float_m, move position center
 
+for_window [instance="system-config-printer"] floating enable
 for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable
 for_window [class="Ssh-askpass"] floating enable
@@ -110,7 +111,7 @@ bindsym $mod+Shift+apostrophe mark "●"
 
 # Firefox shortcuts
 bindsym $mod+backslash exec --no-startup-id i3-focus -c firefox -m - -fallback firefox
-bindsym $mod+Shift+backslash exec --no-startup-id i3-focus -c firefox -m _docs
+bindsym $mod+Shift+backslash exec --no-startup-id i3-focus -c firefox -m docs
 
 # Kill window
 bindsym $mod+Shift+q kill
@@ -266,6 +267,11 @@ bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
 # Change fn keys profile
 bindsym $mod+Escape exec --no-startup-id fnmux -next
 
+# Start/stop timer
+bindsym $mod+F9 exec --no-startup-id timer toggle 25m
+
+# Open docs
+bindsym Control+space exec --no-startup-id rofi-web-search
 
 # Keyboard cheatsheet
 bindsym Menu exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'

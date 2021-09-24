@@ -45,9 +45,9 @@ _mpv_profile() {
 
 _default_profile() {
 	case "$1" in
-		mod+F1) capture -window root ;;
-		mod+Shift+F1) capture -wait -window root ;;
-		mod+F2) capture ;;
+		mod+F1) capture;;
+		mod+Shift+F1) capture -wait ;;
+		mod+F2) capture -select;;
 		mod+F3) exec rec -root ;;
 		mod+F4) exec rec ;;
 		mod+F5) exec i3-focus -c URxvt -t '^Cmus$' -kill -fallback 'urxvt -name floating -title Cmus -e cmus-tmux' ;;

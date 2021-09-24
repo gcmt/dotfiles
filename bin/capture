@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import sys
 import time
 import argparse
 from pathlib import Path
@@ -14,7 +13,7 @@ def notify(*args):
 
 def parse_args():
     parser = argparse.ArgumentParser(allow_abbrev=False)
-    parser.add_argument('-root', action="store_true", default=False)
+    parser.add_argument('-select', action="store_true", default=False)
     parser.add_argument('-wait', type=int, nargs='?', const=4)
     return parser.parse_known_args()
 
@@ -23,7 +22,7 @@ def main():
 
     args, import_args = parse_args()
 
-    cmd = ['import'] + import_args
+    cmd = ['scrot'] + import_args
 
     if args.wait:
         id = '6677'
@@ -33,15 +32,15 @@ def main():
         notify('-C', id)
         time.sleep(0.5)
 
-    if args.root:
-        cmd += ['-win', 'root']
+    if args.select:
+        cmd += ['-s']
 
     timestamp = datetime.now().strftime('%Y-%m-%d-%T')
     dest = Path.home() / f'Downloads/Screenshot_{timestamp}.png'
 
     proc = run(cmd + [dest])
     if proc.returncode:
-        sys.exit(1)
+        raise SystemExit
 
     print(f"Screen captured at {dest}")
 

@@ -1,6 +1,6 @@
 _pkgname=rxvt-unicode
 pkgname=rxvt-unicode-patched
-pkgver=9.22
+pkgver=9.26
 pkgrel=1
 pkgdesc="Unicode enabled rxvt-clone terminal emulator (urxvt)"
 arch=('x86_64')
@@ -15,11 +15,11 @@ _patches=(
 	"font-width.diff"
 )
 source=(
-	http://dist.schmorp.de/rxvt-unicode/$_pkgname-$pkgver.tar.bz2
+	$_pkgname-$pkgver.tar.bz2
 	urxvt.desktop
 	"${_patches[@]}"
 )
-sha256sums=('e94628e9bcfa0adb1115d83649f898d6edb4baced44f5d5b769c2eeb8b95addd'
+sha256sums=('643116b9a25d29ad29f4890131796d42e6d2d21312282a613ef66c80c5b8c98b'
             '195ef9c2babc7e9bcaffaceb9951406c01b7c27a19e43b4dfbd8441ad89f00d0'
             '2ec6d769b7d71861e5efbc6fb9cbf1e48374dea376bca82d2e7dc9867cb8d4a3'
             '66480b448271f28fde29861bb16c513c20d138a2dd19c68835141d9eb7a2dd22')

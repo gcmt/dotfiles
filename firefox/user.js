@@ -1,5 +1,6 @@
 
 user_pref("general.warnOnAboutConfig", false);
+user_pref("browser.tabs.closeWindowWithLastTab", false);
 
 user_pref("permissions.default.desktop-notification", 2);
 

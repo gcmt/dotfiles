@@ -65,7 +65,6 @@ let s:colored = [
 	\ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded', 'WildMenu',
 	\ 'Linenr', 'CursorLineNr',
 	\ 'PopupSelected', 'CursorLine', 'CursorColumn', 'ColorColumn',
-	\ 'SignColumn', 'FoldColumn',
 	\ 'WarningMsg', 'ErrorMsg', 'ModeMsg', 'MoreMsg', 'Question',
 	\ 'DiffAdd', 'DiffDelete', 'DiffChange', 'DiffText',
 	\ 'PMenu', 'PMenuSel', 'PMenuSBar', 'PMenuThumb',

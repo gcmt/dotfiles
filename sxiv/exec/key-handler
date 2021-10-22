@@ -1,8 +1,34 @@
 #!/bin/bash
 
+ID=9900
+delta=100
+
 while read file; do
 	fullpath="$(realpath -P "$file")"
 	case "$1" in
+		"C-s")
+            read -r W H < <(identify -format "%w %h" "${file}")
+            max=$(printf "${W}\n${H}" | sort -n | tail -1)
+            dunstify -r "${ID}" "SXIV" "convert -size ${max}x${max}"
+            convert -size ${max}x${max} xc:white "${file}" -gravity center -composite  "${file}"
+			;;
+		"C-p")
+            read -r W H < <(identify -format "%w %h" "${file}")
+            (( W += delta ))
+            (( H += delta ))
+            dunstify -r "${ID}" "SXIV" "convert -size +${delta}"
+            convert -size ${W}x${H} xc:white "${file}" -gravity center -composite  "${file}"
+			;;
+		"C-o")
+            read -r W H < <(identify -format "%w %h" "${file}")
+            (( W -= delta ))
+            (( H -= delta ))
+            dunstify -r "${ID}" "SXIV" "convert -size -${delta}"
+            convert -size ${W}x${H} xc:white "${file}" -gravity center -composite  "${file}"
+			;;
+		"C-c")
+			convert "$file" -trim "$file"
+			;;
 		"C-r")
 			convert -rotate 90 "$file" "$file"
 			;;

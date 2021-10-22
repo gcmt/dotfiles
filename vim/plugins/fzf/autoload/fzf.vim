@@ -109,7 +109,7 @@ func! fzf#files(cwd, external)
 
 	call s:run({
 		\ 'external': a:external,
-		\ 'source': "rg --files --hidden -g '!.git/'",
+		\ 'source': g:fzf_files_cmd,
 		\ 'callback': funcref('s:files__cb'),
 		\ 'fzf_opts': fzf_opts,
 		\ 'cwd' : empty(a:cwd) ? getcwd() : a:cwd,

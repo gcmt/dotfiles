@@ -171,6 +171,15 @@ activate() {
 	echo "virtual environment activated: $venv"
 }
 
+poet() {
+	POET_MANUAL=1
+	if [[ -v VIRTUAL_ENV ]]; then
+		deactivate
+	else
+		source "$(poetry env info --path)/bin/activate"
+	fi
+}
+
 vimx() {
 	touch "$@" && chmod u+x "$@" && vim "$@"
 }
@@ -204,16 +213,10 @@ mcd() {
 }
 compdef mcd=mkdir
 
-# git shortcut
 g() {
 	[ $# -eq 0 ] && git status || git "$@"
 }
 compdef g=git
-
-# vagrant shortcut
-va() {
-	[ $# -eq 0 ] && vagrant status || vagrant "$@"
-}
 
 ledger() {
     if [[ -n "${LEDGER_FILE}" ]]; then
@@ -222,6 +225,11 @@ ledger() {
     else
         command ledger "$@"
     fi
+}
+
+ledit() {
+    cd "${LEDGER_DIR}"
+    vim -c 'norm! G' "${LEDGER_DIR}/g.$(date +%Y).ledger"
 }
 
 # ALIASES

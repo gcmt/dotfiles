@@ -274,9 +274,6 @@ bindsym $mod+F9 exec --no-startup-id timer toggle 25m
 # Open docs
 bindsym Control+space exec --no-startup-id rofi-web-search
 
-# Keyboard cheatsheet
-bindsym Menu exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
-
 # lsblk menu
 bindsym $mod+x exec --no-startup-id urxvt -name floating -e blkmenu --border -p 'name == "sda"' --open 'vifm {}'
 
@@ -298,6 +295,9 @@ mode "i3" {
 	bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 
 	bindsym w mode "default"; exec --no-startup-id sh -c "cd ~/.local/share/wallpapers && sxiv -rt ."
+
+    # Keyboard cheatsheet
+    bindsym k exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
 
 	bindsym q mode "default"
 	bindsym Return mode "default"

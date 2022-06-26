@@ -3,6 +3,7 @@
 # Applications
 # ----------------------------------------------------------------------------
 
+exec_always --no-startup-id ~/.local/bin/kbset
 exec_always --no-startup-id ~/.config/polybar/start.sh
 exec_always --no-startup-id ~/.config/compton/start.sh
 exec_always --no-startup-id ~/.config/redshift/start.sh

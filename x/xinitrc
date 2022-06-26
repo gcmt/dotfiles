@@ -3,15 +3,11 @@ export MONITOR_PRIMARY="$(xrandr | grep -w "connected" | grep -o "^[^ ]\+")"
 
 export QT_QPA_PLATFORMTHEME=qt5ct
 
-xrdb -load ~/.Xresources
-
 setxkbmap -layout us -variant altgr-intl
 
-xmodmap ~/.Xmodmap
+xrdb -load ~/.Xresources
 
 xset s off dpms 0 0 0
-
-xset r rate 170 25
 
 ~/.fehbg &
 

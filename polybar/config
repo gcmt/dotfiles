@@ -62,7 +62,7 @@ font-2 = "Font Awesome 5 Free:style=Regular:size=10;3"
 
 modules-left = i3
 modules-center = datetime
-modules-right = rec backup updates eth volume timer stopwatch
+modules-right = rec backup kb updates eth volume timer stopwatch
 
 ; Modules
 ; ----------------------------------------------------------------------------
@@ -116,6 +116,10 @@ interval = 3
 type = custom/script
 exec = ~/.config/polybar/modules/eth enp5s0
 interval = 3
+
+[module/kb]
+type = custom/script
+exec = ~/.config/polybar/modules/kb
 
 [module/updates]
 type = custom/script

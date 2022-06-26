@@ -1,0 +1,98 @@
+#!/usr/bin/python -u
+import os
+import hashlib
+import argparse
+from pathlib import Path
+from subprocess import run, PIPE
+
+
+DUNSTIFY_ID = "6688"
+DUNSTIFY_TIMEOUT = "5000"
+
+BIN = "kbset"
+BIN_PATH = os.path.expanduser("~") / Path(f".local/bin/{BIN}")
+SCRIPT_PATH = Path(os.path.realpath(__file__))
+
+
+def print_settings(settings):
+    print(f'%{{A3:{SCRIPT_PATH} -refresh:}}%{{A1:{SCRIPT_PATH} -edit-raw:}} {settings["layout"]}%{{A}}%{{A}}')
+
+
+def parse_args():
+	parser = argparse.ArgumentParser(description="Polybar KB module")
+	parser.add_argument("-refresh", action="store_true", help="set kb settings")
+	parser.add_argument("-edit-raw", action="store_true", help="edit settings with vim")
+	return parser.parse_args()
+
+
+def _dunstify_cmd():
+    return ['dunstify', '-t', DUNSTIFY_TIMEOUT]
+
+
+def notify_settings(settings):
+    settings = "\n".join(f"{setting}: {value}" for setting, value in settings.items())
+    cmd = _dunstify_cmd() + ["Keyboard settings", settings]
+    run(cmd)
+
+
+def notify(msg, urgency="normal"):
+    cmd = _dunstify_cmd() + ["-u", urgency, "Keyboard settings", msg]
+    run(cmd)
+
+
+def edit_with_vim(path):
+    old_hash = get_file_hash(path)
+    cmd = ["urxvt", "-name", "floating", "-e", "vim", path]
+    run(cmd, stdout=PIPE, stderr=PIPE)
+    new_hash = get_file_hash(path)
+    return old_hash != new_hash
+
+
+def execute(bin):
+    proc = run([bin], stderr=PIPE, stdout=PIPE, encoding='utf-8')
+    if proc.returncode != 0:
+        raise RuntimeError(proc.stderr.strip())
+    return proc.stdout.strip()
+
+
+def get_file_hash(path):
+    with path.open("r") as f:
+        return hashlib.md5(f.read().encode("utf-8")).hexdigest()
+
+
+def get_settings():
+    cmd = ["setxkbmap", "-query"]
+    stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout.strip()
+    settings = {}
+    for line in stdout.split("\n"):
+        setting, value = line.split(":")
+        settings[setting.strip()] = value.strip()
+    return settings
+
+
+def kbset():
+    try:
+        stdout = execute(BIN)
+    except RuntimeError as e:
+        notify(str(e), urgency="critical")
+    else:
+        notify_settings(get_settings())
+        if stdout:
+            notify(stdout)
+
+
+def main():
+    args = parse_args()
+
+    if args.edit_raw:
+        if edit_with_vim(BIN_PATH):
+            kbset()
+
+    elif args.refresh:
+        kbset()
+
+    print_settings(get_settings())
+
+
+if __name__ == '__main__':
+    main()

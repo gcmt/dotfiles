@@ -80,8 +80,8 @@ if _should_install rofi; then
 fi
 
 if _should_install compton; then
-	link "$dotdir/compton" "$XDG_CONFIG_HOME/compton"
-	link "$XDG_CONFIG_HOME/compton/compton.conf" "$XDG_CONFIG_HOME/compton.conf"
+	link "$dotdir/compton" "$XDG_CONFIG_HOME/picom"
+	link "$XDG_CONFIG_HOME/compton/compton.conf" "$XDG_CONFIG_HOME/picom.conf"
 fi
 
 if _should_install i3; then

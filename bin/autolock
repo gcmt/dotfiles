@@ -4,5 +4,5 @@ pkill -x xautolock
 while pgrep -x xautolock >/dev/null; do sleep 1; done
 
 xautolock \
-	-cornerdelay 5 -corners "++--" \
+	-cornerdelay 5 -corners "----" \
 	-time 30 -locker "lock -blank 300" &

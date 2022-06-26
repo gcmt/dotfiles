@@ -382,6 +382,13 @@ for i in {1..4}; do
 	bindkey "\\e$i" delete-argument-$i
 done
 
+# PYENV
+# ----------------------------------------------------------------------------
+
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
 # LOCAL RC
 # ----------------------------------------------------------------------------
 

@@ -1,4 +1,4 @@
 
-clear lock
 !! CapsLock -> Escape
+!!clear lock
 !!keycode 66 = Escape

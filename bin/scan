@@ -10,9 +10,15 @@ _err() {
 
 ID=8899
 
+mode="Black & White"
+#mode="Gray"
+#mode="True Gray"
+#mode="24bit Color"
+resolution=${1:-300}
+
 fname="Scan_$(date +%Y-%m-%d-%T).png"
 dest="${HOME}/Downloads/${fname}"
 
 dunstify -t 100000 -r "${ID}" "Scanning..."
-scanimage --format png --output-file "${dest}"
+scanimage --format png --output-file "${dest}" --resolution "${resolution}" --mode "${mode}"
 dunstify -r "${ID}" "Scanning OK" "${fname}"

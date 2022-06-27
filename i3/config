@@ -265,9 +265,6 @@ bindsym $mod+Control+minus floating enable; resize shrink right 40px; resize shr
 bindsym Scroll_Lock exec --no-startup-id lock -force -blank 2
 bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
 
-# Change fn keys profile
-bindsym $mod+Escape exec --no-startup-id fnmux -next
-
 # Start/stop timer
 bindsym $mod+F9 exec --no-startup-id timer toggle 25m
 
@@ -323,23 +320,17 @@ bindsym $mod+Tab mode "open"
 # Controls
 # ----------------------------------------------------------------------------
 
-# Music player / Mpv controls
-bindsym $mod+F5 exec --no-startup-id fnmux mod+F5
-bindsym $mod+F6 exec --no-startup-id fnmux mod+F6
-bindsym $mod+F7 exec --no-startup-id fnmux mod+F7
-bindsym $mod+F8 exec --no-startup-id fnmux mod+F8
-
-# Screenshots / Screen recording
-bindsym $mod+F1 exec --no-startup-id fnmux mod+F1
-bindsym $mod+Shift+F1 exec --no-startup-id fnmux mod+Shift+F1
-bindsym $mod+F2 exec --no-startup-id fnmux mod+F2
-bindsym $mod+F3 exec --no-startup-id fnmux mod+F3
-bindsym $mod+F4 exec --no-startup-id fnmux mod+F4
+# Screenshots
+bindsym Print exec --no-startup-id capture
+bindsym Shift+Print exec --no-startup-id capture -select
 
 # Volume controls
-bindsym $mod+F10 exec --no-startup-id fnmux mod+F10
-bindsym $mod+F11 exec --no-startup-id fnmux mod+F11
-bindsym $mod+F12 exec --no-startup-id fnmux mod+F12
+bindsym XF86AudioMute exec --no-startup-id volume toggle
+bindsym XF86AudioLowerVolume exec --no-startup-id volume down
+bindsym XF86AudioRaiseVolume exec --no-startup-id volume up
+bindsym $mod+F10 exec --no-startup-id volume toggle
+bindsym $mod+F11 exec --no-startup-id volume down
+bindsym $mod+F12 exec --no-startup-id volume up
 
 # Colors
 # ----------------------------------------------------------------------------

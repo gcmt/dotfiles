@@ -13,6 +13,7 @@ set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,phistory,fhistory,dir
 set followlinks
 set dotfiles
 set sortnumbers
+set sort=name
 set scrolloff=4
 set fastrun
 set suggestoptions=normal,visual,view,otherpane,keys,marks,registers
@@ -147,6 +148,7 @@ nnoremap <silent> L :if &previewprg == '' | logview | else | set previewprg='' |
 nnoremap <silent> V :if &viewcolumns == '' | details | else | set viewcolumns='' | endif<cr>
 
 nnoremap Q :quit<cr>
+nnoremap q :quit<cr>
 nnoremap <c-w>q :quit<cr>
 
 nnoremap J 3j

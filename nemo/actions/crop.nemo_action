@@ -1,5 +1,5 @@
 [Nemo Action]
-Active=true
+Active=false
 Name=Crop Image
 Comment=Crop Image
 Dependencies=convert

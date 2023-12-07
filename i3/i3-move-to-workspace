@@ -8,25 +8,25 @@ ask_for_workspace() {
 	opts+=" -kb-custom-1 'Control+Return'"
 
 	local name rofi_exit
-	name="$(eval "rofi $opts")"
+	name="$(echo | eval "rofi ${opts}")"
 	rofi_exit=$?
 
 	# strip whitespaces
-	name="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$name")"
+	name="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "${name}")"
 
 	if (( rofi_exit == 1 )); then
 		exit 1
 	fi
 
-	if [[ -z "$name" ]]; then
+	if [[ -z "${name}" ]]; then
 		# automatically pick a workspace when no name is given
-		case $rofi_exit in
+		case ${rofi_exit} in
 			10) i3-move-to-workspace -auto -nofollow ;;
 			*) i3-move-to-workspace -auto ;;
 		esac
 	else
 		local follow=1
-		if [[ "$name" =~ ^_scratch$ || $rofi_exit == 10 ]]; then
+		if [[ "${name}" =~ ^_scratch$ || ${rofi_exit} == 10 ]]; then
 			follow=0
 		fi
 		move_to_workspace "$name" "$follow"
@@ -38,14 +38,14 @@ ask_for_workspace() {
 move_to_workspace() {
 	local target="$1" follow="$2"
 	local cmd num
-	if [[ "$target" =~ ^[0-9]+$ ]]; then
+	if [[ "${target}" =~ ^[0-9]+$ ]]; then
 		num="number"
 	fi
-	cmd="move to workspace $num \"$target\""
+	cmd="move to workspace ${num} \"${target}\""
 	if (( follow == 1 )); then
-		cmd="$cmd; workspace $num \"$target\""
+		cmd="${cmd}; workspace ${num} \"${target}\""
 	fi
-	i3-msg "$cmd" >/dev/null
+	i3-msg "${cmd}" >/dev/null
 }
 
 
@@ -53,8 +53,8 @@ first_available_workspace() {
 	local num=1
 	local workspaces="$(i3-msg -t get_workspaces | jq '.[] | .num')"
 	while (( num < 10 )); do
-		if ! grep -q "$num" <<< "$workspaces"; then
-			echo "$num"
+		if ! grep -q "${num}" <<< "${workspaces}"; then
+			echo "${num}"
 			break
 		fi
 		(( num += 1 ))
@@ -63,7 +63,7 @@ first_available_workspace() {
 
 
 print_usage() {
-	echo "Usage: $(basename "$0") [-ask] [-auto] [-nofollow] [WORKSPACE]" 1>&2
+	echo "Usage: $(basename "$0") [-ask] [-auto] [-nofollow] [WORKSPACE]" >&2
 }
 
 if (( $# == 0 )); then

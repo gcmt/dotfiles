@@ -1,128 +1,48 @@
-#!/usr/bin/python -u
+#!/bin/bash
 
-import os
-import sys
-import time
-import atexit
-import signal
-import threading
-from pathlib import Path
-from datetime import datetime
-from subprocess import run, PIPE
+SCRIPTPATH="$(realpath -s "$0")"
+STATE="$HOME/.cache/polybar-datetime.state"
+FORMATS=(default seconds utc est pst)
 
+if [ ! -f "${STATE}" ]; then
+    echo -n "${FORMATS[0]}" > "${STATE}"
+fi
 
-FIFO = Path("/tmp/polybar_datetime.fifo")
-STATE = Path(f"/run/user/{os.getuid()}/polybar_datetime_style")
-
-FORMATS = {
-    'default': '%a %d %H:%M',
-    'utc': '%a %d %H:%M UTC',
-    'seconds': '%a %d %H:%M:%S'
+main() {
+    local label
+    local format="$(cat "${STATE}")"
+    while true; do
+        inotifywait -t 1 -q -e modify "${STATE}" >/dev/null
+        (( $? == 0 )) && format="$(cat "${STATE}")"
+        case "${format}" in
+            default) label=$(date +"%a %d %H:%M") ;;
+            seconds) label=$(date +"%a %d %H:%M:%S") ;;
+            utc) label=$(date -u +"%a %d %H:%M UTC") ;;
+            est) label=$(TZ=America/New_York date +"%a %d %H:%M EST") ;;
+            pst) label=$(TZ=America/Los_Angeles date +"%a %d %H:%M PST") ;;
+            *) label="unknown format" ;;
+        esac
+        echo "%{A1:$SCRIPTPATH -cycle:}${label}%{A}"
+    done
 }
 
+cycle_format() {
+    local next_format
+    local curr_format="$(cat "${STATE}")"
+    for i in "${!FORMATS[@]}"; do
+       if [[ "${FORMATS[$i]}" == "${curr_format}" ]]; then
+           next_format="${FORMATS[$((i+1))]}"
+           if [ -n "${next_format}" ]; then
+                echo -n "${next_format}" > "${STATE}"
+           else
+                echo -n "${FORMATS[0]}" > "${STATE}"
+           fi
+       fi
+    done
+}
 
-class Clock(threading.Thread):
-
-    def __init__(self, style='default'):
-        super().__init__(daemon=True)
-        self.stop_event = threading.Event()
-        self.style = style
-
-    def run(self):
-        while True:
-            print_date(self.style)
-            if self.stop_event.wait(timeout=1.0):
-                return
-
-    def stop(self):
-        self.stop_event.set()
-        self.join()
-
-
-def start_clock(style):
-    clock = Clock(style=style)
-    clock.start()
-    return clock
-
-
-def print_date(style):
-    now = datetime.utcnow() if style == 'utc' else datetime.now()
-    t = now.strftime(FORMATS.get(style))
-    print(f'%{{A3:{os.path.realpath(__file__)} -menu:}}{t}%{{A}}')
-
-
-def get_current_style():
-    current = STATE.read_text()
-    return current if current in FORMATS else 'default'
-
-
-def main():
-    clock = start_clock(get_current_style())
-    while True:
-        style = FIFO.read_text().strip()
-        if style in FORMATS:
-            STATE.write_text(style)
-            clock.stop()
-            clock = start_clock(style)
-
-
-def menu():
-
-    styles = ['default', 'seconds', 'utc']
-    entries = 'default\nshow seconds\nutc time'
-
-    selected = styles.index(get_current_style())
-    cmd = ['mouse-menu', '-format', 'i', '-selected-row', str(selected)]
-
-    try:
-        stdout = run(cmd, input=entries, stdout=PIPE, encoding='utf8').stdout.strip()
-    except FileNotFoundError:
-        error('i3-tiny-menu not found')
-        sys.exit(1)
-
-    if not stdout:
-        return
-
-    style = styles[int(stdout)]
-    FIFO.write_text(style + '\n')
-
-
-def err(message):
-    scriptname = os.path.basename(__file__)
-    print(f"{scriptname}: {message}", file=sys.stderr)
-    sys.exit(1)
-
-
-if __name__ == '__main__':
-
-    if '-menu' in sys.argv:
-
-        if not FIFO.is_fifo():
-            err("module not running")
-
-        menu()
-
-    else:
-
-        try:
-            os.mkfifo(FIFO)
-        except FileExistsError:
-            pass
-
-        STATE.touch()
-
-        def cleanup(*args):
-            try:
-                FIFO.unlink()
-                STATE.unlink()
-            except FileNotFoundError:
-                pass
-
-        def exit(*args):
-            sys.exit()
-
-        atexit.register(cleanup)
-        signal.signal(signal.SIGINT, exit)
-        signal.signal(signal.SIGTERM, exit)
-
-        main()
+case "$1" in
+	"") main ;;
+	-cycle) cycle_format ;;
+	*) exit 1 ;;
+esac

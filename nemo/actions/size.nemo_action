@@ -1,5 +1,5 @@
 [Nemo Action]
-Active=true
+Active=false
 Name=Resize Image
 Comment=Resize Image
 Dependencies=convert

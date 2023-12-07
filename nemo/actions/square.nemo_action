@@ -1,5 +1,5 @@
 [Nemo Action]
-Active=true
+Active=false
 Name=Square Image
 Comment=Square Image
 Dependencies=convert

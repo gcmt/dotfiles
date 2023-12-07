@@ -8,12 +8,12 @@ exec_always --no-startup-id ~/.config/polybar/start.sh
 exec_always --no-startup-id ~/.config/compton/start.sh
 exec_always --no-startup-id ~/.config/redshift/start.sh
 exec_always --no-startup-id ~/.config/dunst/start.sh
-exec_always --no-startup-id ~/.config/mpd/start.sh
 exec_always --no-startup-id ~/.config/imwheel/start.sh
 exec_always --no-startup-id ~/.local/bin/autolock
 exec_always --no-startup-id i3-history -monitor
 exec_always --no-startup-id parcellite
 exec --no-startup-id tmux new -ds scratch
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # Variables
 # ----------------------------------------------------------------------------
@@ -39,16 +39,20 @@ font pango:Noto Sans Regular 10
 workspace_auto_back_and_forth no
 focus_follows_mouse yes
 
-default_border normal 0
+default_border pixel 0
 default_floating_border normal 0
 
 default_orientation auto
 workspace_layout stacking
 
 floating_modifier $mod
+tiling_drag modifier titlebar
 
 gaps inner 5
 gaps outer 1
+
+#gaps inner 0
+#gaps outer 0
 
 # Rules
 # ----------------------------------------------------------------------------
@@ -60,10 +64,13 @@ for_window [class="URxvt" instance="calc"] floating enable, resize set 35ppt 30p
 for_window [class="URxvt" instance="vim-popup"] border pixel 1, floating enable, $float_m, move position center
 
 for_window [instance="system-config-printer"] floating enable
+for_window [class="Yad"] floating enable
 for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable
 for_window [class="Ssh-askpass"] floating enable
 for_window [class="feh" title="^Cheatsheet$"] floating enable, move position center
+for_window [title=" - Discord"] move container to workspace "discord"
+#for_window [title="Origin"] floating enable
 
 for_window [class="KeepassXC"] layout stacking
 for_window [class="git-cola"] layout stacking
@@ -72,6 +79,7 @@ for_window [class="Firefox" title="Library"] layout stacking
 for_window [class=".*"] title_format " %title"
 for_window [class="git-cola"] title_format " %title - Git Cola"
 for_window [class="Firefox" instance="Places"] title_format " %title - Mozilla Firefox"
+for_window [title="Wine System Tray"] kill
 
 # Bindings
 # ----------------------------------------------------------------------------
@@ -79,6 +87,16 @@ for_window [class="Firefox" instance="Places"] title_format " %title - Mozilla F
 # Mouse bindings
 bindsym --release button3 exec --no-startup-id i3-titlebar-menu
 bindsym --whole-window button2 exec --no-startup-id i3-choose-window -no-inputbar -mouse y
+
+# Mouse wheel
+bindsym --whole-window $mod+button4 exec --no-startup-id i3-next-workspace -next
+bindsym --whole-window $mod+button5 exec --no-startup-id i3-next-workspace -prev
+
+# Mouse side buttons
+bindsym --whole-window Control+button9 exec --no-startup-id i3-next-workspace -next
+bindsym --whole-window Control+button8 exec --no-startup-id i3-next-workspace -prev
+bindsym --whole-window button9 exec --no-startup-id i3-next-window -prev
+bindsym --whole-window button8 exec --no-startup-id i3-next-window -next
 
 # Prevent/allow screen locking
 bindsym Pause exec --no-startup-id coffee
@@ -96,23 +114,13 @@ bindsym $mod+Shift+Next exec --no-startup-id i3-rotate -next -follow
 bindsym $mod+Prior exec --no-startup-id i3-rotate -prev
 bindsym $mod+Shift+Prior exec --no-startup-id i3-rotate -prev -follow
 
-# Open console calculator
-bindsym $mod+equal exec --no-startup-id i3-focus -n calc -kill -fallback '$term_prg -name calc -e calc-tmux'
-
-# Edit files
-bindsym $mod+e exec --no-startup-id rofi-edit
-
 # Mark/unmark window
 bindsym $mod+m exec --no-startup-id i3-mark
 bindsym $mod+Shift+m [con_id="__focused__"] unmark
 
 # Mark shortcut
-bindsym $mod+apostrophe exec --no-startup-id i3-focus -m "●"
-bindsym $mod+Shift+apostrophe mark "●"
-
-# Firefox shortcuts
-bindsym $mod+backslash exec --no-startup-id i3-focus -c firefox -m - -fallback firefox
-bindsym $mod+Shift+backslash exec --no-startup-id i3-focus -c firefox -m docs
+bindsym $mod+apostrophe exec --no-startup-id i3-focus -m "~"
+bindsym $mod+Shift+apostrophe mark "~"
 
 # Kill window
 bindsym $mod+Shift+q kill
@@ -242,6 +250,7 @@ bindsym $mod+a workspace back_and_forth
 bindsym $mod+BackSpace exec --no-startup-id i3-focus-last-window
 
 # Cycle through workspaces
+bindsym $mod+Tab exec --no-startup-id i3-next-workspace -next
 bindsym $mod+n exec --no-startup-id i3-next-workspace -next
 bindsym $mod+p exec --no-startup-id i3-next-workspace -prev
 
@@ -268,11 +277,13 @@ bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
 # Start/stop timer
 bindsym $mod+F9 exec --no-startup-id timer toggle 25m
 
-# Open docs
-bindsym Control+space exec --no-startup-id rofi-web-search
+# Apps shortcuts
+bindsym $mod+equal exec --no-startup-id i3-focus -c "firefox" -m "-" -fallback "firefox"
+bindsym $mod+Shift+equal exec --no-startup-id i3-focus -c "firefox" -m "mail" -bounce -fallback "firefox --no-remote -P Mail"
+bindsym $mod+grave exec --no-startup-id i3-focus -c Nemo -t "^Downloads" -fallback "nemo Downloads"
 
-# lsblk menu
-bindsym $mod+x exec --no-startup-id urxvt -name floating -e blkmenu --border -p 'name == "sda"' --open 'vifm {}'
+# Keyboard cheatsheet
+bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
 
 mode "i3" {
 
@@ -282,19 +293,12 @@ mode "i3" {
 
 	bindsym Shift+l exec --no-startup-id lock -force -blank 2, mode "default"
 	bindsym Shift+s exec --no-startup-id systemctl suspend, mode "default"
-	bindsym Shift+h exec --no-startup-id systemctl hibernate, mode "default"
 
 	bindsym c exec --no-startup-id $term_floating -e vim .config/i3/config; mode "default"
 	bindsym t exec --no-startup-id $term_floating -e vim .config/redshift/redshift.conf; mode "default"
-	bindsym m exec --no-startup-id $term_floating -e vim .config/mpv/input.conf; mode "default"
 
 	# Reset workspace layout
 	bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
-
-	bindsym w mode "default"; exec --no-startup-id sh -c "cd ~/.local/share/wallpapers && sxiv -rt ."
-
-    # Keyboard cheatsheet
-    bindsym k exec --no-startup-id i3-focus -c feh -t '^Cheatsheet$' -kill -fallback '.local/share/cheats/altgr-intl'
 
 	bindsym q mode "default"
 	bindsym Return mode "default"
@@ -306,23 +310,20 @@ bindsym $mod+$alt+space mode "i3"
 
 mode "open" {
 
-	bindsym m exec --no-startup-id i3-focus -t "\| FastMail -" -fallback "firefox --no-remote -P Mail"; mode "default"
-	bindsym d exec --no-startup-id i3-focus -c Nemo -t "^Downloads" -fallback "nemo Downloads"; mode "default"
-
 	bindsym q mode "default"
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
 	bindsym Control+c mode "default"
 }
 
-bindsym $mod+Tab mode "open"
+#bindsym $mod+o mode "open"
 
 # Controls
 # ----------------------------------------------------------------------------
 
 # Screenshots
-bindsym Print exec --no-startup-id capture
-bindsym Shift+Print exec --no-startup-id capture -select
+bindsym $mod+F1 exec --no-startup-id capture
+bindsym $mod+F2 exec --no-startup-id capture -select
 
 # Volume controls
 bindsym XF86AudioMute exec --no-startup-id volume toggle
@@ -338,17 +339,17 @@ bindsym $mod+F12 exec --no-startup-id volume up
 # class                  border   back     text     indic    child_border
 
 # =light colors=
-client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
-client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
-client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
-client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
-client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
-client.background       #e7e8eb
-
-# =dark colors=
 # client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
 # client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
 # client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
 # client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
 # client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
 # client.background       #e7e8eb
+
+# =dark colors=
+client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
+client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
+client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
+client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
+client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
+client.background       #e7e8eb

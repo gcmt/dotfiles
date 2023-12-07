@@ -11,28 +11,28 @@ main() {
 	# add a trailing space if the worksapce name is just a number
 	local current
 	current=$(current_workspace_name)
-	if [[ "$current" =~ ^[0-9]+$ ]]; then
-		current="$current "
+	if [[ "${current}" =~ ^[0-9]+$ ]]; then
+		current="${current} "
 	fi
 
 	local opts name
-	name="$(grep -o "^[0-9]\\+" <<< "$current")"
+	name="$(grep -o "^[0-9]\\+" <<< "${current}")"
 
 	if (( reset == 1 )); then
-		if [[ -z "$name" ]]; then
+		if [[ -z "${name}" ]]; then
 			name="$(i3-new-workspace -dry)"
 		fi
 	elif (( menu == 1 )); then
-		opts="-dmenu -p 'Name' -filter '$current' -theme 'i3-input'"
-		name="$(eval "rofi $opts")"
-		name="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "$name")"
+		opts="-dmenu -p 'Name' -filter '${current}' -theme 'i3-input'"
+		name="$(echo | eval "rofi ${opts}")"
+		name="$(sed 's/\(\s\+$\|^\s\+\)//g' <<< "${name}")"
 	fi
 
-	if [[ -z "$name" ]]; then
+	if [[ -z "${name}" ]]; then
 		exit 1
 	fi
 
-	i3-msg -q "rename workspace to \"$name\""
+	i3-msg -q "rename workspace to \"${name}\"" >/dev/null
 
 }
 

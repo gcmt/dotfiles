@@ -1,14 +1,13 @@
 #!/bin/bash
 
-date_prefix=0
 use_selection=0
 extract_audio=0
 
-while getopts "dsx" OPT; do
+while getopts "sx" OPT; do
 	case $OPT in
-		d) date_prefix=1 ;;
 		s) use_selection=1 ;;
 		x) extract_audio=1 ;;
+        *) exit 1
 	esac
 done
 shift $((OPTIND -1))
@@ -19,34 +18,77 @@ else
 	url="$1"
 fi
 
-if [[ -z "$url" ]]; then
+if [[ -z "${url}" ]]; then
 	exit 1
 fi
 
-title=$(youtube-dl -qe "$url")
-if (( $? != 0 )); then
-	notify-send "Youtube-dl error" "Downlaod failed with error code $?"
-	exit 1
+_NOTIFY_DELAY=60000
+_OUT_FORMAT="%(title)s.%(ext)s"
+_FORMAT='bestvideo[height<=1080][vcodec^=av01][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio/best[ext=mp4]/best'
+
+header="Downloading Video"
+if (( extract_audio == 1 )); then 
+    header="${header} (Audio only)"
 fi
 
-(( extract_audio == 1 )) && what="Song" || what="Video"
-notify-send -t 3000 "Downloading $what" "$title"
+_notify_id=$(dunstify -p -t "${_NOTIFY_DELAY}" "${header}" "${url}")
 
-cd ~/Downloads
+title=$(yt-dlp --skip-download --print "%(title)s" "${url}")
+exitcode=$?
 
-format="%(title)s.%(ext)s"
-if (( date_prefix == 1 )); then
-	format="%(upload_date)s - $format"
+if (( exitcode != 0 )); then
+	dunstify -t 10000 -u critical "Download Error" "yt-dlp failed with error code ${exitcode}"
+    echo >&2 "Error: yt-dlp failed with error code ${exitcode}"
+    exit 1
 fi
+
+echo "${header}: ${title}"
+dunstify -t "${_NOTIFY_DELAY}" -r "${_notify_id}" "${header}" "${title}"
+
+cd ~/Downloads || exit 1
+
+notify_progress() {
+    local header=$1
+    local title=$2
+    local progress=0 
+    local percent=
+    while read -r line; do
+        if grep -q '^\[ExtractAudio\]' <<< "${line}"; then
+            header="Extracting Audio..."
+            (( progress -= 3 ))
+        fi
+        percent=$(grep -Po '\d+\.?\d+(?=%)' <<< "${line}")
+        if [[ -n "${percent}" ]]; then
+            progress="${percent}"
+        fi
+        dunstify -h int:value:"${progress}" -t "${_NOTIFY_DELAY}" -r "${_notify_id}" "${header}" "${title}"
+    done
+}
 
 if (( extract_audio == 1 )); then
-	youtube-dl -q -x --audio-format mp3 -o "$format" "$url"
+	yt-dlp --newline \
+        --no-mtime \
+        --format 'bestaudio/best'\
+        --extract-audio \
+        --audio-quality 0 \
+        --audio-format mp3 \
+        --output "${_OUT_FORMAT}" \
+        "${url}" \
+        | notify_progress "${header}" "${title}"
 else
-	youtube-dl -q -o "$format" "$url"
+	yt-dlp --newline \
+        --no-mtime \
+        --format "${_FORMAT}" \
+        --output "${_OUT_FORMAT}" \
+        "${url}" \
+        | notify_progress "${header}" "${title}"
 fi
 
-if (( $? == 0 )); then
-	notify-send -t 3000 "Download Finished" "$title"
+exitcode=$?
+if (( exitcode == 0 )); then
+    echo "Download successful"
+	dunstify -t 5000 -r "${_notify_id}" "Download Finished" "${title}"
 else
-	notify-send "Download error" "Youtube-dl failed with error code $?"
+    echo >&2 "Error: yt-dlp failed with error code ${exitcode}"
+	dunstify -t 10000 -u critical -r "${_notify_id}" "Download Error" "yt-dlp failed with error code ${exitcode}"
 fi

@@ -13,3 +13,5 @@ inoremap <buffer> . .<c-g>u
 inoremap <buffer> ? ?<c-g>u
 inoremap <buffer> ! !<c-g>u
 inoremap <buffer> , ,<c-g>u
+
+imap <silent> <buffer> <c-t> <c-r>=trim(system("date +%Y-%m-%d"))<cr>

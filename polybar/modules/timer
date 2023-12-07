@@ -24,7 +24,7 @@ timer() {
 		else
 			echo
 			notify-send -t 6000 "Timer Finished" "Elapsed time:  $(format_time $1)"
-			mpv "$sound" >/dev/null 2>&1
+			mpv --no-loop-playlist "$sound" >/dev/null 2>&1
 			break
 		fi
 		sleep 1

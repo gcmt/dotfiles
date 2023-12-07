@@ -7,7 +7,7 @@ state_up() {
 }
 
 ip_addr() {
-	ip addr | grep -A2 ": $if:" | grep -Po "(?<=inet )[0-9.]+"
+	ip addr | grep -A3 ": $if:" | grep -Po "(?<=inet )[0-9.]+"
 }
 
 draw_block() {

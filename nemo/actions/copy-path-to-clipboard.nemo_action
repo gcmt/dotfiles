@@ -1,5 +1,5 @@
 [Nemo Action]
-Active=true
+Active=false
 Name=Copy Path
 Comment=Copy Path to Clipboard
 Exec=<copy-path-to-clipboard.sh %F>

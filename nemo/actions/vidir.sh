@@ -1,16 +1,14 @@
 #!/bin/bash
 
-if [[ -d "$1" ]]; then
-	current="$1"
-	cd "$1" || exit 1
-	shift
-else
-	exit 1
+# current_dir is empty when using vidir from a search result
+current_dir="$1"
+paths=( "${@:2}" )
+
+if [[ -d "${current_dir}" ]]; then
+	cd "${current_dir}" || exit 1
+    for i in "${!paths[@]}"; do
+        paths[$i]=".${paths[i]#$(pwd)}"
+    done
 fi
 
-args=( "$@" )
-for i in "${!args[@]}"; do
-	args[$i]=".${args[i]#$current}"
-done
-
-exec urxvt -name floating -e vidir "${args[@]}"
+exec urxvt -name floating -e vidir "${paths[@]}"

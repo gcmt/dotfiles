@@ -3,8 +3,7 @@ setl nonumber
 setl norelativenumber
 setl matchpairs+=<:>
 
-imap <buffer> <c-t><c-t> <plug>(taggify)
-imap <buffer> <c-t><c-i> <plug>(taggify-inline)
+"imap <buffer> <c-t> <plug>(taggify-inline)
 
 inoremap <silent> <buffer> <c-g><c-f> <c-r>=_jump_after('\v\</\a+\>')<cr>
 
@@ -14,7 +13,7 @@ nnoremap <buffer> <silent> <c-p> :call <sid>next_tag(1)<cr>
 func! s:next_tag(backward)
 	let flags = 'W' . (a:backward ? 'b' : '')
 	if search('\v\<\zs\a+', flags)
-		" set cursorline
+		set cursorline
 	end
 endf
 

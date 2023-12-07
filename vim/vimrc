@@ -29,48 +29,30 @@
 
 	let g:plugins = []
 
-	comm! -nargs=1 Plug call add(g:plugins, $VIMDATA . '/plugins/' . <q-args>)
-	comm! -nargs=1 Plugl call add(g:plugins, $VIMHOME . '/plugins/' . <q-args>)
+	comm! -nargs=1 Local call add(g:plugins, $VIMHOME . '/plugins/' . <q-args>)
 
-	Plugl flow
-	Plugl bookmarks
-	Plugl buffers
-	Plugl commenter
-	Plugl ctags
-	Plugl explorer
-	Plugl finder
-	Plugl fm
-	Plugl fzf
-	Plugl grep
-	Plugl marks
-	Plugl objects
-	Plugl python
-	Plugl quickfix
-	Plugl regtee
-	Plugl search
-	Plugl spotter
-	Plugl taggify
-	Plugl taglist
-	Plugl term
-	Plugl tmux
+	Local flow
+	Local bookmarks
+	Local buffers
+	Local commenter
+	Local ctags
+	Local explorer
+	Local finder
+	Local fm
+	Local fzf
+	Local grep
+	Local marks
+	Local objects
+	Local python
+	Local quickfix
+	Local regtee
+	Local search
+	Local spotter
+	Local taggify
+	Local taglist
+	Local tmux
 
-	Plug YouCompleteMe
-	Plug ale
-	Plug vim-fugitive
-	Plug gv.vim
-	Plug vim-gitgutter
-	Plug ultisnips
-	Plug vim-css-color
-	Plug vim-vue
-	Plug vim-javascript
-	Plug css.vim
-	Plug html5.vim
-	Plug vim-elixir
-	Plug vim-markdown
-	Plug vim-yaml
-
-	delcomm Plug
-	delcomm Plugl
+	delcomm Local
 
 	func! s:set_rtp()
 		let rtp = []
@@ -93,6 +75,24 @@
 	call s:set_rtp()
 
 	comm! Helptags call <sid>helptags()
+
+	call plug#begin($VIMDATA . '/plugins/')
+	Plug 'dense-analysis/ale'
+	Plug 'tpope/vim-fugitive'
+	Plug 'prettier/vim-prettier'
+	Plug 'editorconfig/editorconfig-vim'
+	Plug 'junegunn/gv.vim'
+	Plug 'fatih/vim-go'
+	Plug 'airblade/vim-gitgutter'
+	Plug 'SirVer/ultisnips'
+	Plug 'posva/vim-vue'
+	Plug 'pangloss/vim-javascript'
+	Plug 'mxw/vim-jsx'
+	Plug 'JulesWang/css.vim'
+	Plug 'othree/html5.vim'
+	Plug 'tpope/vim-markdown'
+	Plug 'gcmt/wildfire.vim'
+	call plug#end()
 
 " OPTIONS
 " ----------------------------------------------------------------------------
@@ -198,7 +198,7 @@
 
 	set virtualedit=block
 	set mouse=a
-	set ttymouse=xterm2
+	" set ttymouse=urxvt
 
 	set expandtab
 	set tabstop=4
@@ -238,7 +238,7 @@
 	set list
 	set fillchars=vert:┃
 	let g:listchars = ',trail:·,precedes:‹,extends:›'
-	let &listchars = 'tab:│ ' . listchars
+	let &listchars = 'tab:  ' . listchars
 
 	nnoremap <silent> goi :call <sid>toggle_indent_guides("│")<cr>
 	nnoremap <silent> goI :call <sid>toggle_indent_guides("┃")<cr>
@@ -246,6 +246,27 @@
 	func! s:toggle_indent_guides(bar)
 		let &listchars = (&listchars =~ 'tab:'.a:bar ? 'tab:  ' : 'tab:'.a:bar.' ') . g:listchars
 	endf
+
+	" Use different cursor styles for different modes:
+	" - 0 blinking block
+	" - 1 blinking block
+	" - 2 steady block
+	" - 3 blinking underline
+	" - 4 steady underline
+	" - 5 blinking bar
+	" - 6 steady bar
+	let &t_EI = "\<Esc>[2 q"
+	let &t_SI = "\<Esc>[6 q"
+	let &t_SR = "\<Esc>[4 q"
+
+	" Setup focus reporting escape sequences. The first is intepreted by the
+	" urxvt focus extension.
+	let focus_on = "\<Esc>]777;focus;on\007" . "\<Esc>[?1004h"
+	let focus_off = "\<Esc>]777;focus;off\007" . "\<Esc>[?1004l"
+
+	" Enable/disable focus reporting when Vim starts/exits.
+	let &t_ti = &t_EI . focus_on . &t_ti
+	let &t_te = focus_off . &t_te
 
 " STATUSLINE
 " ----------------------------------------------------------------------------
@@ -320,6 +341,7 @@
 	func! _stl_meta(win, sep)
 		let items = []
 		let bnum = a:win.bufnr
+		let diff = getbufvar(bnum, '&diff')
 		let bt = getbufvar(bnum, '&buftype')
 		let ft = getbufvar(bnum, '&filetype')
 		let ff = getbufvar(bnum, '&fileformat')
@@ -327,6 +349,10 @@
 		let enc = getbufvar(bnum, '&encoding')
 		let enc = printf('%s:%s', fenc ? fenc : enc, ff)
 		if !empty(ft) && empty(bt) && a:win.width > 80
+			if !diff && ft == 'python' && !empty($VIRTUAL_ENV) && a:win.width > 60
+				let venv = fnamemodify($VIRTUAL_ENV, ':t')
+				let ft .= '@' . venv
+			end
 			call add(items, ft)
 		end
 		call filter(items, 'len(v:val)')
@@ -341,7 +367,7 @@
 		let diff = getbufvar(bnum, '&diff')
 		let branch = exists('*FugitiveHead') ? FugitiveHead() : ''
 		if !diff && !empty(branch) && a:win.width > 60
-			return 'git:' . branch
+			return 'git@' . branch
 		end
 		return ''
 	endf
@@ -377,6 +403,25 @@
 		return toupper('--'.get(map, mode(), mode()).'--')
 	endf
 
+	fun! _stl_ale(win)
+		try
+			let counts = ale#statusline#Count(a:win.bufnr)
+		catch /.*/
+			return ''
+		endtry
+		let errors = counts.error + counts.style_error
+		let warnings = counts.total - errors
+		if counts.total
+			let ret = '['
+			let ret .= warnings ? warnings . 'W' : ''
+			let ret .= warnings && errors ?  '/' : ''
+			let ret .= errors ? errors . 'E' : ''
+			let ret .= ']'
+			return ret
+		end
+		return ''
+	endf
+
 	func! _stl()
 		let ret = ''
 
@@ -391,7 +436,7 @@
 			call add(items, '%=')
 			call add(items, _stl_regtee())
 			call add(items, _stl_clip(win))
-			call add(items, _stl_venv(win))
+			call add(items, _stl_ale(win))
 			call add(items, _stl_branch(win))
 			call add(items, _stl_meta(win, sep))
 			call add(items, '%1lL %02cC (%P)')
@@ -502,13 +547,11 @@
 
 	let g:quickfix_height = 50
 
-	nnoremap <silent> gxq :cwindow<cr>zz
 	nnoremap <silent> ]q :cnext<cr>zz:set cul<cr>
 	nnoremap <silent> ]Q :clast<cr>zz:set cul<cr>
 	nnoremap <silent> [q :cprev<cr>zz:set cul<cr>
 	nnoremap <silent> [Q :cfirst<cr>zz:set cul<cr>
 
-	nnoremap <silent> gxl :lwindow<cr>zz
 	nnoremap <silent> ]l :lnext<cr>zz:set cul<cr>
 	nnoremap <silent> ]L :llast<cr>zz:set cul<cr>
 	nnoremap <silent> [l :lprev<cr>zz:set cul<cr>
@@ -599,11 +642,11 @@
 
 	" jump after given characters without leaving insert mode
 	inoremap <silent> <c-f> <c-r>=_jump_after("\\v[])}>`\"']", 1)<cr>
+	inoremap <silent> <c-t> <c-r>=_jump_after("}", 0)<cr>
 
-	func! _jump_after(pattern, ...)
-		let sameline = a:0 && a:1
+	func! _jump_after(pattern, sameline = 0)
 		let pos = searchpos(a:pattern, 'Wcen')
-		if pos == [0, 0] || sameline && pos[0] != line('.')
+		if pos == [0, 0] || a:sameline && pos[0] != line('.')
 			return ''
 		end
 		call cursor(pos)
@@ -744,34 +787,6 @@
 	nnoremap gz :CdHere<cr>
 	nnoremap gZ :CdRoot<cr>
 
-" TRAILINGS
-" ----------------------------------------------------------------------------
-
-	aug _strip
-		au!
-
-		au BufWritePre * call <sid>strip_trailing_lines()
-		au BufWritePre * call <sid>strip_trailing_spaces()
-
-		au BufEnter,BufNewFile * let b:strip_spaces = 1
-		au BufEnter,BufNewFile *.py let b:strip_lines = 1
-
-		au BufEnter,BufNewFile *.adoc let b:strip_spaces = 0
-
-	aug END
-
-	func! s:strip_trailing_spaces()
-		if &ft != 'diff' && get(g:, 'strip_spaces', 1) && get(b:, 'strip_spaces', 0)
-			call _s('\v\s+$', '', 'e')
-		end
-	endf
-
-	func! s:strip_trailing_lines()
-		if &ft != 'diff' && get(g:, 'strip_lines', 1) && get(b:, 'strip_lines', 0)
-			call _s('\v($\n\s*)+%$', '', '')
-		end
-	endf
-
 " MISC
 " ----------------------------------------------------------------------------
 
@@ -802,6 +817,8 @@
 		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|explorer|buffers|finder|bookmarks|marks|taglist|plugs|search)$' | set nocul | end
 
 		" Filetype fixes
+		au BufNewFile,BufRead *.ledger set ft=ledger
+		au BufNewFile,BufRead Watering.md set ft=watering
 		au BufNewFile,BufRead */Xresources.d/* set ft=xdefaults
 		au BufNewFile,BufRead *.rasi set ft=css
 
@@ -878,26 +895,6 @@
 	iabbrev lenght length
 	iabbrev retrun return
 
-" Command aliases
-" ----------------------------------------------------------------------------
-
-	let g:aliases = {
-		\ 'find': 'Find', 'grep': 'Grep', 'greb': 'Greb', 'vim': 'Vim', 'vimb': 'Vimb',
-		\ 'cdr': 'CdRoot', 'cdh': 'CdHere', 'ws': 'WriteSudo', 'vimrc': 'Vimrc',
-		\ 'search': 'Search', 'sea': 'Search', 'tag': 'Tag',
-	\ }
-
-	cnoremap <cr> <c-]><c-\>e<sid>expand_aliases()<cr><cr>
-	cnoremap <c-j> <c-]><c-\>e<sid>expand_aliases()<cr><cr>
-
-	func! s:expand_aliases()
-		if getcmdtype() == ':'
-			let cmd = matchstr(getcmdline(), '\v\w+')
-			return substitute(getcmdline(), '\v\w+', get(g:aliases, cmd, cmd), '')
-		end
-		return getcmdline()
-	endf
-
 " Search
 " ----------------------------------------------------------------------------
 
@@ -958,23 +955,6 @@
 		\ 'var':1, 'let':1, 'const':1, 'function':1, 'class':1
 	\ }
 
-" Ale
-" ----------------------------------------------------------------------------
-
-	highlight link AleError None
-	highlight link AleWarning None
-	highlight link AleErrorSign Exception
-	highlight link AleWarningSign Repeat
-
-	let g:ale_sign_error = 'x'
-	let g:ale_sign_warning = '!'
-	let g:ale_lint_on_text_changed = 'never'
-	let g:ale_open_list = 0
-
-	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
-	let g:ale_python_pylint_options = '--disable=C0111,C0103'
-	let g:ale_python_flake8_options = '--ignore=E501,E302,E305,E265,E266,E231,E116,E117,E226,E241'
-
 " Explorer/Ranger/Vifm
 " ----------------------------------------------------------------------------
 
@@ -1019,16 +999,55 @@
 	let g:UltiSnipsJumpBackwardTrigger = '<c-b>'
 	let g:UltiSnipsSnippetsDir = $VIMHOME . '/UltiSnips'
 
-" YouCompleteMe
+" Ale
 " ----------------------------------------------------------------------------
 
-	let g:ycm_min_num_of_chars_for_completion = 3
-	let g:ycm_filetype_whitelist = #{python: 1, javascript: 1, cs: 0}
+	highlight link AleError Underlined
+	highlight link AleWarning Underlined
+	highlight link AleErrorSign Red
+	highlight link AleWarningSign Orange
+
+	let g:ale_sign_error = 'x'
+	let g:ale_sign_warning = '!'
+	let g:ale_lint_on_text_changed = 'never'
+	let g:ale_open_list = 0
+	let g:ale_fix_on_save = 1
+
+	let g:ale_fixers = {}
+	let g:ale_fixers['ledger'] = ['remove_trailing_lines', 'trim_whitespace']
+	let g:ale_fixers.python = ['black']
+
+	let g:ale_linters = {}
+	let g:ale_linters.python = ['flake8', 'mypy']
+
+	let g:ale_python_pylint_options = '--disable=C0111,C0103'
+	let g:ale_python_flake8_options = '--ignore=E203,E501'
+	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
+
+
+" EditorConfig
+" ----------------------------------------------------------------------------
+
+	let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+
+" Prettier
+" ----------------------------------------------------------------------------
+
+	let g:prettier#quickfix_enabled = 0
+	let g:prettier#quickfix_auto_focus = 0
+	let g:prettier#autoformat_require_pragma = 0
+	let g:prettier#autoformat_config_present = 1
+	let g:prettier#autoformat_config_files = ['.prettierrc']
 
 " GitGutter
 " ----------------------------------------------------------------------------
 
 	let g:gitgutter_enabled = 0
+
+" vim-go
+" ----------------------------------------------------------------------------
+
+	let g:go_doc_popup_window = 1
 
 " Disable unused plugins
 " ----------------------------------------------------------------------------
@@ -1040,3 +1059,19 @@
 	let g:loaded_netrwPlugin = 1
 
 " ----------------------------------------------------------------------------
+
+let g:wildfire_objects = {
+	\ "*" : ["i'", 'i"', "i)", "i]", "i}", "ip", "it"],
+\}
+
+	" This selects the next closest text object.
+	map <ENTER> <Plug>(wildfire-fuel)
+
+	" This selects the previous closest text object.
+	vmap <C-ENTER> <Plug>(wildfire-water)
+
+augroup wildfire_custom
+    au FileType vim echom "fietype"
+    au BufReadPost *.vim echom "bufreadpost"
+augroup END
+

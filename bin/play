@@ -1,17 +1,46 @@
 #!/bin/bash
 
-fifo=/tmp/mpv.fifo
 
-if [[ ! -p "$fifo" ]]; then
-	mkfifo "$fifo"
+fifo=
+if grep -q ".mp3" <<< "$@"; then
+    for i in {1..100}; do 
+        candidate="/tmp/mpv_${i}.fifo"
+        if [[ -e "${candidate}" ]]; then
+            playlist=$(echo '{"command": ["get_property", "playlist"]}' | socat - "${candidate}")
+            if grep -qF "$(dirname "$1")" <<< "${playlist}"; then
+                counter=0
+                for f in "${@:1}"; do
+                    if ! grep -qF "$f" <<< "${playlist}"; then
+                        echo "{\"command\": [\"loadfile\", \"${f}\", \"append\"]}" | socat - "${candidate}"
+                        (( counter += 1 )) 
+                    fi
+                done
+                if (( counter > 0 )); then
+                    notify-send "Mpv" "Added ${counter} files to instance ${candidate}"
+                fi
+                #echo 'set playlist-pos-1 ${playlist-count}' | socat - "${candidate}"
+                exit 0
+            fi
+       else
+            fifo=$candidate
+            break
+        fi
+    done
+fi
+
+if [[ -z "${fifo}" ]]; then
+    fifo="/tmp/mpv.fifo"
 fi
 
 _exit() {
-	if ! pgrep -x mpv >/dev/null; then
-		rm -f "$fifo"
-	fi
+    rm -f "$fifo"
 }
 
 trap "_exit" 0
 
-mpv --input-ipc-server="$fifo" --player-operation-mode=pseudo-gui "$@"
+osc_visibility=
+if grep -q ".mp3" <<< "$@"; then
+    osc_visibility="--script-opts=osc-visibility=always"
+fi
+
+mpv --input-ipc-server="$fifo" --player-operation-mode=pseudo-gui $osc_visibility "$@"

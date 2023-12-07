@@ -1,12 +1,16 @@
 #!/bin/bash
 
-img="$(mktemp).png"
+tmp_img="$(mktemp --suffix '.png')"
 
 convert \
 	-trim -font "Noto Mono" -pointsize 10 \
 	-fill "#444444" -background white -bordercolor white -border 25 \
-	pango:"$(cat -)" "$img"
+	pango:"$(cat -)" "$tmp_img"
 
-feh -x --title "Cheatsheet" "$img"
+trap "_exit" 0
 
-rm "$img"
+_exit() {
+    rm "$tmp_img"
+}
+
+feh -x --title "Cheatsheet" "$tmp_img"

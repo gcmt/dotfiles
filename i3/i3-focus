@@ -3,6 +3,7 @@
 import os
 import re
 import sys
+import time
 import argparse
 import i3pie
 import shlex
@@ -15,6 +16,11 @@ def error(msg):
     print(f"{script}: {msg}", file=sys.stderr)
 
 
+def fatal(msg):
+    error(msg)
+    sys.exit(1)
+
+
 def parse_args():
 
     parser = argparse.ArgumentParser(allow_abbrev=False, description="i3 focus helper")
@@ -25,19 +31,19 @@ def parse_args():
     parser.add_argument('-n', help="The window instance")
     parser.add_argument('-m', help="The window marks (use - to require no marks)")
     parser.add_argument('-fallback', default="", help="The command to execute when the targeted window does not exist")
-
+    parser.add_argument('-move', action='store_true', default=False, help="Move the targeted window to the current workspace")
     group1 = parser.add_mutually_exclusive_group(required=False)
-    group1.add_argument('-move', action='store_true', default=False, help="Move the targeted window to the current workspace")
-    group1.add_argument('-kill', action='store_true', default=False, help="Kill the targeted window")
     group1.add_argument('-bounce', action='store_true', default=True, help="Focus the previously focused window when the target window is already focused (default)")
     group1.add_argument('-nobounce', action='store_false', dest='bounce', help="Don't focus the previously focused window when the target window is already focused")
+    group2 = parser.add_mutually_exclusive_group(required=False)
+    group2.add_argument('-kill', action='store_true', default=False, help="Kill the window if already focused")
+    group2.add_argument('-scratch', action='store_true', default=False, help="Instead of killing the window, move it to the scratchpad")
 
     args = parser.parse_args()
 
     if args.id is None and args.t is None and args.c is None and args.n is None and args.m is None:
         parser.print_usage(file=sys.stderr)
-        error("provide at least one selection criteria")
-        sys.exit(2)
+        fatal("provide at least one selection criteria")
 
     if args.m != "-":
         args.m = set(args.m.split(',')) if args.m else set()
@@ -46,14 +52,15 @@ def parse_args():
         try:
             args.id = int(args.id, 0)
         except ValueError:
-            error(f"invalid argument '{args.id}' for option -id, must be a number")
-            sys.exit(1)
+            fatal(f"invalid argument '{args.id}' for option -id, must be a number")
 
     return args
 
 
 def match(args, win):
+    """Match the given window with command line arguments"""
     if args.m == "-" and set(win.marks):
+        # If '-' is given as mark, then explicitly require no marks
         return False
     if isinstance(args.m, set) and args.m and not args.m & set(win.marks):
         return False
@@ -67,6 +74,7 @@ def match(args, win):
 
 
 def get_last_window(tree):
+    """Return the last focused window (requires i3-history)"""
     try:
         proc = run(['i3-history', '-print'], stdout=PIPE, encoding='utf8')
     except FileNotFoundError:
@@ -83,13 +91,39 @@ def get_last_window(tree):
 
 
 def focus(win, move=False):
+    """Focus the given window"""
+    print(win)
     if win.workspace().name == '_scratch' or move:
         win.command('move to workspace current')
     return not win.command('focus').error
 
 
 def kill(win):
+    """Quit the given window"""
     return not win.command('kill').error
+
+
+def move_to_scratchpad(win):
+    """Move the given window to the scratchpad"""
+    return not win.command('move to workspace _scratch').error
+
+
+def search_win_by_pid(pid, timeout=10):
+    """Return the window id that belongs to the given process id"""
+    xdotool = ["xdotool", "search", "--pid", str(pid), "--onlyvisible", "--all", "--limit", "1"]
+    timeout = time.time() + timeout
+    while True:
+        time.sleep(0.5)
+        if time.time() > timeout:
+            error(f"Could not find window with pid: {pid}")
+            return None
+        try:
+            p = run(xdotool, stdout=PIPE, encoding="utf-8")
+        except FileNotFoundError:
+            error("command not found: xdotool")
+            return None
+        if p.returncode == 0:
+            return p.stdout.strip()
 
 
 def main(i3):
@@ -97,19 +131,21 @@ def main(i3):
     args = parse_args()
     tree = i3.get_tree()
 
-    if args.bounce and not (args.kill or args.move or args.id):
-        focused = tree.focused_window()
+    focused = tree.focused_window()
+    if args.bounce and not (args.scratch or args.kill or args.move or args.id):
+        # if the window is already focused, move to the last focused window
         if focused and match(args, focused):
-            last = get_last_window(tree)
-            if not last:
-                sys.exit(1)
-            focus(last)
-            sys.exit()
+            if last := get_last_window(tree):
+                focus(last)
+                sys.exit()
+            sys.exit(1)
 
     success = False
     for win in tree.windows():
         if args.id and args.id == win.window_id or not args.id and match(args, win):
-            if args.kill:
+            if args.scratch and win == focused:
+                success = move_to_scratchpad(win)
+            elif args.kill and win == focused:
                 success = kill(win)
             else:
                 success = focus(win, move=args.move)
@@ -117,13 +153,16 @@ def main(i3):
 
     fallback = shlex.split(args.fallback)
     if fallback and not success:
+        # open the given fallback program if no window matched the rules
         try:
-            os.execvp(fallback[0], fallback)
-        except OSError:
-            os.execv(fallback[0], fallback)
+            pid = Popen(fallback).pid
         except FileNotFoundError:
-            error(f"command not found: {fallback[0]}")
-            sys.exit(1)
+            fatal(f"command not found: {fallback[0]}")
+        if args.m and args.m != "-":
+            # automatically mark the window if marks are given (first one only)
+            if id := search_win_by_pid(pid):
+                mark = list(args.m)[0]
+                i3.command(f'[id="{id}"] mark "{mark}"')
     else:
         sys.exit(not success)
 

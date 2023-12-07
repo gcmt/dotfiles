@@ -37,3 +37,15 @@
 	added = green
 	changed = yellow
 	untracked = white
+[cola]
+	spellcheck = true
+	tabwidth = 4
+[gui]
+	editor = urxvt -e vim
+[credential]
+	provider = generic
+[filter "lfs"]
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+	clean = git-lfs clean -- %f

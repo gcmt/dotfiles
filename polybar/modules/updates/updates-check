@@ -1,0 +1,6 @@
+#!/bin/bash
+
+state="$HOME/.cache/updates-check.state"
+truncate -s0 "${state}"
+
+checkupdates | tee -a "${state}" 

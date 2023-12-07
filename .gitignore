@@ -9,3 +9,4 @@ vifm-help.txt
 *.pyc
 *.bak
 tags
+vifm/vifminfo.json

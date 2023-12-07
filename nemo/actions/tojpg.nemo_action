@@ -1,5 +1,5 @@
 [Nemo Action]
-Active=true
+Active=false
 Name=Convert to Jpeg
 Comment=Convert files to Jpg
 Dependencies=convert

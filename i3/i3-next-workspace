@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+
+import i3pie
+import argparse
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Cycle i3 workspaces")
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("-next", action="store_true", help="focus next workspace")
+    group.add_argument("-prev", action="store_true", help="focus previous workspace")
+    return parser.parse_args()
+
+
+def main(i3):
+
+    args = parse_args()
+    tree = i3.get_tree()
+    focused = tree.current_workspace()
+
+    numbered = []
+    labeled = []
+
+    # workspace order mimics the same order used in the 
+    # i3 polybar module
+
+    for w in tree.workspaces():
+        if w.name.startswith("_"):
+            continue
+        elif w.name[0].isdigit():
+            numbered.append(w)
+        else:
+            labeled.append(w)
+
+    numbered = sorted(numbered, key=lambda w: w.name)
+    labeled = sorted(labeled, key=lambda w: w.name)
+    workspaces = labeled + numbered
+
+    if focused.name.startswith("_"):
+        current = len(workspaces)
+        w = workspaces[0] if args.next else workspaces[-1]
+    else:
+        current = workspaces.index(focused)
+        offset = 1 if args.next else -1
+        i = current + offset
+        w = workspaces[i % len(workspaces)]
+
+    i3.command(f'workspace "{w.name}"')
+
+
+if __name__ == "__main__":
+    with i3pie.Connection() as i3:
+        main(i3)

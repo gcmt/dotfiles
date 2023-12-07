@@ -51,18 +51,21 @@ border-bottom-size = 0
 border-color = #00000000
 
 padding-left = 0
-padding-right = 2
+padding-right = 3
 
-module-margin-left = 3
-module-margin-right = 0
+module-margin-left = 2
+module-margin-right = 2
 
 font-0 = "Noto Mono:style=Medium:size=10;3"
-font-1 = "Font Awesome 5 Free:style=Solid:size=10;3"
-font-2 = "Font Awesome 5 Free:style=Regular:size=10;3"
+font-1 = "Font Awesome 6 Free:style=Solid:size=11;3"
+font-3 = "Font Awesome 6 Free:style=Regular:size=11;3"
+font-2 = "Font Awesome 6 Brands:style=regular:size=11;3"
 
 modules-left = i3
 modules-center = datetime
-modules-right = rec backup kb updates eth volume timer stopwatch
+modules-right = systemd rec backup sync updates plants kb eth volume timer stopwatch 
+
+separator = %{F#bbb}-%{F-}
 
 ; Modules
 ; ----------------------------------------------------------------------------
@@ -102,6 +105,11 @@ type = custom/script
 exec = ~/.config/polybar/modules/stopwatch
 tail = true
 
+[module/plants]
+type = custom/script
+exec = ~/.config/polybar/modules/plants.py
+interval = 60
+
 [module/rec]
 type = custom/script
 exec = ~/.config/polybar/modules/recording
@@ -114,8 +122,18 @@ interval = 3
 
 [module/eth]
 type = custom/script
-exec = ~/.config/polybar/modules/eth enp5s0
+exec = ~/.config/polybar/modules/eth eno1
 interval = 3
+
+[module/systemd]
+type = custom/script
+exec = ~/.config/polybar/modules/systemd
+interval = 30
+
+[module/sync]
+type = custom/script
+exec = ~/.config/polybar/modules/sync
+tail = true
 
 [module/kb]
 type = custom/script
@@ -123,7 +141,7 @@ exec = ~/.config/polybar/modules/kb
 
 [module/updates]
 type = custom/script
-exec = ~/.config/polybar/modules/updates
+exec = ~/.config/polybar/modules/updates/updates
 tail = true
 
 [module/caffeine]
@@ -131,4 +149,4 @@ type = custom/script
 exec = ~/.config/polybar/modules/caffeine
 tail = true
 
-; vim:ft=dosini cms=;\ %s
+; viy:ft=dosini cms=;\ %s

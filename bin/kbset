@@ -1,12 +1,10 @@
 #!/bin/bash
 
-set -e
-
-layout="us"
-variant="altgr-intl"
+layout=us
+variant=altgr-intl
 
 setxkbmap -layout $layout -variant $variant
 
 xmodmap ~/.Xmodmap
 
-xset r rate 190 35
+xset r rate 150 30

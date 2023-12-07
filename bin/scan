@@ -2,23 +2,45 @@
 
 set -e
 
-trap '_err' ERR
+resp=$(yad \
+    --title 'Scan' \
+    --borders 10 \
+    --separator $'\t' \
+    --item-separator="," \
+    --width 500 \
+    --text-align fill \
+    --form \
+    --field "File Name" \
+    --field "Mode":CB \
+    --field "Resolution" \
+    --field "Format":CB \
+    --button="Cancel":1 \
+    --button="Scan":0 \
+    "Scan_$(date +%Y-%m-%d-%T).png" "Black & White,Gray,True Gray,24bit Color" "300" "png,jpeg,tiff,pnm" \
+)
 
-_err() {
-    dunstify -t 5000 -u critical -r "${ID}" "Scanning Failed"
-}
+IFS=$'\t' read -ra fields <<< "${resp}"
 
-ID=8899
+_fname="${fields[0]}"
+_mode="${fields[1]}"
+_resolution="${fields[2]}"
+_format="${fields[3]}"
 
-mode="Black & White"
-#mode="Gray"
-#mode="True Gray"
-#mode="24bit Color"
-resolution=${1:-300}
+_dest="${HOME}/Downloads/${_fname}"
 
-fname="Scan_$(date +%Y-%m-%d-%T).png"
-dest="${HOME}/Downloads/${fname}"
+echo "Scanning..."
+_notify_id=$(dunstify -t 60000 -p "Scanning..." "Writing to '${_fname}'")
 
-dunstify -t 100000 -r "${ID}" "Scanning..."
-scanimage --format png --output-file "${dest}" --resolution "${resolution}" --mode "${mode}"
-dunstify -r "${ID}" "Scanning OK" "${fname}"
+echo "Output:" "${_dest}"
+echo "Mode:" "${_mode}"
+echo "Resolution:" "${_resolution}"
+echo "Format:" "${_format}"
+
+scanimage -pv --mode "${_mode}" --resolution "${_resolution}" --format "${_format}" -o "${_dest}"
+exitcode=$?
+if (( exitcode != 0 )); then
+    dunstify -r "${_notify_id}" -u critical "Scan Failed" "Scanimage failed with error code $exitcode"
+    exit $exitcode
+fi
+
+dunstify -r "${_notify_id}" "Scan Successful" "Successfully written to '${_fname}'"

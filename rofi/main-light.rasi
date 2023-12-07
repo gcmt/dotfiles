@@ -30,9 +30,9 @@
 	urgent-foreground: rgba(181, 85, 95, 100%);
 	urgent-background: @background;
 	selected-urgent-foreground: rgba(181, 85, 95, 100%);
-	selected-urgent-background: @background;
+	selected-urgent-background: @selected-normal-background;
 	alternate-urgent-foreground: @urgent-foreground;
-	alternate-urgent-background: @background;
+	alternate-urgent-background: @alternate-normal-background;
 
 }
 

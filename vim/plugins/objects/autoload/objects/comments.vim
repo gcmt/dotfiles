@@ -1,7 +1,4 @@
 
-" FIXME:
-" - Properly handle multiline comments (multiple paragraphs, etc.)
-
 
 let s:default_options = {
 	\ 'inner': 0,
@@ -22,69 +19,86 @@ func! objects#comments#select(options, visual, count)
 	let options = s:options(a:options)
 	let curpos = getcurpos()[1:2]
 
-	" check for a comment at the end of the line
-	if objects#synat(line('.'), col('.')) != 'Comment'
-		let curpos[1] = strchars(getline(curpos[0]))
-	end
+	while 1
 
-	let start = s:find_start(curpos)
-	if start == [0, 0]
-		return
-	end
-
-	let end = s:find_end(curpos)
-	if end == [0, 0]
-		return
-	end
-
-	call cursor(start)
-
-	if start[0] == end[0] && options.inner
-		" don't select any space preceding the comment
-		call search('\S', "Wc", start[0])
-	end
-
-	if options.content
-		" select only the comment content
-		if search('\v\s*\S+', "Wce", start[0])
-			if col('.') != col('$')-1
-				call search('\S', "We", start[0])
+		if objects#synat(line('.'), col('.')) != 'Comment'
+			let curpos[1] += 1
+			if curpos[1] > strchars(getline('.'))
+				break
 			else
-				norm! +
+				continue
 			end
 		end
-	end
 
-	if !options.content && start[1] == 1 && end[1] == strchars(getline(end[0]))
-		norm! V
-	else
-		norm! v
-	end
+		let start = [0, 0]
+		let end = [0, 0]
 
-	call cursor(end)
+		" detect multiline comment
+		let skip = "objects#synat(line('.'), col('.')) != 'Comment'"
+		let start = searchpairpos('/\*', '', '\*/', 'Wcnb', skip)
+		let end = searchpairpos('/\*', '', '\*/', 'Wcn', skip)
+		let end[1] = end[1] ? end[1]+1 : 0
 
-	if start[0] != end[0] && !options.inner && !options.content
-		" select all empty lines after the comment block
-		let line = nextnonblank(end[0]+1)
-		let line = line ? line-1 : line('$')
-		call cursor([line, 1])
-	end
+		if start[0] == 0 || end[0] == 0
+			" echo "multiline not found"
+			" detect inline comment or block
+			let start = s:find_start(curpos)
+			let end = s:find_end(curpos)
+		end
 
-	if options.content && search('\V*/', 'Wncb', end[0])
-		" handle multiline comments ending
-		if search('\v\s*\*/', "Wcb", end[0])
-			if col('.') != 1
-				call search('\S', 'Wb', end[0])
-			else
-				norm! kg_
+		if start[0] == 0 || end[0] == 0
+			break
+		end
+
+		" echo start end
+
+		let startln = getline(start[0])
+		let endln = getline(end[0])
+		let isblock = strcharpart(startln, 0, start[1]-1) =~ '\v^\s*$' && end[1] == strchars(endln)
+
+		call cursor(start)
+
+		if options.content
+			" select only the comment content
+			if search('\v\S+', "Wce", start[0])
+				if col('.') != col('$')-1
+					call search('\S', "We", start[0])
+				else
+					norm! +
+				end
 			end
 		end
-	end
 
-	if a:visual && options.content
-		" move the cursor at the start of the comment
-		norm! o
-	end
+		exec "norm!" (isblock ? "V" : "v")
+
+		call cursor(end)
+
+		if isblock && !options.inner && !options.content
+			" select all empty lines after the comment block
+			let line = nextnonblank(end[0]+1)
+			let line = line ? line-1 : line('$')
+			call cursor([line, 1])
+		end
+
+		if options.content && search('\V*/', 'Wncb', end[0])
+			" select only the comment content
+			if search('\v\s*\*/', "Wcb", end[0])
+				if col('.') != 1
+					call search('\S', 'Wb', end[0])
+				else
+					norm! kg_
+				end
+			end
+		end
+
+		if a:visual && options.content
+			" move the cursor at the start of the comment
+			norm! o
+		end
+
+		break
+
+	endw
 
 endf
 
@@ -92,26 +106,19 @@ endf
 " Search for comments on the target line. If {inline} is false, the search is
 " aborted as soon as a non comment character is encountered.
 func! s:search_comment(linenr, inline)
-	let columns = split(getline(a:linenr), '\zs')
-	if empty(columns)
-		return [0, 0]
-	end
-	let col = 1
-	let j = 0
-	while col <= len(columns)
-		if columns[col-1] =~ '\s'
-			" consider any space before the comment as part of the comment
-			" itself
-			let j = j ? j : col
-		elseif objects#synat(a:linenr, col) == 'Comment'
-			return [(j ? j : col), len(columns)]
-		elseif !a:inline
+	let line = getline(a:linenr)
+	for [col, char] in map(split(line, '\zs'), {i, val -> [i+1, val]})
+		if objects#synat(a:linenr, col) == 'Comment'
+			" since we are detecting inline comments, we can consider the rest
+			" of the line also a comment
+			return [col, strchars(line)]
+		elseif !a:inline && char =~ '\s'
+			" stop early when encountering a non-comment unless it's a space
 			return [0, 0]
-		else
-			let j = 0
 		end
 		let col += 1
-	endw
+	endfo
+	return [0, 0]
 endf
 
 " s:find_start({curpos:list}) -> [linenr, colnr]

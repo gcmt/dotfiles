@@ -3,9 +3,9 @@ Type = Package
 Operation = Upgrade
 Operation = Install
 Operation = Remove
-Target= *
+Target = *
 
 [Action]
 Description = Notify polybar module
 When = PostTransaction
-Exec = /bin/bash -c "[[ ! -f /run/user/$SUDO_UID/polybar_updates.pid ]] || kill $(cat /run/user/$SUDO_UID/polybar_updates.pid)"
+Exec = /bin/bash -c "truncate -s0 /run/user/$SUDO_UID/updates-check.state"

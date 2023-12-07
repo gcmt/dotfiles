@@ -10,6 +10,7 @@ configuration {
 	disable-history: false;
 	case-sensitive: false;
 	cycle: true;
+	hover-select: false;
 	auto-select: false;
 	parse-hosts: false;
 	parse-known-hosts: true;
@@ -20,7 +21,6 @@ configuration {
 	threads: 0;
 	scroll-method: 0;
 	click-to-exit: true;
-	theme: "main-light";
 	pid: "/run/user/1000/rofi.pid";
 	display-run: "";
 	display-ssh: "ssh";
@@ -50,7 +50,6 @@ configuration {
 	kb-row-right: "";
 	kb-row-up: "Up,Control+k";
 	kb-row-down: "Down,Control+j";
-	kb-row-tab: "Tab";
 	kb-page-prev: "";
 	kb-page-next: "";
 	kb-row-first: "";
@@ -82,3 +81,5 @@ configuration {
 	me-select-entry: "";
 	me-accept-entry: "MousePrimary";
 }
+
+@theme "main-light"

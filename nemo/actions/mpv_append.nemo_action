@@ -1,0 +1,8 @@
+[Nemo Action]
+Active=true
+Name=Add to Mpv
+Comment=Add to Active Mpv Instance
+Conditions=exec <mpv_append_condition.sh>;
+Exec=<mpv_append.sh %F>
+Selection=notnone
+Extensions=mp3

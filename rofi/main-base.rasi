@@ -116,3 +116,8 @@ element.alternate.active {
 	background-color: @alternate-active-background;
 	text-color: @alternate-active-foreground;
 }
+
+element-text {
+    background-color: inherit;
+    text-color: inherit;
+}

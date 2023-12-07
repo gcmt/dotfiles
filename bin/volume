@@ -10,10 +10,10 @@ shift $((OPTIND -1))
 
 id=4224
 timeout=1000
-summary="Volume"
+header="Volume"
 
 polybar_visible() {
-	xprop -id $(xdo id -N Polybar) | grep -q "window state: Normal"
+	xprop -id "$(xdo id -N Polybar)" | grep -q "window state: Normal"
 }
 
 is_mute() {
@@ -22,19 +22,12 @@ is_mute() {
 
 notify_volume() {
 	polybar_visible || (( quiet == 1 )) && return
-	if (( $1 == 0 )); then
-		text="Volume off"
-	else
-		# 350px -> 37 dashes
-		n=$(seq $(($1 * 37 / 100)))
-		text=$(printf "%0.s─" $n)
-	fi
-	dunstify -t $timeout -r $id "$summary" "$text"
+    dunstify -h int:value:"$1" -t $timeout -r $id "$header $1%"
 }
 
 notify_mute() {
 	polybar_visible || (( quiet == 1 )) && return
-	dunstify -t $timeout -r $id "$summary" "Muted"
+	dunstify -t $timeout -r $id "$header" "Muted"
 }
 
 case "$1" in

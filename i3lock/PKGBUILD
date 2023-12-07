@@ -1,6 +1,6 @@
 _pkgname=i3lock
 pkgname=i3lock-patched
-pkgver=2.11.2.g7f9caec
+pkgver=2.11.3.g0379727
 pkgrel=1
 pkgdesc="An improved screenlocker based upon XCB and PAM"
 arch=('i686' 'x86_64')
@@ -12,7 +12,7 @@ depends=('xcb-util-image' 'libev' 'cairo' 'libxkbcommon-x11')
 backup=("etc/pam.d/i3lock")
 makedepends=('git')
 source=(
-	"git://github.com/gcmt/i3lock#branch=custom-ui"
+	"git+https://github.com/gcmt/i3lock#branch=custom-ui"
 )
 sha1sums=('SKIP')
 

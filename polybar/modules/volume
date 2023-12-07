@@ -1,14 +1,9 @@
 #!/bin/bash
 
-if ! pulseaudio --check; then
-	exit 1
-fi
-
 print_label() {
 	local label
-	local info="$(pacmd list-sinks | grep -A23 "^\s*\* index:")"
-	local volume="$(grep "^\s*volume:" <<< "$info" | grep -Pom1 '[0-9]+(?=%)' | tail -1)"
-	if grep "^\s*muted:" <<< "$info" | grep -q "yes"; then
+	local volume="$(amixer -D pulse sget Master | grep -Pom1 '[0-9]+(?=%)')"
+	if amixer -D pulse sget Master | grep -q '\[off\]'; then
 		label=" Mute"
 	elif (( volume < 25 )); then
 		label=" $volume%"

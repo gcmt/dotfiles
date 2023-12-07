@@ -5,6 +5,7 @@ user_pref("browser.tabs.closeWindowWithLastTab", false);
 user_pref("permissions.default.desktop-notification", 2);
 
 user_pref("privacy.trackingprotection.enabled", true);
+user_pref("privacy.resistFingerprinting", true);
 
 user_pref("extensions.pocket.enabled", false);
 
@@ -21,11 +22,8 @@ user_pref("browser.urlbar.oneOffSearches", false);
 user_pref("findbar.highlightAll", true);
 user_pref("findbar.modalHighlight", true);
 
-user_pref("browser.urlbar.openViewOnFocus", false);
-user_pref("browser.urlbar.update1", false);
-user_pref("browser.urlbar.update1.interventions", false);
-user_pref("browser.urlbar.update1.searchTips", false);
-user_pref("browser.urlbar.update1.view.stripHttps", false);
+
+user_pref("media.ffmpeg.vaapi.enabled", true);
 
 // user_pref("mousewheel.acceleration.factor", 5); // 10
 // user_pref("mousewheel.acceleration.start", 1); // -1

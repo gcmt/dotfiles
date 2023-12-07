@@ -68,12 +68,19 @@ def rofi(args, rofiargs):
         input = [line.strip() for line in sys.stdin]
 
     options  = ['-dmenu', '-click-to-exit', '-theme', f'{args.theme}']
-    options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary']
+    options += ['-me-select-entry', '', '-me-accept-entry', 'MousePrimary', '-hover-select']
     options += ['-theme-str', f'* {{ font: "{args.font} {args.fontsize}"; }}']
     options += ['-theme-str', 'case-indicator { enabled: false; }']
     options += ['-theme-str', 'listview { fixed-height: false; scrollbar: false; }']
     options += ['-theme-str', 'window { location: north west; anchor: north west; }']
     options += ['-theme-str', 'element { border: false; }']
+
+    # add separator on urgent-marked rows
+    urgent_style = "{text-color: @foreground; border: 2px 0 0 solid; border-color: #DDD;}"
+    options += ['-theme-str', f'element.normal.urgent {urgent_style}']
+    options += ['-theme-str', f'element.active.urgent {urgent_style}']
+    options += ['-theme-str', f'element.alternate.urgent {urgent_style}']
+    options += ['-theme-str', f'element.selected.urgent {urgent_style}']
 
     if args.maxlines:
         lines = min(len(input), args.maxlines)

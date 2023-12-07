@@ -1,0 +1,26 @@
+#!/bin/bash
+
+STATE="$HOME/.cache/sync-to-cloud.state"
+
+if [ ! -f "${STATE}" ]; then
+    exit 1
+fi
+
+display_changes() {
+    if grep -q "^Error:" "${STATE}"; then
+        echo "%{A1:systemctl --user start sync-to-cloud.service:}%{F#ce7d86}%{F-}%{A}"
+   else
+        local send=$(grep -c "^[<>ch]" "${STATE}")
+        local del=$(grep -c '^\*deleting' "${STATE}")
+        if (( send != 0 || del != 0 )); then
+            echo "%{A1:systemctl --user start sync-to-cloud.service:}%{A3:urxvt -name floating -e vim -R $STATE:} ${send}  ${del}%{A}%{A}"
+        else
+            echo
+        fi
+    fi
+}
+
+display_changes
+while inotifywait -q -e modify "${STATE}" >/dev/null; do
+    display_changes
+done

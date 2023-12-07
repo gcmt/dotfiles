@@ -1,0 +1,29 @@
+#!/bin/bash
+
+resp=$(yad \
+    --title 'Youtube Downloader' \
+    --text "<b>Youtube Downloader</b>" \
+    --borders 10 \
+    --separator $'\t' \
+    --width 500 \
+    --text-align fill \
+    --form \
+    --field "" "" \
+    --field "Extract Audio:chk" TRUE \
+    --button="Cancel":1 \
+    --button="Download":0 \
+)
+
+IFS=$'\t' read -ra fields <<< "${resp}"
+
+url=${fields[0]}
+if [[ -z "${url}" ]]; then
+    exit 1
+fi
+
+extract=
+if [[ "${fields[1]}" == "TRUE" ]]; then
+    extract="-x"
+fi
+
+yd ${extract} "${url}"

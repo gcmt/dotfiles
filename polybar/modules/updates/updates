@@ -1,0 +1,44 @@
+#!/bin/bash
+
+SCRIPTPATH="$(realpath -s "$0")"
+STATE="$HOME/.cache/updates-check.state"
+touch "${STATE}"
+
+main() {
+    display_updates
+    while inotifywait -q -e modify "${STATE}" >/dev/null; do
+        display_updates
+    done
+}
+
+display_updates() {
+    local count=$(wc -l < "${STATE}")
+    if (( count > 0 )); then
+        echo "%{A1:$SCRIPTPATH tmux:}%{A3:$SCRIPTPATH quickview:} ${count}%{A}%{A}"
+    else
+        echo
+    fi
+}
+
+open_tmux() {
+	local session=updates
+	if ! tmux has -t "=${session}" 2>/dev/null; then
+		tmux new -ds "${session}"
+	fi
+	urxvt -name floating -e t "${session}"
+}
+
+quickview() {
+	local choice="$(sed 's;^\(\S\+\)\s\+\(.*\)$;\1 <span foreground="#999">\2</span>;' < "${STATE}" \
+		| mouse-menu -noselected -width auto -markup-rows -maxlines 40)"
+	if [[ -n "${choice}" ]]; then
+        open_tmux
+    fi
+}
+
+case "$1" in
+	"") main ;;
+	tmux) open_tmux & ;;
+	quickview) quickview & ;;
+	*) exit 1 ;;
+esac

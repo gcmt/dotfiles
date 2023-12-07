@@ -1,7 +1,16 @@
 
-iabbrev <buffer> none None
-iabbrev <buffer> true True
-iabbrev <buffer> false False
+setl textwidth=88
+
+" Generate tags
+nnoremap <buffer> <F7> :Ctags --languages=python -f .tags/python/0.project<cr>
+
+" Outline python module
+nnoremap <silent> <buffer> <leader>o :Search! \v^\s*\zs(class\|def)><cr>
+nnoremap <silent> <buffer> <leader>O :Search! \v^\s*\zs(class)><cr>
+
+" Foramt code
+nnoremap <silent> <buffer> <F6> :ALEFix<cr>
+inoremap <silent> <buffer> <F6> <esc>:ALEFix<cr>
 
 func! s:adjust_indentation(lines)
 	let min_indent = -1
@@ -38,7 +47,7 @@ func! s:run()
 endf
 
 if exists('$TMUX')
-	let b:tmux = {'prg': 'python', 'args': ['-i'], 'eof': 1}
+	let b:tmux = {'prg': 'python', 'args': [], 'eof': 1}
 	nnoremap <silent> <buffer> <leader>r :call <sid>run()<cr>
 	nnoremap <silent> <buffer> <F5> :call <sid>run()<cr>
 	inoremap <silent> <buffer> <F5> <esc>:call <sid>run()<cr>
@@ -47,30 +56,3 @@ else
 	nnoremap <silent> <buffer> <leader>r :python %<cr>
 end
 
-" Generate tags
-nnoremap <buffer> <F7> :Ctags --languages=python -f .tags/python/0.project<cr>
-
-" Outline python module
-nnoremap <silent> <buffer> <leader>o :Search! \v^\s*\zs(class\|def)><cr>
-nnoremap <silent> <buffer> <leader>O :Search! \v^\s*\zs(class)><cr>
-
-" Expand current name into a function definition
-inoremap <silent> <buffer> <c-g><c-s> <c-r>=python#snippets#func()<cr>
-
-" Foramt code
-command! Format call python#formatter#format_current_file()
-nnoremap <silent> <buffer> <F6> :Format<cr>
-inoremap <silent> <buffer> <F6> <esc>:Format<cr>
-
-" jedi integration
-" command! -buffer Usages call python#jedi#usages()
-" command! -buffer Docstring call python#jedi#docstring()
-" command! -buffer Signature call python#jedi#signature()
-" command! -bang -buffer -nargs=? Definition call python#jedi#definitions(<q-bang>, <q-args>)
-" command! -bang -buffer -nargs=? Assignment call python#jedi#assignments(<q-bang>, <q-args>)
-" nnoremap <silent> <buffer> <leader>k :Docstring<cr>
-" nnoremap <silent> <buffer> <leader>,u :Usages<cr>
-" nnoremap <silent> <buffer> <leader>,a :Assignment<cr>
-" nnoremap <silent> <buffer> <leader>,d :Definition<cr>
-" nnoremap <silent> <buffer> <leader>,s :Signature<cr>
-" inoremap <silent> <buffer> <c-x><c-s> <c-r>=python#jedi#call_signatures()<cr>

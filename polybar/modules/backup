@@ -1,112 +1,41 @@
 #!/bin/bash
 
-current_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-cd "$current_dir" || exit 1
-source utils
+SCRIPTPATH="$(realpath -s "$0")"
+STATE_FILE="${XDG_RUNTIME_DIR}/borg-backup.state"
+ERROR_FILE="${XDG_RUNTIME_DIR}/borg-backup.error"
 
-notify() {
-	if ! utils::polybar_visible && (( quiet == 0 )); then
-		notify-send -t 3000 "$@"
-	fi
-}
+touch "${STATE_FILE}"
+touch "${ERROR_FILE}"
 
-notify_err() {
-	notify -u critical "$@"
-}
-
-view_log() {
-	urxvt -title "$1 - Journalctl" -e journalctl -e -u "$1" &
+clear_error() {
+    truncate -s0 "${ERROR_FILE}"
+    print_label
 }
 
 print_label() {
-	local label
-	local failed="$1" archive="$2"
-	if (( failed == 1 )); then
-		label="%{F#ce7d86} Backup%{F-}"
-	elif [[ "$archive" =~ ^rsync\.net ]]; then
+    local label=
+    if [ -s "${STATE_FILE}" ]; then
 		label=" Backup"
-	elif [[ "$archive" =~ ^/run/media/ ]]; then
-		label=" Backup"
 	fi
-	echo "%{A3:$scriptpath clickright:}%{A1:$scriptpath clickleft:}$label%{A}%{A}"
+    if [ -s "${ERROR_FILE}" ]; then
+		label="%{F#ce7d86} Backup%{F-}"
+	fi
+    if [ -n "${label}" ]; then
+        echo "%{A3:${SCRIPTPATH} -clear:}${label}%{A}"
+    else
+        echo
+    fi
 }
 
 main() {
-	if [[ -e "$err_file" ]]; then
-		print_label 1
-	elif [[ -e "$arch_file" ]]; then
-		print_label 0 "$(cat "$arch_file")"
-	fi
-	while true; do
-		if read -r event archive < "$fifo"; then
-			case $event in
-				started)
-					notify "Backup Started" "$archive"
-					print_label 0 "$archive"
-					;;
-				completed)
-					notify "Backup Finished" "$archive"
-					echo
-					;;
-				error)
-					notify_err "Backup Failed" "$archive"
-					print_label 1
-					;;
-				clean)
-					echo
-					;;
-			esac
-		fi
-	done
+    print_label
+    while inotifywait -q -e modify "${STATE_FILE}" "${ERROR_FILE}" >/dev/null; do
+        print_label
+    done
 }
 
-click_left() {
-	if [[ -e "$err_file" ]]; then
-		archive="$(cat "$err_file")"
-	elif [[ -e "$arch_file" ]]; then
-		archive="$(cat "$arch_file")"
-	else
-		exit
-	fi
-	if [[ "$archive" =~ ^rsync\.net ]]; then
-		view_log borg-backup-rsync
-	elif [[ "$archive" =~ MyPassport ]]; then
-		view_log borg-backup-hdd
-	fi
-}
-
-click_right() {
-	if [[ -e "$err_file" && -p "$fifo" ]]; then
-		echo clean > "$fifo"
-	elif [[ -e "$arch_file" ]]; then
-		mouse-menu -noselected -room 0 -width auto -markup-rows <<< "<b>Archive</b>: $(cat "$arch_file")"
-	fi
-}
-
-err() {
-	echo "$scriptname: $*" >&2
-	exit 1
-}
-
-scriptpath="$(realpath -s "$0")"
-scriptname="$(basename "$scriptpath")"
-fifo="/tmp/polybar_backup.fifo"
-
-borg_dir="/run/borg-backup"
-arch_file="$borg_dir/archive"
-err_file="$borg_dir/error"
-
-quiet=0
-
-if (( $# == 0 )); then
-	if [[ -p "$fifo" ]]; then
-		err "module already running"
-	fi
-	mkfifo "$fifo"
-	trap "rm '$fifo'" 0
-	main
-elif [[ "$1" == "clickleft" ]]; then
-	click_left
-elif [[ "$1" == "clickright" ]]; then
-	click_right
-fi
+case "$1" in
+	"") main ;;
+	-clear) clear_error & ;;
+	*) exit 1 ;;
+esac

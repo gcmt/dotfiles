@@ -85,10 +85,10 @@ func! s:doau_cmdline(event)
 endf
 
 func! s:escape(str)
-	if !empty($TMUX)
-		let str = substitute(a:str, "\<Esc>", "\<Esc>\<Esc>", 'g')
-		return "\<Esc>Ptmux;" . str . "\<Esc>\\"
-	end
+	"if !empty($TMUX)
+	"	let str = substitute(a:str, "\<Esc>", "\<Esc>\<Esc>", 'g')
+	"	return "\<Esc>Ptmux;" . str . "\<Esc>\\"
+	"end
 	return a:str
 endf
 

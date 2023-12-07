@@ -1,5 +1,5 @@
 [Nemo Action]
-Active=true
+Active=false
 Name=Scale Image
 Comment=Scale Image
 Dependencies=convert

@@ -274,7 +274,8 @@ alias whose='pacman -Qo'
 alias open='xdg-open'
 alias rg="rg --color=never -S"
 alias http="http --style=algol"
-alias update='systemd-inhibit sudo pacman -Syu'
+alias update="systemd-inhibit sudo pacman -Syu"
+alias sys="systemctl"
 
 # WIDGETS
 # ----------------------------------------------------------------------------
@@ -346,6 +347,10 @@ autoload -U down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
 
+# pageup/pagedown
+bindkey '^[[5~' up-line-or-history
+bindkey '^[[6~' down-line-or-history
+
 bindkey "^[[A" up-line-or-beginning-search
 bindkey "^[[B" down-line-or-beginning-search
 
@@ -365,6 +370,7 @@ bindkey -M vicmd 'Y' vi-yank-eol
 
 bindkey '^k' edit-command-line
 bindkey -M vicmd '^k' edit-command-line
+bindkey -M vicmd v edit-command-line
 
 bindkey '^q' push-line-or-edit
 
@@ -381,13 +387,6 @@ for i in {1..4}; do
 	zle -N delete-argument-$i
 	bindkey "\\e$i" delete-argument-$i
 done
-
-# PYENV
-# ----------------------------------------------------------------------------
-
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
 
 # LOCAL RC
 # ----------------------------------------------------------------------------

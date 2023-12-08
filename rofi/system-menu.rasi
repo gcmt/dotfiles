@@ -1,0 +1,31 @@
+
+@import "main-light"
+
+window {
+    font: "Noto Mono Regular 50";
+    width: 750px;
+    children: [listview];
+}
+
+element.normal.normal {
+    background-color: @normal-background;
+    text-color: @foreground-dim;
+}
+
+element.alternate.normal {
+    background-color: @alternate-normal-background;
+    text-color: @foreground-dim;
+}
+
+listview {
+    flow: horizontal; 
+    columns: 4;
+    scrollbar: false;
+    lines: 1;
+    border: 0;
+} 
+
+element {
+    padding: 50px 60px;
+    margin: 0;
+}

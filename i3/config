@@ -280,10 +280,14 @@ bindsym $mod+F9 exec --no-startup-id timer toggle 25m
 # Apps shortcuts
 bindsym $mod+equal exec --no-startup-id i3-focus -c "firefox" -m "-" -fallback "firefox"
 bindsym $mod+Shift+equal exec --no-startup-id i3-focus -c "firefox" -m "mail" -bounce -fallback "firefox --no-remote -P Mail"
-bindsym $mod+grave exec --no-startup-id i3-focus -c Nemo -t "^Downloads" -fallback "nemo Downloads"
+#bindsym $mod+grave exec --no-startup-id i3-focus -c Nemo -t "^Downloads" -fallback "nemo Downloads"
 
 # Keyboard cheatsheet
 bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
+
+# horizontal menus
+bindsym $mod+Delete exec --no-startup-id i3-sys-menu -sys
+bindsym $mod+grave exec --no-startup-id i3-sys-menu -i3
 
 mode "i3" {
 

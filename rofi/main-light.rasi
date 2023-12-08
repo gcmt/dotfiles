@@ -3,6 +3,7 @@
 
 	background: rgba(237, 238, 242, 100%);
 	foreground: rgba(82, 86, 94, 100%);
+	foreground-dim: rgba(82, 86, 94, 60%);
 
 	background-color: @background;
 

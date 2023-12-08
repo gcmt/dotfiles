@@ -1,0 +1,57 @@
+#!/bin/bash
+
+display_menu() {
+    for entry in "$@"; do 
+        echo "<span face='Font Awesome 6 Free'>${entry}</span>"
+    done | rofi -dmenu  -markup-rows -format d -theme "system-menu" -theme-str "${theme_override}"
+}
+
+system_menu() {
+    local suspend=""
+    local lock=""
+    local reboot=""
+    local poweroff=""
+    local icons=("${suspend}" "${lock}" "${reboot}" "${poweroff}") 
+    local choice=$(display_menu "${icons[@]}")
+    case "${choice}" in
+        1) systemctl suspend ;;
+        2) lock -force -blank 2 ;;
+        3) systemctl reboot ;;
+        4) systemctl poweroff ;;
+        *) exit 1 ;;
+    esac
+}
+
+i3_menu() {
+    local reload=""
+    local restart=""
+    local exit=""
+    local config=""
+    local redshift=""
+    local icons=("${reload}" "${restart}" "${exit}" "${config}" "${redshift}") 
+    local choice=$(display_menu "${icons[@]}")
+    case "${choice}" in
+        1) i3-msg reload >/dev/null ;;
+        2) i3-msg restart >/dev/null ;;
+        3) i3-msg exit >/dev/null ;;
+        4) urxvt -name floating -e vim ~/.config/i3/config ;;
+        5) urxvt -name floating -e vim ~/.config/redshift/redshift.conf ;;
+        *) exit 1 ;;
+    esac
+}
+
+print_usage() {
+	echo >&2 "Usage: i3-sys-menu [-sys|-i3]"
+}
+
+case "$1" in
+    -i3)
+        theme_override="window { width: 950px; } listview { columns: 5; }"
+        i3_menu
+        ;;
+    -sys)
+        theme_override="window { width: 750px; } listview { columns: 4; }"
+        system_menu
+        ;;
+    *) print_usage && exit 1 ;;
+esac

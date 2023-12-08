@@ -6,6 +6,7 @@ import argparse
 
 def parse_args():
     parser = argparse.ArgumentParser(description="Cycle i3 workspaces")
+    parser.add_argument("-dry", action="store_true", help="print next workspace without actually moving")
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-next", action="store_true", help="focus next workspace")
     group.add_argument("-prev", action="store_true", help="focus previous workspace")
@@ -45,7 +46,10 @@ def main(i3):
         i = current + offset
         w = workspaces[i % len(workspaces)]
 
-    i3.command(f'workspace "{w.name}"')
+    if args.dry:
+        print(w.name)
+    else:
+        i3.command(f'workspace "{w.name}"')
 
 
 if __name__ == "__main__":

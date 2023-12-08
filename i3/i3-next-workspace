@@ -13,37 +13,37 @@ def parse_args():
     return parser.parse_args()
 
 
+def is_hidden(w):
+    return w.name.startswith("_") or w.name.endswith("_")
+
+
 def main(i3):
 
     args = parse_args()
     tree = i3.get_tree()
-    focused = tree.current_workspace()
 
     numbered = []
     labeled = []
 
-    # workspace order mimics the same order used in the 
-    # i3 polybar module
-
     for w in tree.workspaces():
-        if w.name.startswith("_"):
+        if is_hidden(w):
             continue
         elif w.name[0].isdigit():
             numbered.append(w)
         else:
             labeled.append(w)
 
-    numbered = sorted(numbered, key=lambda w: w.name)
-    labeled = sorted(labeled, key=lambda w: w.name)
-    workspaces = labeled + numbered
+    # workspace order mimics the same order used in the 
+    # i3 polybar module
+    by_name = lambda w: w.name
+    workspaces = sorted(labeled, key=by_name) + sorted(numbered, key=by_name)
+    focused = tree.current_workspace()
 
-    if focused.name.startswith("_"):
-        current = len(workspaces)
+    if is_hidden(focused):
         w = workspaces[0] if args.next else workspaces[-1]
     else:
-        current = workspaces.index(focused)
         offset = 1 if args.next else -1
-        i = current + offset
+        i = workspaces.index(focused) + offset
         w = workspaces[i % len(workspaces)]
 
     if args.dry:

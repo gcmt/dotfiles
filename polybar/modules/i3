@@ -51,6 +51,10 @@ def colored(s, fg=None, bg=None):
     return ret
 
 
+def is_hidden(w):
+    return w.name.startswith("_") or w.name.endswith("_")
+
+
 def draw(subscriber, conn, event, data, all=False):
 
     global MODE
@@ -81,7 +85,7 @@ def draw(subscriber, conn, event, data, all=False):
     for i, w in enumerate(workspaces):
         if w.name == "_scratch":
             _scratch = [w]
-        elif w.name.startswith("_"):
+        elif is_hidden(w):
             _hidden.append(w)
         elif w.name[0].isdigit():
             numbered.append(w)
@@ -92,31 +96,32 @@ def draw(subscriber, conn, event, data, all=False):
     labeled = sorted(labeled, key=lambda w: w.name)
 
     for w in labeled + numbered + _hidden + _scratch:
-        is_hidden = w.name.startswith("_")
-        if not all and is_hidden and w is not active:
+        is_hidden_ = is_hidden(w)
+        if not all and is_hidden_ and w is not active:
             hidden.append(w)
             continue
 
-        colors = Colors.hidden if is_hidden else Colors.normal
+        colors = Colors.hidden if is_hidden_ else Colors.normal
         if w is active:
-            colors = Colors.hidden_active if is_hidden else Colors.active
+            colors = Colors.hidden_active if is_hidden_ else Colors.active
         if w.urgent:
             colors = Colors.urgent
         
-        if w.name == "_scratch":
+        name = w.name.strip("_")
+        if name == "scratch":
             block = colored(padded(""), **colors)
-        elif w.name == "mail" or w.name == "_mail":
+        elif name == "mail":
             block = colored(padded(""), **colors)
-        elif w.name == "web":
+        elif name == "web":
             block = colored(padded(""), **colors)
-        elif w.name == "dev": 
+        elif name in ("dev", "code"):
             block = colored(padded(""), **colors)
-        elif w.name == "music" or w.name == "_music": 
+        elif name == "music": 
             block = colored(padded(""), **colors)
-        elif w.name == "steam": 
+        elif name == "steam": 
             block = colored(padded(""), **colors)
         else:
-            block = colored(padded(w.name.lstrip("_")), **colors)
+            block = colored(padded(name), **colors)
 
         block = _clickable(block, btn=1, cmd=f"i3-msg workspace {w.name}")
         block = _clickable(

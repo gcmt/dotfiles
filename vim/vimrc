@@ -1060,18 +1060,12 @@
 
 " ----------------------------------------------------------------------------
 
-let g:wildfire_objects = {
-	\ "*" : ["i'", 'i"', "i)", "i]", "i}", "ip", "it"],
-\}
+	let g:wildfire_objects = {
+		\ "*" : ["i'", 'i"', "i)", "i]", "i}", "ip", "it"],
+	\}
 
 	" This selects the next closest text object.
 	map <ENTER> <Plug>(wildfire-fuel)
 
 	" This selects the previous closest text object.
 	vmap <C-ENTER> <Plug>(wildfire-water)
-
-augroup wildfire_custom
-    au FileType vim echom "fietype"
-    au BufReadPost *.vim echom "bufreadpost"
-augroup END
-

@@ -275,7 +275,7 @@ alias rg="rg --color=never -S"
 alias http="http --style=algol"
 alias update="systemd-inhibit sudo pacman -Syu"
 alias mktree='mktree -v'
-alias sys="systemctl"
+alias ncdu="ncdu --color off"
 
 # WIDGETS
 # ----------------------------------------------------------------------------

@@ -178,6 +178,13 @@ func! s:render(winid, bufnr, buffers)
 
     let fmt = g:buffers_line_format
 
+    let marks = {}
+    if g:buffers_show_bookmarks && exists("*bookmarks#marks")
+        for [letter, path] in items(bookmarks#marks())
+            let marks[path] = letter
+        endfor
+    end
+
     let table = {}
     let i = 1
 
@@ -191,6 +198,7 @@ func! s:render(winid, bufnr, buffers)
         let is_directory = isdirectory(bufname(b))
 
         let bufname = bufname(b)
+        let fullpath = fnamemodify(bufname, ':p')
         let bufpath = ""
 
         if is_unnamed
@@ -199,10 +207,10 @@ func! s:render(winid, bufnr, buffers)
         elseif is_terminal
             let bufpath = g:buffers_label_terminal
         else
-            let bufpath = s:prettify_path(fnamemodify(bufname, ':p'))
+            let bufpath = s:prettify_path(fullpath)
             let bufname =  fnamemodify(bufpath, ':t')
             if get(tails, bufname) > 1
-                let bufname = join(split(bufpath, '/')[-2:], '/')
+                let bufname = join(split(fullpath, '/')[-2:], '/')
             end
         end
 
@@ -217,7 +225,12 @@ func! s:render(winid, bufnr, buffers)
         let bufname_hl = is_directory ? get(hlmap, "is_directory") : bufname_hl
         let hlmap.bufname = bufname_hl
 
-        let repl = #{bufname: bufname, bufpath: bufpath}
+        let repl = #{
+            \ bufname: bufname,
+            \ bufpath: bufpath,
+            \ mark: get(marks, fullpath, ''),
+        \ }
+
         let [line, positions] = util#fmt(fmt, repl, 1)
         call setbufline(a:bufnr, i, line)
         call s:set_matches(a:winid, i, positions, hlmap)

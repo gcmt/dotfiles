@@ -13,13 +13,14 @@ let g:buffers_loaded = 1
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
 let s:options = #{
+    \ show_bookmarks: 1,
     \ sorting: 'alphabetical',
     \ cursorline: 1,
     \ minheight: -1,
     \ maxheight: 80,
     \ label_unnamed: '[no name]',
     \ label_terminal: '[terminal]',
-    \ line_format: ' %{bufname}%(  %{bufpath}%)',
+    \ line_format: ' %{bufname}%(  %{bufpath}%)%(  [%{mark}]%)',
     \ highlight: {
         \ "bufname": "Fg",
         \ 'bufpath': 'Comment',
@@ -27,6 +28,7 @@ let s:options = #{
         \ 'is_unlisted': 'Comment',
         \ 'is_terminal': 'Magenta',
         \ 'is_directory': 'Directory',
+        \ 'mark': 'Comment',
     \ },
     \ mappings: {
         \ 'q': '@quit',

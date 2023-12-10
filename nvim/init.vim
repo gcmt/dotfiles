@@ -655,6 +655,14 @@
         end
     endf
 
+" Cd
+" ----------------------------------------------------------------------------
+
+    let g:root_markers = ['.gitignore']
+
+    command! -bang -nargs=0 Here call util#cd_into_buf_dir(<q-bang>)
+    command! -bang -nargs=0 Root call util#cd_into_root_dir(<q-bang>)
+
 " Search
 " ----------------------------------------------------------------------------
 

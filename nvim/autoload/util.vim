@@ -1,4 +1,36 @@
 
+" Find project root
+func! util#find_root(path)
+    if empty(a:path) || a:path == '/'
+        return ''
+    end
+    let files = glob(a:path.'/.*', 1, 1) + glob(a:path.'/*', 1, 1)
+    let pattern = '\V\^\(' . join(get(g:, 'root_markers', ['.gitignore']), '\|') . '\)\$'
+    if match(map(files, "fnamemodify(v:val, ':t')"), pattern) >= 0
+        return a:path
+    end
+    return util#find_root(fnamemodify(a:path, ':h'))
+endf
+
+
+" Cd into the current project root directory
+func! util#cd_into_root_dir(bang)
+    let path = util#find_root(expand('%:p:h'))
+    if !empty(path)
+        let cd = empty(a:bang) ? 'cd' : 'lcd'
+        exec cd fnameescape(path)
+        pwd
+    end
+endf
+
+
+" Cd into the directory of the current buffer
+func! util#cd_into_buf_dir(bang)
+    let cd = empty(a:bang) ? 'cd' : 'lcd'
+    exec cd fnameescape(expand('%:p:h'))
+    pwd
+endf
+
 
 " Returns the syntax group under the cursor
 func! util#cursyn()
@@ -12,7 +44,6 @@ func! util#s(pattern, string, flags)
     sil! exec 'keepj' 'keepp' '%s/'.a:pattern.'/'.a:string.'/'.a:flags
     call winrestview(view)
 endf
-
 
 " Search withouth moving the cursor
 func! util#search(visual)

@@ -11,7 +11,7 @@ export GOPATH="$HOME/.local/go"
 export MANROFFOPT=-c  # fixes bold styling when viewing manpages in vim
 export MANPAGER="/bin/sh -c \"col -b | nvim -c 'setl noma ft=man ts=8 nolist nonu nomod' -c 'nn <silent> <buffer> q :q<cr>' -\""
 
-export EDITOR=vim
+export EDITOR=nvim
 export BROWSER=firefox
 export LANG=en_US.UTF-8
 

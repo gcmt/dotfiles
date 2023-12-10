@@ -139,7 +139,7 @@ def draw(subscriber, conn, event, data, all=False):
         indicator = "+" * len(hidden)  # ›
         indicator = colored(padded(indicator), **Colors.dim)
         cmd = f"echo all > '{FIFO}'"
-        if len(hidden) == 1 and not active.name.startswith("_"):
+        if len(hidden) == 1 and not is_hidden(active):
             # automatically focus hidden workspace
             cmd += f"&& i3-msg workspace {hidden[0].name}"
         indicator = _clickable(indicator, btn=1, cmd=cmd)

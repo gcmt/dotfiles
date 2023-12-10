@@ -61,12 +61,37 @@ func bookmarks#view() abort
     end
 
     exec 'sil keepj keepa botright 1new' s:bufname
-    let b:bookmarks = {'table': {}}
-    setl filetype=bookmarks buftype=nofile bufhidden=hide nobuflisted
-    setl noundofile nobackup noswapfile nospell
-    setl nowrap nonumber norelativenumber nolist textwidth=0
-    setl cursorline nocursorcolumn colorcolumn=0
-    call setwinvar(0, '&stl', ' bookmarks')
+
+    let winnr = bufwinnr(s:bufname)
+    call setwinvar(winnr, '&cursorline', g:buffers_cursorline)
+    call setwinvar(winnr, '&cursorcolumn', 0)
+    call setwinvar(winnr, '&colorcolumn', 0)
+    call setwinvar(winnr, '&signcolumn', "no")
+    call setwinvar(winnr, '&wrap', 0)
+    call setwinvar(winnr, '&number', 0)
+    call setwinvar(winnr, '&relativenumber', 0)
+    call setwinvar(winnr, '&list', 0)
+    call setwinvar(winnr, '&textwidth', 0)
+    call setwinvar(winnr, '&undofile', 0)
+    call setwinvar(winnr, '&backup', 0)
+    call setwinvar(winnr, '&swapfile', 0)
+    call setwinvar(winnr, '&spell', 0)
+
+    " wipe any message
+    echo
+
+    let bufnr = bufnr(s:bufname, 1)
+    call bufload(bufnr)
+
+    call setbufvar(bufnr, '&filetype', 'bookmarks')
+    call setbufvar(bufnr, '&buftype', 'nofile')
+    call setbufvar(bufnr, '&bufhidden', 'hide')
+    call setbufvar(bufnr, '&buflisted', 0)
+    call setbufvar(bufnr, 'bookmarks', {'table': {}})
+
+    " hide statusbar
+    exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
+    call setwinvar(winnr, '&laststatus', '0')
 
     call bookmarks#render()
     call cursor(1, 2)

@@ -59,7 +59,7 @@ nnoremap B :bmarks<cr>
 command! reload :write | restart
 
 command! run !! ./%f %a
-command! diff vim -d %f %F
+command! diff nvim -d %f %F
 command! df df -h %S 2>/dev/null
 command! ncdu ncdu %d
 command! mcd :mkdir! %a | cd %a

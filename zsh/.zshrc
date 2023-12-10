@@ -181,12 +181,12 @@ poet() {
 }
 
 vimx() {
-	touch "$@" && chmod u+x "$@" && vim "$@"
+	touch "$@" && chmod u+x "$@" && nvim "$@"
 }
 
 # open files that contain the given pattern
 vimg() {
-	vim -q <(rg --vimgrep "$@") +copen
+	nvim -q <(rg --vimgrep "$@") +copen
 }
 
 # search and open files with vim
@@ -197,13 +197,14 @@ vimf() {
 		-g "!*.pyc" -g "!*.beam" -g "!*.pdf" -g "!*.jpg" -g "!*.png" -g "!*.gif" -g "!*.mp4" -g "!*.gpg" \
 		| grep "$(echo "$@" | sed 's/\s\+/.*/')" > "$flist"
 	if [[ -s "$flist" ]]; then
-		vim "$flist" \
+		nvim "$flist" \
 			-c "argd %" \
 			-c "setl nomodifiable" \
 			-c "nn <silent> <buffer> gf :set bl<bar>norm! ^vg_gf<cr>" -c "nmap <buffer> l gf" \
 			-c "nn <silent> <buffer> gF :set nobl<bar>norm! ^vg_gf<cr>" -c "nmap <buffer> L gF"
 	else
-		echo -n "$0: nothing found"
+		echo >&2 "$0: nothing found"
+        return 1
 	fi
 }
 
@@ -229,19 +230,17 @@ ledger() {
 
 ledit() {
     cd "${LEDGER_DIR}"
-    vim -c 'norm! G' "${LEDGER_DIR}/g.$(date +%Y).ledger"
+    nvim -c 'norm! G' "${LEDGER_DIR}/g.$(date +%Y).ledger"
 }
 
 # ALIASES
 # ----------------------------------------------------------------------------
 
-alias ze='vim $ZDOTDIR/.zshrc'
+alias ze='nvim $ZDOTDIR/.zshrc'
 alias zs='source $ZDOTDIR/.zshrc'
 
 alias dark='colorscheme dark'
 alias light='colorscheme light'
-
-alias vi=vim
 
 alias cb='cd -'
 alias ..=' ..'
@@ -257,7 +256,6 @@ alias rm='rm -Iv'
 alias mv='mv -iv'
 alias cp='cp -iv'
 alias mkdir='mkdir -pv'
-alias mktree='mktree -v'
 
 export LS_COLORS="di=34:ln=36:so=32:pi=35:ex=31"
 alias ls='LC_COLLATE=C ls --time-style=long-iso --color=auto --group-directories-first --quoting-style=literal'
@@ -270,11 +268,13 @@ alias ipy="ipython"
 alias pudb="pudb3"
 alias pypath='python -c "import sys; [print(p) for p in filter(None, sys.path)]"'
 
+alias vim='nvim'
 alias whose='pacman -Qo'
 alias open='xdg-open'
 alias rg="rg --color=never -S"
 alias http="http --style=algol"
 alias update="systemd-inhibit sudo pacman -Syu"
+alias mktree='mktree -v'
 alias sys="systemctl"
 
 # WIDGETS

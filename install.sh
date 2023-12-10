@@ -98,9 +98,7 @@ if _should_install urxvt; then
 fi
 
 if _should_install vim; then
-	mkdir -p "$XDG_DATA_HOME/vim"
-	mkdir -p "$XDG_CACHE_HOME/vim/undo"
-	link "$dotdir/vim" "$XDG_CONFIG_HOME/vim"
+	link "$dotdir/nvim" "$XDG_CONFIG_HOME/nvim"
 fi
 
 if _should_install zsh; then

@@ -63,6 +63,7 @@ for_window [class="URxvt" instance="floating"] floating enable, $float_m, move p
 for_window [class="URxvt" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
 for_window [class="URxvt" instance="vim-popup"] border pixel 1, floating enable, $float_m, move position center
 
+for_window [instance="steamwebhelper" title="Steam Settings"] floating enable
 for_window [instance="system-config-printer"] floating enable
 for_window [class="Yad"] floating enable
 for_window [class="Pinentry"] floating enable
@@ -298,8 +299,8 @@ mode "i3" {
 	bindsym Shift+l exec --no-startup-id lock -force -blank 2, mode "default"
 	bindsym Shift+s exec --no-startup-id systemctl suspend, mode "default"
 
-	bindsym c exec --no-startup-id $term_floating -e vim .config/i3/config; mode "default"
-	bindsym t exec --no-startup-id $term_floating -e vim .config/redshift/redshift.conf; mode "default"
+	bindsym c exec --no-startup-id $term_floating -e nvim .config/i3/config; mode "default"
+	bindsym t exec --no-startup-id $term_floating -e nvim .config/redshift/redshift.conf; mode "default"
 
 	# Reset workspace layout
 	bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
@@ -343,17 +344,17 @@ bindsym $mod+F12 exec --no-startup-id volume up
 # class                  border   back     text     indic    child_border
 
 # =light colors=
-# client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
-# client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
-# client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
-# client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
-# client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
-# client.background       #e7e8eb
-
-# =dark colors=
 client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
 client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
 client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
 client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
 client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
 client.background       #e7e8eb
+
+# =dark colors=
+# client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
+# client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
+# client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
+# client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
+# client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
+# client.background       #e7e8eb

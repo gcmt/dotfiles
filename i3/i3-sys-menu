@@ -34,8 +34,8 @@ i3_menu() {
         1) i3-msg reload >/dev/null ;;
         2) i3-msg restart >/dev/null ;;
         3) i3-msg exit >/dev/null ;;
-        4) urxvt -name floating -e vim ~/.config/i3/config ;;
-        5) urxvt -name floating -e vim ~/.config/redshift/redshift.conf ;;
+        4) urxvt -name floating -e nvim ~/.config/i3/config ;;
+        5) urxvt -name floating -e nvim ~/.config/redshift/redshift.conf ;;
         *) exit 1 ;;
     esac
 }

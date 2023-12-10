@@ -42,7 +42,7 @@ def notify(msg, urgency="normal"):
 
 def edit_with_vim(path):
     old_hash = file_hash(path)
-    cmd = ["urxvt", "-name", "floating", "-e", "vim", path]
+    cmd = ["urxvt", "-name", "floating", "-e", "nvim", path]
     run(cmd, stdout=PIPE, stderr=PIPE)
     new_hash = file_hash(path)
     return old_hash != new_hash

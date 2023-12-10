@@ -2,29 +2,14 @@
 " INIT
 " ----------------------------------------------------------------------------
 
-	if !exists('$XDG_CONFIG_HOME')
-		let $XDG_CONFIG_HOME = $HOME.'/.config'
-	end
-
-	if !exists('$XDG_DATA_HOME')
-		let $XDG_DATA_HOME = $HOME.'/.local/share'
-	end
-
-	if !exists('$XDG_CACHE_HOME')
-		let $XDG_CACHE_HOME = $HOME.'/.cache'
-	end
-
-	if !exists('$VIMHOME')
-		let s:rcdir = fnamemodify(expand('<sfile>'), ':h')
-		let $VIMHOME = isdirectory(s:rcdir.'/.vim') ? s:rcdir.'/.vim' : s:rcdir
-	end
+	let $VIMHOME = $HOME . '/.vim'
 
 	if !exists('$VIMCACHE')
-		let $VIMCACHE = $XDG_CACHE_HOME.'/vim'
+		let $VIMCACHE = $HOME . '/.cache/vim'
 	end
 
 	if !exists('$VIMDATA')
-		let $VIMDATA = $XDG_DATA_HOME.'/vim'
+		let $VIMDATA = $HOME . '/.local/share/vim'
 	end
 
 	let g:plugins = []
@@ -35,7 +20,6 @@
 	Local bookmarks
 	Local buffers
 	Local commenter
-	Local ctags
 	Local explorer
 	Local finder
 	Local fm
@@ -48,8 +32,6 @@
 	Local regtee
 	Local search
 	Local spotter
-	Local taggify
-	Local taglist
 	Local tmux
 
 	delcomm Local
@@ -66,32 +48,21 @@
 		let &rtp = join(rtp, ',')
 	endf
 
-	func! s:helptags()
-		for docdir in globpath(join(g:plugins, ','), 'doc', 1, 1)
-			exec 'helptags' docdir
-		endfor
-	endf
-
 	call s:set_rtp()
 
-	comm! Helptags call <sid>helptags()
-
 	call plug#begin($VIMDATA . '/plugins/')
+
 	Plug 'dense-analysis/ale'
 	Plug 'tpope/vim-fugitive'
-	Plug 'prettier/vim-prettier'
 	Plug 'editorconfig/editorconfig-vim'
-	Plug 'junegunn/gv.vim'
-	Plug 'fatih/vim-go'
 	Plug 'airblade/vim-gitgutter'
 	Plug 'SirVer/ultisnips'
-	Plug 'posva/vim-vue'
 	Plug 'pangloss/vim-javascript'
 	Plug 'mxw/vim-jsx'
 	Plug 'JulesWang/css.vim'
 	Plug 'othree/html5.vim'
 	Plug 'tpope/vim-markdown'
-	Plug 'gcmt/wildfire.vim'
+
 	call plug#end()
 
 " OPTIONS
@@ -718,29 +689,6 @@
 	" tee yanks to a sticky register
 	nnoremap <expr> gQ ":Regtee ".nr2char(getchar())."<cr>"
 
-" TAGS
-" ----------------------------------------------------------------------------
-
-	set tags=
-	let g:tags_common = []
-
-	aug _tags
-		au!
-		au BufEnter * if &ft != 'taglist' | call <sid>set_tagfiles() | end
-		au User UpdateTagfiles call <sid>set_tagfiles()
-	aug END
-
-	" The order of tags file will determine in what position Taglist will display
-	" them. Prefix them with a number followed by a dot to enforce an ordering:
-	" ie. results from 0.project will always be displayed on top.
-	" To ignore a tag file, prefix its name with an underscore.
-	func! s:set_tagfiles()
-		let local_tags = glob('.tags/'.&filetype.'/[^_]*', 1, 1)
-		let global_tags = glob($XDG_DATA_HOME.'/tags/'.&filetype.'/[^_]*', 1, 1)
-		let tagfiles = g:tags_common + local_tags + global_tags
-		call setbufvar('%', '&tags', join(tagfiles, ','))
-	endf
-
 " PROJECT
 " ----------------------------------------------------------------------------
 
@@ -770,7 +718,6 @@
 		if !empty(path)
 			let cd = empty(a:bang) ? 'cd' : 'lcd'
 			exec cd fnameescape(path)
-			doau User UpdateTagfiles
 			pwd
 		end
 	endf
@@ -814,7 +761,7 @@
 		au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q <c-w>c | end
 
 		" Show cursorline only for a short amount of time
-		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|explorer|buffers|finder|bookmarks|marks|taglist|plugs|search)$' | set nocul | end
+		au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|explorer|buffers|finder|bookmarks|marks|plugs|search)$' | set nocul | end
 
 		" Filetype fixes
 		au BufNewFile,BufRead *.ledger set ft=ledger
@@ -850,7 +797,7 @@
 	endf
 
 	command! -nargs=0 Vimrc edit $MYVIMRC
-	command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
+	"command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 
 	" Write helpers
 	command! -nargs=0 SudoWrite exec 'write !sudo tee % > /dev/null'
@@ -925,19 +872,6 @@
 	nnoremap <silent> gm' :call bookmarks#jump(getchar())<cr>
 	nnoremap <silent> gmm :call bookmarks#set(getchar(), expand('%:p'))<cr>
 	nnoremap <silent> gmd :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
-
-" Taglist
-" ----------------------------------------------------------------------------
-
-	nnoremap <silent> <c-]> :Tag <c-r><c-w><cr>
-
-" Ctags
-" ----------------------------------------------------------------------------
-
-	let g:ctags = {
-		\ 'python_options': ['--exclude=venv'],
-		\ 'javascript_options': ['--exclude=node_modules'],
-	\ }
 
 " Spotter
 " ----------------------------------------------------------------------------
@@ -1057,15 +991,3 @@
 	let g:loaded_getscriptPlugin = 1
 	let g:loaded_2html_plugin = 1
 	let g:loaded_netrwPlugin = 1
-
-" ----------------------------------------------------------------------------
-
-	let g:wildfire_objects = {
-		\ "*" : ["i'", 'i"', "i)", "i]", "i}", "ip", "it"],
-	\}
-
-	" This selects the next closest text object.
-	map <ENTER> <Plug>(wildfire-fuel)
-
-	" This selects the previous closest text object.
-	vmap <C-ENTER> <Plug>(wildfire-water)

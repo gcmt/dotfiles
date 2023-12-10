@@ -165,7 +165,7 @@ enable_window_title = no
 
 search_engine_default_search_mode = 1
 
-external_editor = vim
+external_editor = nvim
 use_console_editor = yes
 
 # Colors

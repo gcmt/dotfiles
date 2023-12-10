@@ -70,7 +70,7 @@ def print_label(plants):
 
 
 def edit_with_vim(path):
-    cmd = ["urxvt", "-name", "floating", "-e", "vim", os.path.expanduser(path)]
+    cmd = ["urxvt", "-name", "floating", "-e", "nvim", os.path.expanduser(path)]
     run(cmd, stdout=PIPE, stderr=PIPE)
 
 

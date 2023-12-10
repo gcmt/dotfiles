@@ -8,10 +8,8 @@ export ZDATADIR="$XDG_DATA_HOME/zsh"
 
 export GOPATH="$HOME/.local/go"
 
-export VIMINIT='let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc" | source $MYVIMRC'
-
 export MANROFFOPT=-c  # fixes bold styling when viewing manpages in vim
-export MANPAGER="/bin/sh -c \"col -b | vim --not-a-term -c 'setl noma ft=man ts=8 nolist nonu nomod' -c 'nn <silent> <buffer> q :q<cr>' -\""
+export MANPAGER="/bin/sh -c \"col -b | nvim -c 'setl noma ft=man ts=8 nolist nonu nomod' -c 'nn <silent> <buffer> q :q<cr>' -\""
 
 export EDITOR=vim
 export BROWSER=firefox

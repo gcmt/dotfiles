@@ -2,7 +2,7 @@
 	name = Giacomo Comitti
 	email = dev@gcomit.com
 [core]
-	editor = vim
+	editor = nvim
 [diff]
 	tool = vimdiff
 [difftool]
@@ -41,7 +41,7 @@
 	spellcheck = true
 	tabwidth = 4
 [gui]
-	editor = urxvt -e vim
+	editor = urxvt -e nvim
 [credential]
 	provider = generic
 [filter "lfs"]

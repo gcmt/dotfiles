@@ -6,9 +6,12 @@ paths=( "${@:2}" )
 
 if [[ -d "${current_dir}" ]]; then
 	cd "${current_dir}" || exit 1
-    for i in "${!paths[@]}"; do
-        paths[$i]=".${paths[i]#$(pwd)}"
-    done
+    if [[ "${current_dir}" == "${paths[0]}" ]]; then
+        paths=( "." )
+    fi
+    # for i in "${!paths[@]}"; do
+        # paths[$i]=".${paths[i]#$(pwd)}"
+    # done
 fi
 
 exec urxvt -name floating -e vidir "${paths[@]}"

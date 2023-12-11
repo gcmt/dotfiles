@@ -10,10 +10,13 @@ if exists("g:loaded_bookmarks") || &cp
 end
 let g:loaded_bookmarks = 1
 
-let s:options = {
-    \ 'max_winsize': 50,
-    \ 'marks': 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM',
-    \ 'explorer_cmd': executable('ranger') ? 'Ranger!' : 'Explorer'
+let s:options = #{
+    \ popup: 1,
+    \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
+    \ cursorline: 1,
+    \ max_height: 50,
+    \ marks: 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM',
+    \ explorer_cmd: executable('ranger') ? 'Ranger!' : 'Explorer'
 \ }
 
 for [s:option, s:default] in items(s:options)

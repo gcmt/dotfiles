@@ -13,6 +13,8 @@ let g:buffers_loaded = 1
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
 let s:options = #{
+    \ popup: 1,
+    \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
     \ show_bookmarks: 1,
     \ sorting: 'alphabetical',
     \ cursorline: 1,

@@ -11,6 +11,8 @@ end
 let g:loaded_marks = 1
 
 let s:options = #{
+    \ popup: 1,
+    \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
     \ cursorline: 1,
     \ minheight: -1,
     \ maxheight: 80,

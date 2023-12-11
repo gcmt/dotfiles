@@ -60,10 +60,44 @@ func bookmarks#view() abort
         return s:err("No bookmarks found")
     end
 
-    exec 'sil keepj keepa botright 1new' s:bufname
+    if g:bookmarks_popup
 
-    let winnr = bufwinnr(s:bufname)
-    call setwinvar(winnr, '&cursorline', g:buffers_cursorline)
+        let bufnr = nvim_create_buf(0, 0)
+        let ui = nvim_list_uis()[0]
+
+        let percent = ui.width < 120 ? 80 : 60
+        let width = float2nr(ui.width * percent / 100)
+        let height = 10
+
+        let opts = {
+            \ 'relative': 'editor',
+            \ 'width': width,
+            \ 'height': height,
+            \ 'col': (ui.width/2) - (width/2),
+            \ 'row': (ui.height/2) - (height/2),
+            \ 'anchor': 'NW',
+            \ 'style': 'minimal',
+            \ 'border': g:bookmarks_popup_borders,
+        \ }
+
+        let winid = nvim_open_win(bufnr, 1, opts)
+        let winnr = bufwinnr(bufnr)
+
+    else
+
+        exec 'sil keepj keepa botright 1new' s:bufname
+        let winnr = bufwinnr(s:bufname)
+        let winid = win_getid(winnr)
+        let bufnr = bufnr(s:bufname, 1)
+        call bufload(bufnr)
+
+        " hide statusbar
+        exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
+        call setwinvar(winnr, '&laststatus', '0')
+
+    end
+
+    call setwinvar(winnr, '&cursorline', g:bookmarks_cursorline)
     call setwinvar(winnr, '&cursorcolumn', 0)
     call setwinvar(winnr, '&colorcolumn', 0)
     call setwinvar(winnr, '&signcolumn', "no")
@@ -77,24 +111,17 @@ func bookmarks#view() abort
     call setwinvar(winnr, '&swapfile', 0)
     call setwinvar(winnr, '&spell', 0)
 
-    " wipe any message
-    echo
-
-    let bufnr = bufnr(s:bufname, 1)
-    call bufload(bufnr)
-
     call setbufvar(bufnr, '&filetype', 'bookmarks')
     call setbufvar(bufnr, '&buftype', 'nofile')
     call setbufvar(bufnr, '&bufhidden', 'hide')
     call setbufvar(bufnr, '&buflisted', 0)
     call setbufvar(bufnr, 'bookmarks', {'table': {}})
 
-    " hide statusbar
-    exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
-    call setwinvar(winnr, '&laststatus', '0')
-
     call bookmarks#render()
     call cursor(1, 2)
+
+    " wipe any message
+    echo
 
 endf
 
@@ -141,7 +168,7 @@ func bookmarks#render()
 endf
 
 func s:resize_window(entries_num)
-    let max = float2nr(&lines * g:bookmarks_max_winsize / 100)
+    let max = float2nr(&lines * g:bookmarks_max_height / 100)
     exec 'resize' min([a:entries_num, max])
 endf
 

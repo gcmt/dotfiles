@@ -7,7 +7,7 @@ end
 let g:colors_name = 'main'
 
 if &background == 'light'
-    let s:black         = ['#24292e', 0]
+    let s:black         = ['#2c3238', 0]
     let s:red           = ['#ad2f3b', 1]
     let s:green         = ['#06803d', 2]
     let s:yellow        = ['#dbc172', 3]
@@ -70,7 +70,7 @@ let s:colored = [
     \ 'PMenu', 'PMenuSel', 'PMenuSBar', 'PMenuThumb',
     \ 'TabLine', 'TabLineSel', 'TabLineFill',
     \ 'SpellBad', 'SpellCap', 'SpellLocal', 'SpellRare',
-    \ 'Yank', 'Spotter',
+    \ 'Yank', 'Spotter', 'FloatBorder'
 \ ]
 let s:colored = '\v^(' . join(s:colored, '|') . ')$'
 
@@ -136,6 +136,11 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     else
         cal s:h('WildMenu', s:bg, s:fg_very_dim, '', '')
     end
+
+    cal s:h('FloatBorder', s:fg_very_dim, '', '', '')
+    cal s:h('NormalFloat', s:fg, '', '', '')
+    cal s:h('FloatTitle	', s:fg, '', '', '')
+    cal s:h('FloatFooter', s:fg, '', '', '')
 
     cal s:h('Linenr', s:fg_very_dim, '', '', '')
     cal s:h('CursorLineNr', s:red, '', 'none', '')

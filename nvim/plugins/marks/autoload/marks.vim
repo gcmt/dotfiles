@@ -45,10 +45,43 @@ func marks#view() abort
     let curr_bufnr = bufnr('%')
     let curr_winnr = winnr()
 
-    exec 'sil keepj keepa botright 1new' s:bufname
+    if g:marks_popup
 
-    let winnr = bufwinnr(s:bufname)
-    let winid = win_getid(winnr)
+        let bufnr = nvim_create_buf(0, 0)
+        let ui = nvim_list_uis()[0]
+
+        let percent = ui.width < 120 ? 80 : 60
+        let width = float2nr(ui.width * percent / 100)
+        let height = 10
+
+        let opts = {
+            \ 'relative': 'editor',
+            \ 'width': width,
+            \ 'height': height,
+            \ 'col': (ui.width/2) - (width/2),
+            \ 'row': (ui.height/2) - (height/2),
+            \ 'anchor': 'NW',
+            \ 'style': 'minimal',
+            \ 'border': g:marks_popup_borders,
+        \ }
+
+        let winid = nvim_open_win(bufnr, 1, opts)
+        let winnr = bufwinnr(bufnr)
+
+    else
+
+        exec 'sil keepj keepa botright 1new' s:bufname
+
+        let winnr = bufwinnr(s:bufname)
+        let winid = win_getid(winnr)
+        let bufnr = bufnr(s:bufname, 1)
+        call bufload(bufnr)
+
+        " hide statusbar
+        exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
+        call setwinvar(winnr, '&laststatus', '0')
+
+    end
 
     call setwinvar(winnr, '&cursorline', g:marks_cursorline)
     call setwinvar(winnr, '&cursorcolumn', 0)
@@ -64,12 +97,6 @@ func marks#view() abort
     call setwinvar(winnr, '&swapfile', 0)
     call setwinvar(winnr, '&spell', 0)
 
-    " wipe any message
-    echo
-
-    let bufnr = bufnr(s:bufname, 1)
-    call bufload(bufnr)
-
     call setbufvar(bufnr, '&filetype', 'marks')
     call setbufvar(bufnr, '&buftype', 'nofile')
     call setbufvar(bufnr, '&bufhidden', 'hide')
@@ -79,7 +106,6 @@ func marks#view() abort
 
     let ctx = #{
         \ winid: winid,
-        \ winnr: winnr,
         \ bufnr: bufnr,
         \ table: table,
         \ curr_bufnr: curr_bufnr,
@@ -97,12 +123,12 @@ func marks#view() abort
         end
     endfor
 
-    " hide statusbar
-    exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
-    call setwinvar(winnr, '&laststatus', '0')
-
     call s:setup_mappings(g:marks_mappings, ctx)
     call s:resize_window(ctx, g:marks_maxheight)
+
+    " wipe any message
+    echo
+
 endf
 
 
@@ -208,7 +234,7 @@ func s:render(winid, bufnr, marks) abort
         for mark in sort(marks, {a, b -> a.linenr - b.linenr})
             let table[i] = mark
             let repl = #{
-                \ link: k == len(marks)-1 ? pipes[1].pipes[2] : pipes[0].pipes[2],
+                \ pipes: k == len(marks)-1 ? pipes[1].pipes[2] : pipes[0].pipes[2],
                 \ mark: mark.letter,
                 \ linenr: printf('%'.ln_width.'S', mark.linenr),
                 \ colnr: printf('%'.col_width.'S', mark.colnr),

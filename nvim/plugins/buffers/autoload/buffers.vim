@@ -17,10 +17,43 @@ func! buffers#view(all) abort
     let curr_bufnr = bufnr('%')
     let curr_winnr = winnr()
 
-    exec 'sil keepj keepa botright 1new' s:bufname
+    if g:buffers_popup
 
-    let winnr = bufwinnr(s:bufname)
-    let winid = win_getid(winnr)
+        let bufnr = nvim_create_buf(0, 0)
+        let ui = nvim_list_uis()[0]
+
+        let percent = ui.width < 120 ? 80 : 60
+        let width = float2nr(ui.width * percent / 100)
+        let height = 10
+
+        let opts = {
+            \ 'relative': 'editor',
+            \ 'width': width,
+            \ 'height': height,
+            \ 'col': (ui.width/2) - (width/2),
+            \ 'row': (ui.height/2) - (height/2),
+            \ 'anchor': 'NW',
+            \ 'style': 'minimal',
+            \ 'border': g:buffers_popup_borders,
+        \ }
+
+        let winid = nvim_open_win(bufnr, 1, opts)
+        let winnr = bufwinnr(bufnr)
+
+    else
+
+        exec 'sil keepj keepa botright 1new' s:bufname
+
+        let winnr = bufwinnr(s:bufname)
+        let winid = win_getid(winnr)
+        let bufnr = bufnr(s:bufname, 1)
+        call bufload(bufnr)
+
+        " hide statusbar
+        exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
+        call setwinvar(winnr, '&laststatus', '0')
+
+    end
 
     call setwinvar(winnr, '&cursorline', g:buffers_cursorline)
     call setwinvar(winnr, '&cursorcolumn', 0)
@@ -36,22 +69,15 @@ func! buffers#view(all) abort
     call setwinvar(winnr, '&swapfile', 0)
     call setwinvar(winnr, '&spell', 0)
 
-    " wipe any message
-    echo
-
-    let bufnr = bufnr(s:bufname, 1)
-    call bufload(bufnr)
-
+    call setbufvar(bufnr, '&buflisted', 0)
     call setbufvar(bufnr, '&filetype', 'buffers')
     call setbufvar(bufnr, '&buftype', 'nofile')
     call setbufvar(bufnr, '&bufhidden', 'hide')
-    call setbufvar(bufnr, '&buflisted', 0)
 
     let table = s:render(winid, bufnr, buffers)
 
     let ctx = #{
         \ winid: winid,
-        \ winnr: winnr,
         \ bufnr: bufnr,
         \ table: table,
         \ curr_bufnr: curr_bufnr,
@@ -69,12 +95,12 @@ func! buffers#view(all) abort
         end
     endfor
 
-    " hide statusbar
-    exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
-    call setwinvar(winnr, '&laststatus', '0')
-
     call s:setup_mappings(g:buffers_mappings, ctx)
     call s:resize_window(ctx, g:buffers_maxheight)
+
+    " wipe any message
+    echo
+
 endf
 
 

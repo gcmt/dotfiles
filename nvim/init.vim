@@ -90,8 +90,9 @@
         redraw!
     endf
 
-    nnoremap <silent> <F3> :call <sid>set_bg(&bg == 'dark' ? 'light' : 'dark')<cr>
-    nnoremap <silent> <F4> :let g:minimal = 1 - g:minimal<bar>let &bg = &bg<cr>
+    command! Dark call <sid>set_bg("dark")
+    command! Light call <sid>set_bg("light")
+    command! Minimal let g:minimal = 1 - g:minimal<bar>let &bg = &bg
 
     let g:minimal = 1
     let &bg = s:get_term_bg()

@@ -63,15 +63,16 @@ for_window [class="URxvt" instance="floating"] floating enable, $float_m, move p
 for_window [class="URxvt" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
 for_window [class="URxvt" instance="vim-popup"] border pixel 1, floating enable, $float_m, move position center
 
-for_window [instance="steamwebhelper" title="Steam Settings"] floating enable
 for_window [instance="system-config-printer"] floating enable
 for_window [class="Yad"] floating enable
 for_window [class="Pinentry"] floating enable
 for_window [class="Qalculate"] floating enable
 for_window [class="Ssh-askpass"] floating enable
 for_window [class="feh" title="^Cheatsheet$"] floating enable, move position center
-for_window [title=" - Discord"] move container to workspace "discord"
 #for_window [title="Origin"] floating enable
+
+for_window [class="steam"] move container to workspace "steam"
+for_window [instance="steamwebhelper" title="Steam Settings"] floating enable
 
 for_window [class="KeepassXC"] layout stacking
 for_window [class="git-cola"] layout stacking
@@ -107,7 +108,7 @@ bindsym $mod+g exec --no-startup-id sensors-notify
 bindsym $mod+Shift+g exec --no-startup-id sensors-notify -pinned
 
 # Swap window
-bindsym $mod+Control+backslash exec --no-startup-id i3-swap
+bindsym $mod+Shift+grave exec i3-swap
 
 # Rotate windows
 bindsym $mod+Next exec --no-startup-id i3-rotate -next
@@ -279,16 +280,17 @@ bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
 bindsym $mod+F9 exec --no-startup-id timer toggle 25m
 
 # Apps shortcuts
-bindsym $mod+equal exec --no-startup-id i3-focus -c "firefox" -m "-" -fallback "firefox"
-bindsym $mod+Shift+equal exec --no-startup-id i3-focus -c "firefox" -m "mail" -bounce -fallback "firefox --no-remote -P Mail"
-#bindsym $mod+grave exec --no-startup-id i3-focus -c Nemo -t "^Downloads" -fallback "nemo Downloads"
+bindsym $mod+backslash exec --no-startup-id i3-focus -c "firefox" -m "-" -fallback "firefox"
+bindsym $mod+Shift+backslash exec --no-startup-id i3-focus -c "firefox" -m "mail" -bounce -fallback "firefox --no-remote -P Mail"
+bindsym $mod+equal exec --no-startup-id i3-focus -c Nemo -fallback nemo
+bindsym $mod+Shift+equal exec --no-startup-id nemo
 
 # Keyboard cheatsheet
-bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
+#bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
 
-# horizontal menus
+# system/i3 menu
 bindsym $mod+Delete exec --no-startup-id i3-sys-menu -sys
-bindsym $mod+grave exec --no-startup-id i3-sys-menu -i3
+bindsym $mod+Shift+Delete exec --no-startup-id i3-sys-menu -i3
 
 mode "i3" {
 

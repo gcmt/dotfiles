@@ -20,6 +20,7 @@ func! s:unset()
     end
 endf
 
+nnoremap <silent> <buffer> <esc> :close<cr>
 nnoremap <silent> <buffer> q :close<cr>
 nnoremap <silent> <buffer> <enter> :call <sid>jump('edit')<cr>zz
 nnoremap <silent> <buffer> <c-j> :call <sid>jump('edit')<cr>zz

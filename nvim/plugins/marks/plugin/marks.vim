@@ -34,6 +34,7 @@ let s:options = #{
         \ 'l': '@jump',
         \ 'd': '@delete',
         \ "\<cr>": '@jump',
+        \ "\<esc>": '@quit',
     \ },
 \ }
 

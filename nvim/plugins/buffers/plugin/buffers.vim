@@ -46,6 +46,7 @@ let s:options = #{
         \ 'l': '@edit',
         \ '.': '@fm',
         \ "\<cr>": '@edit',
+        \ "\<esc>": '@quit',
     \ },
 \ }
 

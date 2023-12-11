@@ -1,4 +1,4 @@
-#define _LIGHT_black         #282e33
+#define _LIGHT_black         #2c3238
 #define _LIGHT_red           #d43535
 #define _LIGHT_green         #06803d
 #define _LIGHT_yellow        #dbc172

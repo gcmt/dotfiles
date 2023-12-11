@@ -11,7 +11,6 @@ end
 let g:fzf_loaded = 1
 
 command! -nargs=* Files call fzf#files(<q-args>)
-command! -nargs=0 Lines call fzf#lines()
 
 let s:options = {
     \ 'default_opts': "-e --multi --preview 'head -100 {}' --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:19,gutter:-1",

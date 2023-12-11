@@ -19,19 +19,19 @@ func! buffers#view(all) abort
 
     if g:buffers_popup
 
+        let lines = &lines - 2
         let bufnr = nvim_create_buf(0, 0)
-        let ui = nvim_list_uis()[0]
-
-        let percent = ui.width < 120 ? 80 : 60
-        let width = float2nr(ui.width * percent / 100)
-        let height = 10
+        let percent = &columns < 120 ? 80 : 60
+        let width = float2nr(&columns * percent / 100)
+        let max = float2nr(lines * g:buffers_max_height / 100)
+        let height = min([len(buffers), max])
 
         let opts = {
             \ 'relative': 'editor',
             \ 'width': width,
             \ 'height': height,
-            \ 'col': (ui.width/2) - (width/2),
-            \ 'row': (ui.height/2) - (height/2),
+            \ 'col': (&columns/2) - (width/2),
+            \ 'row': (lines/2) - (height/2),
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ 'border': g:buffers_popup_borders,
@@ -96,7 +96,7 @@ func! buffers#view(all) abort
     endfor
 
     call s:setup_mappings(g:buffers_mappings, ctx)
-    call s:resize_window(ctx, g:buffers_maxheight)
+    call s:resize_window(ctx, g:buffers_max_height)
 
     " wipe any message
     echo
@@ -358,7 +358,7 @@ func! s:buf_delete(ctx) abort
     let buffers = s:get_buffers(a:ctx.all, g:buffers_sorting)
     let a:ctx.table = s:render(a:ctx.winid, a:ctx.bufnr, buffers)
 
-    call s:resize_window(a:ctx, g:buffers_maxheight)
+    call s:resize_window(a:ctx, g:buffers_max_height)
 endf
 
 
@@ -386,7 +386,7 @@ func! s:toggle_unlisted(ctx)
     call win_execute(bufwinid(a:ctx.bufnr), a:ctx.selected)
     call win_execute(bufwinid(a:ctx.bufnr), 'norm! 0')
 
-    call s:resize_window(a:ctx, g:buffers_maxheight)
+    call s:resize_window(a:ctx, g:buffers_max_height)
 endf
 
 

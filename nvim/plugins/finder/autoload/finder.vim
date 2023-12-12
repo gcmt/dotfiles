@@ -21,7 +21,7 @@ func finder#findg(path, query) abort
 endf
 
 
-func finder#find(path, query) abort
+func finder#find(path, query, autojump = 0) abort
     if empty(a:query) && !bufexists(s:bufname)
         return s:err('No previous searches')
     end
@@ -37,7 +37,12 @@ func finder#find(path, query) abort
             end
         end
     end
-    call s:view_results(results)
+    if a:autojump && len(results) == 1
+        let path = substitute(results[0], getcwd().'/', '', '')
+        exec 'edit' fnameescape(path)
+    else
+        call s:view_results(results)
+    end
 endf
 
 func s:view_results(results) abort

@@ -1,6 +1,6 @@
 
 " Open the given file/directory
-func! fm#open(target)
+func! fm#open(target, bang)
 
     let out_file = tempname()
 
@@ -13,6 +13,10 @@ func! fm#open(target)
             let cmd += ['--select='.shellescape(a:target)]
         else
             let cmd += [fnamemodify(a:target, ':p:h')]
+        end
+
+        if !empty(a:bang)
+            let cmd += ["+fzfilter"]
         end
 
         let Callback = funcref('s:vifm_callback')

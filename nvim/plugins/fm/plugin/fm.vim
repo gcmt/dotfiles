@@ -10,7 +10,7 @@ if exists('g:fm_loaded') || &cp
 end
 let g:fm_loaded = 1
 
-command! -nargs=* Fm call fm#open(<q-args>)
+command! -bang -nargs=* Fm call fm#open(<q-args>, <q-bang>)
 
 let s:options = {
     \ 'cmd': 'vifm',

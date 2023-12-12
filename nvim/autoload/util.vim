@@ -72,7 +72,7 @@ func! util#regedit(reg)
 
     exec "sil keepj keepa botright 1new __regedit__"
     setl ft=regedit bt=nofile bh=wipe nobl noudf nobk noswf nospell
-    call setwinvar(winnr(), "&stl", " [Register " . reg . "]")
+    call setwinvar(winnr(), "&stl", " [Register " . reg . "] ctrl-v to insert control characters")
 
     let reg_content = getreg(reg, 1, 1)
     call append(1, reg_content)
@@ -94,7 +94,6 @@ endf
 
 
 " Delete the buffer without closing the window
-"
 func! util#bdelete(cmd, bang)
 
     let target = bufnr("%")

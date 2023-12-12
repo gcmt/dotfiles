@@ -422,8 +422,11 @@ endf
 "   - path (string): the prettified path
 "
 func! s:prettify_path(path)
-    let repl = getcwd() != $HOME ? '\V\^'.getcwd().'/' : ''
-    let path = substitute(a:path, repl, '', '')
+    let path = a:path
+    if path != (getcwd() . '/')
+        let repl = getcwd() != $HOME ? ('\V\^' . getcwd() . '/') : ''
+        let path = substitute(path, repl, '', '')
+    end
     let path = substitute(path, '\v/$', '', '')
     let path = substitute(path, '\V\^'.$HOME, '~', '')
     return path

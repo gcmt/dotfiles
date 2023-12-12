@@ -609,6 +609,13 @@
     command! -nargs=0 Vimrc edit $MYVIMRC
     command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 
+	command! -nargs=? -complete=filetype FtEdit call <sid>ft_edit(<q-args>)
+
+	func! s:ft_edit(ft)
+		let ft = empty(a:ft) ? &ft : a:ft
+		call finder#find($VIMHOME, 'ftplugin.*'.ft.'\.vim$', 1)
+	endf
+
     " Write helpers
     command! -nargs=0 SudoWrite exec 'write !sudo tee % > /dev/null'
     command! -bang -nargs=* W write<bang> <args>

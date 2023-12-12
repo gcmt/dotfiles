@@ -41,6 +41,7 @@ focus_follows_mouse yes
 
 default_border pixel 0
 default_floating_border normal 0
+for_window [floating] border pixel 1
 
 default_orientation auto
 workspace_layout stacking
@@ -99,9 +100,6 @@ bindsym --whole-window Control+button9 exec --no-startup-id i3-next-workspace -n
 bindsym --whole-window Control+button8 exec --no-startup-id i3-next-workspace -prev
 bindsym --whole-window button9 exec --no-startup-id i3-next-window -prev
 bindsym --whole-window button8 exec --no-startup-id i3-next-window -next
-
-# Prevent/allow screen locking
-bindsym Pause exec --no-startup-id coffee
 
 # Sensors
 bindsym $mod+g exec --no-startup-id sensors-notify
@@ -190,16 +188,6 @@ bindsym $mod+Shift+j move down 10px
 bindsym $mod+Shift+k move up 10px
 bindsym $mod+Shift+l move right 10px
 
-# Resize container
-bindsym $mod+Control+Left resize shrink left 5px or 2ppt
-bindsym $mod+Control+Down resize shrink down 5px or 2ppt
-bindsym $mod+Control+Up resize shrink up 5px or 2ppt
-bindsym $mod+Control+Right resize shrink right 5px or 2ppt
-bindsym $mod+Shift+Left resize grow left 5px or 2ppt
-bindsym $mod+Shift+Down resize grow down 5px or 2ppt
-bindsym $mod+Shift+Up resize grow up 5px or 2ppt
-bindsym $mod+Shift+Right resize grow right 5px or 2ppt
-
 # Resize with slop
 bindsym $mod+v exec --no-startup-id i3-slop-resize
 
@@ -256,9 +244,6 @@ bindsym $mod+Tab exec --no-startup-id i3-next-workspace -next
 bindsym $mod+n exec --no-startup-id i3-next-workspace -next
 bindsym $mod+p exec --no-startup-id i3-next-workspace -prev
 
-# Change focus between tiling / floating windows
-bindsym $mod+z focus mode_toggle
-
 # Scratchpad bindings
 bindsym $mod+0 exec --no-startup-id i3-scratch -focus
 bindsym $mod+Shift+0 exec --no-startup-id i3-choose-window -no-inputbar -hide-workspace -g 'workspace_name=_scratch'
@@ -272,13 +257,6 @@ bindsym $mod+f floating toggle
 bindsym $mod+Control+plus floating enable; resize grow right 40px; resize grow down 10px; move position center
 bindsym $mod+Control+minus floating enable; resize shrink right 40px; resize shrink down 10px; move position center
 
-# Suspend/Lock shortcuts
-bindsym Scroll_Lock exec --no-startup-id lock -force -blank 2
-bindsym $mod+Scroll_Lock exec --no-startup-id systemctl suspend
-
-# Start/stop timer
-bindsym $mod+F9 exec --no-startup-id timer toggle 25m
-
 # Apps shortcuts
 bindsym $mod+backslash exec --no-startup-id i3-focus -c "firefox" -m "-" -fallback "firefox"
 bindsym $mod+Shift+backslash exec --no-startup-id i3-focus -c "firefox" -m "mail" -bounce -fallback "firefox --no-remote -P Mail"
@@ -286,7 +264,7 @@ bindsym $mod+equal exec --no-startup-id i3-focus -c Nemo -fallback nemo
 bindsym $mod+Shift+equal exec --no-startup-id nemo
 
 # Keyboard cheatsheet
-#bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
+bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
 
 # system/i3 menu
 bindsym $mod+Delete exec --no-startup-id i3-sys-menu -sys
@@ -316,7 +294,6 @@ mode "i3" {
 bindsym $mod+$alt+space mode "i3"
 
 mode "open" {
-
 	bindsym q mode "default"
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
@@ -324,6 +301,34 @@ mode "open" {
 }
 
 #bindsym $mod+o mode "open"
+
+mode "shrink" {
+    bindsym Up resize shrink up 5px or 2ppt
+    bindsym Right resize shrink right 5px or 2ppt
+    bindsym Left resize shrink left 5px or 2ppt
+    bindsym Down resize shrink down 5px or 2ppt
+	bindsym $mod+Up mode "grow"
+	bindsym q mode "default"
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+	bindsym Control+c mode "default"
+}
+
+mode "grow" {
+    bindsym Left resize grow left 5px or 2ppt
+    bindsym Down resize grow down 5px or 2ppt
+    bindsym Up resize grow up 5px or 2ppt
+    bindsym Right resize grow right 5px or 2ppt
+	bindsym $mod+Down mode "shrink"
+	bindsym q mode "default"
+	bindsym Return mode "default"
+	bindsym Escape mode "default"
+	bindsym Control+c mode "default"
+}
+
+# Resize mode
+bindsym $mod+Up mode "grow"
+bindsym $mod+Down mode "shrink"
 
 # Controls
 # ----------------------------------------------------------------------------
@@ -354,9 +359,9 @@ client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
 client.background       #e7e8eb
 
 # =dark colors=
-# client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
-# client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
-# client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
+# client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #6a737d
+# client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #6a737d
+# client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #6a737d
 # client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
 # client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
 # client.background       #e7e8eb

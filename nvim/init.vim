@@ -663,6 +663,21 @@
         end
     endf
 
+" QUICKFIX
+" ----------------------------------------------------------------------------
+
+	let g:quickfix_height = 50
+
+	nnoremap <silent> ]q :cnext<cr>zz:set cul<cr>
+	nnoremap <silent> ]Q :clast<cr>zz:set cul<cr>
+	nnoremap <silent> [q :cprev<cr>zz:set cul<cr>
+	nnoremap <silent> [Q :cfirst<cr>zz:set cul<cr>
+
+	nnoremap <silent> ]l :lnext<cr>zz:set cul<cr>
+	nnoremap <silent> ]L :llast<cr>zz:set cul<cr>
+	nnoremap <silent> [l :lprev<cr>zz:set cul<cr>
+	nnoremap <silent> [L :lfirst<cr>zz:set cul<cr>
+
 " Cd
 " ----------------------------------------------------------------------------
 

@@ -9,20 +9,11 @@ FZF_DEFAULT_OPTS+=" --header='${header}'"
 FZF_DEFAULT_OPTS+=" --color prompt:19,info:19,pointer:24"
 FZF_DEFAULT_OPTS+=" --ansi --inline-info --no-bold --bind 'tab:down,shift-tab:up'"
 
-d=
-if (( $# > 0 )); then
-	d="--directory"
-fi
-
-target="$(LC_COLLATE=C ls -A1p $d --color=always --group-directories-first "$@" | fzf 2>/dev/tty)"
+target="$(LC_COLLATE=C ls -A1p --color=always --group-directories-first "$@" | fzf 2>/dev/tty)"
 if [[ -n "${target}" ]]; then
 	after=
 	if [[ -d "${target}" ]]; then
-		if (( $# > 0 )); then
-			after=ff
-		else
-			after=fa
-		fi
+        after=fzfilter
 	fi
 	vifm --server-name "$VIFM_SERVER" --remote +"goto \"${target}\""  +"norm! l" +"${after}"
 fi

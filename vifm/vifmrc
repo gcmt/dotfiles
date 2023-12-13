@@ -7,6 +7,7 @@ colorscheme main
 set syscalls
 set trash
 set vimhelp
+set vicmd=nvim
 set history=100
 set undolevels=100
 set vifminfo=dhistory,savedirs,chistory,state,tui,shistory,phistory,fhistory,dirstack,registers,bookmarks,bmarks
@@ -25,6 +26,7 @@ set fillchars=vborder:┃
 set statusline="  %A  %u:%g  %5E  %d  %[→ %T%]%=%D "
 set rulerformat="%2l-%S%[ (+%x)%] "
 set timefmt="%Y-%m-%d %H:%M"
+set viewcolumns=-{name}..,-10{size},-18{mtime},10{uname},-10{gname},12{perms}
 
 set wildmenu
 set wildstyle=popup
@@ -61,7 +63,7 @@ command! reload :write | restart
 command! run !! ./%f %a
 command! diff nvim -d %f %F
 command! df df -h %S 2>/dev/null
-command! ncdu ncdu %d
+command! ncdu ncdu --colors off %d
 command! mcd :mkdir! %a | cd %a
 command! link ln -s %d/%f %D
 command! last :set sort=-mtime | !rg --files --hidden -g '!.git/*' -0 | xargs -0 ls -tr | tail -%a | tac %%U
@@ -81,8 +83,8 @@ command! root :!vifm-root .git/ &
 
 " The %n macro make sure env variables set here are visible in child processes
 " when using vifm inside tmux
-command! fa vifm-fzf-filter %n
-command! ff :%%select | !vifm-fzf-filter %%f %%n
+command! fzfilter vifm-fzf-filter %n
+"command! ff :%%select | !vifm-fzf-filter %%f %%n
 command! fzf vifm-fzf %a %n
 command! fzfd vifm-fzf -cd %a %n
 
@@ -95,7 +97,7 @@ endif
 
 command! tabfmt :execute 'tabname ' . expand('%%d:' . expand('%a'))
 
-autocmd DirEnter ** :tabfmt ~
+autocmd DirEnter **/* :tabfmt ~
 nnoremap <c-t> :tabnew | tabfmt ~<cr>
 
 " Mappings
@@ -112,8 +114,7 @@ nnoremap <c-s> :shell<cr>
 nnoremap <c-a> :cd -<cr>
 nnoremap <c-x> <nop>
 
-nnoremap f :ff<cr>
-nnoremap F :fa<cr>
+nnoremap f :fzfilter<cr>
 nnoremap <c-f> :fzf<cr>
 nnoremap <c-d> :fzfd<cr>
 

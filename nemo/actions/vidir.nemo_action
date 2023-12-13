@@ -3,6 +3,7 @@ Active=true
 Name=Rename With Vidir
 Comment=Rename files with Vidir
 Dependencies=vidir
+Icon-Name=format-text-bold
 Exec=<vidir.sh %P %F>
 Selection=any
 Extensions=any

@@ -2,6 +2,7 @@
 Active=true
 Name=Copy Path
 Comment=Copy Path to Clipboard
+Icon-Name=folder
 Exec=<copy-path-to-clipboard.sh %F>
 Selection=any
 Extensions=any

@@ -27,7 +27,7 @@ func bookmarks#set(mark, target) abort
         call remove(s:marks, keys(s:marks)[i])
     end
     let s:marks[mark] = a:target
-    echo printf("file \"%s\" marked with [%s]", s:prettify_path(a:target), mark)
+    call s:echo(printf("file \"%s\" marked with [%s]", s:prettify_path(a:target), mark))
 endf
 
 func bookmarks#jump(mark, ...) abort
@@ -178,5 +178,12 @@ func s:prettify_path(path)
 endf
 
 func s:err(msg)
+    norm! "\<c-l>"
     echohl WarningMsg | echo a:msg | echohl None
 endf
+
+func s:echo(msg)
+    norm! "\<c-l>"
+    echo a:msg
+endf
+

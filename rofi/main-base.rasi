@@ -7,10 +7,12 @@
 }
 
 window {
-	font: "Noto Sans Regular 10";
+	font: "Noto Sans Regular 11";
 	location: center;
 	anchor: center;
 	width: 40%;
+	border: 1px 1px 0 solid;
+	border-color: @separator-color;
 }
 
 mainbox {

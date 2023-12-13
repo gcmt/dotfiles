@@ -22,8 +22,8 @@ URxvt.saveLines: 8192
 URxvt.iso14755: false
 URxvt.pointerBlank: true
 
-!URxvt.keysym.Control-Tab: eval:system('tmux select-window -t +')
-!URxvt.keysym.Shift-Control-ISO_Left_Tab: eval:system('tmux select-window -t -')
+;URxvt.keysym.Shift-ISO_Left_Tab: eval:system('tmux select-window -t +')
+;URxvt.keysym.Shift-Control-ISO_Left_Tab: eval:system('tmux select-window -t -')
 
 URxvt.keysym.Shift-Control-H: eval:system('tmux select-window -t -')
 URxvt.keysym.Shift-Control-L: eval:system('tmux select-window -t +')
@@ -40,8 +40,8 @@ URxvt.matcher.pattern.1: \\bwww\\.[\\w-]+\\.[\\w./?&@#-]*[\\w/-]
 URxvt.keysym.Shift-Control-S: matcher:select
 URxvt.keysym.Shift-Control-M: matcher:list
 
-URxvt.font: xft:Noto Sans Mono:size=11
-URxvt.boldFont: xft:Noto Sans Mono:size=11:style=bold
+URxvt.font: xft:Noto Sans Mono:size=12
+URxvt.boldFont: xft:Noto Sans Mono:size=12:style=bold
 URxvt.letterSpace: 1
 URxvt.lineSpace: 3
 

@@ -212,7 +212,10 @@ func! s:search.goto_closest_match()
         end
     endfo
     call cursor(closest, 1)
-    norm! zz
+    if closest < len(self.matches) - (&lines / 2)
+        " don't trigger zz towards the end of the list
+        norm! zz
+    end
 endf
 
 " s:search.set_statusline() -> 0

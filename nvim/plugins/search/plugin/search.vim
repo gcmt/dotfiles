@@ -29,6 +29,7 @@ let s:options = #{
     \ goto_closest_match: 1,
     \ show_match: 1,
     \ match_hl: "SearchUnderline",
+    \ linenr_hl: "LineNr",
     \ transform_cb: v:null,
     \ filter_cb: v:null,
 \ }

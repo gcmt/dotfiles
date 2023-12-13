@@ -195,7 +195,7 @@ func! s:search.render(bufnr, curr_line)
     call self.set_statusline()
 
     if self.options.show_line_numbers
-        call matchadd('LineNr', '\v^\s*\d+', -1, -1, #{window: winid})
+        call matchadd(self.options.linenr_hl, '\v^\s*\d+', -1, -1, #{window: winid})
     end
 
     if self.options.goto_closest_match

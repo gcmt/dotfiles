@@ -6,6 +6,7 @@ end
 
 let g:colors_name = 'main'
 
+let s:none = ['NONE', 'NONE']
 if &background == 'light'
     let s:black         = ['#2c3238', 0]
     let s:red           = ['#ad2f3b', 1]
@@ -52,6 +53,7 @@ let s:bold = [
     \ 'htmlTagName', 'htmlEndTag',
     \ 'pythonInclude',
     \ 'jsFunction',
+    \ 'goDeclaration', 'goBuiltins', 'goDeclType', 'goLabel', 'goVar', 'goConst',
 \ ]
 let s:bold = '\v^(' . join(s:bold, '|') . ')$'
 
@@ -59,9 +61,9 @@ let s:bold = '\v^(' . join(s:bold, '|') . ')$'
 let s:colored = [
     \ 'Hidden', 'Normal.*', 'StatusLine.*', 'Fg.*',
     \ 'Cyan.*', 'Green.*', 'Blue.*', 'Magenta.*', 'Red.*', 'Yellow.*', 'Orange.*',
-    \ 'Cursor', 'Comment', 'String', 'Visual', 'Linenr',
+    \ 'Cursor', 'Comment', 'String', 'Visual', 'Linenr', 'Todo',
     \ 'Cursor', 'NonText', 'SpecialKey', 'Conceal',
-    \ 'Search', 'IncSearch',
+    \ 'Search', 'IncSearch', 'SearchUnderline',
     \ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded', 'WildMenu',
     \ 'Linenr', 'CursorLineNr',
     \ 'PopupSelected', 'CursorLine', 'CursorColumn', 'ColorColumn',
@@ -70,33 +72,38 @@ let s:colored = [
     \ 'PMenu', 'PMenuSel', 'PMenuSBar', 'PMenuThumb',
     \ 'TabLine', 'TabLineSel', 'TabLineFill',
     \ 'SpellBad', 'SpellCap', 'SpellLocal', 'SpellRare',
-    \ 'Yank', 'Spotter', 'FloatBorder'
+    \ 'Yank', 'Spotter', 'FloatBorder', 'QuickFixLine'
 \ ]
 let s:colored = '\v^(' . join(s:colored, '|') . ')$'
 
 func! s:h(group, fg, bg, attr, sp) abort
-    let fg = !g:minimal || a:group =~ s:colored ? a:fg : s:fg
-    let bg = !g:minimal || a:group =~ s:colored ? a:bg : s:bg
-    let attr = g:minimal && a:group =~ s:bold ? 'bold' : a:attr
-    if !empty(fg)
-        exec 'hi' a:group 'guifg='.fg[0] 'ctermfg='.fg[1]
+    if empty(a:fg)
+        let fg = s:none
+    else
+        let fg = !g:minimal || a:group =~ s:colored ? a:fg : s:fg
     end
-    if !empty(bg)
-        exec 'hi' a:group 'guibg='.bg[0] 'ctermbg='.bg[1]
+    if empty(a:bg)
+        let bg = s:none
+    else
+        let bg = !g:minimal || a:group =~ s:colored ? a:bg : s:bg
     end
-    if !empty(attr)
-         exec 'hi' a:group 'gui='.attr 'cterm='.attr
+    if g:minimal && a:group =~ s:bold
+        let attr = 'bold'
+    else
+        let attr = empty(a:attr) ? 'NONE' : a:attr
     end
-    if !empty(a:sp)
-         exec 'hi' a:group 'guisp='.a:sp[0]
-    end
+    let sp = empty(a:sp) ? s:none : a:sp
+    exec 'hi' a:group 'guifg='.fg[0] 'ctermfg='.fg[1]
+    exec 'hi' a:group 'guibg='.bg[0] 'ctermbg='.bg[1]
+    exec 'hi' a:group 'gui='.attr 'cterm='.attr
+    exec 'hi' a:group 'guisp='.sp[0]
 endf
 
 if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     cal s:h('Hidden', s:bg, s:bg, '', '')
 
-    cal s:h('Normal', s:fg, s:bg, '', '')
+    cal s:h('Normal', s:fg, s:bg, 'none', '')
     cal s:h('Blue', s:blue, '', 'none', '')
     cal s:h('Cyan', s:cyan, '', 'none', '')
     cal s:h('Green', s:green, '', 'none', '')
@@ -120,10 +127,11 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('StatusLineTerm', s:fg_dim, s:bg_accent, 'none', '')
 
     cal s:h('Cursor', '', s:magenta, '', '')
-    cal s:h('NonText', s:fg_very_dim, '', 'none', '')
+    cal s:h('NonText', s:fg_super_dim, '', 'none', '')
     cal s:h('SpecialKey', s:fg_super_dim, '', 'none', '')
     cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
-    cal s:h('Search', '', s:hl, '', '')
+    cal s:h('Search', s:bg, s:hl, '', '')
+    cal s:h('SearchUnderline', s:red, '', 'underline', 'none')
     cal s:h('IncSearch', s:bg, s:red, 'none', '')
     cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')
     cal s:h('MatchParen', s:bg, s:fg_very_dim, '', '')
@@ -217,7 +225,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     cal s:h('qfError', s:fg_dim, '', '', '')
     cal s:h('qfLineNr', s:fg_very_dim, '', '', '')
-    cal s:h('QuickFixLine', s:bg, s:fg_dim, '', '')
+    cal s:h('QuickFixLine', '', s:fg_super_dim, '', '')
 
     cal s:h('Yank', '', s:bg_accent, '', '')
 
@@ -251,6 +259,13 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     cal s:h('goDeclaration', s:blue, '', '', '')
     cal s:h('goDeclType', s:blue, '', '', '')
+    cal s:h('goBuiltins', s:fg, '', '', '')
+    cal s:h('goType', s:fg, '', '', '')
+    cal s:h('goLabel', s:fg, '', '', '')
+    cal s:h('goVar', s:fg, '', '', '')
+    cal s:h('goConst', s:fg, '', '', '')
+    hi default link goFormatSpecifier String
+    hi default link goEscapeC String
 
     cal s:h('htmlTagName', s:blue, '', '', '')
     cal s:h('htmlSpecialTagName', s:blue, '', '', '')
@@ -307,8 +322,13 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('jsonBoolean', s:fg_dim, '', '', '')
     cal s:h('jsonBraces', s:fg, '', '', '')
 
+    cal s:h('vimFunction', s:fg, '', '', '')
+    cal s:h('vimFunc', s:fg, '', '', '')
+    cal s:h('vimUserFunc', s:fg, '', '', '')
+
     cal s:h('yamlString', s:green, '', '', '')
     cal s:h('yamlKey', s:magenta, '', '', '')
+    hi default link yamlBlockMappingKey Statement
 
     cal s:h('markdownCode', s:fg_dim, '', '', '')
     cal s:h('markdownURL', s:fg_dim, '', 'underline', '')
@@ -316,5 +336,6 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     for s:n in range(1, 6)
         cal s:h('markdownH' . s:n, s:fg, '', 'bold', '')
     endfor
+
 
 end

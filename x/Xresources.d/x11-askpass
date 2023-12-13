@@ -1,0 +1,17 @@
+
+x11-ssh-askpass*Dialog.title: SSH Passphrase
+x11-ssh-askpass*Dialog.font: xft:Noto Sans:size=16
+
+x11-ssh-askpass*Indicator.height: 5
+x11-ssh-askpass*Indicator.width: 20
+x11-ssh-askpass*Indicator.horizontalSpacing: 10
+x11-ssh-askpass*Indicator.verticalSpacing: 5
+
+x11-ssh-askpass*background: #e7e8eb
+x11-ssh-askpass*borderColor: #e7e8eb
+x11-ssh-askpass*borderWidth: 0
+x11-ssh-askpass*minimumCount: 20
+
+x11-ssh-askpass*shadowThickness: 1
+x11-ssh-askpass*horizontalSpacing: 5
+x11-ssh-askpass*verticalSpacing: 5

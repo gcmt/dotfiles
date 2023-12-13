@@ -28,22 +28,19 @@
     call add(g:plugins, $VIMHOME.'/plugins/fzf')
 
     let g:vendor = []
+    call add(g:vendor, $VIMDATA.'/vendor/nvim-treesitter')
     call add(g:vendor, $VIMDATA.'/vendor/vim-fugitive')
     call add(g:vendor, $VIMDATA.'/vendor/vim-gitgutter')
+    call add(g:vendor, $VIMDATA.'/vendor/UltiSnips')
+    call add(g:vendor, $VIMDATA.'/vendor/editorconfig-vim')
+    call add(g:vendor, $VIMDATA.'/vendor/vim-go')
+    call add(g:vendor, $VIMDATA.'/vendor/ale')
 
     let s:rtp = []
     call extend(s:rtp, g:plugins + g:vendor)
     call extend(s:rtp, globpath(join(g:plugins, ','), 'after', 1, 1))
     call extend(s:rtp, globpath(join(g:vendor, ','), 'after', 1, 1))
     exec 'set rtp+=' . join(s:rtp, ',')
-
-    func! s:helptags()
-		for dir in globpath(join(g:plugins + g:vendor, ','), 'doc', 1, 1)
-			exec 'helptags' dir
-		endfor
-	endf
-
-	comm! Helptags call <sid>helptags()
 
 " OPTIONS
 " ----------------------------------------------------------------------------
@@ -98,9 +95,8 @@
     let &bg = s:get_term_bg()
     colorscheme main
 
-    if exists('$TMUX')
-        set cmdheight=1
-    end
+    set cmdheight=1
+    set laststatus=3
 
     set guioptions=c
 
@@ -157,7 +153,7 @@
     set t_vb=
 
     set list
-    let g:listchars = ',trail:·,precedes:‹,extends:›'
+    let g:listchars = ',leadmultispace:│   ,trail:·,precedes:‹,extends:›'
     let &listchars = 'tab:  ' . listchars
 
 " STATUSLINE
@@ -195,7 +191,7 @@
             end
         end
         if getbufvar(bnum, '&modified')
-            let name = '%#StatusLineBold#** ' . name . ' **%*'
+            let name = name . ' [+]'
         end
         if !empty(flags)
             let name = '%#StatusLineDim#' . flags . '%*' . a:sep . name
@@ -316,10 +312,8 @@
 
     func! _stl()
         let ret = ''
-
         let win = getwininfo(g:statusline_winid)[0]
         let sep = win.width < 110 ? '  ' : '   '
-
         try
             let items = []
             call add(items, _stl_alternate(win))
@@ -337,7 +331,6 @@
         catch /.*/
             return matchstr(v:exception, '\vE\d+:.*')
         endtry
-
     endf
 
     set stl=%!_stl()
@@ -389,10 +382,10 @@
     nnoremap <silent> <c-w>v <c-w>v:b#<cr>
     nnoremap <silent> <c-w>s <c-w>s:b#<cr>
 
-    nnoremap <silent> <left> 3<c-w><
-    nnoremap <silent> <right> 3<c-w>>
-    nnoremap <silent> <up> <c-w>+
-    nnoremap <silent> <down> <c-w>-
+    nnoremap <silent> <left> <c-w>h
+    nnoremap <silent> <right> <c-w>l
+    nnoremap <silent> <up> <c-w>k
+    nnoremap <silent> <down> <c-w>j
 
 " BUFFERS
 " ----------------------------------------------------------------------------
@@ -403,7 +396,7 @@
     aug END
 
     " switch to the alternate buffer
-    nnoremap <silent> <c-a> :call <sid>goto_alternate()<cr>
+    nnoremap <silent> <tab> :call <sid>goto_alternate()<cr>
 
     func! s:goto_alternate()
         if buflisted(@#)
@@ -591,13 +584,12 @@
         au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q <c-w>c | end
 
         " Show cursorline only for a short amount of time
-        au CursorHold,CursorHoldI * if &ft !~ '\v^(qf|explorer|buffers|finder|bookmarks|marks|plugs|search)$' | set nocul | end
+        "au CursorHold,CursorHoldI * if empty(&buftype) | set nocul | end
 
         " Filetype fixes
         au BufNewFile,BufRead *.ledger set ft=ledger
         au BufNewFile,BufRead */Xresources.d/* set ft=xdefaults
         au BufNewFile,BufRead *.rasi set ft=css
-
     aug END
 
     "inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
@@ -609,7 +601,7 @@
     command! -nargs=0 Vimrc edit $MYVIMRC
     command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 
-	command! -nargs=? -complete=filetype FtEdit call <sid>ft_edit(<q-args>)
+	command! -nargs=? -complete=filetype Ftedit call <sid>ft_edit(<q-args>)
 
 	func! s:ft_edit(ft)
 		let ft = empty(a:ft) ? &ft : a:ft
@@ -701,11 +693,7 @@
 " Buffers
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> <c-b> :Buffers<cr>
-    nnoremap <silent> gl :Buffers<cr>
-    nnoremap <silent> gL :Buffers!<cr>
-    tnoremap <silent> <c-g>l <c-w>:Buffers<cr>
-    tnoremap <silent> <c-g>L <c-w>:Buffers!<cr>
+    nnoremap <silent> <enter> :Buffers<cr>
 
 " Marks
 " ----------------------------------------------------------------------------
@@ -717,10 +705,10 @@
 " Bookmarks
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> gm, :call bookmarks#view()<cr>
-    nnoremap <silent> gm' :call bookmarks#jump(getchar())<cr>
-    nnoremap <silent> gmm :call bookmarks#set(getchar(), expand('%:p'))<cr>
-    nnoremap <silent> gmd :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
+    nnoremap <silent> gb :call bookmarks#view()<cr>
+    nnoremap <silent> <c-b> :call bookmarks#jump(getchar())<cr>
+    nnoremap <silent> gm :call bookmarks#set(input("MarkFile: "), expand('%:p'))<cr>
+    nnoremap <silent> gM :call bookmarks#set(input("MarkDir: "), expand('%:p:h'))<cr>
 
 " Spotter
 " ----------------------------------------------------------------------------
@@ -742,21 +730,75 @@
 " ----------------------------------------------------------------------------
 
     nnoremap <silent> g. :exec 'Fm' expand('%:p')<cr>
-    nnoremap <silent> g: :exec 'Fm' getcwd()<cr>
+    nnoremap <silent> <backspace> :exec 'Fm' getcwd()<cr>
 
-    " let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
+    let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
 
-    " nnoremap <silent> gy :Explorer<cr>
-    " nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
-    " nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
+    "nnoremap <silent> <backspace> :Explorer<cr>
+    "nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
+    "nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
 
 " GitGutter
 " ----------------------------------------------------------------------------
 
 	let g:gitgutter_enabled = 1
 
+" Ale
+" ----------------------------------------------------------------------------
+
+    aug _ale
+        au!
+        au BufEnter * if !empty(&bt) | ALEDisableBuffer | end
+    aug END
+
+	highlight link AleError Underlined
+	highlight link AleWarning Underlined
+	highlight link AleErrorSign Red
+	highlight link AleWarningSign Orange
+
+    let g:ale_echo_msg_error_str = 'E'
+    let g:ale_echo_msg_warning_str = 'W'
+	let g:ale_sign_error = 'x'
+	let g:ale_sign_warning = '!'
+	let g:ale_lint_on_text_changed = 'never'
+	let g:ale_open_list = 0
+	let g:ale_fix_on_save = 1
+
+	let g:ale_fixers = {}
+	let g:ale_fixers['ledger'] = ['remove_trailing_lines', 'trim_whitespace']
+	let g:ale_fixers.python = ['black']
+
+	let g:ale_linters = {}
+	let g:ale_linters.python = ['flake8', 'mypy']
+
+	let g:ale_python_pylint_options = '--disable=C0111,C0103'
+	let g:ale_python_flake8_options = '--ignore=E203,E501'
+	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
+
 " Disable unused plugins
 " ----------------------------------------------------------------------------
 
 	let g:loaded_2html_plugin = 1
 	let g:loaded_netrwPlugin = 1
+
+" editor config
+" ----------------------------------------------------------------------------
+
+    let g:EditorConfig_exclude_patterns = ['fugitive://.*']
+
+" vim-go
+" ----------------------------------------------------------------------------
+
+    let g:go_fmt_autosave = 1
+    let g:go_fmt_command = "goimports"
+    let g:go_list_type = "quickfix"
+    let g:go_fmt_fail_silently = 1
+    let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
+    let g:go_metalinter_autosave = 1
+    let g:go_metalinter_autosave_enabled = ['vet', 'golint']
+    let g:go_auto_type_info = 1
+
+" source init.lua
+" ----------------------------------------------------------------------------
+
+    lua require('init')

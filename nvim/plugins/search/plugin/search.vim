@@ -21,7 +21,7 @@ let s:options = #{
     \ popup: 1,
     \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
     \ max_height_popup: 90,
-    \ max_height_win: 50,
+    \ max_height_window: 50,
     \ exclude_syntax: ['Comment', 'String'],
     \ set_search_register: 1,
     \ add_to_search_history: 1,

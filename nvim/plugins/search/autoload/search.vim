@@ -7,6 +7,7 @@ let s:bufname = "__search__"
 " The {options} dictionary allows to override default global options.
 func! search#do(pattern, options)
 
+    let curr_line = line('.')
     let curr_bufnr = bufnr('%')
     let curr_filetype = &filetype
 
@@ -34,7 +35,7 @@ func! search#do(pattern, options)
 
     let bufnr = s.open_window()
     call setbufvar(bufnr, 'search', {'s': s})
-    call s.render(bufnr)
+    call s.render(bufnr, curr_line)
 
 endf
 
@@ -153,9 +154,9 @@ func! s:search.do()
     return 1
 endf
 
-" s:search.render() -> 0
+" s:search.render({bufnr:number}, {curr_line:number}) -> 0
 " Render search results in the current buffer.
-func! s:search.render(bufnr)
+func! s:search.render(bufnr, curr_line)
 
     let winid = bufwinid(a:bufnr)
     call setbufvar(a:bufnr, "&filetype", self.curr_filetype)
@@ -165,24 +166,42 @@ func! s:search.render(bufnr)
     call clearmatches()
 
     let b:search.table = {}
-    let width = len(max(map(copy(self.matches), 'v:val[0]')))
+    let width = len(self.matches[-1][0])
+    let closest = self.matches[0]
+    let mindist = 99999
+
     for i in range(len(self.matches))
         let m = self.matches[i]
         let b:search.table[i+1] = m
+
         let num = printf("%".width."s ", m[0])
         let line = self.options.show_line_numbers ? num : ""
         let line .= getbufline(self.curr_bufnr, m[0])[0]
         let Transform = self.options.transform_cb
         let line = Transform != v:null ? Transform(line) : line
         call setbufline(a:bufnr, i+1, line)
-    endfor
 
-    call matchadd('LineNr', '\v^\s*\d+', -1, -1, #{window: winid})
+        let dist = abs(a:curr_line - m[0])
+        if dist < mindist
+            let mindist = dist
+            let closest = i+1
+        end
+    endfor
 
     call self.set_statusline()
 
+    if self.options.show_line_numbers
+        call matchadd('LineNr', '\v^\s*\d+', -1, -1, #{window: winid})
+    end
+
     if self.options.goto_closest_match
-        call self.goto_closest_match()
+        call cursor(closest, 1)
+        if closest < (len(self.matches) - (&lines / 2))
+            " don't trigger zz towards the end of the list
+            norm! zz
+        end
+    else
+        call cursor(1, 1)
     end
 
     if self.options.show_match
@@ -190,32 +209,6 @@ func! s:search.render(bufnr)
     end
 
     call setbufvar(a:bufnr, "&modifiable", 0)
-endf
-
-" s:search.goto_closest_match() -> 0
-" Move the cursor to the match closest to the current cursor position
-" in the searched buffer.
-func! s:search.goto_closest_match()
-    call cursor(1, 1)
-    if !s:goto_bufwinnr(self.curr_bufnr)
-        return
-    end
-    let curline = line('.')
-    wincmd p
-    let mindist = 99999
-    let closest = line('.')
-    for [line, entry] in items(b:search.table)
-        let dist = abs(curline - entry[0])
-        if dist < mindist
-            let mindist = dist
-            let closest = line
-        end
-    endfo
-    call cursor(closest, 1)
-    if closest < len(self.matches) - (&lines / 2)
-        " don't trigger zz towards the end of the list
-        norm! zz
-    end
 endf
 
 " s:search.set_statusline() -> 0
@@ -245,17 +238,6 @@ func! s:list2dict(list, ...)
         end
     endfo
     return dict
-endf
-
-" s:goto_bufwinnr({bufnr:number}) -> number
-" Go to the first window that contains the buffer {bufnr}.
-func! s:goto_bufwinnr(bufnr)
-    let winnr = bufwinnr(a:bufnr)
-    if winnr == -1
-        return 0
-    end
-    exec winnr.'wincmd w'
-    return 1
 endf
 
 " s:err({msg:string}) -> 0

@@ -6,13 +6,6 @@ nnoremap <silent> <buffer> l :call <sid>jump()<cr>
 nnoremap <silent> <buffer> <cr> :call <sid>jump()<cr>
 nnoremap <silent> <buffer> <c-j> :call <sid>jump()<cr>
 
-nnoremap <silent> <buffer> a :call <sid>toggle_line_numbers()<cr>
-
-func! s:toggle_line_numbers()
-    let val = 1 - b:search.s.view_options.show_line_numbers
-    call b:search.s.render({'show_line_numbers': val})
-endf
-
 func! s:jump()
     let bufnr = b:search.s.curr_bufnr
     let entry = get(b:search.table, line('.'), [])

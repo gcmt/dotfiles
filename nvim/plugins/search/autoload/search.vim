@@ -219,7 +219,9 @@ endf
 " Set the statusline with the current search info.
 func! s:search.set_statusline()
     let bufname = join(split(fnamemodify(bufname(self.curr_bufnr), ':p:~'), '/')[-1:], '/')
-    call setwinvar(0, '&stl', ' search /' . self.pattern . '/ ' . bufname)
+    let exclude_syntax = self.options.exclude_syntax
+    let exclude = empty(exclude_syntax) ? "" : " exclude=[" . join(exclude_syntax, ', ') . "]"
+    call setwinvar(0, '&stl', printf(' search /%s/%s %s', self.pattern, exclude, bufname))
 endf
 
 " s:synat({line:number}, {col:number}) -> string

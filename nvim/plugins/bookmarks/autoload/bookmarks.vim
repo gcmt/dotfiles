@@ -60,6 +60,8 @@ func bookmarks#view() abort
         return s:err("No bookmarks found")
     end
 
+    let curr_buf = fnamemodify(bufname('%'), ':p')
+
     if g:bookmarks_popup
 
         let bufnr = nvim_create_buf(0, 0)
@@ -119,6 +121,13 @@ func bookmarks#view() abort
 
     call bookmarks#render()
     call cursor(1, 2)
+
+    " position the cursor on the current file
+    for [linenr, mark] in items(b:bookmarks.table)
+        if curr_buf == get(s:marks, mark, '')
+            call cursor(linenr, 2)
+        end
+    endfor
 
     " wipe any message
     echo

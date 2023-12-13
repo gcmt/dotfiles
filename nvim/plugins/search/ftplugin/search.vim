@@ -1,5 +1,6 @@
 
 nnoremap <silent> <buffer> q :close<cr>
+nnoremap <silent> <buffer> <esc> :close<cr>
 
 nnoremap <silent> <buffer> l :call <sid>jump()<cr>
 nnoremap <silent> <buffer> <cr> :call <sid>jump()<cr>
@@ -13,7 +14,7 @@ func! s:toggle_line_numbers()
 endf
 
 func! s:jump()
-    let bufnr = b:search.s.bufnr
+    let bufnr = b:search.s.curr_bufnr
     let entry = get(b:search.table, line('.'), [])
     if empty(entry)
         return
@@ -28,7 +29,7 @@ endf
 nnoremap <silent> <buffer> c :<c-u>call <sid>show_context()<cr>
 
 func! s:show_context()
-    let bufnr = b:search.s.bufnr
+    let bufnr = b:search.s.curr_bufnr
     let entry = get(b:search.table, line('.'), [])
     if empty(entry)
         return

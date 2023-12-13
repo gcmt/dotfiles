@@ -11,22 +11,36 @@ end
 let g:search_loaded = 1
 
 func s:search(bang, pattern)
-    let bufname = '__search__'
-    if bufwinnr(bufname) != -1
-        exec bufwinnr(bufname) . 'wincmd c'
-    end
-    let options = empty(a:bang) ? {} : {'exclude_syn': ['Comment', 'String']}
-    call search#do(bufnr('%'), a:pattern, bufname, options, {})
+    let options = empty(a:bang) ? {} : {'exclude_syntax': []}
+    call search#do(a:pattern, options)
 endf
 
 command -bang -nargs=? Search call <sid>search(<q-bang>, <q-args>)
 
-func s:setup_colors()
-    hi default link SearchMatch RedBold
+let s:options = #{
+    \ popup: 1,
+    \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
+    \ max_height_popup: 90,
+    \ max_height_win: 50,
+    \ exclude_syntax: ['Comment', 'String'],
+    \ set_search_register: 1,
+    \ add_to_search_history: 1,
+    \ show_line_numbers: 1,
+    \ goto_closest_match: 1,
+    \ show_match: 1,
+    \ match_hl: "SearchUnderline",
+    \ transform_cb: v:null,
+    \ filter_cb: v:null,
+\ }
+
+func! _search_global_options()
+    let globals = {}
+    for option in keys(s:options)
+        let globals[option] = get(g:, 'search_' . option)
+    endfor
+    return globals
 endf
 
-call s:setup_colors()
-
-aug _spotter
-    au Colorscheme * call <sid>setup_colors()
-aug END
+for [s:option, s:default] in items(s:options)
+    let g:search_{s:option} = get(g:, 'search_'.s:option, s:default)
+endfo

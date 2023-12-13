@@ -11,6 +11,10 @@ func! search#do(pattern, options)
     let curr_bufnr = bufnr('%')
     let curr_filetype = &filetype
 
+    if bufname("%") == s:bufname
+        return
+    end
+
     if empty(a:pattern)
         " Display previous search results when no pattern is given
         if bufexists(s:bufname)

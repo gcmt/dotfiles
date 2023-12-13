@@ -2,6 +2,7 @@
 export MONITOR_PRIMARY="$(xrandr | grep -w "connected" | grep -o "^[^ ]\+")"
 
 export QT_QPA_PLATFORMTHEME=qt5ct
+export GTK2_RC_FILES=~/.gtk-2.0/gtkrc
 
 setxkbmap -layout us -variant altgr-intl
 

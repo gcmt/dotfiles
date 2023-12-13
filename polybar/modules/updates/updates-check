@@ -1,6 +1,9 @@
 #!/bin/bash
 
-state="$HOME/.cache/updates-check.state"
-truncate -s0 "${state}"
+set -e
 
-checkupdates | tee -a "${state}" 
+state="$HOME/.cache/updates-check.state"
+out=$(checkupdates)
+if (( $? == 0 )); then
+    echo "${out}" > "${state}"
+fi

@@ -2,8 +2,8 @@
 Description=Check regularly for updates
 
 [Timer]
-OnBootSec=10m
-OnUnitActiveSec=2h
+OnBootSec=20m
+OnUnitActiveSec=1h
 Unit=updates-check.service
 
 [Install]

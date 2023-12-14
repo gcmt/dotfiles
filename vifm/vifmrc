@@ -151,6 +151,7 @@ nnoremap <silent> V :if &viewcolumns == '' | details | else | set viewcolumns=''
 nnoremap Q :quit<cr>
 nnoremap q :quit<cr>
 nnoremap <c-w>q :quit<cr>
+nnoremap <c-c> :quit<cr>
 
 nnoremap J 3j
 nnoremap K 3k

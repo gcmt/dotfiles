@@ -664,6 +664,7 @@
 " ----------------------------------------------------------------------------
 
 	let g:quickfix_height = 50
+    command! -nargs=0 Cclear call setqflist([], 'r')
 
 	nnoremap <silent> ]q :cnext<cr>zz<cr>
 	nnoremap <silent> ]Q :clast<cr>zz<cr>

@@ -210,16 +210,24 @@
         return ''
     endf
 
+    func! OpenQuickfix(minwid, clicks, btn, mod)
+        copen
+    endf
+
+    func! OpenLoclist(minwid, clicks, btn, mod)
+        lopen
+    endf
+
     func! _stl_qf(win)
         if a:win.width < 80
             return []
         end
         let flags = []
         if !empty(getqflist())
-            call add(flags, '[QF]')
+            call add(flags, '%@OpenQuickfix@[QF]%X')
         end
         if !empty(getloclist(a:win.winid))
-            call add(flags, '[LOC]')
+            call add(flags, '%@OpenLoclist@[LOC]%X')
         end
         let ale = _stl_ale(a:win)
         return join(flags, ' ') . (empty(ale) ? '' : ' ' . ale)

@@ -31,7 +31,6 @@
     call add(g:vendor, $VIMDATA.'/vendor/vim-fugitive')
     call add(g:vendor, $VIMDATA.'/vendor/vim-gitgutter')
     call add(g:vendor, $VIMDATA.'/vendor/ultisnips')
-    call add(g:vendor, $VIMDATA.'/vendor/editorconfig-vim')
     call add(g:vendor, $VIMDATA.'/vendor/vim-go')
     call add(g:vendor, $VIMDATA.'/vendor/ale')
 
@@ -794,10 +793,6 @@
 
 	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
 
-" editor config
-" ----------------------------------------------------------------------------
-
-    let g:EditorConfig_exclude_patterns = ['fugitive://.*']
 
 " vim-go
 " ----------------------------------------------------------------------------

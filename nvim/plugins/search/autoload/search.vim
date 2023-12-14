@@ -7,9 +7,11 @@ let s:bufname = "__search__"
 " The {options} dictionary allows to override default global options.
 func! search#do(pattern, options) abort
 
-    let curr_line = line('.')
-    let curr_bufnr = bufnr('%')
-    let curr_filetype = &filetype
+    let context = #{
+        \ curr_line: line('.'),
+        \ curr_bufnr: bufnr('%'),
+        \ curr_filetype: &filetype,
+    \ }
 
     if bufname("%") == s:bufname
         return
@@ -23,7 +25,8 @@ func! search#do(pattern, options) abort
                 call s:err("Nothing found")
             else
                 let bufnr = s.open_window()
-                call s.render(bufnr, curr_line)
+                let s.ctx.curr_line = context.curr_line
+                call s.render(bufnr)
             end
         else
             call s:err("No previous searches")
@@ -32,14 +35,14 @@ func! search#do(pattern, options) abort
     end
 
     let options = extend(_search_global_options(), a:options, 'force')
-    let s = s:search.new(curr_bufnr, curr_filetype, a:pattern, options)
+    let s = s:search.new(context, a:pattern, options)
     if !s.do()
         return s:err("Nothing found")
     end
 
     let bufnr = s.open_window()
     call setbufvar(bufnr, 'search', {'s': s})
-    call s.render(bufnr, curr_line)
+    call s.render(bufnr)
 
 endf
 
@@ -124,28 +127,27 @@ func! s:search.open_window() abort
     return bufnr
 endf
 
-" s:search.new({curr_bufnr:number}, {curr_filetype:string}, {pattern:string}, {options:dict}) -> dict
+" s:search.new({context:dict}, {pattern:string}, {options:dict}) -> dict
 " Create a new search object.
-func! s:search.new(curr_bufnr, curr_filetype, pattern, options)
+func! s:search.new(context, pattern, options)
     let s = copy(s:search)
-    let s.bufname = s:bufname
-    let s.matches = []
-    let s.curr_bufnr = a:curr_bufnr
-    let s.curr_filetype = a:curr_filetype
+    let s.ctx = a:context
     let s.pattern = a:pattern
+    let s.bufname = s:bufname
     let s.options = a:options
+    let s.matches = []
     return s
 endf
 
 " s:search.do() -> number
-" Search for {self.pattern} in {self.curr_bufnr}.
-" Filtering by syntax require the current buffer to be equal to {self.curr_bufnr}.
+" Search for {self.pattern} in {self.ctx.curr_bufnr}.
+" Filtering by syntax require the current buffer to be equal to {self.ctx.curr_bufnr}.
 " A number is returned to indicate success (1) or failure (0).
 func! s:search.do() abort
     let self.matches = []
-    let lines = getbufline(self.curr_bufnr, 1, '$')
+    let lines = getbufline(self.ctx.curr_bufnr, 1, '$')
     let exclude_syntax = {}
-    if bufnr('%') == self.curr_bufnr
+    if bufnr('%') == self.ctx.curr_bufnr
         let exclude_syntax = s:list2dict(self.options.exclude_syntax)
     else
         call s:err(printf("Current buffer is %s, filtering by syntax not available", bufnr('%')))
@@ -173,12 +175,12 @@ func! s:search.do() abort
     return 1
 endf
 
-" s:search.render({bufnr:number}, {curr_line:number}) -> 0
+" s:search.render({bufnr:number}) -> 0
 " Render search results in the current buffer.
-func! s:search.render(bufnr, curr_line) abort
+func! s:search.render(bufnr, ...) abort
 
     let winid = bufwinid(a:bufnr)
-    call setbufvar(a:bufnr, "&filetype", self.curr_filetype)
+    call setbufvar(a:bufnr, "&filetype", self.ctx.curr_filetype)
     call setbufvar(a:bufnr, "&modifiable", 1)
     call setbufvar(a:bufnr, "&list", 0)
     sil! call deletebufline(a:bufnr, 1, "$")
@@ -195,12 +197,12 @@ func! s:search.render(bufnr, curr_line) abort
 
         let num = printf("%".width."s ", m[0])
         let line = self.options.show_line_numbers ? num : ""
-        let line .= getbufline(self.curr_bufnr, m[0])[0]
+        let line .= getbufline(self.ctx.curr_bufnr, m[0])[0]
         let Transform = self.options.transform_cb
         let line = Transform != v:null ? Transform(line) : line
         call setbufline(a:bufnr, i+1, line)
 
-        let dist = abs(a:curr_line - m[0])
+        let dist =abs(self.ctx.curr_line - m[0])
         if dist < mindist
             let mindist = dist
             let closest = i+1
@@ -213,7 +215,11 @@ func! s:search.render(bufnr, curr_line) abort
         call matchadd(self.options.linenr_hl, '\v^\s*\d+', -1, -1, #{window: winid})
     end
 
-    if self.options.goto_closest_match
+    let goto_line_number = a:0 > 0 ? a:1 : -1
+
+    if goto_line_number > 0
+        call cursor(goto_line_number, 1)
+    elseif self.options.goto_closest_match
         call cursor(closest, 1)
         if closest < (len(self.matches) - (&lines / 2))
             " don't trigger zz towards the end of the list
@@ -238,7 +244,7 @@ endf
 " s:search.set_statusline() -> 0
 " Set the statusline with the current search info.
 func! s:search.set_statusline()
-    let bufname = join(split(fnamemodify(bufname(self.curr_bufnr), ':p:~'), '/')[-1:], '/')
+    let bufname = join(split(fnamemodify(bufname(self.ctx.curr_bufnr), ':p:~'), '/')[-1:], '/')
     let exclude_syntax = self.options.exclude_syntax
     let exclude = empty(exclude_syntax) ? "" : " exclude=[" . join(exclude_syntax, ', ') . "]"
     call setwinvar(0, '&stl', printf(' search /%s/%s %s', self.pattern, exclude, bufname))

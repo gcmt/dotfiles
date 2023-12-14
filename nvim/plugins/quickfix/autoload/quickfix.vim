@@ -61,10 +61,10 @@ endf
 " Filter quickfix entries. Unless {inverse} is given and it's 1, keep only
 " quickfix entries for which the value returned by the {val} function contains
 " {pattern}. If {inverse} is given and it's 1, those entries are removed instead.
-func! s:qfilter(pattern, val, ...)
+func! s:qfilter(pattern, val, inverse)
     let qf = getqflist({'all': 1})
     call s:snapshot(qf)
-    let Match = a:0 > 0 && a:1 ? {v, p -> v !~ p} : {v, p -> v =~ p}
+    let Match = a:inverse ? {v, p -> v !~ p} : {v, p -> v =~ p}
     call filter(qf.items, {i, entry -> Match(a:val(entry), a:pattern)})
     if qf.size != len(qf.items)
         call setqflist([], 'r', qf)

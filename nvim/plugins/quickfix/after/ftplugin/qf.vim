@@ -12,17 +12,20 @@ endf
 setl stl=%t\ %{_quickfix_title()}
 
 func! s:set_height(percentage)
-    exec 'resize' float2nr(&lines * a:percentage / 100)
-    if line('$') <= winheight(0)
-        exec 'resize' line('$')
+    if &buftype == 'quickfix'
+        exec 'resize' float2nr(&lines * a:percentage / 100)
+        if line('$') <= winheight(0)
+            exec 'resize' line('$')
+        end
     end
 endf
 
 call s:set_height(get(g:, 'quickfix_height', 25))
 
-norm! zz
+call matchadd('LineNr', '\v\|\d+ col \d+( \w+)?\|', -1, -1, {})
 
 nnoremap <buffer> q <c-w>c
+nnoremap <buffer> <RightMouse> <c-w>c
 
 " don't close the quickfix window
 nnoremap <silent> <buffer> L <enter>zz

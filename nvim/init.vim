@@ -212,7 +212,7 @@
         return ''
     endf
 
-    func! _stl_flags(win)
+    func! _stl_qf(win)
         if a:win.width < 80
             return []
         end
@@ -223,7 +223,27 @@
         if !empty(getloclist(a:win.winid))
             call add(flags, '[LOC]')
         end
-        return join(flags, ' ')
+        let ale = _stl_ale(a:win)
+        return join(flags, ' ') . (empty(ale) ? '' : ' ' . ale)
+    endf
+
+    func! _stl_ale(win)
+        try
+            let counts = ale#statusline#Count(a:win.bufnr)
+        catch /.*/
+            return ''
+        endtry
+        let errors = counts.error + counts.style_error
+        let warnings = counts.total - errors
+        if counts.total
+            let ret = ''
+            let ret .= warnings ? '%#StatusLineWarn#■%* ' . warnings : ''
+            let ret .= warnings && errors ?  ' ' : ''
+            let ret .= errors ? '%#StatusLineErr#■%* ' . errors  : ''
+            let ret .= ''
+            return ret
+        end
+        return ''
     endf
 
     func! _stl_meta(win, sep)
@@ -291,25 +311,6 @@
         return toupper('--'.get(map, mode(), mode()).'--')
     endf
 
-    fun! _stl_ale(win)
-        try
-            let counts = ale#statusline#Count(a:win.bufnr)
-        catch /.*/
-            return ''
-        endtry
-        let errors = counts.error + counts.style_error
-        let warnings = counts.total - errors
-        if counts.total
-            let ret = '['
-            let ret .= warnings ? warnings . 'W' : ''
-            let ret .= warnings && errors ?  '/' : ''
-            let ret .= errors ? errors . 'E' : ''
-            let ret .= ']'
-            return ret
-        end
-        return ''
-    endf
-
     func! _stl()
         let ret = ''
         let win = getwininfo(g:statusline_winid)[0]
@@ -319,13 +320,13 @@
             call add(items, _stl_alternate(win))
             call add(items, _stl_buffer(win, sep))
             call add(items, '%=')
+            call add(items, _stl_qf(win))
+            call add(items, '%=')
             call add(items, _stl_regtee())
             call add(items, _stl_clip(win))
-            call add(items, _stl_ale(win))
             call add(items, _stl_branch(win))
             call add(items, _stl_meta(win, sep))
             call add(items, '%1lL %02cC (%P)')
-            call add(items, _stl_flags(win))
             call filter(items, {_, v -> !empty(v)})
             return ' ' . join(items, sep) . ' '
         catch /.*/

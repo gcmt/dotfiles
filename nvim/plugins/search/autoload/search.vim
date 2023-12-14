@@ -224,7 +224,12 @@ func! s:search.render(bufnr, curr_line) abort
     end
 
     if self.options.show_match
-        call matchadd(self.options.match_hl, self.pattern, -1, -1, #{window: winid})
+        let pattern = self.pattern
+        if self.options.show_line_numbers
+            " match only after the line number column
+            let pattern = '\%>' . (width+1) . 'c' . self.pattern
+        end
+        call matchadd(self.options.match_hl, pattern, -1, -1, #{window: winid})
     end
 
     call setbufvar(a:bufnr, "&modifiable", 0)

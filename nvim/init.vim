@@ -151,8 +151,7 @@
     set t_vb=
 
     set list
-    let g:listchars = ',leadmultispace:│   ,trail:·,precedes:‹,extends:›'
-    let &listchars = 'tab:  ' . listchars
+    let &listchars = 'tab:│  ,leadmultispace:│   ,trail:·,precedes:‹,extends:›'
 
 " STATUSLINE
 " ----------------------------------------------------------------------------

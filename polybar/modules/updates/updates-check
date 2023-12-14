@@ -1,9 +1,7 @@
 #!/bin/bash
 
-set -e
-
 state="$HOME/.cache/updates-check.state"
 out=$(checkupdates)
-if (( $? == 0 )); then
+if [[ -n "${out}" ]]; then
     echo "${out}" > "${state}"
 fi

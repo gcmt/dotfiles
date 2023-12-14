@@ -23,7 +23,7 @@ func! search#do(pattern, options)
                 call s:err("Nothing found")
             else
                 let bufnr = s.open_window()
-                call s.render(bufnr)
+                call s.render(bufnr, curr_line)
             end
         else
             call s:err("No previous searches")

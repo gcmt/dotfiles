@@ -5,7 +5,7 @@ let s:bufname = "__search__"
 " search#do({pattern:string}, {options:dict}) -> 0
 " Search for {pattern} in the current buffer.
 " The {options} dictionary allows to override default global options.
-func! search#do(pattern, options)
+func! search#do(pattern, options) abort
 
     let curr_line = line('.')
     let curr_bufnr = bufnr('%')
@@ -45,7 +45,7 @@ endf
 
 " s:search.open_window() -> number
 " Open search buffer window or popup and return the buffer number.
-func! s:search.open_window()
+func! s:search.open_window() abort
 
     if has('nvim') && self.options.popup
 
@@ -56,16 +56,27 @@ func! s:search.open_window()
         end
 
         let lines = &lines - 2
-        let percent = &columns < 120 ? 80 : 60
-        let width = float2nr(&columns * percent / 100)
-        let max = float2nr(lines * self.options.max_height_popup / 100)
-        let height = min([len(self.matches), max])
+        let columns = &columns - 2
+
+        if type(self.options.width_popup) == v:t_string
+            let percent = str2nr(trim(self.options.width_popup, '%'))
+            let width = float2nr(columns * percent / 100)
+        else
+            throw "Invalid type for option width_popup: " . self.options.width_popup
+        end
+
+        if type(self.options.max_height_popup) == v:t_string
+            let max_height = lines * str2nr(trim(self.options.max_height_popup, '%')) / 100
+            let height = min([len(self.matches), max_height])
+        else
+            throw "Invalid type for option max_height_popup: " . self.options.max_height_popup
+        end
 
         let opts = {
             \ 'relative': 'editor',
             \ 'width': width,
             \ 'height': height,
-            \ 'col': (&columns/2) - (width/2),
+            \ 'col': (columns/2) - (width/2),
             \ 'row': (lines/2) - (height/2),
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
@@ -82,8 +93,12 @@ func! s:search.open_window()
         let winnr = bufwinnr(bufnr)
         call bufload(bufnr)
 
-        let max = float2nr(&lines * self.options.max_height_window / 100)
-        exec 'resize' min([len(self.matches), max])
+        if type(self.options.max_height_window) == v:t_string
+            let max_height = lines * str2nr(trim(self.options.max_height_window, '%')) / 100
+            exec "resize" min([len(self.matches), max_height])
+        else
+            throw "Invalid type for option max_height_window: " . self.options.max_height_window
+        end
 
     end
 
@@ -126,7 +141,7 @@ endf
 " Search for {self.pattern} in {self.curr_bufnr}.
 " Filtering by syntax require the current buffer to be equal to {self.curr_bufnr}.
 " A number is returned to indicate success (1) or failure (0).
-func! s:search.do()
+func! s:search.do() abort
     let self.matches = []
     let lines = getbufline(self.curr_bufnr, 1, '$')
     let exclude_syntax = {}
@@ -160,7 +175,7 @@ endf
 
 " s:search.render({bufnr:number}, {curr_line:number}) -> 0
 " Render search results in the current buffer.
-func! s:search.render(bufnr, curr_line)
+func! s:search.render(bufnr, curr_line) abort
 
     let winid = bufwinid(a:bufnr)
     call setbufvar(a:bufnr, "&filetype", self.curr_filetype)

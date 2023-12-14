@@ -1,4 +1,3 @@
-
 " INIT
 " ----------------------------------------------------------------------------
 
@@ -31,7 +30,7 @@
     call add(g:vendor, $VIMDATA.'/vendor/nvim-treesitter')
     call add(g:vendor, $VIMDATA.'/vendor/vim-fugitive')
     call add(g:vendor, $VIMDATA.'/vendor/vim-gitgutter')
-    call add(g:vendor, $VIMDATA.'/vendor/UltiSnips')
+    call add(g:vendor, $VIMDATA.'/vendor/ultisnips')
     call add(g:vendor, $VIMDATA.'/vendor/editorconfig-vim')
     call add(g:vendor, $VIMDATA.'/vendor/vim-go')
     call add(g:vendor, $VIMDATA.'/vendor/ale')
@@ -481,8 +480,7 @@
     noremap <c-k> 5<c-y>
 
     " jump after given characters without leaving insert mode
-    inoremap <silent> <c-f> <c-r>=_jump_after("\\v[])}>`\"']", 1)<cr>
-    inoremap <silent> <c-t> <c-r>=_jump_after("}", 0)<cr>
+    inoremap <silent> <c-f> <c-r>=_jump_after("\\v[])}>`\"']", 0)<cr>
 
     func! _jump_after(pattern, sameline = 0)
         let pos = searchpos(a:pattern, 'Wcen')
@@ -661,15 +659,15 @@
 
 	let g:quickfix_height = 50
 
-	nnoremap <silent> ]q :cnext<cr>zz:set cul<cr>
-	nnoremap <silent> ]Q :clast<cr>zz:set cul<cr>
-	nnoremap <silent> [q :cprev<cr>zz:set cul<cr>
-	nnoremap <silent> [Q :cfirst<cr>zz:set cul<cr>
+	nnoremap <silent> ]q :cnext<cr>zz<cr>
+	nnoremap <silent> ]Q :clast<cr>zz<cr>
+	nnoremap <silent> [q :cprev<cr>zz<cr>
+	nnoremap <silent> [Q :cfirst<cr>zz<cr>
 
-	nnoremap <silent> ]l :lnext<cr>zz:set cul<cr>
-	nnoremap <silent> ]L :llast<cr>zz:set cul<cr>
-	nnoremap <silent> [l :lprev<cr>zz:set cul<cr>
-	nnoremap <silent> [L :lfirst<cr>zz:set cul<cr>
+	nnoremap <silent> ]l :lnext<cr>zz<cr>
+	nnoremap <silent> ]L :llast<cr>zz<cr>
+	nnoremap <silent> [l :lprev<cr>zz<cr>
+	nnoremap <silent> [L :lfirst<cr>zz<cr>
 
 " Cd
 " ----------------------------------------------------------------------------
@@ -682,7 +680,15 @@
 " Search
 " ----------------------------------------------------------------------------
 
-    nnoremap s :Search<space>
+    func! s:search()
+        let target = input('// ')
+        norm! "\<c-l>"
+        if !empty(target)
+            exec 'Search' target
+        end
+    endf
+
+    nnoremap s :call <sid>search()<cr>
     nnoremap gs :Search<cr>
     nnoremap <silent> S :Search \<<c-r><c-w>\><cr>
 
@@ -694,14 +700,14 @@
 " Buffers
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> <enter> :Buffers<cr>
+    nnoremap <silent> gl :Buffers<cr>
 
 " Marks
 " ----------------------------------------------------------------------------
 
     nnoremap <silent> m, :call marks#view()<cr>
     nnoremap <silent> m. :call marks#set_auto(1)<cr>
-    nnoremap <silent> m: :call marks#set_auto(0)<cr>
+    nnoremap <silent> m; :call marks#set_auto(0)<cr>
 
 " Bookmarks
 " ----------------------------------------------------------------------------
@@ -710,6 +716,18 @@
     nnoremap <silent> <c-b> :call bookmarks#jump(getchar())<cr>
     nnoremap <silent> gm :call bookmarks#set(input("MarkFile: "), expand('%:p'))<cr>
     nnoremap <silent> gM :call bookmarks#set(input("MarkDir: "), expand('%:p:h'))<cr>
+
+" Explorer/Ranger/Vifm
+" ----------------------------------------------------------------------------
+
+    nnoremap <silent> g. :exec 'Fm' expand('%:p')<cr>
+    nnoremap <silent> <c-p> :exec 'Fm' getcwd()<cr>
+
+    let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
+
+    "nnoremap <silent> <backspace> :Explorer<cr>
+    "nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
+    "nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
 
 " Spotter
 " ----------------------------------------------------------------------------
@@ -726,18 +744,6 @@
     let g:spotter_banned_words_javascript = {
         \ 'var':1, 'let':1, 'const':1, 'function':1, 'class':1
     \ }
-
-" Explorer/Ranger/Vifm
-" ----------------------------------------------------------------------------
-
-    nnoremap <silent> g. :exec 'Fm' expand('%:p')<cr>
-    nnoremap <silent> <backspace> :exec 'Fm' getcwd()<cr>
-
-    let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
-
-    "nnoremap <silent> <backspace> :Explorer<cr>
-    "nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
-    "nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
 
 " GitGutter
 " ----------------------------------------------------------------------------
@@ -759,28 +765,34 @@
 
     let g:ale_echo_msg_error_str = 'E'
     let g:ale_echo_msg_warning_str = 'W'
-	let g:ale_sign_error = 'x'
-	let g:ale_sign_warning = '!'
-	let g:ale_lint_on_text_changed = 'never'
+	let g:ale_sign_error = '■'
+	let g:ale_sign_warning = '■'
+	let g:ale_lint_on_text_changed = 'normal'
+    let g:ale_virtualtext_cursor = 'never'
+    let g:ale_set_highlights = 0
+    " let g:ale_set_loclist = 1
+    " let g:ale_set_quickfix = 1
+
+    let g:ale_enabled = 1
 	let g:ale_open_list = 0
 	let g:ale_fix_on_save = 1
+    let g:ale_disable_lsp = 0
+    let g:ale_linters_explicit = 1
 
 	let g:ale_fixers = {}
-	let g:ale_fixers['ledger'] = ['remove_trailing_lines', 'trim_whitespace']
-	let g:ale_fixers.python = ['black']
-
 	let g:ale_linters = {}
-	let g:ale_linters.python = ['flake8', 'mypy']
 
+	let g:ale_fixers['*'] = ['remove_trailing_lines', 'trim_whitespace']
+
+	let g:ale_fixers.python = ['black']
+	let g:ale_linters.python = ['flake8', 'pylint']
 	let g:ale_python_pylint_options = '--disable=C0111,C0103'
 	let g:ale_python_flake8_options = '--ignore=E203,E501'
+
+	let g:ale_fixers.go = ['goimports']
+	let g:ale_linters.go = ['errcheck', 'staticcheck', 'govet', 'revive']
+
 	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
-
-" Disable unused plugins
-" ----------------------------------------------------------------------------
-
-	let g:loaded_2html_plugin = 1
-	let g:loaded_netrwPlugin = 1
 
 " editor config
 " ----------------------------------------------------------------------------
@@ -790,14 +802,23 @@
 " vim-go
 " ----------------------------------------------------------------------------
 
-    let g:go_fmt_autosave = 1
-    let g:go_fmt_command = "goimports"
     let g:go_list_type = "quickfix"
-    let g:go_fmt_fail_silently = 1
-    let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
-    let g:go_metalinter_autosave = 1
-    let g:go_metalinter_autosave_enabled = ['vet', 'golint']
     let g:go_auto_type_info = 1
+    let g:go_snippet_engine = ""
+
+" Ultisnips
+" ----------------------------------------------------------------------------
+
+	let g:UltiSnipsExpandTrigger = '<tab>'
+	let g:UltiSnipsJumpForwardTrigger = '<tab>'
+	let g:UltiSnipsJumpBackwardTrigger = '<c-z>'
+	let g:UltiSnipsSnippetDirectories = ['UltiSnips']
+
+" Disable unused plugins
+" ----------------------------------------------------------------------------
+
+	let g:loaded_2html_plugin = 1
+	let g:loaded_netrwPlugin = 1
 
 " source init.lua
 " ----------------------------------------------------------------------------

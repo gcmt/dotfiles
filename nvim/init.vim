@@ -760,11 +760,6 @@
 " Ale
 " ----------------------------------------------------------------------------
 
-    aug _ale
-        au!
-        au BufEnter * if !empty(&bt) | ALEDisableBuffer | end
-    aug END
-
 	highlight link AleError Underlined
 	highlight link AleWarning Underlined
 	highlight link AleErrorSign Red

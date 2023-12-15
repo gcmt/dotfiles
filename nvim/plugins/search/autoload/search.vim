@@ -180,7 +180,7 @@ endf
 func! s:search.render(bufnr, ...) abort
 
     let winid = bufwinid(a:bufnr)
-    call setbufvar(a:bufnr, "&filetype", self.ctx.curr_filetype)
+    call setbufvar(a:bufnr, "&syntax", self.ctx.curr_filetype)
     call setbufvar(a:bufnr, "&modifiable", 1)
     call setbufvar(a:bufnr, "&list", 0)
     sil! call deletebufline(a:bufnr, 1, "$")

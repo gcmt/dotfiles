@@ -119,10 +119,12 @@ func! s:search.open_window() abort
     call setwinvar(winnr, '&swapfile', 0)
     call setwinvar(winnr, '&spell', 0)
 
-    call setbufvar(bufnr, '&filetype', 'search')
+    call setbufvar(bufnr, '&filetype', s:bufname)
     call setbufvar(bufnr, '&buftype', 'nofile')
     call setbufvar(bufnr, '&bufhidden', 'hide')
     call setbufvar(bufnr, '&buflisted', 0)
+
+    call s:setup_mappings()
 
     return bufnr
 endf
@@ -248,6 +250,53 @@ func! s:search.set_statusline()
     let exclude_syntax = self.options.exclude_syntax
     let exclude = empty(exclude_syntax) ? "" : " exclude=[" . join(exclude_syntax, ', ') . "]"
     call setwinvar(0, '&stl', printf(' search /%s/%s %s', self.pattern, exclude, bufname))
+endf
+
+" s:setup_mappings() -> 0
+" Setup mappings for the search results window
+func! s:setup_mappings()
+    exec 'nnoremap <silent> <buffer> q :close<cr>'
+    exec 'nnoremap <silent> <buffer> <esc> :close<cr>'
+    exec 'nnoremap <silent> <buffer> l :call <sid>jump()<cr>'
+    exec 'nnoremap <silent> <buffer> <cr> :call <sid>jump()<cr>'
+    exec 'nnoremap <silent> <buffer> <c-j> :call <sid>jump()<cr>'
+    exec 'nnoremap <silent> <buffer> a :call <sid>toggle_numbers()<cr>'
+    exec 'nnoremap <silent> <buffer> c :<c-u>call <sid>show_context()<cr>'
+endf
+
+" s:jump() -> 0
+" Jump to the current search result
+func! s:jump()
+    let bufnr = b:search.s.ctx.curr_bufnr
+    let entry = get(b:search.table, line('.'), [])
+    if empty(entry)
+        return
+    end
+    close
+    norm! m'
+    exec bufnr 'buffer'
+    call cursor(entry)
+    norm! zz
+endf
+
+" s:show_context() -> 0
+" Show context lines for the search result under cursor
+func! s:show_context()
+    let bufnr = b:search.s.ctx.curr_bufnr
+    let entry = get(b:search.table, line('.'), [])
+    if empty(entry)
+        return
+    end
+    let start = max([entry[0] - v:count1, 1])
+    let end = entry[0] + v:count1
+    echo join(getbufline(bufnr, start, end), "\n")
+endf
+
+" s:toggle_numbers() -> 0
+" Toggle numbers visibility
+func! s:toggle_numbers()
+    let b:search.s.options.show_line_numbers = 1 - b:search.s.options.show_line_numbers
+    call b:search.s.render(bufnr('%'), line('.'))
 endf
 
 " s:synat({line:number}, {col:number}) -> string

@@ -80,7 +80,7 @@ func! s:search.open_window() abort
             \ 'width': width,
             \ 'height': height,
             \ 'col': (columns/2) - (width/2),
-            \ 'row': (lines/2) - (height/2),
+            \ 'row': float2nr((lines/2) - (height/2)) - 1,
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ 'border': self.options.popup_borders,

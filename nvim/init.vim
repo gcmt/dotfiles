@@ -430,9 +430,9 @@
     nnoremap <silent> <c-e> :<c-u>call append(line('.')-1, map(range(v:count1), "''"))<cr>
     nnoremap <silent> <c-d> :<c-u>call append(line('.'), map(range(v:count1), "''"))<cr>
 
-    " buffer text object
-    vnoremap a% G$ogg
-    onoremap a% :<c-u>norm va%<cr>
+	" buffer text object
+	vnoremap a% GoggV
+	onoremap a% :<c-u>norm va%<cr>
 
     " blackhole register shortcut
     nnoremap _ "_

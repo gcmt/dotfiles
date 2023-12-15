@@ -687,17 +687,25 @@
 " Search
 " ----------------------------------------------------------------------------
 
-    func! s:search()
-        let target = input('// ')
-        norm! "\<c-l>"
-        if !empty(target)
-            exec 'Search' target
+    " search current word or selection
+    func! s:search(visual)
+        if a:visual && line("'<") != line("'>")
+            call util#err("Not allowed")
+            return
         end
+        if a:visual
+            let selection = getline('.')[col("'<")-1:col("'>")-1]
+            let pattern = '\V' . escape(selection, '/\')
+        else
+            let pattern = '\<' . expand('<cword>') . '\>'
+        end
+        exec 'Search' pattern
     endf
 
-    nnoremap s :call <sid>search()<cr>
+    nnoremap s :Search<space>
     nnoremap gs :Search<cr>
-    nnoremap <silent> S :Search \<<c-r><c-w>\><cr>
+    nnoremap <silent> S :call <sid>search(0)<cr>
+    vnoremap <silent> S :<c-u>call <sid>search(1)<cr>
 
 " Fzf
 " ----------------------------------------------------------------------------

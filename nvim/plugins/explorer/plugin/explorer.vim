@@ -12,11 +12,16 @@ let g:explorer_loaded = 1
 
 command! -bang -nargs=? Explorer call explorer#open(<q-args>, !empty(<q-bang>))
 
-let s:options = {
-    \ 'hidden_files': 1,
-    \ 'filters': [],
-    \ 'filters_active': 1,
-    \ 'expand_depth': 3,
+let s:options = #{
+    \ popup: 1,
+    \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
+    \ width_popup: "80%",
+    \ max_height_popup: "90%",
+    \ max_height_window: "50%",
+    \ hidden_files: 1,
+    \ filters: [],
+    \ filters_active: 1,
+    \ expand_depth: 3,
 \ }
 
 for [s:option, s:default] in items(s:options)

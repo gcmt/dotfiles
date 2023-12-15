@@ -255,13 +255,18 @@ endf
 " s:setup_mappings() -> 0
 " Setup mappings for the search results window
 func! s:setup_mappings()
-    exec 'nnoremap <silent> <buffer> q :close<cr>'
-    exec 'nnoremap <silent> <buffer> <esc> :close<cr>'
-    exec 'nnoremap <silent> <buffer> l :call <sid>jump()<cr>'
-    exec 'nnoremap <silent> <buffer> <cr> :call <sid>jump()<cr>'
-    exec 'nnoremap <silent> <buffer> <c-j> :call <sid>jump()<cr>'
-    exec 'nnoremap <silent> <buffer> a :call <sid>toggle_numbers()<cr>'
-    exec 'nnoremap <silent> <buffer> c :<c-u>call <sid>show_context()<cr>'
+    for trigger in g:search_mappings_jump
+        exec 'nnoremap <silent> <buffer>' trigger ':call <sid>jump()<cr>'
+    endfor
+    for trigger in g:search_mappings_close
+        exec 'nnoremap <silent> <buffer>' trigger ':close<cr>'
+    endfor
+    for trigger in g:search_mappings_context
+        exec 'nnoremap <silent> <buffer>' trigger ':<c-u>call <sid>show_context()<cr>'
+    endfor
+    for trigger in g:search_mappings_toggle_numbers
+        exec 'nnoremap <silent> <buffer>' trigger ':call <sid>toggle_numbers()<cr>'
+    endfor
 endf
 
 " s:jump() -> 0

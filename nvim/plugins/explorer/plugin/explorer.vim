@@ -10,14 +10,14 @@ if exists('g:explorer_loaded') || &cp
 end
 let g:explorer_loaded = 1
 
-command! -bang -nargs=? Explorer call explorer#open(<q-args>, !empty(<q-bang>))
+command! -bang -nargs=? Explorer call explorer#open(<q-args>, <q-bang>)
 
 let s:options = #{
-    \ popup: 1,
+    \ popup: 0,
     \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
     \ width_popup: "80%",
-    \ max_height_popup: "90%",
-    \ max_height_window: "50%",
+    \ height_popup: "60%",
+    \ height_window: "50%",
     \ hidden_files: 1,
     \ filters: [],
     \ filters_active: 1,
@@ -28,24 +28,57 @@ for [s:option, s:default] in items(s:options)
     let g:explorer_{s:option} = get(g:, 'explorer_'.s:option, s:default)
 endfo
 
-func s:setup_colors()
-    hi default link ExplorerTitle Magenta
-    hi default link ExplorerPipe Comment
-    hi default link ExplorerDir Blue
-    hi default link ExplorerLink Cyan
-    hi default link ExplorerExec Green
-    hi default link ExplorerDim Comment
+let s:mappings = #{
+    \ enter_or_edit:        [['l', '<cr>'], "Enter directory or edit file under cursor"],
+    \ close:                [['q'], "Close this window"],
+    \ info:                 [['i'], "Show file or directory info"],
+    \ preview:              [['p'], "Preview file under cursor"],
+    \ auto_expand:          [['x'], "Auto expand directories"],
+    \ close_dir:            [['h'], "Close current directory"],
+    \ set_root:             [['L'], "Set current directory as root"],
+    \ up_root:              [['H'], "Set the parent directory as root"],
+    \ toggle_hidden_files:  [['a'], "Toggle hidden files"],
+    \ toggle_filters:       [['f'], "Toggle filters"],
+    \ create_file:          [['%'], "Create new file"],
+    \ create_dir:           [['c'], "Create new directory"],
+    \ rename:               [['r'], "Rename file or directory under cursor"],
+    \ delete:               [['d'], "Delete file or directory under cursor"],
+    \ set_bookmark:         [['b'], "Set bookmark for the file or directory under cursor"],
+    \ help:                 [['?'], "Show help"],
+\ }
+
+for [s:action, s:default] in items(s:mappings)
+    let g:explorer_map_{s:action} = get(g:, 'explorer_map_'.s:action, s:default[0])
+endfo
+
+let s:colors = #{
+    \ title: 'Magenta',
+    \ pipe: 'Comment',
+    \ dir: 'Blue',
+    \ link: 'Cyan',
+    \ exec: 'Green',
+\ }
+
+for [s:hl, s:hlgroup] in items(s:colors)
+    let g:explorer_hl_{s:hl} = get(g:, 'explorer_hl_'.s:hl, s:hlgroup)
+endfo
+
+" Returns all mappings with their help message
+func! __explorer_mappings_help()
+    let help = []
+    for [action, default] in items(s:mappings)
+        let mappings = get(g:, 'explorer_map_' . action)
+        let helpmsg = default[1]
+        call append(help, [mappings, helpmsg])
+    endfo
+    return help
 endf
 
-call s:setup_colors()
-
-func s:edit_directory(path)
-    bwipe
-    call explorer#open(a:path)
+" Returns all mappings
+func! __explorer_mappings()
+    let mappings = {}
+    for action in keys(s:mappings)
+        let mappings[action] = get(g:, 'explorer_map_' . action)
+    endfor
+    return mappings
 endf
-
-aug _explorer
-    au BufWritePost .vimrc call <sid>setup_colors()
-    au Colorscheme * call <sid>setup_colors()
-    au VimEnter,BufReadPost * if isdirectory(expand('%:p')) | call <sid>edit_directory(expand('%:p')) | end
-aug END

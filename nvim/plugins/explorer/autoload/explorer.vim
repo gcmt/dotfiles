@@ -1,105 +1,122 @@
 
 let s:node = {}
+let s:bufname = "__explorer__"
 
-" Restore alternate buffer
-func! s:restore_alternate()
-    for nr in [b:explorer.alt, b:explorer.current] + range(1, bufnr('$'))
-        if buflisted(nr)
-            let @# = nr
-            break
-        end
-    endfo
+func! explorer#open(target, bang) abort
+
+    if bufname("%") == s:bufname
+        return
+    end
+
+    let target = empty(a:target) ? bufname('%') : a:target
+    let target = fnamemodify(target, ':p')
+    let dir = isdirectory(target) ? target : fnamemodify(target, ':h')
+
+    let tree = s:node.new(dir, 'dir')
+    let bufnr = s:open_window()
+    call setbufvar(bufnr, "explorer", #{tree: tree, bufnr: bufnr})
+
+    call tree.explore()
+    call tree.render()
 endf
 
-aug _explorer
-    au!
-    au BufLeave __explorer__ call <sid>restore_alternate()
-aug END
+" s.open_window() -> number
+" Open search buffer window or popup and return the buffer number.
+func! s:open_window() abort
 
-func! explorer#open(target, curwin) abort
+    let lines = &lines - 2
+    let columns = &columns - 2
 
-    let target = a:target
-    let curwin = a:curwin
+    if has('nvim') && g:explorer_popup
 
-    if !empty(target)
-        if !isdirectory(target) && !filereadable(target)
-            return s:err("Invalid file or directory: %s", target)
+        let bufnr = bufnr(s:bufname)
+        if bufnr == -1
+            let bufnr = nvim_create_buf(0, 0)
+            call nvim_buf_set_name(bufnr, s:bufname)
         end
-    end
 
-    let explorer = {}
+        if type(g:explorer_width_popup) == v:t_string
+            let percent = str2nr(trim(g:explorer_width_popup, '%'))
+            let width = float2nr(columns * percent / 100)
+        else
+            throw "Invalid type for option width_popup: " . g:explorer_width_popup
+        end
 
-    if exists('b:explorer')
-        let explorer = b:explorer
-        let curwin = 1
+        if type(g:explorer_height_popup) == v:t_string
+            let percent = str2nr(trim(g:explorer_height_popup, '%'))
+            let height = float2nr(lines * percent / 100)
+        else
+            throw "Invalid type for option height_popup: " . g:explorer_height_popup
+        end
+
+        let opts = {
+            \ 'relative': 'editor',
+            \ 'width': width,
+            \ 'height': height,
+            \ 'col': (columns/2) - (width/2),
+            \ 'row': float2nr((lines/2) - (height/2)) - 1,
+            \ 'anchor': 'NW',
+            \ 'style': 'minimal',
+            \ 'border': g:explorer_popup_borders,
+        \ }
+
+        call nvim_open_win(bufnr, 1, opts)
+        let winnr = bufwinnr(bufnr)
+
     else
-        let explorer.current = bufnr('%')
-        let explorer.alt = bufnr('#')
+
+        exec 'sil keepj keepa botright 2new' s:bufname
+        let bufnr = bufnr(s:bufname)
+        let winnr = bufwinnr(bufnr)
+        call bufload(bufnr)
+
+        if type(g:explorer_height_window) == v:t_string
+            let percent = str2nr(trim(g:explorer_height_window, '%'))
+            exec "resize" float2nr(lines * percent / 100)
+        else
+            throw "Invalid type for option height_window: " . g:explorer_height_window
+        end
+
     end
 
-    if curwin
-        sil edit __explorer__
-    else
-        sil keepj keepa botright new __explorer__
-        let w:explorer = 1
-    end
+    call setwinvar(winnr, '&cursorline',1)
+    call setwinvar(winnr, '&cursorcolumn', 0)
+    call setwinvar(winnr, '&colorcolumn', 0)
+    call setwinvar(winnr, '&signcolumn', "no")
+    call setwinvar(winnr, '&wrap', 0)
+    call setwinvar(winnr, '&number', 0)
+    call setwinvar(winnr, '&relativenumber', 0)
+    call setwinvar(winnr, '&list', 0)
+    call setwinvar(winnr, '&textwidth', 0)
+    call setwinvar(winnr, '&undofile', 0)
+    call setwinvar(winnr, '&backup', 0)
+    call setwinvar(winnr, '&swapfile', 0)
+    call setwinvar(winnr, '&spell', 0)
 
-    setl filetype=explorer buftype=nofile bufhidden=hide nobuflisted
-    setl noundofile nobackup noswapfile nospell
-    setl nowrap nonumber norelativenumber nolist textwidth=0
-    setl cursorline nocursorcolumn colorcolumn=0
+    call setbufvar(bufnr, '&filetype', s:bufname)
+    call setbufvar(bufnr, '&buftype', 'nofile')
+    call setbufvar(bufnr, '&bufhidden', 'hide')
+    call setbufvar(bufnr, '&buflisted', 0)
 
     call s:setup_mappings()
 
-    let b:explorer = extend(get(b:, 'explorer', {}), explorer)
-
-    if empty(get(b:explorer, 'tree', {}))
-        let target = fnamemodify(bufname(b:explorer.current), ':p')
-    end
-
-    if !empty(target)
-
-        let target = substitute(fnamemodify(target, ':p'), '\v/+$', '', '')
-
-        if isdirectory(target)
-            let dir = target
-        else
-            let dir = fnamemodify(target, ':h')
-        end
-
-        let b:explorer.tree = s:node.new_node(dir, 'dir')
-        call b:explorer.tree.explore()
-        call b:explorer.tree.render()
-
-        if filereadable(target)
-            let path = target
-        else
-            let path = fnamemodify(bufname(b:explorer.current), ':p')
-        end
-
-        if !s:action__goto(path)
-            call s:action__goto_first_child(b:explorer.tree)
-        end
-
-        if line('w0') > 1
-            norm! zz
-        end
-
-    else
-
-        let winsave = winsaveview()
-        call b:explorer.tree.render()
-        call winrestview(winsave)
-
-    end
-
+    return bufnr
 endf
 
+" s:setup_mappings() -> 0
+" Setup mappings
+func! s:setup_mappings()
+    for [action, triggers] in items(__explorer_mappings())
+        for trigger in triggers
+            exec 'nnoremap <silent> <buffer>' trigger ':call <sid>action__'.action.'()<cr>'
+        endfor
+    endfor
+endf
 
-" s:node.new_node({path:string}, {type:string}[, {parent:dict}]) -> dict
+" s:node.new({path:string}, {type:string}[, {parent:dict}]) -> dict
 " Create a new node for the given {path} with type {type}.
 " An optional {parent} node might be given as well.
-func s:node.new_node(path, type, ...)
+func s:node.new(path, type, ...)
     let node = copy(s:node)
     let node.path = a:path
     let node.type = a:type
@@ -107,7 +124,6 @@ func s:node.new_node(path, type, ...)
     let node.parent = a:0 > 0 ? a:1 : {}
     return node
 endf
-
 
 " s:node.set_path({path:string}) -> 0
 " Set path for the current node.
@@ -134,7 +150,7 @@ func s:node.ls()
     if !isdirectory(self.path)
         return []
     end
-    let cmd = 'ls -1AH ' . shellescape(self.path)
+    let cmd = 'ls -1AH --group-directories-first ' . shellescape(self.path)
     return systemlist(cmd)
 endf
 
@@ -155,7 +171,7 @@ func s:node.explore(...)
         let a:node.content = []
         for fname in files
             let path = s:path_join(a:node.path, fname)
-            let node = s:node.new_node(path, getftype(path), a:node)
+            let node = s:node.new(path, getftype(path), a:node)
             call add(a:node.content, node)
             if node.type == 'dir'
                 call s:_explore(node, a:lvl+1, a:max_depth)
@@ -165,7 +181,6 @@ func s:node.explore(...)
 
     let max_depth = a:0 > 0 ? a:1 : 1
     call s:_explore(self, 1, max_depth)
-
 endf
 
 " s:node.find({test:funcref}) -> dict
@@ -190,6 +205,7 @@ endf
 
 " s:node.rename({path:string}) -> 0
 " Set current node path to {path} and updates all its descendant nodes.
+" TODO find better way
 func! s:node.rename(path)
     let old = self.path
     let Fn = {node -> node.set_path(substitute(node.path, '\V\^'.old, a:path, ''))}
@@ -212,14 +228,16 @@ endf
 " Render the directory tree in the current buffer.
 func! s:node.render() abort
 
-    syn clear
-    setl modifiable
-    sil %delete _
+    let winid = bufwinid(b:explorer.bufnr)
+    call setbufvar(b:explorer.bufnr, "&modifiable", 1)
+    call setbufvar(b:explorer.bufnr, "&list", 0)
+    sil! call deletebufline(b:explorer.bufnr, 1, "$")
+    call clearmatches()
 
-    syn match ExplorerPipe /─/
-    syn match ExplorerPipe /├/
-    syn match ExplorerPipe /│/
-    syn match ExplorerPipe /└/
+    exec 'syn match' g:explorer_hl_pipe '/─/'
+    exec 'syn match' g:explorer_hl_pipe '/├/'
+    exec 'syn match' g:explorer_hl_pipe '/│/'
+    exec 'syn match' g:explorer_hl_pipe '/└/'
 
     let b:explorer.map = {}
 
@@ -231,62 +249,47 @@ func! s:node.render() abort
         call add(filters, {node -> node.filename() !~ '\V\^.'})
     end
 
-    func! s:_print_tree(node, nr, filters, padding, is_last_child)
+    func! s:_print_tree(winid, node, nr, filters, padding, is_last_child)
 
         let nr = a:nr + 1
         let b:explorer.map[nr] = a:node
 
         let filename = a:node.filename()
-
         let links = a:padding . (a:is_last_child ? '└─ ' : '├─ ')
-
         let line = links . filename
 
         if a:node.type == 'dir'
-            call s:highlight('ExplorerDir', nr, len(links), len(links)+len(filename)+2)
+            call s:matchadd(a:winid, g:explorer_hl_dir, nr, len(links), len(links)+len(filename)+2)
         elseif a:node.type == 'link'
-            call s:highlight('ExplorerLink', nr, len(links), len(links)+len(filename)+2)
+            call s:matchadd(a:winid, g:explorer_hl_link, nr, len(links), len(links)+len(filename)+2)
         end
 
-        call setline(nr, line)
+        call setbufline(b:explorer.bufnr, nr, line)
 
         let padding = a:padding . (a:is_last_child ? '   ' : '│  ')
-
-        let nodes = s:directories_first(s:filter(a:node.content, a:filters))
+        let nodes = s:filter(a:node.content, a:filters)
         let last = len(nodes)-1
         for i in range(len(nodes))
-            let nr = s:_print_tree(nodes[i], nr, a:filters, padding, i == last)
+            let nr = s:_print_tree(a:winid, nodes[i], nr, a:filters, padding, i == last)
         endfo
 
         return nr
-
     endf
 
     let nr = 1
-
     let b:explorer.map[nr] = self
-
     let title = self.path
-    call setline(nr, title)
-    call s:highlight('ExplorerTitle', nr)
+    call setbufline(b:explorer.bufnr, nr, title)
+    call s:matchadd(winid, g:explorer_hl_title, nr)
 
-    let nodes = s:directories_first(s:filter(self.content, filters))
+    let nodes = s:filter(self.content, filters)
     let last = len(nodes)-1
     for k in range(len(nodes))
-        let nr = s:_print_tree(nodes[k], nr, filters, '', k == last)
+        let nr = s:_print_tree(winid, nodes[k], nr, filters, '', k == last)
     endfo
 
     call setwinvar(0, "&stl", ' ' . title)
-    setl nomodifiable
-
-endf
-
-" s:directories_first({list:dict}) -> list
-" Order a list of nodes by putting directories first.
-" Sorting doesn't happen in-place, a new list is returned.
-func! s:directories_first(nodes)
-    let Fn = {a, b -> a.type == b.type ? 0 : a.type != 'dir' ? 1 : -1}
-    return sort(copy(a:nodes), Fn)
+    call setbufvar(b:explorer.bufnr, "&modifiable", 0)
 endf
 
 " s:selected_node() -> dict
@@ -295,33 +298,11 @@ func! s:selected_node()
     return get(b:explorer.map, line('.'), {})
 endf
 
-" s:setup_mappings() -> 0
-" Setup action mappings
-func! s:setup_mappings()
-    exec 'nnoremap <silent> <buffer> l :<c-u>call <sid>action__enter_or_edit()<cr>'
-    exec 'nnoremap <silent> <buffer> <enter> :call <sid>action__enter_or_edit()<cr>'
-    exec 'nnoremap <silent> <buffer> q :call <sid>action__close()<cr>'
-    exec 'nnoremap <silent> <buffer> i :call <sid>action__info()<cr>'
-    exec 'nnoremap <silent> <buffer> p :call <sid>action__preview()<cr>'
-    exec 'nnoremap <silent> <buffer> x :call <sid>action__auto_expand()<cr>'
-    exec 'nnoremap <silent> <buffer> h :call <sid>action__close_dir()<cr>'
-    exec 'nnoremap <silent> <buffer> L :call <sid>action__set_root()<cr>'
-    exec 'nnoremap <silent> <buffer> H :call <sid>action__up_root()<cr>'
-    exec 'nnoremap <silent> <buffer> a :call <sid>action__toggle_hidden_files()<cr>'
-    exec 'nnoremap <silent> <buffer> f :call <sid>action__toggle_filters()<cr>'
-    exec 'nnoremap <silent> <buffer> % :call <sid>action__create_file()<cr>'
-    exec 'nnoremap <silent> <buffer> c :call <sid>action__create_directory()<cr>'
-    exec 'nnoremap <silent> <buffer> r :call <sid>action__rename()<cr>'
-    exec 'nnoremap <silent> <buffer> d :call <sid>action__delete()<cr>'
-    exec 'nnoremap <silent> <buffer> b :call <sid>action__bookmarks_set(getchar())<cr>'
-    exec 'nnoremap <silent> <buffer> ? :call <sid>action__help()<cr>'
-endf
-
-" s:action__goto({path:string} [, {strict:number}]) -> number
+" s:goto({path:string} [, {strict:number}]) -> number
 " Move the cursor to the line with the given {path}.
 " Unless {strict} is given and it's 1, when {path} is not found in the current
 " map, the process is repeated recursively for all the parent directories.
-func! s:action__goto(path, ...)
+func! s:goto(path, ...)
     if a:path == '/'
         return 0
     end
@@ -329,19 +310,22 @@ func! s:action__goto(path, ...)
         if a:path == node.path
             exec line
             norm! 0
+            let botline = getwininfo(bufwinid(b:explorer.bufnr))[0]['botline']
+            if line + len(node.content) > botline
+                exec "norm!" (line + len(node.content) - botline) . "\<c-e>"
+            end
             return 1
         end
     endfo
     let strict = a:0 > 0 && a:1
-    let parent = fnamemodify(a:path, ':h')
-    return strict ? 0 : s:action__goto(parent)
+    return strict ? 0 : s:goto(fnamemodify(a:path, ':h'))
 endf
 
-" s:action__goto_first_child({node:dict}) -> number
-" Move the cursor to the first visible (the only case s:action__goto
-" will return 1) child node.
+" s:goto_first_child({node:dict}) -> number
+" Move the cursor to the first visible child node
+" (the only case s:goto will return 1).
 " A number is returned to indicate success (1) or failure (0).
-func! s:action__goto_first_child(node)
+func! s:goto_first_child(node)
     for [line, node] in items(b:explorer.map)
         if node.path == a:node.path
             let next = get(b:explorer.map, line+1, {})
@@ -373,7 +357,7 @@ func! s:action__close_dir() abort
     end
     let node.parent.content = []
     call b:explorer.tree.render()
-    call s:action__goto(node.parent.path)
+    call s:goto(node.parent.path)
 endf
 
 " s:action__up_root() -> 0
@@ -381,10 +365,10 @@ endf
 func! s:action__up_root() abort
     let current = b:explorer.tree.path
     let parent = s:path_dirname(b:explorer.tree.path)
-    let b:explorer.tree = s:node.new_node(parent, 'dir')
+    let b:explorer.tree = s:node.new(parent, 'dir')
     call b:explorer.tree.explore()
     call b:explorer.tree.render()
-    call s:action__goto(current)
+    call s:goto(current)
 endf
 
 " s:action__set_root() -> 0
@@ -403,7 +387,7 @@ func! s:action__set_root() abort
     let node.parent = {}
     let b:explorer.tree = node
     call b:explorer.tree.render()
-    call s:action__goto_first_child(node)
+    call s:goto_first_child(node)
 endf
 
 " s:action__enter_or_edit() -> 0
@@ -419,13 +403,12 @@ func! s:action__enter_or_edit() abort
     if isdirectory(node.path)
         call node.explore(v:count1)
         call b:explorer.tree.render()
-        call s:action__goto(node.path)
-        call s:action__goto_first_child(node)
-        return
+        call s:goto(node.path)
+        call s:goto_first_child(node)
+    else
+        call s:action__close()
+        exec 'edit' fnameescape(node.path)
     end
-    let current = b:explorer.current
-    exec 'edit' fnameescape(node.path)
-    let @# = buflisted(current) ? current : bufnr('%')
 endf
 
 " s:action__auto_expand() -> 0
@@ -440,8 +423,8 @@ func! s:action__auto_expand() abort
     end
     call node.explore(g:explorer_expand_depth)
     call b:explorer.tree.render()
-    call s:action__goto(node.path)
-    call s:action__goto_first_child(node)
+    call s:goto(node.path)
+    call s:goto_first_child(node)
 endf
 
 " s:action__preview() -> 0
@@ -494,7 +477,7 @@ func! s:action__create_file() abort
     end
     call node.explore()
     call b:explorer.tree.render()
-    call s:action__goto(path)
+    call s:goto(path)
 endf
 
 " s:action__create_directory() -> 0
@@ -526,7 +509,7 @@ func! s:action__create_directory() abort
     endtry
     call node.explore()
     call b:explorer.tree.render()
-    call s:action__goto(path)
+    call s:goto(path)
 endf
 
 " s:action__rename() -> 0
@@ -561,20 +544,11 @@ func! s:action__rename() abort
     if bufnr(node.path) != -1
         exec 'split' fnameescape(to)
         close
-        if bufnr(@#) == bufnr(node.path)
-            let @# = bufnr(to)
-        end
-        if b:explorer.current == bufnr(node.path)
-            let b:explorer.current = bufnr(to)
-        end
-        if b:explorer.alt == bufnr(node.path)
-            let b:explorer.alt = bufnr(to)
-        end
         sil! exec 'bwipe' node.path
     end
     call node.rename(to)
     call b:explorer.tree.render()
-    call s:action__goto(to)
+    call s:goto(to)
 endf
 
 " s:action__delete() -> 0
@@ -599,7 +573,7 @@ func! s:action__delete() abort
     sil! exec 'bwipe' node.path
     call node.parent.explore()
     call b:explorer.tree.render()
-    call s;action__goto(node.parent.path)
+    call s:goto(node.parent.path)
 endf
 
 " s:action__toggle_filters() -> 0
@@ -609,7 +583,7 @@ func! s:action__toggle_filters()
     let node = s:selected_node()
     call b:explorer.tree.render()
     if !empty(node)
-        call s:action__goto(node.path)
+        call s:goto(node.path)
     end
 endf
 
@@ -620,43 +594,38 @@ func! s:action__toggle_hidden_files()
     let current = s:selected_node()
     call b:explorer.tree.render()
     if !empty(current)
-        call s:action__goto(current.path)
+        call s:goto(current.path)
     end
 endf
 
-" s:action__bookmarks_set({mark:number}) -> 0
+" s:action__set_bookmarks() -> 0
 " Add bookmark for the selected file or directory.
 " Requires the 'bookmarks' plugin.
-func! s:action__bookmarks_set(mark)
+func! s:action__set_bookmark()
     if !get(g:, 'loaded_bookmarks')
         return s:err("Bookmarks not available")
     end
     let node = s:selected_node()
     if !empty(node)
-        call bookmarks#set(a:mark, node.path)
+        let mark = input("Bookmark: ")
+        call bookmarks#set(mark, node.path)
     end
 endf
 
 " s:action__close() -> 0
-" Close the Explorer buffer.
+" Close the window.
 func! s:action__close()
-    if get(w:, 'explorer', 0)
-        close
-    elseif buflisted(b:explorer.current)
-        exec 'buffer' b:explorer.current
-    else
-        enew
-    end
+    close
 endf
 
-" TODO
 " s:action__help() -> 0
 " Show very basic help.
 func! s:action__help()
-    let mappings = ["todo"]
-    "let mappings = sort(filter(split(execute('nmap'), "\n"), {-> v:val =~ '\vexplorer#'}))
-    "call map(mappings, {-> substitute(v:val, '\V\(\^n  \|\(*@\)\?:\(<C-U>\)\?call explorer#\(actions\|buffer\)#\|<CR>\$\)', '', 'g')})
-    echo join(mappings, "\n")
+    let help = []
+    for [mappings, helpmsg] in __explorer_mappings_help()
+        call append(help, printf("%20s %s", join(mappings, ', '), helpmsg)))
+    endfor
+    echo join(help, "\n")
 endf
 
 " s:path_join([{path:string}, ...]) -> string
@@ -674,17 +643,17 @@ func! s:path_dirname(path)
     return dirname != '.' ? dirname : ''
 endf
 
-" TODO: use matchadd
-" s:highlight({group:string}, {line:number}, [, {start:number}, [, {end:number}]]) -> 0
+" s:matchadd({winid:number}, {group:string}, {line:number}, [, {start:number}, [, {end:number}]]) -> 0
 " Highlight a {line} with the given highlight {group}.
 " If neither {start} or {end} are given, the whole line is highlighted.
 " If only {start} is given, the line is highlighted starting from the column {start}.
 " If only {end} is given, the line is highlighted from {start} to {end}.
-func! s:highlight(group, line, ...)
+func! s:matchadd(winid, group, line, ...)
     let start = a:0 > 0 && type(a:1) == v:t_number ? '%>'.a:1.'c.*' : ''
     let end = a:0 > 1 && type(a:2) == v:t_number ? '%<'.a:2.'c' : ''
     let line = '%'.a:line.'l' . (empty(start.end) ? '.*' : '')
-    exec printf('syn match %s /\v%s%s%s/', a:group, line, start, end)
+    let pattern = printf('\v%s%s%s', line, start, end)
+    return matchadd(a:group, pattern, -1, -1, #{window: a:winid})
 endf
 
 " s:prettify_path({path:string}) -> string

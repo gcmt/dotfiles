@@ -192,13 +192,14 @@ func! s:search.render(bufnr, ...) abort
     let width = len(self.matches[-1][0])
     let closest = self.matches[0]
     let mindist = 99999
+    let padding = self.options.left_padding
 
     for i in range(len(self.matches))
         let m = self.matches[i]
         let b:search.table[i+1] = m
 
-        let num = printf("%".width."s ", m[0])
-        let line = self.options.show_line_numbers ? num : ""
+        let num = printf("%".width."s", m[0])
+        let line = self.options.show_line_numbers ? num . padding : padding
         let line .= getbufline(self.ctx.curr_bufnr, m[0])[0]
         let Transform = self.options.transform_cb
         let line = Transform != v:null ? Transform(line) : line
@@ -235,7 +236,7 @@ func! s:search.render(bufnr, ...) abort
         let pattern = self.pattern
         if self.options.show_line_numbers
             " match only after the line number column
-            let pattern = '\%>' . (width+1) . 'c' . self.pattern
+            let pattern = '\%>' . (width+len(padding)) . 'c' . self.pattern
         end
         call matchadd(self.options.match_hl, pattern, -1, -1, #{window: winid})
     end

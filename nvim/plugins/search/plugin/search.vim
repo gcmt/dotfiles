@@ -28,6 +28,7 @@ let s:options = #{
     \ add_to_search_history: 1,
     \ show_line_numbers: 1,
     \ goto_closest_match: 1,
+    \ left_padding: " ",
     \ show_match: 1,
     \ match_hl: "SearchUnderline",
     \ linenr_hl: "LineNr",

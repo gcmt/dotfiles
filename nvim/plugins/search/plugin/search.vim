@@ -33,7 +33,7 @@ let s:options = #{
     \ linenr_hl: "LineNr",
     \ transform_cb: v:null,
     \ filter_cb: v:null,
-    \ mappings_jump: ['l', '<cr>'],
+    \ mappings_jump: ['l', '<cr>', '<2-LeftMouse>'],
     \ mappings_close: ['q', '<esc>'],
     \ mappings_context: ['c'],
     \ mappings_toggle_numbers: ['a'],

@@ -22,6 +22,7 @@ let s:options = #{
     \ label_unnamed: '[no name]',
     \ label_terminal: '[terminal]',
     \ line_format: ' %{bufname}%(  %{bufpath}%)%(  [%{mark}]%)',
+    \ fm_command: 'Explorer %f',
     \ highlight: {
         \ "bufname": "Fg",
         \ 'bufpath': 'Comment',

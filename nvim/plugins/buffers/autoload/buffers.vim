@@ -132,7 +132,7 @@ func s:do_action(action, ctx, close_fn = v:none)
             call a:close_fn()
         end
         if a:action =~ 'fm'
-            exec 'Fm' expand('%:p')
+            exec substitute(g:buffers_fm_command, '%f', expand('%:p'), 'g')
         end
     else
         call s:err("Unknown action: " . a:action)

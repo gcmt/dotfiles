@@ -572,7 +572,7 @@
     aug _misc
         au!
 
-        au BufEnter * if isdirectory(expand('%:p')) | exec 'Explorer!' expand('%:p') | end
+        au VimEnter * if isdirectory(expand('%:p')) | exec 'Explorer!' expand('%:p') | end
 
         au FocusGained,BufEnter,CursorHold * sil! checktime
 
@@ -739,14 +739,14 @@
 " Explorer/Ranger/Vifm
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> g. :exec 'Fm' expand('%:p')<cr>
-    nnoremap <silent> <c-p> :exec 'Fm' getcwd()<cr>
+    "nnoremap <silent> g. :exec 'Fm' expand('%:p')<cr>
+    "nnoremap <silent> <c-p> :exec 'Fm' getcwd()<cr>
 
     let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
 
-    "nnoremap <silent> <backspace> :Explorer<cr>
-    "nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
-    "nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
+    nnoremap <silent> <backspace> :exec 'Explorer' getcwd()<cr>
+    nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
+    nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
 
 " Spotter
 " ----------------------------------------------------------------------------

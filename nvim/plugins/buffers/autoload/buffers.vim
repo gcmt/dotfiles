@@ -408,11 +408,14 @@ func! s:get_buffers(all, sorting = 'numerical')
     let F1 = a:all ? function('bufexists') : function('buflisted')
     let F2 = {i, nr -> F1(nr) && getbufvar(nr, '&buftype') =~ '\v^(terminal)?$'}
     let buffers = filter(range(1, bufnr('$')), F2)
-    call map(buffers, {i, b -> [b, fnamemodify(bufname(b), ':t')]})
+    call map(buffers, {_, b -> [b, fnamemodify(bufname(b), ':t'), fnamemodify(bufname(b), ':p')]})
     if a:sorting == 'alphabetical'
-        call sort(buffers, {a, b -> char2nr(a[1]) - char2nr(b[1])})
+        call sort(buffers, {a, b -> a[1] == b[1] ? 0 : (a[1] > b[1] ? 1 : -1)})
+    elseif a:sorting == 'viewtime'
+        let t = g:buffers_time_table
+        call sort(buffers, {a, b -> get(t, b[2], 0) - get(t, a[2], 0)})
     end
-    return map(buffers, {i, v -> v[0]})
+    return map(buffers, {_, v -> v[0]})
 endf
 
 

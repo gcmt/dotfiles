@@ -12,6 +12,8 @@ let g:buffers_loaded = 1
 
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
+" sorting: [alphabetical | numerical | viewtime]
+
 let s:options = #{
     \ popup: 1,
     \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
@@ -54,3 +56,20 @@ let s:options = #{
 for [s:option, s:default] in items(s:options)
     let g:buffers_{s:option} = get(g:, 'buffers_'.s:option, s:default)
 endfo
+
+func s:update_time_table()
+    if empty(&buftype)
+        let path = fnamemodify(bufname('%'), ':p')
+        let g:buffers_time_table[path] = strftime('%s')
+    end
+endf
+
+" maps paths to their last view time
+let g:buffers_time_table = {}
+
+if g:buffers_sorting == 'viewtime'
+    aug _buffers
+        au!
+        au BufWinEnter * call <sid>update_time_table()
+    aug END
+end

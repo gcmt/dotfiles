@@ -18,7 +18,7 @@ endf
 call mkdir(fnamemodify(s:bookmarks_file, ':p:h'), 'p')
 call s:load_marks()
 
-func bookmarks#marks(cwd = '')
+func bookmarks#marks(cwd = '') abort
     if empty(a:cwd)
         return copy(s:marks)
     else
@@ -27,7 +27,7 @@ func bookmarks#marks(cwd = '')
     end
 endf
 
-func bookmarks#unset(path)
+func bookmarks#unset(path) abort
     try
         call remove(s:marks, a:path)
         call s:write_marks()
@@ -78,13 +78,14 @@ func bookmarks#jump(mark, ...) abort
     end
 endf
 
-func bookmarks#view() abort
+func bookmarks#view(all = 0) abort
 
     if bufwinnr(s:bufname) != -1
         return
     end
 
-    if empty(bookmarks#marks(getcwd()))
+    let cwd = a:all ? '' : getcwd()
+    if empty(bookmarks#marks(cwd))
         return s:err("No bookmarks found")
     end
 
@@ -146,7 +147,7 @@ func bookmarks#view() abort
     call setbufvar(bufnr, 'bookmarks', {'table': {}})
 
     call s:setup_mappings()
-    call s:render(bufnr)
+    call s:render(bufnr, a:all)
     call cursor(1, 2)
 
     " position the cursor on the current file
@@ -162,7 +163,22 @@ func bookmarks#view() abort
 
 endf
 
-func s:render(bufnr)
+func s:setup_mappings() abort
+    for key in g:bookmarks_mappings_jump
+        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_jump('edit')<cr>zz"
+    endfor
+    for key in g:bookmarks_mappings_unset
+        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_unset()<cr>"
+    endfor
+    for key in g:bookmarks_mappings_close
+        exec "nnoremap <silent> <nowait> <buffer>" key ":close<cr>"
+    endfor
+    for key in g:bookmarks_mappings_toggle_global
+        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_toggle_global_bookmarks()<cr>"
+    endfor
+endf
+
+func s:render(bufnr, all = 0) abort
 
     syntax clear
     setl modifiable
@@ -171,9 +187,13 @@ func s:render(bufnr)
 
     syn match BookmarksDim /\v(\[|\])/
 
+    let b:show_all = get(b:, 'show_all', a:all)
+    let cwd = b:show_all ? '' : getcwd()
+
     let i = 1
     let b:bookmarks.table = {}
-    for [path, mark] in sort(items(bookmarks#marks(getcwd())), {v -> v[1]})
+    let marks = sort(map(items(bookmarks#marks(cwd)), {_, v -> [v[1], v[0]]}), 'l')
+    for [mark, path] in marks
 
         let b:bookmarks.table[i] = [path, mark]
 
@@ -194,59 +214,67 @@ func s:render(bufnr)
 
     endfor
 
+    if empty(marks)
+        call setbufline(a:bufnr, 1, " No bookmarks")
+    end
+
     call s:resize_window(line('$'))
     call setpos('.', pos_save)
     setl nomodifiable
 
 endf
 
-func! s:jump(cmd) abort
+func s:action_jump(cmd) abort
     let win = winnr()
-    let item = get(b:bookmarks.table, line('.'), [])
-    if !empty(item)
-        wincmd p
-        exec win.'wincmd c'
-        call bookmarks#jump(item[1], a:cmd)
+    let selected = get(b:bookmarks.table, line('.'), [])
+    if !empty(selected)
+        close
+        let path = selected[0]
+        if isdirectory(path)
+            exec substitute(g:bookmarks_explorer_cmd, '%f', fnameescape(path), '')
+        else
+            exec a:cmd fnameescape(s:prettify_path(path))
+        end
     end
 endf
 
-func! s:unset()
-    let item = get(b:bookmarks.table, line('.'), [])
-    if !empty(item)
-        call bookmarks#unset(item[0])
+func s:action_unset() abort
+    let selected = get(b:bookmarks.table, line('.'), [])
+    if !empty(selected)
+        call bookmarks#unset(selected[0])
         call s:render(bufnr('%'))
     end
-    if empty(bookmarks#marks(getcwd()))
-        close
+endf
+
+func s:action_toggle_global_bookmarks() abort
+    let current = get(b:bookmarks.table, line('.'), [])
+    let b:show_all = !b:show_all
+    call s:render(bufnr('%'))
+    if !empty(current)
+        " keep cursor on current mark
+        for [linenr, mark] in items(b:bookmarks.table)
+            if current[0] == mark[0]
+                call cursor(linenr, 2)
+                break
+            end
+        endfor
     end
 endf
 
-func! s:setup_mappings()
-    for key in g:bookmarks_mappings_jump
-        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>jump('edit')<cr>zz"
-    endfor
-    for key in g:bookmarks_mappings_unset
-        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>unset()<cr>"
-    endfor
-    for key in g:bookmarks_mappings_close
-        exec "nnoremap <silent> <nowait> <buffer>" key ":close<cr>"
-    endfor
-endf
-
-func s:resize_window(entries_num)
+func s:resize_window(entries_num) abort
     let max = float2nr(&lines * g:bookmarks_max_height / 100)
     exec 'resize' min([a:entries_num, max])
 endf
 
-func s:prettify_path(path)
+func s:prettify_path(path) abort
     let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
     return substitute(path, '\V\^'.$HOME, '~', '')
 endf
 
-func s:err(msg)
+func s:err(msg) abort
     redraw | echohl WarningMsg | echo a:msg | echohl None
 endf
 
-func s:echo(msg)
+func s:echo(msg) abort
     redraw | echo a:msg
 endf

@@ -21,6 +21,7 @@ let s:options = #{
     \ mappings_jump: ['l', '<enter>'],
     \ mappings_unset: ['dd'],
     \ mappings_close: ['q', '<esc>'],
+    \ mappings_toggle_global: ['a'],
 \ }
 
 for [s:option, s:default] in items(s:options)
@@ -28,7 +29,7 @@ for [s:option, s:default] in items(s:options)
 endfor
 
 command! -nargs=1 Jump call bookmarks#jump(<q-args>)
-command! -nargs=0 Bookmarks call bookmarks#view()
+command! -bang -nargs=0 Bookmarks call bookmarks#view(!empty(<q-bang>))
 command! -nargs=1 MarkFile call bookmarks#set(<q-args>, expand("%:p"))
 command! -nargs=1 MarkDir call bookmarks#set(<q-args>, expand("%:p:h"))
 

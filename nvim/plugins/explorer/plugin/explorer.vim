@@ -13,7 +13,7 @@ let g:explorer_loaded = 1
 command! -bang -nargs=? Explorer call explorer#open(<q-args>, <q-bang>)
 
 let s:options = #{
-    \ popup: 0,
+    \ popup: 1,
     \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
     \ width_popup: "80%",
     \ height_popup: "60%",
@@ -30,20 +30,22 @@ endfo
 
 let s:mappings = #{
     \ enter_or_edit:        [['l', '<cr>'], "Enter directory or edit file under cursor"],
-    \ close:                [['q'], "Close this window"],
+    \ close:                [['q', '<esc>'], "Close this window"],
     \ info:                 [['i'], "Show file or directory info"],
     \ preview:              [['p'], "Preview file under cursor"],
     \ auto_expand:          [['x'], "Auto expand directories"],
     \ close_dir:            [['h'], "Close current directory"],
     \ set_root:             [['L'], "Set current directory as root"],
     \ up_root:              [['H'], "Set the parent directory as root"],
+    \ set_cwd:              [['w'], "Set working directory"],
     \ toggle_hidden_files:  [['a'], "Toggle hidden files"],
     \ toggle_filters:       [['f'], "Toggle filters"],
     \ create_file:          [['%'], "Create new file"],
     \ create_dir:           [['c'], "Create new directory"],
     \ rename:               [['r'], "Rename file or directory under cursor"],
     \ delete:               [['d'], "Delete file or directory under cursor"],
-    \ set_bookmark:         [['b'], "Set bookmark for the file or directory under cursor"],
+    \ set_bookmark:         [['b', 'm'], "Set bookmark for the file or directory under cursor"],
+    \ del_bookmark:         [['B', 'M'], "Delete bookmark for the file or directory under cursor"],
     \ help:                 [['?'], "Show help"],
 \ }
 
@@ -57,6 +59,7 @@ let s:colors = #{
     \ dir: 'Blue',
     \ link: 'Cyan',
     \ exec: 'Green',
+    \ mark: 'Comment',
 \ }
 
 for [s:hl, s:hlgroup] in items(s:colors)
@@ -68,8 +71,8 @@ func! __explorer_mappings_help()
     let help = []
     for [action, default] in items(s:mappings)
         let mappings = get(g:, 'explorer_map_' . action)
-        let helpmsg = default[1]
-        call append(help, [mappings, helpmsg])
+        let help_msg = default[1]
+        call add(help, [mappings, help_msg])
     endfo
     return help
 endf

@@ -108,7 +108,7 @@ endf
 func! s:setup_mappings()
     for [action, triggers] in items(__explorer_mappings())
         for trigger in triggers
-            exec 'nnoremap <silent> <buffer>' trigger ':call <sid>action__'.action.'()<cr>'
+            exec 'nnoremap <silent> <nowait> <buffer>' trigger ':call <sid>action__'.action.'()<cr>'
         endfor
     endfor
 endf
@@ -203,15 +203,6 @@ func! s:node.find(test)
     return s:find_node(self, a:test)
 endf
 
-" s:node.rename({path:string}) -> 0
-" Set current node path to {path} and updates all its descendant nodes.
-" TODO find better way
-func! s:node.rename(path)
-    let old = self.path
-    let Fn = {node -> node.set_path(substitute(node.path, '\V\^'.old, a:path, ''))}
-    return self.do(Fn)
-endf
-
 " s:node.do({fn:funcref}) -> 0
 " Execute {fn} on the current node and each of its descendants.
 func! s:node.do(fn)
@@ -227,6 +218,13 @@ endf
 " s:node.render() -> 0
 " Render the directory tree in the current buffer.
 func! s:node.render() abort
+
+    let marks = {}
+    if exists('*bookmarks#marks')
+        for [mark, path] in items(bookmarks#marks())
+            let marks[path] = mark
+        endfor
+    end
 
     let winid = bufwinid(b:explorer.bufnr)
     call setbufvar(b:explorer.bufnr, "&modifiable", 1)
@@ -249,7 +247,7 @@ func! s:node.render() abort
         call add(filters, {node -> node.filename() !~ '\V\^.'})
     end
 
-    func! s:_print_tree(winid, node, nr, filters, padding, is_last_child)
+    func! s:_print_tree(winid, marks, node, nr, filters, padding, is_last_child)
 
         let nr = a:nr + 1
         let b:explorer.map[nr] = a:node
@@ -264,13 +262,19 @@ func! s:node.render() abort
             call s:matchadd(a:winid, g:explorer_hl_link, nr, len(links), len(links)+len(filename)+2)
         end
 
+        if has_key(a:marks, a:node.path)
+            let label = printf(" [%s]", a:marks[a:node.path])
+            call s:matchadd(a:winid, g:explorer_hl_mark, nr, len(line), len(line)+len(label)+1)
+            let line .= label
+        end
+
         call setbufline(b:explorer.bufnr, nr, line)
 
         let padding = a:padding . (a:is_last_child ? '   ' : '│  ')
         let nodes = s:filter(a:node.content, a:filters)
         let last = len(nodes)-1
         for i in range(len(nodes))
-            let nr = s:_print_tree(a:winid, nodes[i], nr, a:filters, padding, i == last)
+            let nr = s:_print_tree(a:winid, a:marks, nodes[i], nr, a:filters, padding, i == last)
         endfo
 
         return nr
@@ -285,7 +289,7 @@ func! s:node.render() abort
     let nodes = s:filter(self.content, filters)
     let last = len(nodes)-1
     for k in range(len(nodes))
-        let nr = s:_print_tree(winid, nodes[k], nr, filters, '', k == last)
+        let nr = s:_print_tree(winid, marks, nodes[k], nr, filters, '', k == last)
     endfo
 
     call setwinvar(0, "&stl", ' ' . title)
@@ -352,6 +356,10 @@ endf
 " deletes all content of the parent node and redraw the directory tree.
 func! s:action__close_dir() abort
     let node = s:selected_node()
+    if node.type == 'dir' && empty(node.parent)
+        call s:action__up_root()
+        return
+    end
     if empty(node) || empty(node.parent) || empty(node.parent.parent)
         return
     end
@@ -526,29 +534,30 @@ func! s:action__rename() abort
     if bufnr(node.path) != -1 && getbufvar(bufnr(node.path), '&mod')
         return s:err('File is open and contains changes')
     end
-    let name = input(printf("%s\n└─ %s -> ", node.parent.path, node.filename())) | redraw
+    let name = input(printf("%s\n%s -> ", node.parent.path, node.filename())) | redraw
     if empty(name)
         return
     end
     if name =~ '/'
-        return s:err("The new file name should not contain '/' characters")
+        return s:err("Invalid name: " . name)
     end
     redraw
-    let to = s:path_join(node.parent.path, name)
-     if isdirectory(to) || filereadable(to)
-        return s:err("File already exists: " . to)
+    let dest = s:path_join(node.parent.path, name)
+     if isdirectory(dest) || filereadable(dest)
+        return s:err("File already exists: " . dest)
     end
-    if rename(node.path, to) != 0
+    if rename(node.path, dest) != 0
         return s:err("Cannot rename file: ", node.path)
     end
     if bufnr(node.path) != -1
-        exec 'split' fnameescape(to)
+        exec 'split' fnameescape(dest)
         close
         sil! exec 'bwipe' node.path
     end
-    call node.rename(to)
+    let node.path = dest
+    let node.content = []
     call b:explorer.tree.render()
-    call s:goto(to)
+    call s:goto(dest)
 endf
 
 " s:action__delete() -> 0
@@ -598,6 +607,15 @@ func! s:action__toggle_hidden_files()
     end
 endf
 
+" s:action__set_cwd() -> 0
+" Set current working directory
+func! s:action__set_cwd()
+    let node = s:selected_node()
+    let cwd = isdirectory(node.path) ? node.path : node.parent.path
+    exec "cd" cwd
+    pwd
+endf
+
 " s:action__set_bookmarks() -> 0
 " Add bookmark for the selected file or directory.
 " Requires the 'bookmarks' plugin.
@@ -609,7 +627,27 @@ func! s:action__set_bookmark()
     if !empty(node)
         let mark = input("Bookmark: ")
         call bookmarks#set(mark, node.path)
+        call b:explorer.tree.render()
+        call s:goto(node.path)
     end
+endf
+
+" s:action__del_bookmark() -> 0
+" Delete bookmark for the selected file or directory.
+" Requires the 'bookmarks' plugin.
+func! s:action__del_bookmark()
+    if !get(g:, 'loaded_bookmarks')
+        return s:err("Bookmarks not available")
+    end
+    let node = s:selected_node()
+    echo bookmarks#marks()
+    for [mark, path] in items(bookmarks#marks())
+        if path == node.path
+            call bookmarks#unset(mark)
+            call b:explorer.tree.render()
+            call s:goto(node.path)
+        end
+    endfor
 endf
 
 " s:action__close() -> 0
@@ -639,7 +677,7 @@ endf
 " s:path_dirname({path:string}) -> string
 " Return the directory name of {path}.
 func! s:path_dirname(path)
-    let dirname = fnamemodify(a:path, ':h')
+    let dirname = fnamemodify(substitute(a:path, '\v/+$', '', ''), ':h')
     return dirname != '.' ? dirname : ''
 endf
 

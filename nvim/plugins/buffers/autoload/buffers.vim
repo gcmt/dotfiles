@@ -197,7 +197,7 @@ func! s:render(winid, bufnr, buffers)
 
     call setbufvar(a:bufnr, "&modifiable", 1)
     sil! call deletebufline(a:bufnr, 1, "$")
-    call clearmatches()
+    call clearmatches(a:winid)
 
     let tails = {}
     for bufnr in a:buffers

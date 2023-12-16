@@ -232,7 +232,7 @@ func! s:node.render() abort
     call setbufvar(b:explorer.bufnr, "&modifiable", 1)
     call setbufvar(b:explorer.bufnr, "&list", 0)
     sil! call deletebufline(b:explorer.bufnr, 1, "$")
-    call clearmatches()
+    call clearmatches(bufwinid(b:explorer.bufnr))
 
     exec 'syn match' g:explorer_hl_pipe '/─/'
     exec 'syn match' g:explorer_hl_pipe '/├/'

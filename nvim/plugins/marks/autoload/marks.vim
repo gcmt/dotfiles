@@ -201,8 +201,7 @@ func s:render(winid, bufnr, marks) abort
 
     let pipes = ['├', '└', '─']
 
-    call clearmatches()
-
+    call clearmatches(a:winid)
     call setbufvar(a:bufnr, "&modifiable", 1)
     sil! call deletebufline(a:bufnr, 1, "$")
 

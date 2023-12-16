@@ -186,7 +186,7 @@ func! s:search.render(bufnr, ...) abort
     call setbufvar(a:bufnr, "&modifiable", 1)
     call setbufvar(a:bufnr, "&list", 0)
     sil! call deletebufline(a:bufnr, 1, "$")
-    call clearmatches()
+    call clearmatches(winid)
 
     let b:search.table = {}
     let width = len(self.matches[-1][0])

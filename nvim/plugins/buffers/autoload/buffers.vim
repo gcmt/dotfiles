@@ -20,9 +20,11 @@ func! buffers#view(all) abort
     if g:buffers_popup
 
         let lines = &lines - 2
+        let columns = &columns - 2
+
         let bufnr = nvim_create_buf(0, 0)
-        let percent = &columns < 120 ? 80 : 60
-        let width = float2nr(&columns * percent / 100)
+        let percent = columns < 120 ? 80 : 60
+        let width = float2nr(columns * percent / 100)
         let max = float2nr(lines * g:buffers_max_height / 100)
         let height = min([len(buffers), max])
 
@@ -30,8 +32,8 @@ func! buffers#view(all) abort
             \ 'relative': 'editor',
             \ 'width': width,
             \ 'height': height,
-            \ 'col': (&columns/2) - (width/2),
-            \ 'row': (lines/2) - (height/2),
+            \ 'col': (columns/2) - (width/2),
+            \ 'row': float2nr((lines/2) - (height/2)) - 1,
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ 'border': g:buffers_popup_borders,

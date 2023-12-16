@@ -48,7 +48,8 @@ func bookmarks#set(mark, path) abort
     end
     let s:marks[a:path] = a:mark
     call s:write_marks()
-    call s:echo(printf("file \"%s\" marked with [%s]", s:prettify_path(a:path), mark))
+    let what = isdirectory(a:path) ? 'directory' : 'file'
+    call s:echo(printf("%s \"%s\" marked with [%s]", what, s:prettify_path(a:path), mark))
 endf
 
 " TODO: check for multiple matches

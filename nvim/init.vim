@@ -196,6 +196,10 @@
         return name
     endf
 
+    func! STLGotoAltBuffer(minwid, clicks, btn, mod)
+        call s:goto_alternate()
+    endf
+
     func! _stl_alternate(win)
         if win_getid() != a:win.winid
             return ''
@@ -204,16 +208,16 @@
         let bname = bufname(bnum)
         let alt = expand('#:t')
         if !empty(alt) && expand('#:p') != fnamemodify(bname, ':p') && a:win.width > 80
-            return '%#StatusLineDim#[' . alt . ']%*'
+            return '%#StatusLineDim#%@STLGotoAltBuffer@[' . alt . ']%X%*'
         end
         return ''
     endf
 
-    func! OpenQuickfix(minwid, clicks, btn, mod)
+    func! STLOpenQuickfix(minwid, clicks, btn, mod)
         copen
     endf
 
-    func! OpenLoclist(minwid, clicks, btn, mod)
+    func! CTLOpenLoclist(minwid, clicks, btn, mod)
         lopen
     endf
 
@@ -223,10 +227,10 @@
         end
         let flags = []
         if !empty(getqflist())
-            call add(flags, '%@OpenQuickfix@[QF]%X')
+            call add(flags, '%@STLOpenQuickfix@[QF]%X')
         end
         if !empty(getloclist(a:win.winid))
-            call add(flags, '%@OpenLoclist@[LOC]%X')
+            call add(flags, '%@STLOpenLoclist@[LOC]%X')
         end
         let ale = _stl_ale(a:win)
         return join(flags, ' ') . (empty(ale) ? '' : ' ' . ale)

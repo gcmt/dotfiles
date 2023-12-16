@@ -22,6 +22,10 @@ let s:options = #{
     \ mappings_unset: ['dd'],
     \ mappings_close: ['q', '<esc>'],
     \ mappings_toggle_global: ['a'],
+    \ hl_mark: 'Magenta',
+    \ hl_file: 'Fg',
+    \ hl_dir: 'Blue',
+    \ hl_dim: 'Comment',
 \ }
 
 for [s:option, s:default] in items(s:options)
@@ -32,17 +36,3 @@ command! -nargs=1 Jump call bookmarks#jump(<q-args>)
 command! -bang -nargs=0 Bookmarks call bookmarks#view(!empty(<q-bang>))
 command! -nargs=1 MarkFile call bookmarks#set(<q-args>, expand("%:p"))
 command! -nargs=1 MarkDir call bookmarks#set(<q-args>, expand("%:p:h"))
-
-func s:setup_colors()
-    hi default link BookmarksMark Magenta
-    hi default link BookmarksFile Fg
-    hi default link BookmarksDir Blue
-    hi default link BookmarksDim Comment
-endf
-
-call s:setup_colors()
-
-aug _bookmarks
-    au BufWritePost */nvim/init.vim call <sid>setup_colors()
-    au Colorscheme * call <sid>setup_colors()
-aug END

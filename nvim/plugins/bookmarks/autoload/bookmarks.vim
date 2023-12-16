@@ -176,12 +176,14 @@ endf
 
 func s:render(bufnr, all = 0) abort
 
-    syntax clear
-    setl modifiable
+    let winid = bufwinid(a:bufnr)
     let pos_save = getpos('.')
-    sil %delete _
 
-    syn match BookmarksDim /\v(\[|\])/
+    call clearmatches(winid)
+    call setbufvar(a:bufnr, "&modifiable", 1)
+    sil! call deletebufline(a:bufnr, 1, "$")
+
+    call matchadd(g:bookmarks_hl_dim, '\v(\[|\])', -1, -1, #{window: winid})
 
     let b:show_all = get(b:, 'show_all', a:all)
     let cwd = b:show_all ? '' : getcwd()
@@ -193,16 +195,19 @@ func s:render(bufnr, all = 0) abort
 
         let b:bookmarks.table[i] = [path, mark]
 
-        exec 'syn match BookmarksMark /\v%'.i.'l%'.(2).'c./'
-        let line = '['.mark.'] '
+        let pattern = '\v%' . i . 'l%' . (2) . 'c.'
+        call matchadd(g:bookmarks_hl_mark, pattern, -1, -1, #{window: winid})
+        let line = '[' . mark . '] '
 
         let tail = fnamemodify(path, ':t')
-        let group = isdirectory(path) ? 'BookmarksDir' : 'BookmarksFile'
-        exec 'syn match '.group.' /\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(tail)+2).'c/'
+        let group = isdirectory(path) ? g:bookmarks_hl_dir : g:bookmarks_hl_file
+        let pattern = '\v%' . i . 'l%>' . (len(line)) . 'c.*%<' . (len(line)+len(tail)+2) . 'c'
+        call matchadd(group, pattern, -1, -1, #{window: winid})
         let line .= tail
 
         let path = s:prettify_path(path)
-        exec 'syn match BookmarksDim /\v%'.i.'l%>'.(len(line)).'c.*/'
+        let pattern = '\v%' . i . 'l%>' . (len(line)) . 'c.*'
+        call matchadd(g:bookmarks_hl_dim, pattern, -1, -1, #{window: winid})
         let line .= ' ' . path
 
         call setbufline(a:bufnr, i, line)
@@ -216,7 +221,7 @@ func s:render(bufnr, all = 0) abort
 
     call s:resize_window(line('$'))
     call setpos('.', pos_save)
-    setl nomodifiable
+    call setbufvar(a:bufnr, "&modifiable", 0)
 
 endf
 

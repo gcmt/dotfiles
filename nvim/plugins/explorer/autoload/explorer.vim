@@ -330,7 +330,10 @@ func! s:goto(path, ...)
                         \ len(node.content) - (wininfo['botline'] - line)
                     \ ])
                 \ ])
-                exec "norm!" offset . "\<c-e>"
+                if offset > 0
+                    " an offest of 0 still moves the cursor 1 line up
+                    exec "norm!" offset . "\<c-e>"
+                end
             end
             return line
         end

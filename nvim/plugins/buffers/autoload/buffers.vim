@@ -302,6 +302,12 @@ func! s:buf_edit(ctx) abort
         return 1
     end
 
+    let fullpath = fnamemodify(bufname(target), ':p')
+    if isdirectory(fullpath)
+        exec substitute(g:buffers_fm_command, '%f', fullpath, 'g')
+        return 1
+    end
+
     let winid = win_getid(a:ctx.curr_winnr)
     let is_terminal = getbufvar(target, '&bt') == 'terminal'
 
@@ -309,9 +315,9 @@ func! s:buf_edit(ctx) abort
     sil exec get(commands, a:ctx.action, is_terminal ? 'split' : '')
 
     if is_terminal || empty(bufname(target))
-        sil exec 'buffer' target
+        exec 'buffer' target
     else
-        sil exec 'edit' fnameescape(bufname(target))
+        exec 'edit' fnameescape(bufname(target))
     end
 
     return 1

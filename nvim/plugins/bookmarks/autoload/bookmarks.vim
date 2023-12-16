@@ -53,7 +53,7 @@ func bookmarks#set(mark, path) abort
 endf
 
 " TODO: check for multiple matches
-func bookmarks#jump(mark, ...) abort
+func bookmarks#jump(mark, cmd = 'edit') abort
     let mark = type(a:mark) == v:t_number ? nr2char(a:mark) : a:mark
     if mark == "\<esc>"
         return
@@ -61,22 +61,17 @@ func bookmarks#jump(mark, ...) abort
     if len(mark) != 1 || g:bookmarks_marks !~# mark
         return s:err("Invalid mark")
     end
-    let path = ''
-    for [p, m] in items(bookmarks#marks(getcwd()))
-        if m == a:mark
-            let path = p
-            break
+    for [path_, mark_] in items(bookmarks#marks(getcwd()))
+        if mark == mark_
+            if isdirectory(path_)
+                exec substitute(g:bookmarks_explorer_cmd, '%f', fnameescape(path_), '')
+            else
+                exec a:cmd fnameescape(path_)
+            end
+            return
         end
     endfor
-    if empty(path)
-        return s:err("Mark not set")
-    end
-    if isdirectory(path)
-        exec substitute(g:bookmarks_explorer_cmd, '%f', fnameescape(path), '')
-    else
-        let cmd = a:0 ? a:1 : 'edit'
-        exec cmd fnameescape(s:prettify_path(path))
-    end
+    return s:err("Mark not set")
 endf
 
 func bookmarks#view(all = 0) abort

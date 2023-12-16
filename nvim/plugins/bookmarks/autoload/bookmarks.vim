@@ -229,7 +229,7 @@ func s:action_jump(cmd) abort
         if isdirectory(path)
             exec substitute(g:bookmarks_explorer_cmd, '%f', fnameescape(path), '')
         else
-            exec a:cmd fnameescape(s:prettify_path(path))
+            exec a:cmd fnameescape(path)
         end
     end
 endf

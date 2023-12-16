@@ -205,10 +205,8 @@ func! s:render(winid, bufnr, buffers)
     let fmt = g:buffers_line_format
 
     let marks = {}
-    if g:buffers_show_bookmarks && exists("*bookmarks#marks")
-        for [letter, path] in items(bookmarks#marks())
-            let marks[path] = letter
-        endfor
+    if g:buffers_show_bookmarks && get(g:, 'loaded_bookmarks', 0)
+        let marks = bookmarks#marks()
     end
 
     let table = {}

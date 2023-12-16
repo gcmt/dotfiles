@@ -1,17 +1,42 @@
 
 let s:marks = {}
 let s:bufname = '__bookmarks__'
+let s:bookmarks_file = expand(g:bookmarks_file)
 
-func bookmarks#marks()
-    return s:marks
+func! s:load_marks()
+    if !empty(s:bookmarks_file) && filereadable(s:bookmarks_file)
+        let s:marks = json_decode(readfile(s:bookmarks_file))
+    end
 endf
 
-func bookmarks#unset(mark)
-    call remove(s:marks, a:mark)
+func! s:write_marks()
+    if !empty(s:bookmarks_file)
+        call writefile([json_encode(s:marks)], s:bookmarks_file)
+    end
 endf
 
-func bookmarks#set(mark, target) abort
-    if type(a:target) != v:t_string
+call mkdir(fnamemodify(s:bookmarks_file, ':p:h'), 'p')
+call s:load_marks()
+
+func bookmarks#marks(cwd = '')
+    if empty(a:cwd)
+        return copy(s:marks)
+    else
+        " Return only marks for files inside the current cwd
+        return filter(copy(s:marks), {path -> path =~# '\V\^' . a:cwd . '\(/\|\$\)'  })
+    end
+endf
+
+func bookmarks#unset(path)
+    try
+        call remove(s:marks, a:path)
+        call s:write_marks()
+    catch /E716.*/
+    endtry
+endf
+
+func bookmarks#set(mark, path) abort
+    if type(a:path) != v:t_string
         return s:err("Invalid target")
     end
     let mark = type(a:mark) == v:t_number ? nr2char(a:mark) : a:mark
@@ -21,17 +46,13 @@ func bookmarks#set(mark, target) abort
     if len(mark) != 1 || g:bookmarks_marks !~# mark
         return s:err("Invalid mark")
     end
-    if index(values(s:marks), a:target) > -1
-        " dont allow multiple marks for the same target
-        let i = index(values(s:marks), a:target)
-        call remove(s:marks, keys(s:marks)[i])
-    end
-    let s:marks[mark] = a:target
-    call s:echo(printf("file \"%s\" marked with [%s]", s:prettify_path(a:target), mark))
+    let s:marks[a:path] = a:mark
+    call s:write_marks()
+    call s:echo(printf("file \"%s\" marked with [%s]", s:prettify_path(a:path), mark))
 endf
 
+" TODO: check for multiple matches
 func bookmarks#jump(mark, ...) abort
-    let cmd = a:0 ? a:1 : 'edit'
     let mark = type(a:mark) == v:t_number ? nr2char(a:mark) : a:mark
     if mark == "\<esc>"
         return
@@ -39,14 +60,21 @@ func bookmarks#jump(mark, ...) abort
     if len(mark) != 1 || g:bookmarks_marks !~# mark
         return s:err("Invalid mark")
     end
-    let target = get(s:marks, mark, '')
-    if empty(target)
+    let path = ''
+    for [p, m] in items(bookmarks#marks(getcwd()))
+        if m == a:mark
+            let path = p
+            break
+        end
+    endfor
+    if empty(path)
         return s:err("Mark not set")
     end
-    if isdirectory(target)
-        exec g:bookmarks_explorer_cmd fnameescape(target)
+    if isdirectory(path)
+        exec substitute(g:bookmarks_explorer_cmd, '%f', fnameescape(path), '')
     else
-        exec 'edit' fnameescape(s:prettify_path(target))
+        let cmd = a:0 ? a:1 : 'edit'
+        exec cmd fnameescape(s:prettify_path(path))
     end
 endf
 
@@ -56,11 +84,9 @@ func bookmarks#view() abort
         return
     end
 
-    if empty(s:marks)
+    if empty(bookmarks#marks(getcwd()))
         return s:err("No bookmarks found")
     end
-
-    let curr_buf = fnamemodify(bufname('%'), ':p')
 
     if g:bookmarks_popup
 
@@ -119,12 +145,14 @@ func bookmarks#view() abort
     call setbufvar(bufnr, '&buflisted', 0)
     call setbufvar(bufnr, 'bookmarks', {'table': {}})
 
-    call bookmarks#render()
+    call s:setup_mappings()
+    call s:render(bufnr)
     call cursor(1, 2)
 
     " position the cursor on the current file
-    for [linenr, mark] in items(b:bookmarks.table)
-        if curr_buf == get(s:marks, mark, '')
+    let current = fnamemodify(bufname('%'), ':p')
+    for [linenr, item] in items(b:bookmarks.table)
+        if current == item[0]
             call cursor(linenr, 2)
         end
     endfor
@@ -134,11 +162,7 @@ func bookmarks#view() abort
 
 endf
 
-func bookmarks#render()
-
-    if &filetype != 'bookmarks'
-        throw "Bookmarks: not allowed here"
-    end
+func s:render(bufnr)
 
     syntax clear
     setl modifiable
@@ -149,23 +173,23 @@ func bookmarks#render()
 
     let i = 1
     let b:bookmarks.table = {}
-    for [mark, target] in sort(items(s:marks))
+    for [path, mark] in sort(items(bookmarks#marks(getcwd())), {v -> v[1]})
 
-        let b:bookmarks.table[i] = mark
+        let b:bookmarks.table[i] = [path, mark]
 
         exec 'syn match BookmarksMark /\v%'.i.'l%'.(2).'c./'
         let line = '['.mark.'] '
 
-        let tail = fnamemodify(target, ':t')
-        let group = isdirectory(target) ? 'BookmarksDir' : 'BookmarksFile'
+        let tail = fnamemodify(path, ':t')
+        let group = isdirectory(path) ? 'BookmarksDir' : 'BookmarksFile'
         exec 'syn match '.group.' /\v%'.i.'l%>'.(len(line)).'c.*%<'.(len(line)+len(tail)+2).'c/'
         let line .= tail
 
-        let target = s:prettify_path(target)
+        let path = s:prettify_path(path)
         exec 'syn match BookmarksDim /\v%'.i.'l%>'.(len(line)).'c.*/'
-        let line .= ' ' . target
+        let line .= ' ' . path
 
-        call setline(i, line)
+        call setbufline(a:bufnr, i, line)
         let i += 1
 
     endfor
@@ -174,6 +198,39 @@ func bookmarks#render()
     call setpos('.', pos_save)
     setl nomodifiable
 
+endf
+
+func! s:jump(cmd) abort
+    let win = winnr()
+    let item = get(b:bookmarks.table, line('.'), [])
+    if !empty(item)
+        wincmd p
+        exec win.'wincmd c'
+        call bookmarks#jump(item[1], a:cmd)
+    end
+endf
+
+func! s:unset()
+    let item = get(b:bookmarks.table, line('.'), [])
+    if !empty(item)
+        call bookmarks#unset(item[0])
+        call s:render(bufnr('%'))
+    end
+    if empty(bookmarks#marks(getcwd()))
+        close
+    end
+endf
+
+func! s:setup_mappings()
+    for key in g:bookmarks_mappings_jump
+        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>jump('edit')<cr>zz"
+    endfor
+    for key in g:bookmarks_mappings_unset
+        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>unset()<cr>"
+    endfor
+    for key in g:bookmarks_mappings_close
+        exec "nnoremap <silent> <nowait> <buffer>" key ":close<cr>"
+    endfor
 endf
 
 func s:resize_window(entries_num)
@@ -187,12 +244,9 @@ func s:prettify_path(path)
 endf
 
 func s:err(msg)
-    norm! "\<c-l>"
-    echohl WarningMsg | echo a:msg | echohl None
+    redraw | echohl WarningMsg | echo a:msg | echohl None
 endf
 
 func s:echo(msg)
-    norm! "\<c-l>"
-    echo a:msg
+    redraw | echo a:msg
 endf
-

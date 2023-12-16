@@ -223,10 +223,8 @@ endf
 func! s:node.render() abort
 
     let marks = {}
-    if exists('*bookmarks#marks')
-        for [mark, path] in items(bookmarks#marks())
-            let marks[path] = mark
-        endfor
+    if get(g:, 'loaded_bookmarks', 0)
+        let marks = bookmarks#marks()
     end
 
     let winsave = winsaveview()
@@ -638,12 +636,12 @@ endf
 " Add bookmark for the selected file or directory.
 " Requires the 'bookmarks' plugin.
 func! s:action__set_bookmark()
-    if !get(g:, 'loaded_bookmarks')
+    if !get(g:, 'loaded_bookmarks', 0)
         return s:err("Bookmarks not available")
     end
     let node = s:selected_node()
     if !empty(node)
-        let mark = input("Bookmark: ")
+        let mark = input("Mark: ")
         call bookmarks#set(mark, node.path)
         call b:explorer.tree.render()
         call s:goto(node.path)
@@ -654,18 +652,15 @@ endf
 " Delete bookmark for the selected file or directory.
 " Requires the 'bookmarks' plugin.
 func! s:action__del_bookmark()
-    if !get(g:, 'loaded_bookmarks')
+    if !get(g:, 'loaded_bookmarks', 0)
         return s:err("Bookmarks not available")
     end
     let node = s:selected_node()
-    echo bookmarks#marks()
-    for [mark, path] in items(bookmarks#marks())
-        if path == node.path
-            call bookmarks#unset(mark)
-            call b:explorer.tree.render()
-            call s:goto(node.path)
-        end
-    endfor
+    if !empty(node)
+        call bookmarks#unset(node.path)
+        call b:explorer.tree.render()
+        call s:goto(node.path)
+    end
 endf
 
 " s:action__close() -> 0

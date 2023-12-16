@@ -16,7 +16,7 @@ let s:options = #{
     \ popup: 1,
     \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
     \ width_popup: "80%",
-    \ height_popup: "60%",
+    \ height_popup: "80%",
     \ height_window: "50%",
     \ hidden_files: 1,
     \ filters: [],

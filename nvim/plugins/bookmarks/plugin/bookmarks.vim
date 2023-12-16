@@ -11,12 +11,16 @@ end
 let g:loaded_bookmarks = 1
 
 let s:options = #{
+    \ file: "$XDG_DATA_HOME/nvim/bookmarks.json",
     \ popup: 1,
     \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
     \ cursorline: 1,
     \ max_height: 50,
     \ marks: 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM',
-    \ explorer_cmd: executable('ranger') ? 'Ranger!' : 'Explorer'
+    \ explorer_cmd: 'Explorer %f',
+    \ mappings_jump: ['l', '<enter>'],
+    \ mappings_unset: ['dd'],
+    \ mappings_close: ['q', '<esc>'],
 \ }
 
 for [s:option, s:default] in items(s:options)

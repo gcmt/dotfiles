@@ -18,6 +18,9 @@ func! explorer#open(target, bang) abort
 
     call tree.explore()
     call tree.render()
+    call cursor(1, 1)
+    call s:goto_first_child(tree)
+
 endf
 
 " s.open_window() -> number
@@ -226,6 +229,7 @@ func! s:node.render() abort
         endfor
     end
 
+    let winsave = winsaveview()
     let winid = bufwinid(b:explorer.bufnr)
     call setbufvar(b:explorer.bufnr, "&modifiable", 1)
     call setbufvar(b:explorer.bufnr, "&list", 0)
@@ -294,6 +298,7 @@ func! s:node.render() abort
 
     call setwinvar(0, "&stl", ' ' . title)
     call setbufvar(b:explorer.bufnr, "&modifiable", 0)
+    call winrestview(winsave)
 endf
 
 " s:selected_node() -> dict
@@ -306,19 +311,28 @@ endf
 " Move the cursor to the line with the given {path}.
 " Unless {strict} is given and it's 1, when {path} is not found in the current
 " map, the process is repeated recursively for all the parent directories.
+" Returns the line number the cursor has been moved to
 func! s:goto(path, ...)
     if a:path == '/'
         return 0
     end
     for [line, node] in items(b:explorer.map)
         if a:path == node.path
-            exec line
-            norm! 0
-            let botline = getwininfo(bufwinid(b:explorer.bufnr))[0]['botline']
-            if line + len(node.content) > botline
-                exec "norm!" (line + len(node.content) - botline) . "\<c-e>"
+            call cursor(line, 1)
+            redraw  " without a redraw, getwininfo does not return updated data
+            let wininfo = getwininfo(bufwinid(bufnr('%')))[0]
+            if line + len(node.content) > wininfo['botline']
+                " move the cursor up to make space for directory content
+                let offset = min([
+                    \ line - wininfo['topline'],
+                    \ max([
+                        \ line - float2nr((wininfo['botline'] + wininfo['topline']) / 2),
+                        \ len(node.content) - (wininfo['botline'] - line)
+                    \ ])
+                \ ])
+                exec "norm!" offset . "\<c-e>"
             end
-            return 1
+            return line
         end
     endfo
     let strict = a:0 > 0 && a:1
@@ -395,6 +409,7 @@ func! s:action__set_root() abort
     let node.parent = {}
     let b:explorer.tree = node
     call b:explorer.tree.render()
+    call cursor(1, 1)
     call s:goto_first_child(node)
 endf
 

@@ -1,3 +1,4 @@
+" TODO: add ability to mark files
 
 let s:bufname = '__buffers__'
 
@@ -414,7 +415,10 @@ func! s:get_buffers(all, sorting = 'numerical')
     if a:sorting == 'alphabetical'
         call sort(buffers, {a, b -> a[1] == b[1] ? 0 : (a[1] > b[1] ? 1 : -1)})
     elseif a:sorting == 'viewtime'
-        let t = g:buffers_time_table
+        let t = g:buffers_viewtime_table
+        call sort(buffers, {a, b -> get(t, b[2], 0) - get(t, a[2], 0)})
+    elseif a:sorting == 'modtime'
+        let t = g:buffers_modtime_table
         call sort(buffers, {a, b -> get(t, b[2], 0) - get(t, a[2], 0)})
     end
     return map(buffers, {_, v -> v[0]})

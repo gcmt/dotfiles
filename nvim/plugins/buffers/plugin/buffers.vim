@@ -12,7 +12,7 @@ let g:buffers_loaded = 1
 
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
-" sorting: [alphabetical | numerical | viewtime]
+" sorting: [alphabetical | numerical | viewtime | modtime]
 
 let s:options = #{
     \ popup: 1,
@@ -60,16 +60,31 @@ endfo
 func s:update_time_table()
     if empty(&buftype)
         let path = fnamemodify(bufname('%'), ':p')
-        let g:buffers_time_table[path] = strftime('%s')
+        let g:buffers_viewtime_table[path] = strftime('%s')
     end
 endf
 
-" maps paths to their last view time
-let g:buffers_time_table = {}
+func s:update_mod_table()
+    if empty(&buftype)
+        let path = fnamemodify(bufname('%'), ':p')
+        let g:buffers_modtime_table[path] = strftime('%s')
+    end
+endf
+
+" maps paths to their last view/mod time
+let g:buffers_viewtime_table = {}
+let g:buffers_modtime_table = {}
 
 if g:buffers_sorting == 'viewtime'
     aug _buffers
         au!
         au BufWinEnter * call <sid>update_time_table()
+    aug END
+end
+
+if g:buffers_sorting == 'modtime'
+    aug _buffers
+        au!
+        au BufModifiedSet * call <sid>update_mod_table()
     aug END
 end

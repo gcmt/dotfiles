@@ -132,7 +132,11 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('NonText', s:fg_super_dim, '', 'none', '')
     cal s:h('SpecialKey', s:fg_super_dim, '', 'none', '')
     cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
-    cal s:h('Search', s:bg, s:hl, '', '')
+    if &bg == 'dark'
+        cal s:h('Search', s:bg, s:hl, '', '')
+    else
+        cal s:h('Search', s:fg, s:hl, '', '')
+    end
     cal s:h('SearchUnderline', s:red, '', 'underline', 'none')
     cal s:h('IncSearch', s:bg, s:red, 'none', '')
     cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')

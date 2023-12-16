@@ -672,11 +672,19 @@ endf
 " s:action__help() -> 0
 " Show very basic help.
 func! s:action__help()
-    let help = []
-    for [mappings, helpmsg] in __explorer_mappings_help()
-        call append(help, printf("%20s %s", join(mappings, ', '), helpmsg)))
+    let help = __explorer_mappings_help()
+    let out = []
+    let width = 1
+    for [mappings, _] in help
+        let str = join(mappings, ', ')
+        if len(str) > width
+            let width = len(str)
+        end
     endfor
-    echo join(help, "\n")
+    for [mappings, helpmsg] in help
+        call add(out, printf("%-".width."s   %s", join(mappings, ', '), helpmsg))
+    endfor
+    echo join(out, "\n")
 endf
 
 " s:path_join([{path:string}, ...]) -> string

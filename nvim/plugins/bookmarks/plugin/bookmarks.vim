@@ -35,5 +35,6 @@ endfor
 
 command! -nargs=1 Jump call bookmarks#jump(<q-args>)
 command! -bang -nargs=0 Bookmarks call bookmarks#view(!empty(<q-bang>))
+command! -bang -nargs=0 QuickJump call bookmarks#quickjump(!empty(<q-bang>))
 command! -nargs=1 Mark call bookmarks#set(<q-args>, expand("%:p"))
 command! -nargs=1 MarkDir call bookmarks#set(<q-args>, expand("%:p:h"))

@@ -1,5 +1,5 @@
 
-let s:marks = {}
+let s:marks = {} " maps paths to marks
 let s:bufname = '__bookmarks__'
 
 func! s:load_marks()
@@ -63,10 +63,10 @@ endf
 " TODO: check for multiple matches
 func bookmarks#jump(mark, cmd = 'edit') abort
     let mark = type(a:mark) == v:t_number ? nr2char(a:mark) : a:mark
-    if mark == "\<esc>"
+    if mark == "\<esc>" || empty(a:mark)
         return
     end
-    if len(mark) != 1 || g:bookmarks_marks !~# mark
+    if !s:is_valid(mark)
         return s:err("Invalid mark")
     end
     for [path_, mark_] in items(bookmarks#marks(getcwd()))
@@ -76,28 +76,39 @@ func bookmarks#jump(mark, cmd = 'edit') abort
             else
                 exec a:cmd fnameescape(path_)
             end
-            return
+            return 1
         end
     endfor
-    return s:err("Mark not set")
+    call s:err("Mark not set")
+    return 0
 endf
 
-func bookmarks#view(all = 0) abort
+func bookmarks#quickjump(all = 0) abort
+    call bookmarks#view(a:all, 0)
+endf
+
+func bookmarks#view(all = 0, interactive = 1) abort
+
+    let current = fnamemodify(bufname('%'), ':p')
 
     if bufwinnr(s:bufname) != -1
         return
     end
 
-    let cwd = a:all ? '' : getcwd()
-    if empty(bookmarks#marks(cwd))
+    let marks = bookmarks#marks(a:all ? '' : getcwd())
+    if empty(marks)
         return s:err("No bookmarks found")
     end
 
     if g:bookmarks_popup
 
-        let bufnr = nvim_create_buf(0, 0)
-        let ui = nvim_list_uis()[0]
+        let bufnr = bufnr(s:bufname)
+        if bufnr == -1
+            let bufnr = nvim_create_buf(0, 0)
+            call nvim_buf_set_name(bufnr, s:bufname)
+        end
 
+        let ui = nvim_list_uis()[0]
         let percent = ui.width < 120 ? 80 : 60
         let width = float2nr(ui.width * percent / 100)
         let height = 10
@@ -150,20 +161,50 @@ func bookmarks#view(all = 0) abort
     call setbufvar(bufnr, '&buflisted', 0)
     call setbufvar(bufnr, 'bookmarks', {'table': {}})
 
-    call s:setup_mappings()
     call s:render(bufnr, a:all)
     call cursor(1, 2)
 
     " position the cursor on the current file
-    let current = fnamemodify(bufname('%'), ':p')
     for [linenr, item] in items(b:bookmarks.table)
         if current == item[0]
             call cursor(linenr, 2)
         end
     endfor
 
-    " wipe any message
-    echo
+    redraw
+
+    if a:interactive
+        call s:setup_mappings()
+    else
+        echo "Mark "
+        while 1
+            redraw
+            try
+                let mark = getcharstr()
+            catch /^Vim:Interrupt$/
+                " catches ctrl-c
+                call s:action_close()
+                break
+            endtry
+            if mark == "\<esc>" || empty(mark)
+                call s:action_close()
+                break
+            end
+            if !s:is_valid(mark)
+                call s:err("Invalid mark")
+                continue
+            end
+            if index(values(marks), mark) == -1
+                call s:err("Unknown mark")
+                continue
+            end
+            call s:action_close()
+            call bookmarks#jump(mark)
+            break
+        endw
+    end
+
+    norm! "\<c-l>"
 
 endf
 
@@ -178,7 +219,7 @@ func s:setup_mappings() abort
         exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_change()<cr>"
     endfor
     for key in g:bookmarks_mappings_close
-        exec "nnoremap <silent> <nowait> <buffer>" key ":close<cr>"
+        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_close()<cr>"
     endfor
     for key in g:bookmarks_mappings_toggle_global
         exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_toggle_global_bookmarks()<cr>"
@@ -252,14 +293,15 @@ endf
 func s:action_jump(cmd) abort
     let win = winnr()
     let selected = get(b:bookmarks.table, line('.'), [])
-    if !empty(selected)
-        close
-        let path = selected[0]
-        if isdirectory(path)
-            exec substitute(g:bookmarks_explorer_cmd, '%f', fnameescape(path), '')
-        else
-            exec a:cmd fnameescape(path)
-        end
+    if empty(selected)
+        return
+    end
+    call s:action_close()
+    let path = selected[0]
+    if isdirectory(path)
+        exec substitute(g:bookmarks_explorer_cmd, '%f', fnameescape(path), '')
+    else
+        exec a:cmd fnameescape(path)
     end
 endf
 
@@ -285,6 +327,10 @@ func s:action_change() abort
     end
     call bookmarks#set(mark, selected[0])
     call s:render(bufnr('%'))
+endf
+
+func s:action_close() abort
+    call win_execute(bufwinid(s:bufname), 'close', 1)
 endf
 
 func s:action_toggle_global_bookmarks() abort

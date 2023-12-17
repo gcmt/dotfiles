@@ -278,11 +278,12 @@ func! s:jump()
     if empty(entry)
         return
     end
+    let cmd = b:search.s.options.post_jump_cmd
     close
     norm! m'
     exec bufnr 'buffer'
     call cursor(entry)
-    norm! zz
+    exec cmd
 endf
 
 " s:show_context() -> 0

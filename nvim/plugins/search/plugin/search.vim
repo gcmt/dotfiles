@@ -34,6 +34,7 @@ let s:options = #{
     \ linenr_hl: "LineNr",
     \ transform_cb: v:null,
     \ filter_cb: v:null,
+    \ post_jump_cmd: 'norm! zz',
     \ mappings_jump: ['l', '<cr>', '<2-LeftMouse>'],
     \ mappings_close: ['q', '<esc>'],
     \ mappings_context: ['c'],

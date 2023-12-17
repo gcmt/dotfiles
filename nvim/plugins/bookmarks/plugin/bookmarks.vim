@@ -16,7 +16,7 @@ let s:options = #{
     \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
     \ cursorline: 1,
     \ max_height: 50,
-    \ marks: 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890',
+    \ marks: "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^&*()_+-=[]{};:\",./<>?\|`~'",
     \ explorer_cmd: 'Explorer %f',
     \ mappings_jump: ['l', '<enter>'],
     \ mappings_unset: ['dd'],

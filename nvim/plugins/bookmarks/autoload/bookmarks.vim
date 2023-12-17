@@ -20,7 +20,7 @@ call mkdir(fnamemodify(expand(g:bookmarks_file), ':p:h'), 'p')
 call s:load_marks()
 
 func s:is_valid(mark) abort
-    if len(a:mark) != 1 || g:bookmarks_marks !~# a:mark
+    if index(split(g:bookmarks_marks, '\zs'), a:mark) == -1
         return 0
     end
     return 1

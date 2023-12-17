@@ -48,7 +48,7 @@ func bookmarks#set(mark, path) abort
         return s:err("Invalid target")
     end
     let mark = type(a:mark) == v:t_number ? nr2char(a:mark) : a:mark
-    if mark == "\<esc>"
+    if mark == "\<esc>" || empty(mark)
         return
     end
     if !s:is_valid(mark)
@@ -63,7 +63,7 @@ endf
 " TODO: check for multiple matches
 func bookmarks#jump(mark, cmd = 'edit') abort
     let mark = type(a:mark) == v:t_number ? nr2char(a:mark) : a:mark
-    if mark == "\<esc>" || empty(a:mark)
+    if mark == "\<esc>" || empty(mark)
         return
     end
     if !s:is_valid(mark)

@@ -47,9 +47,13 @@ func marks#view() abort
 
     if g:marks_popup
 
-        let bufnr = nvim_create_buf(0, 0)
-        let ui = nvim_list_uis()[0]
+        let bufnr = bufnr(s:bufname)
+        if bufnr == -1
+            let bufnr = nvim_create_buf(0, 0)
+            call nvim_buf_set_name(bufnr, s:bufname)
+        end
 
+        let ui = nvim_list_uis()[0]
         let percent = ui.width < 120 ? 80 : 60
         let width = float2nr(ui.width * percent / 100)
         let height = 10

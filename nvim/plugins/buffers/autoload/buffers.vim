@@ -20,10 +20,15 @@ func! buffers#view(all) abort
 
     if g:buffers_popup
 
+        let bufnr = bufnr(s:bufname)
+        if bufnr == -1
+            let bufnr = nvim_create_buf(0, 0)
+            call nvim_buf_set_name(bufnr, s:bufname)
+        end
+
         let lines = &lines - 2
         let columns = &columns - 2
 
-        let bufnr = nvim_create_buf(0, 0)
         let percent = columns < 120 ? 80 : 60
         let width = float2nr(columns * percent / 100)
         let max = float2nr(lines * g:buffers_max_height / 100)

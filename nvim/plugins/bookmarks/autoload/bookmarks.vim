@@ -199,9 +199,17 @@ func s:render(bufnr, all = 0) abort
     let b:show_all = get(b:, 'show_all', a:all)
     let cwd = b:show_all ? '' : getcwd()
 
+    let marks = sort(map(items(bookmarks#marks(cwd)), {_, v -> [v[1], v[0]]}), 'l')
+
+    " create counter of files that share the same name
+    let fnames = {}
+    for [_, path] in marks
+        let fname = fnamemodify(path, ':t')
+        let fnames[fname] = get(fnames, fname, 0) + 1
+    endfo
+
     let i = 1
     let b:bookmarks.table = {}
-    let marks = sort(map(items(bookmarks#marks(cwd)), {_, v -> [v[1], v[0]]}), 'l')
     for [mark, path] in marks
 
         let b:bookmarks.table[i] = [path, mark]
@@ -210,11 +218,16 @@ func s:render(bufnr, all = 0) abort
         call matchadd(g:bookmarks_hl_mark, pattern, -1, -1, #{window: winid})
         let line = '[' . mark . '] '
 
-        let tail = fnamemodify(path, ':t')
+        let fname =  fnamemodify(path, ':t')
+        if get(fnames, fname) > 1
+            " for files that share the same name, also display container
+            " directory
+            let fname = join(split(path, '/')[-2:], '/')
+        end
         let group = isdirectory(path) ? g:bookmarks_hl_dir : g:bookmarks_hl_file
-        let pattern = '\v%' . i . 'l%>' . (len(line)) . 'c.*%<' . (len(line)+len(tail)+2) . 'c'
+        let pattern = '\v%' . i . 'l%>' . (len(line)) . 'c.*%<' . (len(line)+len(fname)+2) . 'c'
         call matchadd(group, pattern, -1, -1, #{window: winid})
-        let line .= tail
+        let line .= fname
 
         let path = s:prettify_path(path)
         let pattern = '\v%' . i . 'l%>' . (len(line)) . 'c.*'

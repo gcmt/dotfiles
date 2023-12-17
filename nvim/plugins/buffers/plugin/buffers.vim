@@ -47,6 +47,8 @@ let s:options = #{
         \ 'u': '@bunload',
         \ 'U': '@bunload!',
         \ 'l': '@edit',
+        \ 'm': '@mark',
+        \ 'M': '@unmark',
         \ '.': '@fm',
         \ "\<cr>": '@edit',
         \ "\<esc>": '@quit',

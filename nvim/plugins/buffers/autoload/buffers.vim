@@ -1,4 +1,3 @@
-" TODO: add ability to mark files
 
 let s:bufname = '__buffers__'
 
@@ -135,6 +134,10 @@ func s:do_action(action, ctx, close_fn = v:none)
         if empty(a:ctx.table) && type(a:close_fn) == v:t_func
             call a:close_fn()
         end
+    elseif a:action == 'mark'
+        call s:set_bookmark(a:ctx)
+    elseif a:action == 'unmark'
+        call s:unset_bookmark(a:ctx)
     elseif a:action =~ 'quit' || a:action =~ 'fm'
         if type(a:close_fn) == v:t_func
             call a:close_fn()
@@ -199,6 +202,8 @@ endf
 "   - table (dict): a dictionary that maps buffer numbers to buffer lines
 "
 func! s:render(winid, bufnr, buffers)
+
+    let winsave = winsaveview()
 
     call setbufvar(a:bufnr, "&modifiable", 1)
     sil! call deletebufline(a:bufnr, 1, "$")
@@ -272,6 +277,7 @@ func! s:render(winid, bufnr, buffers)
     endfo
 
     call setbufvar(a:bufnr, "&modifiable", 0)
+    call winrestview(winsave)
 
     return table
 
@@ -401,6 +407,38 @@ func! s:toggle_unlisted(ctx)
     call s:resize_window(a:ctx, g:buffers_max_height)
 endf
 
+" Mark file or directory under cursor
+"
+" Args:
+"  - ctx (dict): context info
+"
+func! s:set_bookmark(ctx)
+    if !get(g:, 'loaded_bookmarks', 0)
+        return s:err("Bookmarks not available")
+    end
+    let bufnr = get(a:ctx.table, string(a:ctx.selected), -1)
+    let path = fnamemodify(bufname(bufnr), ':p')
+    let mark = input("Mark: ")
+    call bookmarks#set(mark, path)
+    let buffers = s:get_buffers(a:ctx.all, g:buffers_sorting)
+    let a:ctx.table = s:render(a:ctx.winid, a:ctx.bufnr, buffers)
+endf
+
+" Remove mark from file or directory under cursor
+"
+" Args:
+"  - ctx (dict): context info
+"
+func! s:unset_bookmark(ctx)
+    if !get(g:, 'loaded_bookmarks', 0)
+        return s:err("Bookmarks not available")
+    end
+    let bufnr = get(a:ctx.table, string(a:ctx.selected), -1)
+    let path = fnamemodify(bufname(bufnr), ':p')
+    call bookmarks#unset(path)
+    let buffers = s:get_buffers(a:ctx.all, g:buffers_sorting)
+    let a:ctx.table = s:render(a:ctx.winid, a:ctx.bufnr, buffers)
+endf
 
 " Return a list of all loaded or listed buffers.
 " Buffers are sorted according to the value of g:buffers_sorting. Sorting

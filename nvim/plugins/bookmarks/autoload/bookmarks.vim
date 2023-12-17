@@ -1,21 +1,22 @@
 
 let s:marks = {}
 let s:bufname = '__bookmarks__'
-let s:bookmarks_file = expand(g:bookmarks_file)
 
 func! s:load_marks()
-    if !empty(s:bookmarks_file) && filereadable(s:bookmarks_file)
-        let s:marks = json_decode(readfile(s:bookmarks_file))
+    let file = expand(g:bookmarks_file)
+    if !empty(file) && filereadable(file)
+        let s:marks = json_decode(readfile(file))
     end
 endf
 
 func! s:write_marks()
-    if !empty(s:bookmarks_file)
-        call writefile([json_encode(s:marks)], s:bookmarks_file)
+    let file = expand(g:bookmarks_file)
+    if !empty(file)
+        call writefile([json_encode(s:marks)], file)
     end
 endf
 
-call mkdir(fnamemodify(s:bookmarks_file, ':p:h'), 'p')
+call mkdir(fnamemodify(expand(g:bookmarks_file), ':p:h'), 'p')
 call s:load_marks()
 
 func bookmarks#marks(cwd = '') abort

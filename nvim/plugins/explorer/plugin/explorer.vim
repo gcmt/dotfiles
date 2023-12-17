@@ -44,8 +44,8 @@ let s:mappings = #{
     \ create_dir:           [['c'], "Create new directory"],
     \ rename:               [['r'], "Rename file or directory under cursor"],
     \ delete:               [['d'], "Delete file or directory under cursor"],
-    \ set_bookmark:         [['b', 'm'], "Set bookmark for the file or directory under cursor"],
-    \ del_bookmark:         [['B', 'M'], "Delete bookmark for the file or directory under cursor"],
+    \ set_bookmark:         [['m'], "Set bookmark for the file or directory under cursor"],
+    \ del_bookmark:         [['M'], "Delete bookmark for the file or directory under cursor"],
     \ help:                 [['?'], "Show help"],
 \ }
 

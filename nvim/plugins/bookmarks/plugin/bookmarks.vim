@@ -20,6 +20,7 @@ let s:options = #{
     \ explorer_cmd: 'Explorer %f',
     \ mappings_jump: ['l', '<enter>'],
     \ mappings_unset: ['dd'],
+    \ mappings_change: ['c'],
     \ mappings_close: ['q', '<esc>'],
     \ mappings_toggle_global: ['a'],
     \ hl_mark: 'Magenta',

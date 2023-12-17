@@ -19,6 +19,13 @@ endf
 call mkdir(fnamemodify(expand(g:bookmarks_file), ':p:h'), 'p')
 call s:load_marks()
 
+func s:is_valid(mark) abort
+    if len(a:mark) != 1 || g:bookmarks_marks !~# a:mark
+        return 0
+    end
+    return 1
+endf
+
 func bookmarks#marks(cwd = '') abort
     if empty(a:cwd)
         return copy(s:marks)
@@ -44,7 +51,7 @@ func bookmarks#set(mark, path) abort
     if mark == "\<esc>"
         return
     end
-    if len(mark) != 1 || g:bookmarks_marks !~# mark
+    if !s:is_valid(mark)
         return s:err("Invalid mark")
     end
     let s:marks[a:path] = a:mark
@@ -167,6 +174,9 @@ func s:setup_mappings() abort
     for key in g:bookmarks_mappings_unset
         exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_unset()<cr>"
     endfor
+    for key in g:bookmarks_mappings_change
+        exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_change()<cr>"
+    endfor
     for key in g:bookmarks_mappings_close
         exec "nnoremap <silent> <nowait> <buffer>" key ":close<cr>"
     endfor
@@ -246,6 +256,22 @@ func s:action_unset() abort
         call bookmarks#unset(selected[0])
         call s:render(bufnr('%'))
     end
+endf
+
+func s:action_change() abort
+    let selected = get(b:bookmarks.table, line('.'), [])
+    if empty(selected)
+        return
+    end
+    let mark = input("New mark: ")
+    if empty(mark)
+        return
+    end
+    if !s:is_valid(mark)
+        return s:err("Invalid mark")
+    end
+    call bookmarks#set(mark, selected[0])
+    call s:render(bufnr('%'))
 endf
 
 func s:action_toggle_global_bookmarks() abort

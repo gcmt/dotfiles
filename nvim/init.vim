@@ -733,7 +733,7 @@
 
     nnoremap <silent> gb :call bookmarks#view()<cr>
     nnoremap <silent> <c-b> :call bookmarks#jump(getchar())<cr>
-    nnoremap <silent> gm :call bookmarks#set(input("MarkFile: "), expand('%:p'))<cr>
+    nnoremap <silent> gm :call bookmarks#set(input("Mark: "), expand('%:p'))<cr>
     nnoremap <silent> gM :call bookmarks#set(input("MarkDir: "), expand('%:p:h'))<cr>
 
 " Explorer/Ranger/Vifm

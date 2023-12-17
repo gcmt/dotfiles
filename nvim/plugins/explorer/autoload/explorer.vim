@@ -387,6 +387,9 @@ endf
 " Set the parent of the current root directory as new root.
 func! s:action__up_root() abort
     let current = b:explorer.tree.path
+    if current == '/'
+        return
+    end
     let parent = s:path_dirname(b:explorer.tree.path)
     let b:explorer.tree = s:node.new(parent, 'dir')
     call b:explorer.tree.explore()

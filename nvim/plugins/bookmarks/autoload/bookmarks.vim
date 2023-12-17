@@ -236,9 +236,7 @@ func s:setup_mappings() abort
     endfor
 endf
 
-" Display bookmarks in the given buffer. If
-" If the `all` parameter is given and it's 1, then all bookmarks are displayed,
-" otherwise only bookmarks under the current working directory are displayed.
+" Display bookmarks in the given buffer.
 func s:render(bufnr, marks) abort
 
     let winid = bufwinid(a:bufnr)

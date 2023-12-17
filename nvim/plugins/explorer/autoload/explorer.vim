@@ -386,15 +386,17 @@ endf
 " s:action__up_root() -> 0
 " Set the parent of the current root directory as new root.
 func! s:action__up_root() abort
-    let current = b:explorer.tree.path
-    if current == '/'
+    let current_path = b:explorer.tree.path
+    if current_path == '/'
         return
     end
     let parent = s:path_dirname(b:explorer.tree.path)
     let b:explorer.tree = s:node.new(parent, 'dir')
     call b:explorer.tree.explore()
     call b:explorer.tree.render()
-    call s:goto(current)
+    keepj norm! gg
+    call s:goto(current_path)
+    norm! zz
 endf
 
 " s:action__set_root() -> 0
@@ -622,7 +624,9 @@ func! s:action__toggle_hidden_files()
     let current = s:selected_node()
     call b:explorer.tree.render()
     if !empty(current)
+        keepj norm! gg
         call s:goto(current.path)
+        norm! zz
     end
 endf
 

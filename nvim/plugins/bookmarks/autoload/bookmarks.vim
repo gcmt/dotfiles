@@ -2,39 +2,40 @@
 let s:marks = {} " maps paths to marks
 let s:bufname = '__bookmarks__'
 
-func! s:load_marks()
+" Load marks from file.
+func s:load_marks()
     let file = expand(g:bookmarks_file)
     if !empty(file) && filereadable(file)
         let s:marks = json_decode(readfile(file))
     end
 endf
 
-func! s:write_marks()
+" Write marks to file.
+func s:write_marks()
     let file = expand(g:bookmarks_file)
     if !empty(file)
         call writefile([json_encode(s:marks)], file)
     end
 endf
 
-call mkdir(fnamemodify(expand(g:bookmarks_file), ':p:h'), 'p')
-call s:load_marks()
+" Load bookmarks file and create the container directory if it does not exist
+" yet
+if !empty(expand(g:bookmarks_file))
+    call mkdir(fnamemodify(expand(g:bookmarks_file), ':p:h'), 'p')
+    call s:load_marks()
+end
 
-func s:is_valid(mark) abort
-    if index(split(g:bookmarks_marks, '\zs'), a:mark) == -1
-        return 0
-    end
-    return 1
-endf
-
+" Returns all bookmarks. If a directory path is given, only bookmarks
+" for files uner that directory tree are returned.
 func bookmarks#marks(cwd = '') abort
     if empty(a:cwd)
         return copy(s:marks)
     else
-        " Return only marks for files inside the current cwd
         return filter(copy(s:marks), {path -> path =~# '\V\^' . a:cwd . '\(/\|\$\)'  })
     end
 endf
 
+" Remove the bookmark for the given path.
 func bookmarks#unset(path) abort
     try
         call remove(s:marks, a:path)
@@ -43,31 +44,38 @@ func bookmarks#unset(path) abort
     endtry
 endf
 
+" Set a bookmark for the given path.
 func bookmarks#set(mark, path) abort
     if type(a:path) != v:t_string
-        return s:err("Invalid target")
+        call s:err("Invalid target")
+        return 0
     end
     let mark = type(a:mark) == v:t_number ? nr2char(a:mark) : a:mark
     if mark == "\<esc>" || empty(mark)
-        return
+        return 0
     end
     if !s:is_valid(mark)
-        return s:err("Invalid mark")
+        call s:err("Invalid mark")
+        return 0
     end
     let s:marks[a:path] = a:mark
     call s:write_marks()
     let what = isdirectory(a:path) ? 'directory' : 'file'
     call s:echo(printf("%s \"%s\" marked with [%s]", what, s:prettify_path(a:path), mark))
+    return 1
 endf
 
-" TODO: check for multiple matches
+" Jump to the file with the given mark. If a command is given, it is used to
+" edit the file. One can jump to a bookmark only if it is under the current
+" working directory.
 func bookmarks#jump(mark, cmd = 'edit') abort
     let mark = type(a:mark) == v:t_number ? nr2char(a:mark) : a:mark
     if mark == "\<esc>" || empty(mark)
-        return
+        return 0
     end
     if !s:is_valid(mark)
-        return s:err("Invalid mark")
+        call s:err("Invalid mark")
+        return 0
     end
     for [path_, mark_] in items(bookmarks#marks(getcwd()))
         if mark == mark_
@@ -83,24 +91,29 @@ func bookmarks#jump(mark, cmd = 'edit') abort
     return 0
 endf
 
+" Utility function to open the bookmarks view in non-interactive mode.
 func bookmarks#quickjump(all = 0) abort
     call bookmarks#view(a:all, 0)
 endf
 
+" Open a window or popup with all the bookmarks displayed. If the `all`
+" parameter is given and it's 1, then all bookmarks are displayed, otherwise
+" only bookmarks under the current working directory are displayed,
 func bookmarks#view(all = 0, interactive = 1) abort
 
-    let current = fnamemodify(bufname('%'), ':p')
+    let curr_bufpath = fnamemodify(bufname('%'), ':p')
 
     if bufwinnr(s:bufname) != -1
         return
     end
 
+    " Retrieve all marks and sort them alphabetically
     let marks = bookmarks#marks(a:all ? '' : getcwd())
-    if empty(marks)
-        return s:err("No bookmarks found")
-    end
 
-    if g:bookmarks_popup
+    let width = s:calculate_width()
+    let height = s:calculate_height(len(marks))
+
+    if g:bookmarks_popup && has('nvim')
 
         let bufnr = bufnr(s:bufname)
         if bufnr == -1
@@ -108,17 +121,12 @@ func bookmarks#view(all = 0, interactive = 1) abort
             call nvim_buf_set_name(bufnr, s:bufname)
         end
 
-        let ui = nvim_list_uis()[0]
-        let percent = ui.width < 120 ? 80 : 60
-        let width = float2nr(ui.width * percent / 100)
-        let height = 10
-
         let opts = {
             \ 'relative': 'editor',
             \ 'width': width,
             \ 'height': height,
-            \ 'col': (ui.width/2) - (width/2),
-            \ 'row': (ui.height/2) - (height/2),
+            \ 'col': (&columns/2) - (width/2),
+            \ 'row': float2nr(((&lines-2)/2) - (height/2)) - 1,
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ 'border': g:bookmarks_popup_borders,
@@ -129,14 +137,14 @@ func bookmarks#view(all = 0, interactive = 1) abort
 
     else
 
-        exec 'sil keepj keepa botright 1new' s:bufname
+        exec 'sil keepj keepa botright' height.'new' s:bufname
         let winnr = bufwinnr(s:bufname)
         let winid = win_getid(winnr)
         let bufnr = bufnr(s:bufname, 1)
         call bufload(bufnr)
 
         " hide statusbar
-        exec 'au BufHidden <buffer='.bufnr.'> let &laststatus = ' getwinvar(winnr, "&laststatus")
+        exec 'au BufHidden <buffer='.bufnr.'> let &ls =' getwinvar(winnr, "&laststatus")
         call setwinvar(winnr, '&laststatus', '0')
 
     end
@@ -159,14 +167,15 @@ func bookmarks#view(all = 0, interactive = 1) abort
     call setbufvar(bufnr, '&buftype', 'nofile')
     call setbufvar(bufnr, '&bufhidden', 'hide')
     call setbufvar(bufnr, '&buflisted', 0)
-    call setbufvar(bufnr, 'bookmarks', {'table': {}})
 
-    call s:render(bufnr, a:all)
+    let table = s:render(bufnr, marks)
+    call setbufvar(bufnr, 'bookmarks_table', table)
+    call setbufvar(bufnr, 'bookmarks_show_all', a:all)
+
     call cursor(1, 2)
-
     " position the cursor on the current file
-    for [linenr, item] in items(b:bookmarks.table)
-        if current == item[0]
+    for [linenr, item] in items(b:bookmarks_table)
+        if curr_bufpath == item[0]
             call cursor(linenr, 2)
         end
     endfor
@@ -208,6 +217,7 @@ func bookmarks#view(all = 0, interactive = 1) abort
 
 endf
 
+" Setup all mappings in the current window
 func s:setup_mappings() abort
     for key in g:bookmarks_mappings_jump
         exec "nnoremap <silent> <nowait> <buffer>" key ":call <sid>action_jump('edit')<cr>zz"
@@ -226,7 +236,10 @@ func s:setup_mappings() abort
     endfor
 endf
 
-func s:render(bufnr, all = 0) abort
+" Display bookmarks in the given buffer. If
+" If the `all` parameter is given and it's 1, then all bookmarks are displayed,
+" otherwise only bookmarks under the current working directory are displayed.
+func s:render(bufnr, marks) abort
 
     let winid = bufwinid(a:bufnr)
     let pos_save = getpos('.')
@@ -235,14 +248,10 @@ func s:render(bufnr, all = 0) abort
     call setbufvar(a:bufnr, "&modifiable", 1)
     sil! call deletebufline(a:bufnr, 1, "$")
 
-    call matchadd(g:bookmarks_hl_dim, '\v(\[|\])', -1, -1, #{window: winid})
+    " sort marks alphabetically
+    let marks = sort(map(items(a:marks), {_, v -> [v[1], v[0]]}), 'l')
 
-    let b:show_all = get(b:, 'show_all', a:all)
-    let cwd = b:show_all ? '' : getcwd()
-
-    let marks = sort(map(items(bookmarks#marks(cwd)), {_, v -> [v[1], v[0]]}), 'l')
-
-    " create counter of files that share the same name
+    " Create counter of files that share the same name
     let fnames = {}
     for [_, path] in marks
         let fname = fnamemodify(path, ':t')
@@ -250,10 +259,10 @@ func s:render(bufnr, all = 0) abort
     endfo
 
     let i = 1
-    let b:bookmarks.table = {}
+    let table = {}
     for [mark, path] in marks
 
-        let b:bookmarks.table[i] = [path, mark]
+        let table[i] = [path, mark]
 
         let pattern = '\v%' . i . 'l%' . (2) . 'c.'
         call matchadd(g:bookmarks_hl_mark, pattern, -1, -1, #{window: winid})
@@ -284,15 +293,20 @@ func s:render(bufnr, all = 0) abort
         call setbufline(a:bufnr, 1, " No bookmarks")
     end
 
-    call s:resize_window(line('$'))
+    call matchadd(g:bookmarks_hl_dim, '\v(\[|\])', -1, -1, #{window: winid})
+
+    let height = s:calculate_height(i-1)
+    call win_execute(winid, 'resize '.height, 1)
+
     call setpos('.', pos_save)
     call setbufvar(a:bufnr, "&modifiable", 0)
 
+    return table
 endf
 
+" Jump to the bookmark under cursor
 func s:action_jump(cmd) abort
-    let win = winnr()
-    let selected = get(b:bookmarks.table, line('.'), [])
+    let selected = get(b:bookmarks_table, line('.'), [])
     if empty(selected)
         return
     end
@@ -305,16 +319,20 @@ func s:action_jump(cmd) abort
     end
 endf
 
+" Unset bookmark under cursor
 func s:action_unset() abort
-    let selected = get(b:bookmarks.table, line('.'), [])
-    if !empty(selected)
-        call bookmarks#unset(selected[0])
-        call s:render(bufnr('%'))
+    let selected = get(b:bookmarks_table, line('.'), [])
+    if empty(selected)
+        return
     end
+    call bookmarks#unset(selected[0])
+    let cwd = b:bookmarks_show_all ? '' : getcwd()
+    let b:bookmarks_table = s:render(bufnr('%'), bookmarks#marks(cwd))
 endf
 
+" Change letter for the bookmark under cursor
 func s:action_change() abort
-    let selected = get(b:bookmarks.table, line('.'), [])
+    let selected = get(b:bookmarks_table, line('.'), [])
     if empty(selected)
         return
     end
@@ -326,33 +344,55 @@ func s:action_change() abort
         return s:err("Invalid mark")
     end
     call bookmarks#set(mark, selected[0])
-    call s:render(bufnr('%'))
+    let cwd = b:bookmarks_show_all ? '' : getcwd()
+    let b:bookmarks_table = s:render(bufnr('%'), bookmarks#marks(cwd))
 endf
 
+" Close bookmarks window
 func s:action_close() abort
     call win_execute(bufwinid(s:bufname), 'close', 1)
 endf
 
+" Toggle visibility of global bookmarks
 func s:action_toggle_global_bookmarks() abort
-    let current = get(b:bookmarks.table, line('.'), [])
-    let b:show_all = !b:show_all
-    call s:render(bufnr('%'))
-    if !empty(current)
-        " keep cursor on current mark
-        for [linenr, mark] in items(b:bookmarks.table)
-            if current[0] == mark[0]
-                call cursor(linenr, 2)
-                break
-            end
-        endfor
+    let selected = get(b:bookmarks_table, line('.'), [])
+    if empty(selected)
+        return
     end
+    let b:bookmarks_show_all = !b:bookmarks_show_all
+    let cwd = b:bookmarks_show_all ? '' : getcwd()
+    let b:bookmarks_table = s:render(bufnr('%'), bookmarks#marks(cwd))
+    " keep cursor on the current mark
+    for [linenr, mark] in items(b:bookmarks_table)
+        if selected[0] == mark[0]
+            call cursor(linenr, 2)
+            break
+        end
+    endfor
 endf
 
-func s:resize_window(entries_num) abort
-    let max = float2nr(&lines * g:bookmarks_max_height / 100)
-    exec 'resize' min([a:entries_num, max])
+" Check if a mark is valid.
+func s:is_valid(mark) abort
+    if index(split(g:bookmarks_marks, '\zs'), a:mark) == -1
+        return 0
+    end
+    return 1
 endf
 
+" calculate the width of the popup
+func s:calculate_width() abort
+    let percent = str2nr(trim(g:bookmarks_width_popup, '%'))
+    return float2nr(&columns * percent / 100)
+endf
+
+" calculate the height of the popup or window
+func s:calculate_height(content_length) abort
+    let percent = str2nr(trim(g:bookmarks_height_popup, '%'))
+    let max_height = float2nr((&lines-2) * percent / 100)
+    return min([max_height, max([1, a:content_length])])
+endf
+
+" Prettify a path by stripping the working directory and substituting ~ to home
 func s:prettify_path(path) abort
     let path = substitute(a:path, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
     return substitute(path, '\V\^'.$HOME, '~', '')

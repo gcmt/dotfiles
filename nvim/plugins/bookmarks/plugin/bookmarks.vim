@@ -12,11 +12,13 @@ let g:loaded_bookmarks = 1
 
 let s:options = #{
     \ file: "$XDG_DATA_HOME/nvim/bookmarks.json",
+    \ marks: "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^&*()_+-=[]{};:\",./<>?\|`~'",
     \ popup: 1,
     \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
+    \ width_popup: "70%",
+    \ height_popup: "80%",
+    \ height_window: "50%",
     \ cursorline: 1,
-    \ max_height: 50,
-    \ marks: "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890!@#$%^&*()_+-=[]{};:\",./<>?\|`~'",
     \ explorer_cmd: 'Explorer %f',
     \ mappings_jump: ['l', '<enter>'],
     \ mappings_unset: ['dd'],

@@ -61,6 +61,7 @@ func! s:open_window() abort
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ 'border': g:explorer_popup_border,
+            \ 'noautocmd': 1,
         \ }
 
         call nvim_open_win(bufnr, 1, opts)

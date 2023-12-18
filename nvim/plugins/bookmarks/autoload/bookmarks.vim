@@ -130,6 +130,7 @@ func bookmarks#view(all = 0, interactive = 1) abort
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ 'border': g:bookmarks_popup_border,
+            \ 'noautocmd': 1,
         \ }
 
         let winid = nvim_open_win(bufnr, 1, opts)

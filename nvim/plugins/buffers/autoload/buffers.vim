@@ -42,6 +42,7 @@ func! buffers#view(all) abort
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ 'border': g:buffers_popup_border,
+            \ 'noautocmd': 1,
         \ }
 
         let winid = nvim_open_win(bufnr, 1, opts)

@@ -67,6 +67,7 @@ func marks#view() abort
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
             \ 'border': g:marks_popup_border,
+            \ 'noautocmd': 1,
         \ }
 
         let winid = nvim_open_win(bufnr, 1, opts)

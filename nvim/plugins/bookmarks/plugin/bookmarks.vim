@@ -25,6 +25,7 @@ let s:options = #{
     \ mappings_change: ['c'],
     \ mappings_close: ['q', '<esc>'],
     \ mappings_toggle_global: ['a'],
+    \ hl_title: 'Magenta',
     \ hl_mark: 'Magenta',
     \ hl_file: 'Fg',
     \ hl_dir: 'Blue',

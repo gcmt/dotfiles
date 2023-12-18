@@ -169,7 +169,8 @@ func bookmarks#view(all = 0, interactive = 1) abort
     call setbufvar(bufnr, '&bufhidden', 'hide')
     call setbufvar(bufnr, '&buflisted', 0)
 
-    let table = s:render(bufnr, marks)
+    let title = a:all ? '' : s:prettify_path(getcwd())
+    let table = s:render(bufnr, marks, title)
     call setbufvar(bufnr, 'bookmarks_table', table)
     call setbufvar(bufnr, 'bookmarks_show_all', a:all)
 
@@ -238,10 +239,12 @@ func s:setup_mappings() abort
 endf
 
 " Display bookmarks in the given buffer.
-func s:render(bufnr, marks) abort
+func s:render(bufnr, marks, title = '') abort
 
     let winid = bufwinid(a:bufnr)
     let pos_save = getpos('.')
+
+    let pipe_chars = ['├', '└', '─']
 
     call clearmatches(winid)
     call setbufvar(a:bufnr, "&modifiable", 1)
@@ -258,14 +261,28 @@ func s:render(bufnr, marks) abort
     endfo
 
     let i = 1
+
+    if !empty(marks)
+        call matchadd(g:bookmarks_hl_title, '\v%'.i.'l', -1, -1, #{window: winid})
+        if !empty(a:title)
+            call setbufline(a:bufnr, i, a:title)
+        else
+            call setbufline(a:bufnr, i, "all bookmarks")
+        end
+        let i += 1
+    end
+
     let table = {}
     for [mark, path] in marks
 
         let table[i] = [path, mark]
 
-        let pattern = '\v%' . i . 'l%' . (2) . 'c.'
+        let pipes = (i == len(marks)+1) ? pipe_chars[1] : pipe_chars[0]
+        let line = pipes
+
+        let pattern = '\v%' . i . 'l%' . (len(pipes)+3) . 'c.'
         call matchadd(g:bookmarks_hl_mark, pattern, -1, -1, #{window: winid})
-        let line = '[' . mark . '] '
+        let line .= ' [' . mark . '] '
 
         let fname =  fnamemodify(path, ':t')
         if get(fnames, fname) > 1
@@ -293,6 +310,7 @@ func s:render(bufnr, marks) abort
     end
 
     call matchadd(g:bookmarks_hl_dim, '\v(\[|\])', -1, -1, #{window: winid})
+    call matchadd(g:bookmarks_hl_dim, '\v('.join(pipe_chars, '|').')', -1, -1, #{window: winid})
 
     let height = s:calculate_height(i-1)
     call win_execute(winid, 'resize '.height, 1)
@@ -326,7 +344,11 @@ func s:action_unset() abort
     end
     call bookmarks#unset(selected[0])
     let cwd = b:bookmarks_show_all ? '' : getcwd()
-    let b:bookmarks_table = s:render(bufnr('%'), bookmarks#marks(cwd))
+    let b:bookmarks_table = s:render(
+        \ bufnr('%'),
+        \ bookmarks#marks(cwd),
+        \ s:prettify_path(cwd)
+    \ )
 endf
 
 " Change letter for the bookmark under cursor
@@ -344,7 +366,11 @@ func s:action_change() abort
     end
     call bookmarks#set(mark, selected[0])
     let cwd = b:bookmarks_show_all ? '' : getcwd()
-    let b:bookmarks_table = s:render(bufnr('%'), bookmarks#marks(cwd))
+    let b:bookmarks_table = s:render(
+        \ bufnr('%'),
+        \ bookmarks#marks(cwd),
+        \ s:prettify_path(cwd)
+    \ )
 endf
 
 " Close bookmarks window
@@ -355,19 +381,22 @@ endf
 " Toggle visibility of global bookmarks
 func s:action_toggle_global_bookmarks() abort
     let selected = get(b:bookmarks_table, line('.'), [])
-    if empty(selected)
-        return
-    end
     let b:bookmarks_show_all = !b:bookmarks_show_all
     let cwd = b:bookmarks_show_all ? '' : getcwd()
-    let b:bookmarks_table = s:render(bufnr('%'), bookmarks#marks(cwd))
+    let b:bookmarks_table = s:render(
+        \ bufnr('%'),
+        \ bookmarks#marks(cwd),
+        \ s:prettify_path(cwd)
+    \ )
     " keep cursor on the current mark
-    for [linenr, mark] in items(b:bookmarks_table)
-        if selected[0] == mark[0]
-            call cursor(linenr, 2)
-            break
-        end
-    endfor
+    if !empty(selected)
+        for [linenr, mark] in items(b:bookmarks_table)
+            if selected[0] == mark[0]
+                call cursor(linenr, 2)
+                break
+            end
+        endfor
+    end
 endf
 
 " Check if a mark is valid.

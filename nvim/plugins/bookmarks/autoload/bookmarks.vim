@@ -371,6 +371,10 @@ func s:action_change() abort
         \ bookmarks#marks(cwd),
         \ s:prettify_path(cwd)
     \ )
+    " keep cursor on the current mark
+    if !empty(selected)
+        call s:move_cursor_to(selected[0])
+    end
 endf
 
 " Close bookmarks window
@@ -390,13 +394,18 @@ func s:action_toggle_global_bookmarks() abort
     \ )
     " keep cursor on the current mark
     if !empty(selected)
-        for [linenr, mark] in items(b:bookmarks_table)
-            if selected[0] == mark[0]
-                call cursor(linenr, 2)
-                break
-            end
-        endfor
+        call s:move_cursor_to(selected[0])
     end
+endf
+
+" Move the cursor to the mark referencing the given path
+func s:move_cursor_to(path)
+    for [linenr, mark] in items(b:bookmarks_table)
+        if a:path == mark[0]
+            call cursor(linenr, 2)
+            return
+        end
+    endfor
 endf
 
 " Check if a mark is valid.

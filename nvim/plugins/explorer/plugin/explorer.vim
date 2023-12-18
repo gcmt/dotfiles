@@ -14,7 +14,7 @@ command! -bang -nargs=? Explorer call explorer#open(<q-args>, <q-bang>)
 
 let s:options = #{
     \ popup: 1,
-    \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
+    \ popup_border: 'single',
     \ width_popup: "80%",
     \ height_popup: "80%",
     \ height_window: "50%",

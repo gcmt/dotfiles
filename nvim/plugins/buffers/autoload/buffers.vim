@@ -41,7 +41,7 @@ func! buffers#view(all) abort
             \ 'row': float2nr((lines/2) - (height/2)) - 1,
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
-            \ 'border': g:buffers_popup_borders,
+            \ 'border': g:buffers_popup_border,
         \ }
 
         let winid = nvim_open_win(bufnr, 1, opts)

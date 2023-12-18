@@ -19,7 +19,7 @@ command -bang -nargs=? Search call <sid>search(<q-bang>, <q-args>)
 
 let s:options = #{
     \ popup: 1,
-    \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
+    \ popup_border: 'single',
     \ width_popup: "80%",
     \ max_height_popup: "90%",
     \ max_height_window: "50%",

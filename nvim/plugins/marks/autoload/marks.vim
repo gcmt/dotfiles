@@ -66,7 +66,7 @@ func marks#view() abort
             \ 'row': (ui.height/2) - (height/2),
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
-            \ 'border': g:marks_popup_borders,
+            \ 'border': g:marks_popup_border,
         \ }
 
         let winid = nvim_open_win(bufnr, 1, opts)

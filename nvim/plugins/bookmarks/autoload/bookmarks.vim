@@ -129,7 +129,7 @@ func bookmarks#view(all = 0, interactive = 1) abort
             \ 'row': float2nr(((&lines-2)/2) - (height/2)) - 1,
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
-            \ 'border': g:bookmarks_popup_borders,
+            \ 'border': g:bookmarks_popup_border,
         \ }
 
         let winid = nvim_open_win(bufnr, 1, opts)

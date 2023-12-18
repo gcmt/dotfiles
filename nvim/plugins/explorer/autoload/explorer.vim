@@ -60,7 +60,7 @@ func! s:open_window() abort
             \ 'row': float2nr((lines/2) - (height/2)) - 1,
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
-            \ 'border': g:explorer_popup_borders,
+            \ 'border': g:explorer_popup_border,
         \ }
 
         call nvim_open_win(bufnr, 1, opts)

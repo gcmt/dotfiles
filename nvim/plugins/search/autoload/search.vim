@@ -83,7 +83,7 @@ func! s:search.open_window() abort
             \ 'row': float2nr((lines/2) - (height/2)) - 1,
             \ 'anchor': 'NW',
             \ 'style': 'minimal',
-            \ 'border': self.options.popup_borders,
+            \ 'border': self.options.popup_border,
         \ }
 
         call nvim_open_win(bufnr, 1, opts)

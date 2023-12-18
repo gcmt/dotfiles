@@ -12,7 +12,7 @@ let g:loaded_marks = 1
 
 let s:options = #{
     \ popup: 1,
-    \ popup_borders: ["┌", "─" ,"┐", "│", "┘", "─", "└", "│" ],
+    \ popup_border: 'single',
     \ cursorline: 1,
     \ minheight: -1,
     \ maxheight: 80,

@@ -238,7 +238,7 @@ func s:render(winid, bufnr, marks) abort
         for mark in sort(marks, {a, b -> a.linenr - b.linenr})
             let table[i] = mark
             let repl = #{
-                \ pipes: k == len(marks)-1 ? pipes[1].pipes[2] : pipes[0].pipes[2],
+                \ pipes: k == len(marks)-1 ? pipes[1] : pipes[0],
                 \ mark: mark.letter,
                 \ linenr: printf('%'.ln_width.'S', mark.linenr),
                 \ colnr: printf('%'.col_width.'S', mark.colnr),

@@ -1,5 +1,6 @@
 
 let s:bufname = '__buffers__'
+let s:sortings = ['alphabetical', 'numerical', 'viewtime', 'modtime']
 
 " View loaded buffers
 "
@@ -139,6 +140,8 @@ func s:do_action(action, ctx, close_fn = v:none)
         call s:set_bookmark(a:ctx)
     elseif a:action == 'unmark'
         call s:unset_bookmark(a:ctx)
+    elseif a:action =~ 'cycle_sorting'
+        call s:cycle_sorting(a:ctx)
     elseif a:action =~ 'quit' || a:action =~ 'fm'
         if type(a:close_fn) == v:t_func
             call a:close_fn()
@@ -406,6 +409,39 @@ func! s:toggle_unlisted(ctx)
     call win_execute(bufwinid(a:ctx.bufnr), 'norm! 0')
 
     call s:resize_window(a:ctx, g:buffers_max_height)
+endf
+
+" Cycle sorting mode
+"
+" Args:
+"  - ctx (dict): context info
+"
+func! s:cycle_sorting(ctx)
+
+    let current_sorting = g:buffers_sorting
+    for i in range(0, len(s:sortings))
+        if current_sorting == s:sortings[i]
+            let g:buffers_sorting = s:sortings[(i+1)%len(s:sortings)]
+            break
+        end
+    endfor
+    echo "sorting:" g:buffers_sorting
+
+    let selected_bufnr = get(a:ctx.table, string(a:ctx.selected), '')
+    let buffers = s:get_buffers(a:ctx.all, g:buffers_sorting)
+    let a:ctx.table = s:render(a:ctx.winid, a:ctx.bufnr, buffers)
+
+    " Follow the previously selected buffer
+    for [line, bufnr] in items(a:ctx.table)
+        if bufnr == selected_bufnr
+            let a:ctx.selected = line
+            break
+        end
+    endfo
+
+    call win_execute(bufwinid(a:ctx.bufnr), a:ctx.selected)
+    call win_execute(bufwinid(a:ctx.bufnr), 'norm! 0')
+
 endf
 
 " Mark file or directory under cursor

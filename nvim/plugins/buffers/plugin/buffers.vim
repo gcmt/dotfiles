@@ -49,6 +49,7 @@ let s:options = #{
         \ 'l': '@edit',
         \ 'm': '@mark',
         \ 'M': '@unmark',
+        \ 'S': '@cycle_sorting',
         \ '.': '@fm',
         \ "\<cr>": '@edit',
         \ "\<esc>": '@quit',
@@ -77,16 +78,8 @@ endf
 let g:buffers_viewtime_table = {}
 let g:buffers_modtime_table = {}
 
-if g:buffers_sorting == 'viewtime'
-    aug _buffers
-        au!
-        au BufWinEnter * call <sid>update_time_table()
-    aug END
-end
-
-if g:buffers_sorting == 'modtime'
-    aug _buffers
-        au!
-        au BufModifiedSet * call <sid>update_mod_table()
-    aug END
-end
+aug _buffers
+    au!
+    au BufModifiedSet * call <sid>update_mod_table()
+    au BufWinEnter * call <sid>update_time_table()
+aug END

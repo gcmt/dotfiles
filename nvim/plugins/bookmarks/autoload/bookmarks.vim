@@ -410,10 +410,7 @@ endf
 
 " Check if a mark is valid.
 func s:is_valid(mark) abort
-    if index(split(g:bookmarks_marks, '\zs'), a:mark) == -1
-        return 0
-    end
-    return 1
+    return index(split(g:bookmarks_marks, '\zs'), a:mark) != -1
 endf
 
 " calculate the width of the popup

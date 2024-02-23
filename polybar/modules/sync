@@ -1,13 +1,15 @@
 #!/bin/bash
 
-STATE="$HOME/.cache/sync-to-cloud.state"
+STATE="$HOME/.local/share/sync-to-cloud.state"
 
 if [ ! -f "${STATE}" ]; then
     exit 1
 fi
 
 display_changes() {
-    if grep -q "^Error:" "${STATE}"; then
+    if grep -q "^Syncing$" "${STATE}"; then
+        echo " Syncing"
+    elif grep -q "^Error:" "${STATE}"; then
         echo "%{A1:systemctl --user start sync-to-cloud.service:}%{F#ce7d86}%{F-}%{A}"
    else
         local send=$(grep -c "^[<>ch]" "${STATE}")

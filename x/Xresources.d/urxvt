@@ -16,7 +16,7 @@
 URxvt.perl-ext-common: default,matcher,font-manager,message,focus
 
 URxvt.termName: xterm-256color
-URxvt.internalBorder: 5
+URxvt.internalBorder: 10
 URxvt.scrollBar: false
 URxvt.saveLines: 8192
 URxvt.iso14755: false
@@ -40,9 +40,9 @@ URxvt.matcher.pattern.1: \\bwww\\.[\\w-]+\\.[\\w./?&@#-]*[\\w/-]
 URxvt.keysym.Shift-Control-S: matcher:select
 URxvt.keysym.Shift-Control-M: matcher:list
 
-URxvt.font: xft:Noto Sans Mono:size=12
-URxvt.boldFont: xft:Noto Sans Mono:size=12:style=bold
-URxvt.letterSpace: 1
+URxvt.font: xft:Roboto Mono:size=12
+URxvt.boldFont: xft:Roboto Mono:size=12:style=bold
+URxvt.letterSpace: 2
 URxvt.lineSpace: 3
 
 URxvt.keysym.Control-equal: font-manager:reset

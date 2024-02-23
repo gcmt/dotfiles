@@ -72,7 +72,7 @@ let s:colored = [
     \ 'PMenu', 'PMenuSel', 'PMenuSBar', 'PMenuThumb',
     \ 'TabLine', 'TabLineSel', 'TabLineFill',
     \ 'SpellBad', 'SpellCap', 'SpellLocal', 'SpellRare',
-    \ 'Yank', 'Spotter', 'FloatBorder', 'QuickFixLine'
+    \ 'Yank', 'Spotter', 'Float.*', 'QuickFixLine'
 \ ]
 let s:colored = '\v^(' . join(s:colored, '|') . ')$'
 
@@ -151,10 +151,10 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
         cal s:h('WildMenu', s:bg, s:fg_very_dim, '', '')
     end
 
-    cal s:h('FloatBorder', s:fg_very_dim, '', '', '')
     cal s:h('NormalFloat', s:fg, '', '', '')
-    cal s:h('FloatTitle	', s:fg, '', '', '')
-    cal s:h('FloatFooter', s:fg, '', '', '')
+    cal s:h('FloatBorder', s:fg_very_dim, '', '', '')
+    cal s:h('FloatTitle	', s:fg_dim, '', '', '')
+    cal s:h('FloatFooter', s:fg_dim, '', '', '')
 
     cal s:h('Linenr', s:fg_very_dim, '', '', '')
     cal s:h('CursorLineNr', s:red, '', 'none', '')

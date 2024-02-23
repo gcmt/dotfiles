@@ -94,7 +94,7 @@
     colorscheme main
 
     set cmdheight=1
-    set laststatus=3
+    set laststatus=2
 
     set guioptions=c
 
@@ -392,10 +392,10 @@
     nnoremap <silent> <c-w>v <c-w>v:b#<cr>
     nnoremap <silent> <c-w>s <c-w>s:b#<cr>
 
-    nnoremap <silent> <left> <c-w>h
-    nnoremap <silent> <right> <c-w>l
-    nnoremap <silent> <up> <c-w>k
-    nnoremap <silent> <down> <c-w>j
+	nnoremap <silent> <left> 3<c-w><
+	nnoremap <silent> <right> 3<c-w>>
+	nnoremap <silent> <up> <c-w>+
+	nnoremap <silent> <down> <c-w>-
 
 " BUFFERS
 " ----------------------------------------------------------------------------
@@ -556,15 +556,10 @@
 " ----------------------------------------------------------------------------
 
     vnoremap @ :norm! @
-
-    nnoremap Q @q
-    vnoremap <silent> Q :norm! @q<cr>
+    vnoremap <silent> Q :norm! Q<cr>
 
     " edit registers
     command! -nargs=? Regedit call util#regedit(<q-args>)
-
-    " tee yanks to a sticky register
-    nnoremap <expr> gQ ":Regtee ".nr2char(getchar())."<cr>"
 
 " MISC
 " ----------------------------------------------------------------------------
@@ -731,7 +726,10 @@
 " Bookmarks
 " ----------------------------------------------------------------------------
 
+    nnoremap <silent> <backspace> :call bookmarks#quickjump()<cr>
+    nnoremap <silent> gk :call bookmarks#quickjump()<cr>
     nnoremap <silent> gb :call bookmarks#view()<cr>
+    nnoremap <silent> gB :call bookmarks#view(1)<cr>
     nnoremap <silent> <c-b> :call bookmarks#jump(getchar())<cr>
     nnoremap <silent> gm :call bookmarks#set(input("Mark: "), expand('%:p'))<cr>
     nnoremap <silent> gM :call bookmarks#set(input("MarkDir: "), expand('%:p:h'))<cr>
@@ -744,7 +742,6 @@
 
     let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
 
-    nnoremap <silent> <backspace> :exec 'Explorer' getcwd()<cr>
     nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
     nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
 

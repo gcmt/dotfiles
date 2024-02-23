@@ -1,11 +1,9 @@
 [Trigger]
 Type = Package
 Operation = Upgrade
-Operation = Install
-Operation = Remove
 Target = *
 
 [Action]
 Description = Notify polybar module
 When = PostTransaction
-Exec = /bin/bash -c "truncate -s0 /run/user/$SUDO_UID/updates-check.state"
+Exec = /usr/bin/truncate "/home/$SUDO_USER/.local/share/updates-check.state"

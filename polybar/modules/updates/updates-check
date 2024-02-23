@@ -1,7 +1,5 @@
 #!/bin/bash
 
-state="$HOME/.cache/updates-check.state"
+state="$HOME/.local/share/updates-check.state"
 out=$(checkupdates)
-if [[ -n "${out}" ]]; then
-    echo "${out}" > "${state}"
-fi
+echo "${out}" > "${state}"

@@ -15,7 +15,13 @@ clear_error() {
 print_label() {
     local label=
     if [ -s "${STATE_FILE}" ]; then
-		label=" Backup"
+        if grep -q "^Pruning" "${STATE_FILE}"; then
+            label=" Pruning.."
+        elif grep -q "^Compacting" "${STATE_FILE}"; then
+            label=" Compacting.."
+        else
+            label=" Backup"
+        fi
 	fi
     if [ -s "${ERROR_FILE}" ]; then
 		label="%{F#ce7d86} Backup%{F-}"

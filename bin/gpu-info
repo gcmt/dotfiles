@@ -1,6 +1,6 @@
 #!/bin/bash
 
-info="/sys/kernel/debug/dri/0/amdgpu_pm_info"
+info="/sys/kernel/debug/dri/1/amdgpu_pm_info"
 
 if [[ "$*" =~ -v($| ) ]]; then
 	sudo cat "$info"

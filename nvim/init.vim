@@ -217,7 +217,7 @@
         copen
     endf
 
-    func! CTLOpenLoclist(minwid, clicks, btn, mod)
+    func! STLOpenLoclist(minwid, clicks, btn, mod)
         lopen
     endf
 

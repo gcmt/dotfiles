@@ -1,0 +1,11 @@
+[Trigger]
+Type = Package
+Operation = Upgrade
+Operation = Install
+Operation = Remove
+Target = *
+
+[Action]
+Description = Set keyboard repeat rate
+When = PostTransaction
+Exec = /bin/bash -c "xset r rate 150 30"

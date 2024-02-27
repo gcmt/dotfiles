@@ -19,10 +19,10 @@ if &background == 'light'
     let s:orange        = ['#c77408', 16]
     let s:fg_dim        = ['#6a737d', 21]
     let s:fg_very_dim   = ['#97a1ad', 22]
-    let s:fg_super_dim  = ['#c8d1db', 23]
+    let s:fg_super_dim  = ['#dbe3eb', 23]
     let s:bg_accent     = ['#f5f6f7', 24]
     let s:hl            = ['#f7f71b', 25]
-    let s:select        = ['#c8c8fa', 26]
+    let s:select        = ['#2c3238', 26]
     let s:fg            = [s:black[0], 18]
     let s:bg            = [s:white[0], 19]
 else
@@ -152,7 +152,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     end
 
     cal s:h('NormalFloat', s:fg, '', '', '')
-    cal s:h('FloatBorder', s:fg_very_dim, '', '', '')
+    cal s:h('FloatBorder', s:fg_super_dim, '', '', '')
+
     cal s:h('FloatTitle	', s:fg_dim, '', '', '')
     cal s:h('FloatFooter', s:fg_dim, '', '', '')
 
@@ -198,7 +199,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('Identifier', s:fg, '', 'none', '')
     cal s:h('Function', s:fg, '', '', '')
     cal s:h('Statement', s:blue, '', 'none', '')
-    cal s:h('Comment', s:fg_dim, '', '', '')
+    cal s:h('Comment', s:fg_very_dim, '', '', '')
     cal s:h('Conditional', s:magenta, '', 'none', '')
     cal s:h('Label', s:magenta, '', '', '')
     cal s:h('Repeat', s:orange, '', 'none', '')

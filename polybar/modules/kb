@@ -15,18 +15,20 @@ SCRIPT_PATH = Path(os.path.realpath(__file__))
 
 
 def print_settings(settings):
-    print(f'%{{A3:{SCRIPT_PATH} -refresh:}}%{{A1:{SCRIPT_PATH} -edit-raw:}} {settings["layout"]}%{{A}}%{{A}}')
+    print(
+        f'%{{A3:{SCRIPT_PATH} -refresh:}}%{{A1:{SCRIPT_PATH} -edit-raw:}} {settings["layout"]}%{{A}}%{{A}}'
+    )
 
 
 def parse_args():
-	parser = argparse.ArgumentParser(description="Polybar KB module")
-	parser.add_argument("-refresh", action="store_true", help="set kb settings")
-	parser.add_argument("-edit-raw", action="store_true", help="edit settings with vim")
-	return parser.parse_args()
+    parser = argparse.ArgumentParser(description="Polybar KB module")
+    parser.add_argument("-refresh", action="store_true", help="set kb settings")
+    parser.add_argument("-edit-raw", action="store_true", help="edit settings with vim")
+    return parser.parse_args()
 
 
 def _dunstify_cmd():
-    return ['dunstify', '-t', DUNSTIFY_TIMEOUT]
+    return ["dunstify", "-t", DUNSTIFY_TIMEOUT]
 
 
 def notify_settings(settings):
@@ -42,14 +44,14 @@ def notify(msg, urgency="normal"):
 
 def edit_with_vim(path):
     old_hash = file_hash(path)
-    cmd = ["urxvt", "-name", "floating", "-e", "nvim", path]
+    cmd = ["kitty", "--name", "floating", "-e", "nvim", path]
     run(cmd, stdout=PIPE, stderr=PIPE)
     new_hash = file_hash(path)
     return old_hash != new_hash
 
 
 def execute(bin):
-    proc = run([bin], stderr=PIPE, stdout=PIPE, encoding='utf-8')
+    proc = run([bin], stderr=PIPE, stdout=PIPE, encoding="utf-8")
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip())
     return proc.stdout.strip()
@@ -62,7 +64,7 @@ def file_hash(path):
 
 def get_settings():
     cmd = ["setxkbmap", "-query"]
-    stdout = run(cmd, stdout=PIPE, encoding='utf8').stdout.strip()
+    stdout = run(cmd, stdout=PIPE, encoding="utf8").stdout.strip()
     settings = {}
     for line in stdout.split("\n"):
         setting, value = line.split(": ")
@@ -94,5 +96,5 @@ def main():
     print_settings(get_settings())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

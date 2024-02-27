@@ -14,4 +14,4 @@ if [[ -d "${current_dir}" ]]; then
     # done
 fi
 
-exec urxvt -name floating -e vidir "${paths[@]}"
+exec kitty --name floating -e vidir "${paths[@]}"

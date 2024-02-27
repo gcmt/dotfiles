@@ -15,7 +15,7 @@ display_changes() {
         local send=$(grep -c "^[<>ch]" "${STATE}")
         local del=$(grep -c '^\*deleting' "${STATE}")
         if (( send != 0 || del != 0 )); then
-            echo "%{A1:systemctl --user start sync-to-cloud.service:}%{A3:urxvt -name floating -e nvim -R $STATE:} ${send}  ${del}%{A}%{A}"
+            echo "%{A1:systemctl --user start sync-to-cloud.service:}%{A3:kitty --name floating -e nvim -R $STATE:} ${send}  ${del}%{A}%{A}"
         else
             echo
         fi

@@ -8,21 +8,27 @@ fi
 xrdb -load -D$(echo $1 | tr /a-z/ /A-Z/) ~/.Xresources
 
 i3_config="$HOME/.config/i3/config"
+kitty_config="$HOME/.config/kitty/kitty.conf"
+
 if [[ "$1" == 'light' ]]; then
 	vim -E "${i3_config}" <<-EOF
 	/=light colors=/+1;/\v^$/-1s/\v^#\s*//
 	/=dark colors=/+1;\$s/\v^\ze\w/# /
 	wq
 	EOF
+    sed -i 's\dark.conf\light.conf\g' "${kitty_config}"
+    kill -SIGUSR1 $(pgrep kitty) 2>/dev/null
 else
 	vim -E "${i3_config}" <<-EOF
 	/=light colors=/+1;/\v^$/-1s/\v^\ze\w/# /
 	/=dark colors=/+1;\$s/\v^#\s*//
 	wq
 	EOF
+    sed -i 's\light.conf\dark.conf\g' "${kitty_config}"
+    kill -SIGUSR1 $(pgrep kitty) 2>/dev/null
 fi
 
+
 clear
-init-colors
 
 i3-msg  reload >/dev/null

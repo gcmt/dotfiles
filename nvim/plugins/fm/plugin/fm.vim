@@ -15,7 +15,7 @@ command! -bang -nargs=* Fm call fm#open(<q-args>, <q-bang>)
 let s:options = {
     \ 'cmd': 'vifm',
     \ 'preview_treshold': 150,
-    \ 'term_prg': 'TMUX= urxvt -name vim-popup',
+    \ 'term_prg': 'TMUX= kitty --name vim-popup',
 \ }
 
 for [s:option, s:default] in items(s:options)

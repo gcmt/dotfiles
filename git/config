@@ -41,7 +41,7 @@
 	spellcheck = true
 	tabwidth = 4
 [gui]
-	editor = urxvt -e nvim
+	editor = kitty -e nvim
 [credential]
 	provider = generic
 [filter "lfs"]

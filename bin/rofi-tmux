@@ -27,10 +27,10 @@ case $rofi_exit in
 		;;
 	11)
 		# open a new client linked to the current session in a different terminal window
-		urxvt -e tmux new -t "$session" \; set destroy-unattached
+		kitty -e tmux new -t "$session" \; set destroy-unattached
 		;;
 	*)
 		# If the tmux session is already opened, switch to it
-		exec i3-focus -c URxvt -t "^$session - Tmux$" -fallback "urxvt -e t $session"
+		exec i3-focus -c kitty -t "^$session - Tmux$" -fallback "kitty -e t $session"
 		;;
 esac

@@ -21,4 +21,4 @@ if [[ -z "$session" ]]; then
 	exit 1
 fi
 
-exec i3-focus -c URxvt -t "^$session - Tmux$" $move -fallback "urxvt -e t $session"
+exec i3-focus -c kitty -t "^$session - Tmux$" $move -fallback "kitty -e t $session"

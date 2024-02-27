@@ -1,11 +1,11 @@
 configuration {
 	show-icons: false;
-	terminal: "urxvt";
+	terminal: "kitty";
 	ssh-client: "ssh";
-	ssh-command: "urxvt -e {ssh-client} {host}";
+	ssh-command: "kitty -e {ssh-client} {host}";
 	run-command: "{cmd}";
 	run-list-command: "";
-	run-shell-command: "urxvt -e {cmd}";
+	run-shell-command: "kitty -e {cmd}";
 	drun-match-fields: "name";
 	disable-history: false;
 	case-sensitive: false;

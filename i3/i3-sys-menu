@@ -1,7 +1,7 @@
 #!/bin/bash
 
 display_menu() {
-    for entry in "$@"; do 
+    for entry in "$@"; do
         echo "<span face='Font Awesome 6 Free'>${entry}</span>"
     done | rofi -dmenu  -markup-rows -format d -theme "system-menu" -theme-str "${theme_override}"
 }
@@ -11,7 +11,7 @@ system_menu() {
     local lock=""
     local reboot=""
     local poweroff=""
-    local icons=("${suspend}" "${lock}" "${reboot}" "${poweroff}") 
+    local icons=("${suspend}" "${lock}" "${reboot}" "${poweroff}")
     local choice=$(display_menu "${icons[@]}")
     case "${choice}" in
         1) systemctl suspend ;;
@@ -28,14 +28,14 @@ i3_menu() {
     local exit=""
     local config=""
     local redshift=""
-    local icons=("${reload}" "${restart}" "${exit}" "${config}" "${redshift}") 
+    local icons=("${reload}" "${restart}" "${exit}" "${config}" "${redshift}")
     local choice=$(display_menu "${icons[@]}")
     case "${choice}" in
         1) i3-msg reload >/dev/null ;;
         2) i3-msg restart >/dev/null ;;
         3) i3-msg exit >/dev/null ;;
-        4) urxvt -name floating -e nvim ~/.config/i3/config ;;
-        5) urxvt -name floating -e nvim ~/.config/redshift/redshift.conf ;;
+        4) kitty --name floating -e nvim ~/.config/i3/config ;;
+        5) kitty --name floating -e nvim ~/.config/redshift/redshift.conf ;;
         *) exit 1 ;;
     esac
 }

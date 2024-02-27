@@ -5,10 +5,10 @@ import re
 import sys
 import time
 import argparse
-import i3pie
 import shlex
-from pathlib import Path
 from subprocess import run, Popen, PIPE
+
+import i3pie
 
 
 def error(msg):
@@ -22,31 +22,65 @@ def fatal(msg):
 
 
 def parse_args():
-
     parser = argparse.ArgumentParser(allow_abbrev=False, description="i3 focus helper")
 
-    parser.add_argument('-id', help="The window id")
-    parser.add_argument('-t', help="The window name (title)")
-    parser.add_argument('-c', help="The window class")
-    parser.add_argument('-n', help="The window instance")
-    parser.add_argument('-m', help="The window marks (use - to require no marks)")
-    parser.add_argument('-fallback', default="", help="The command to execute when the targeted window does not exist")
-    parser.add_argument('-move', action='store_true', default=False, help="Move the targeted window to the current workspace")
+    parser.add_argument("-id", help="The window id")
+    parser.add_argument("-t", help="The window name (title)")
+    parser.add_argument("-c", help="The window class")
+    parser.add_argument("-n", help="The window instance")
+    parser.add_argument("-m", help="The window marks (use - to require no marks)")
+    parser.add_argument(
+        "-fallback",
+        default="",
+        help="The command to execute when the targeted window does not exist",
+    )
+    parser.add_argument(
+        "-move",
+        action="store_true",
+        default=False,
+        help="Move the targeted window to the current workspace",
+    )
     group1 = parser.add_mutually_exclusive_group(required=False)
-    group1.add_argument('-bounce', action='store_true', default=True, help="Focus the previously focused window when the target window is already focused (default)")
-    group1.add_argument('-nobounce', action='store_false', dest='bounce', help="Don't focus the previously focused window when the target window is already focused")
+    group1.add_argument(
+        "-bounce",
+        action="store_true",
+        default=True,
+        help="Focus the previously focused window when the target window is already focused (default)",
+    )
+    group1.add_argument(
+        "-nobounce",
+        action="store_false",
+        dest="bounce",
+        help="Don't focus the previously focused window when the target window is already focused",
+    )
     group2 = parser.add_mutually_exclusive_group(required=False)
-    group2.add_argument('-kill', action='store_true', default=False, help="Kill the window if already focused")
-    group2.add_argument('-scratch', action='store_true', default=False, help="Instead of killing the window, move it to the scratchpad")
+    group2.add_argument(
+        "-kill",
+        action="store_true",
+        default=False,
+        help="Kill the window if already focused",
+    )
+    group2.add_argument(
+        "-scratch",
+        action="store_true",
+        default=False,
+        help="Instead of killing the window, move it to the scratchpad",
+    )
 
     args = parser.parse_args()
 
-    if args.id is None and args.t is None and args.c is None and args.n is None and args.m is None:
+    if (
+        args.id is None
+        and args.t is None
+        and args.c is None
+        and args.n is None
+        and args.m is None
+    ):
         parser.print_usage(file=sys.stderr)
         fatal("provide at least one selection criteria")
 
     if args.m != "-":
-        args.m = set(args.m.split(',')) if args.m else set()
+        args.m = set(args.m.split(",")) if args.m else set()
 
     if args.id:
         try:
@@ -59,6 +93,7 @@ def parse_args():
 
 def match(args, win):
     """Match the given window with command line arguments"""
+    print("win class", win.window_class)
     if args.m == "-" and set(win.marks):
         # If '-' is given as mark, then explicitly require no marks
         return False
@@ -76,41 +111,51 @@ def match(args, win):
 def get_last_window(tree):
     """Return the last focused window (requires i3-history)"""
     try:
-        proc = run(['i3-history', '-print'], stdout=PIPE, encoding='utf8')
+        proc = run(["i3-history", "-print"], stdout=PIPE, encoding="utf8")
     except FileNotFoundError:
-        error('i3-history not found')
+        error("i3-history not found")
     try:
-        id = proc.stdout.splitlines()[-2]
+        winid = proc.stdout.splitlines()[-2]
     except IndexError:
         return None
     try:
-        id = int(id, 0)
-        return tree.find(fn=lambda con: con.window_id == id)
+        winid = int(winid, 0)
+        return tree.find(fn=lambda con: con.window_id == winid)
     except ValueError:
-        error(f"invalid window id '{id}'")
+        error(f"invalid window id '{winid}'")
+    return None
 
 
 def focus(win, move=False):
     """Focus the given window"""
     print(win)
-    if win.workspace().name == '_scratch' or move:
-        win.command('move to workspace current')
-    return not win.command('focus').error
+    if win.workspace().name == "_scratch" or move:
+        win.command("move to workspace current")
+    return not win.command("focus").error
 
 
 def kill(win):
     """Quit the given window"""
-    return not win.command('kill').error
+    return not win.command("kill").error
 
 
 def move_to_scratchpad(win):
     """Move the given window to the scratchpad"""
-    return not win.command('move to workspace _scratch').error
+    return not win.command("move to workspace _scratch").error
 
 
 def search_win_by_pid(pid, timeout=10):
     """Return the window id that belongs to the given process id"""
-    xdotool = ["xdotool", "search", "--pid", str(pid), "--onlyvisible", "--all", "--limit", "1"]
+    xdotool = [
+        "xdotool",
+        "search",
+        "--pid",
+        str(pid),
+        "--onlyvisible",
+        "--all",
+        "--limit",
+        "1",
+    ]
     timeout = time.time() + timeout
     while True:
         time.sleep(0.5)
@@ -127,7 +172,6 @@ def search_win_by_pid(pid, timeout=10):
 
 
 def main(i3):
-
     args = parse_args()
     tree = i3.get_tree()
 
@@ -160,13 +204,13 @@ def main(i3):
             fatal(f"command not found: {fallback[0]}")
         if args.m and args.m != "-":
             # automatically mark the window if marks are given (first one only)
-            if id := search_win_by_pid(pid):
+            if winid := search_win_by_pid(pid):
                 mark = list(args.m)[0]
-                i3.command(f'[id="{id}"] mark "{mark}"')
+                i3.command(f'[id="{winid}"] mark "{mark}"')
     else:
         sys.exit(not success)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with i3pie.Connection() as i3:
         main(i3)

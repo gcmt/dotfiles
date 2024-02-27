@@ -1,0 +1,10 @@
+[Unit]
+Description=Workaround for motherboard sleep/wakeup bug
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c "echo GPP0 > /proc/acpi/wakeup"
+ExecStart=/bin/sh -c "echo PTXH > /proc/acpi/wakeup"
+
+[Install]
+WantedBy = multi-user.target

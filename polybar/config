@@ -141,7 +141,7 @@ exec = ~/.config/polybar/modules/kb
 
 [module/updates]
 type = custom/script
-exec = ~/.config/polybar/modules/updates/updates
+exec = ~/.config/polybar/modules/updates
 tail = true
 
 [module/caffeine]

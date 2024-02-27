@@ -6,4 +6,4 @@ Target = *
 [Action]
 Description = Notify polybar module
 When = PostTransaction
-Exec = /usr/bin/truncate "/home/$SUDO_USER/.local/share/updates-check.state"
+Exec = /usr/bin/truncate -s0 "/home/gcmt/.local/share/updates-check.state"

@@ -25,7 +25,7 @@ open_tmux() {
 	if ! tmux has -t "=${session}" 2>/dev/null; then
 		tmux new -ds "${session}"
 	fi
-	urxvt -name floating -e t "${session}"
+	kitty --name floating -e t "${session}"
 }
 
 quickview() {

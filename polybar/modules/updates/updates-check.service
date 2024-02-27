@@ -1,9 +1,0 @@
-[Unit]
-Description=Check for updates
-
-[Service]
-Type=oneshot
-ExecStart=%h/.local/bin/updates-check
-
-[Install]
-WantedBy=default.target

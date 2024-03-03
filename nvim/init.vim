@@ -525,33 +525,6 @@
     nnoremap <silent> <RightMouse> <LeftMouse>:call util#search(0)<cr>
     vnoremap <silent> <RightMouse> :<c-u>call util#search(1)<cr>
 
-" YANK FEEDBACK
-" ----------------------------------------------------------------------------
-
-    aug _yankhl
-        au!
-        if exists("##TextYankPost") && has('timers')
-            au TextYankPost * call <sid>yankhl()
-        end
-    aug END
-
-    func! s:yankhl()
-        if v:event.operator != 'y' || v:event.regname == '*'
-            return
-        end
-        let lines = v:event.regcontents
-        if len(lines) > &lines*2
-            return
-        end
-        call map(lines, {-> escape(v:val, '\\')})
-        if !empty(lines) && empty(lines[-1])
-            let lines[-1] = '\n'
-        end
-        let pattern = printf('\V\%%%dl\%%%dc%s', line("'["), col("'["), join(lines, '\n'))
-        let id = matchadd("Yank", pattern, -1)
-        call timer_start(350, {-> call('matchdelete', [id])})
-    endf
-
 " REGISTERS
 " ----------------------------------------------------------------------------
 
@@ -570,6 +543,8 @@
         au VimEnter * if isdirectory(expand('%:p')) | exec 'Explorer!' expand('%:p') | end
 
         au FocusGained,BufEnter,CursorHold * sil! checktime
+
+        au TextYankPost * if has('nvim') | sil! lua vim.highlight.on_yank { higroup='Yank', timeout=300 } | end
 
         au BufWritePost */nvim/init.vim source $MYVIMRC
         au BufWritePost */nvim/colors/*.vim nested exec 'colorscheme' g:colors_name

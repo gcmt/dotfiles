@@ -27,7 +27,7 @@ _OUT_FORMAT="%(title)s.%(ext)s"
 _FORMAT='bestvideo[height<=1080][vcodec^=av01][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio/best[ext=mp4]/best'
 
 header="Downloading Video"
-if (( extract_audio == 1 )); then 
+if (( extract_audio == 1 )); then
     header="${header} (Audio only)"
 fi
 
@@ -50,7 +50,7 @@ cd ~/Downloads || exit 1
 notify_progress() {
     local header=$1
     local title=$2
-    local progress=0 
+    local progress=0
     local percent=
     while read -r line; do
         if grep -q '^\[ExtractAudio\]' <<< "${line}"; then

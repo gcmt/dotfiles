@@ -60,6 +60,7 @@ for_window [class="Sxiv" instance="floating"] floating enable
 for_window [class="kitty" instance="floating"] floating enable, $float_m, move position center
 for_window [class="kitty" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
 for_window [class="kitty" instance="vim-popup"] border pixel 1, floating enable, $float_m, move position center
+for_window [class="corectrl"] floating enable, resize set 30ppt 70ppt, move position center
 
 for_window [instance="system-config-printer"] floating enable
 for_window [class="Yad"] floating enable

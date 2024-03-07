@@ -1,0 +1,9 @@
+[Unit]
+Description=GPU overclock/undervolt
+
+[Service]
+Type=oneshot
+ExecStart=/home/gcmt/.local/bin/gpu -set
+
+[Install]
+WantedBy=graphical.target

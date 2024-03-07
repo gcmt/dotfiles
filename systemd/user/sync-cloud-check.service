@@ -3,4 +3,4 @@ Description=Check if something needs to be synced
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/bin/sync-to-cloud -check
+ExecStart=%h/.local/bin/sync-cloud -check

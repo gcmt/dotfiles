@@ -3,4 +3,4 @@ Description=Sync to cloud
 
 [Service]
 Type=oneshot
-ExecStart=%h/.local/bin/sync-to-cloud
+ExecStart=%h/.local/bin/sync-cloud

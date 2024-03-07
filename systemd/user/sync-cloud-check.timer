@@ -4,7 +4,7 @@ Description=Check regularly if something needs to be synced
 [Timer]
 OnBootSec=20m
 OnUnitActiveSec=1h
-Unit=sync-to-cloud-check.service
+Unit=sync-cloud-check.service
 
 [Install]
 WantedBy=timers.target

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-STATE="$HOME/.local/share/sync-to-cloud.state"
+STATE="$HOME/.local/share/sync-cloud.state"
 
 if [ ! -f "${STATE}" ]; then
     exit 1
@@ -10,12 +10,12 @@ display_changes() {
     if grep -q "^Syncing$" "${STATE}"; then
         echo " Syncing"
     elif grep -q "^Error:" "${STATE}"; then
-        echo "%{A1:systemctl --user start sync-to-cloud.service:}%{F#ce7d86}%{F-}%{A}"
+        echo "%{A1:systemctl --user start sync-cloud.service:}%{F#ce7d86}%{F-}%{A}"
    else
         local send=$(grep -c "^[<>ch]" "${STATE}")
         local del=$(grep -c '^\*deleting' "${STATE}")
         if (( send != 0 || del != 0 )); then
-            echo "%{A1:systemctl --user start sync-to-cloud.service:}%{A3:kitty --name floating -e nvim -R $STATE:} ${send}  ${del}%{A}%{A}"
+            echo "%{A1:systemctl --user start sync-cloud.service:}%{A3:kitty --name floating -e nvim -R $STATE:} ${send}  ${del}%{A}%{A}"
         else
             echo
         fi

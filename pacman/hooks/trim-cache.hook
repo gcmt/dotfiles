@@ -1,11 +1,11 @@
 [Trigger]
+Type = Package
 Operation = Remove
 Operation = Install
 Operation = Upgrade
-Type = Package
 Target = *
 
 [Action]
 Description = Trim packages cache
 When = PostTransaction
-Exec = /usr/bin/paccache -rvuk0 && /usr/bin/paccache -rvk3
+Exec = /bin/bash -c 'paccache -rvuk0 && paccache -rvk3'

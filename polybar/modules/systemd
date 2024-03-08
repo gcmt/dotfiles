@@ -1,9 +1,0 @@
-#!/bin/bash
-
-count=$(systemctl --user --type=service --state=failed --plain --no-legend | wc -l)
-
-if (( count != 0 )); then
-    echo " ${count}"
-else
-    echo
-fi

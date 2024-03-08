@@ -63,7 +63,7 @@ font-2 = "Font Awesome 6 Brands:style=regular:size=10.5;3"
 
 modules-left = i3
 modules-center = datetime
-modules-right = systemd rec backup sync updates plants kb eth volume timer stopwatch
+modules-right = backup sync updates plants kb eth volume timer stopwatch
 
 separator = %{F#bbb}-%{F-}
 
@@ -110,11 +110,6 @@ type = custom/script
 exec = ~/.config/polybar/modules/plants.py
 interval = 60
 
-[module/rec]
-type = custom/script
-exec = ~/.config/polybar/modules/recording
-tail = true
-
 [module/wlan]
 type = custom/script
 exec = ~/.config/polybar/modules/wlan wlp2s0
@@ -124,11 +119,6 @@ interval = 3
 type = custom/script
 exec = ~/.config/polybar/modules/eth eno1
 interval = 3
-
-[module/systemd]
-type = custom/script
-exec = ~/.config/polybar/modules/systemd
-interval = 30
 
 [module/sync]
 type = custom/script
@@ -142,11 +132,6 @@ exec = ~/.config/polybar/modules/kb
 [module/updates]
 type = custom/script
 exec = ~/.config/polybar/modules/updates
-tail = true
-
-[module/caffeine]
-type = custom/script
-exec = ~/.config/polybar/modules/caffeine
 tail = true
 
 ; viy:ft=dosini cms=;\ %s

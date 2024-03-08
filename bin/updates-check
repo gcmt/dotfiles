@@ -1,5 +1,4 @@
 #!/bin/bash
 
-state="$HOME/.local/share/updates-check.state"
 out=$(checkupdates)
-echo "${out}" > "${state}"
+echo "${out}" | tee "$HOME/.local/share/updates-check.state"

@@ -1,5 +1,6 @@
 [Unit]
 Description=Check for updates
+OnFailure=notify-fail@%N.service
 
 [Service]
 Type=oneshot

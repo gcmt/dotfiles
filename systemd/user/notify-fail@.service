@@ -1,0 +1,6 @@
+[Unit]
+Description=Notify service failure
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/notify-send -u critical "Systemd" "Service %i failed"

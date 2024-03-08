@@ -18,4 +18,4 @@ export LANG=en_US.UTF-8
 export RANGER_LOAD_DEFAULT_RC=FALSE
 
 export SSH_ASKPASS="/usr/lib/ssh/x11-ssh-askpass"
-export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/gcr/ssh"
+export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"

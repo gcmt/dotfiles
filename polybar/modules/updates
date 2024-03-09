@@ -1,20 +1,20 @@
 #!/bin/bash
 
 SCRIPTPATH="$(realpath -s "$0")"
-STATE="$HOME/.local/share/updates-check.state"
-touch "${STATE}"
+UPDATES_FILE="$HOME/.local/share/updates-check.state"
+touch "${UPDATES_FILE}"
 
 main() {
     display_updates
-    while inotifywait -q -e modify "${STATE}" >/dev/null; do
+    while inotifywait -q -e modify "${UPDATES_FILE}" >/dev/null; do
         display_updates
     done
 }
 
 display_updates() {
-    local count=$(grep -v "^$" "${STATE}" | wc -l)
+    local count=$(grep -v "^$" "${UPDATES_FILE}" | wc -l)
     if (( count > 0 )); then
-        echo "%{A1:$SCRIPTPATH tmux:}%{A3:$SCRIPTPATH quickview:} ${count}%{A}%{A}"
+        echo "%{A1:$SCRIPTPATH -tmux:}%{A3:$SCRIPTPATH -updates-menu:} ${count}%{A}%{A}"
     else
         echo
     fi
@@ -28,8 +28,8 @@ open_tmux() {
 	kitty --name floating -e t "${session}"
 }
 
-quickview() {
-	local choice="$(sed 's;^\(\S\+\)\s\+\(.*\)$;\1 <span foreground="#999">\2</span>;' < "${STATE}" \
+updates_menu() {
+	local choice="$(sed 's;^\(\S\+\)\s\+\(.*\)$;\1 <span foreground="#999">\2</span>;' < "${UPDATES_FILE}" \
 		| mouse-menu -noselected -width auto -markup-rows -maxlines 40)"
 	if [[ -n "${choice}" ]]; then
         open_tmux
@@ -38,7 +38,7 @@ quickview() {
 
 case "$1" in
 	"") main ;;
-	tmux) open_tmux & ;;
-	quickview) quickview & ;;
+	-tmux) open_tmux & ;;
+	-updates-menu) updates_menu & ;;
 	*) exit 1 ;;
 esac

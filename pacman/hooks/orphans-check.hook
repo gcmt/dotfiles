@@ -1,0 +1,10 @@
+[Trigger]
+Type = Package
+Operation = Remove
+Operation = Upgrade
+Target = *
+
+[Action]
+Description = Check for orphaned packages
+When = PostTransaction
+Exec = /home/gcmt/.local/bin/orphans-check

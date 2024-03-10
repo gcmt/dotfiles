@@ -805,4 +805,6 @@
 " source init.lua
 " ----------------------------------------------------------------------------
 
-    lua require('init')
+    if has('nvim')
+        lua require('init')
+    end

@@ -81,7 +81,7 @@ def print_label(plants):
     water = sum(int(p["elapsed_watering"] == p["target_watering"]) for p in plants)
     label = ""
     if water or delays:
-        label = ""
+        label = " " + str(water + delays)
     # if delays:
     #    label = "%{F#ce7d86}%{F-}"
     script_path = os.path.realpath(__file__)

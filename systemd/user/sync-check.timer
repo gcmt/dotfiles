@@ -1,0 +1,10 @@
+[Unit]
+Description=Check if something needs to be synced
+
+[Timer]
+OnBootSec=20m
+OnUnitActiveSec=1h
+Unit=sync-check.service
+
+[Install]
+WantedBy=timers.target

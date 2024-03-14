@@ -14,7 +14,7 @@ main() {
 display_updates() {
     local count=$(grep -v "^$" "${UPDATES_FILE}" | wc -l)
     if (( count > 0 )); then
-        echo "%{A1:$SCRIPTPATH -tmux:}%{A3:$SCRIPTPATH -updates-menu:} ${count}%{A}%{A}"
+        echo "%{A1:$SCRIPTPATH -tmux:}%{A3:$SCRIPTPATH -menu:} ${count}%{A}%{A}"
     else
         echo
     fi
@@ -39,6 +39,6 @@ updates_menu() {
 case "$1" in
 	"") main ;;
 	-tmux) open_tmux & ;;
-	-updates-menu) updates_menu & ;;
+	-menu) updates_menu & ;;
 	*) exit 1 ;;
 esac

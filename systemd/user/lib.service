@@ -1,0 +1,7 @@
+[Unit]
+Description=Lib check
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/lib -q -s
+ExecStartPre=/bin/sleep 60

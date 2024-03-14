@@ -1,0 +1,11 @@
+[Unit]
+Description=Lib check
+After=network-online.target
+
+[Timer]
+OnCalendar=*-*-* 09:00:00
+Persistent=true
+Unit=lib.service
+
+[Install]
+WantedBy=timers.target

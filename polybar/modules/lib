@@ -1,0 +1,54 @@
+#!/bin/bash
+
+SCRIPTPATH="$(realpath -s "$0")"
+
+trap 'clear_all' USR2
+clear_all() {
+    lib -a -q
+    echo
+}
+
+open_term() {
+	kitty -e /bin/bash -c "lib -i"
+    kill -USR1 $(pgrep -f /polybar/modules/lib)
+}
+
+sleep_pid=
+trap 'print_count' USR1
+print_count() {
+    kill ${sleep_pid} 2>/dev/null
+    local label=""
+    local count=$(lib -c)
+    if (( count > 0 )); then
+        label+=" ${count}"
+    fi
+    lib -l
+    error=$?
+    if (( error == 1 )); then
+        label="%{F#ce7d86}${label}%{F-}"
+    fi
+    if (( count > 0 )); then
+        label="%{A1:${SCRIPTPATH} -view:}${label}%{A}"
+    fi
+    if (( count > 0 || error == 1 )); then
+        echo "%{A3:kill -USR2 $$:}${label}%{A}"
+    else
+        echo
+    fi
+}
+
+main() {
+    while true; do
+        print_count
+        sleep 1h &
+        sleep_pid=$!
+        wait $!
+    done
+}
+
+case "$1" in
+	"") main ;;
+	-view) open_term & ;;
+	-clear) clear_all & ;;
+	*) exit 1 ;;
+esac

@@ -63,7 +63,7 @@ font-2 = "Font Awesome 6 Brands:style=regular:size=10.5;3"
 
 modules-left = i3
 modules-center = datetime
-modules-right = backup sync updates plants kb eth volume timer stopwatch
+modules-right = backup sync lib updates plants kb eth volume timer stopwatch
 
 separator = %{F#bbb}-%{F-}
 
@@ -132,6 +132,11 @@ exec = ~/.config/polybar/modules/kb
 [module/updates]
 type = custom/script
 exec = ~/.config/polybar/modules/updates
+tail = true
+
+[module/lib]
+type = custom/script
+exec = ~/.config/polybar/modules/lib
 tail = true
 
 ; viy:ft=dosini cms=;\ %s

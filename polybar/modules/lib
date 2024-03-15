@@ -9,11 +9,10 @@ clear_all() {
 }
 
 open_term() {
-	kitty -e /bin/bash -c "lib -i"
+    kitty --title Lib -e /bin/bash -c "lib -i"
     kill -USR1 $(pgrep -f /polybar/modules/lib)
 }
 
-sleep_pid=
 trap 'print_count' USR1
 print_count() {
     kill ${sleep_pid} 2>/dev/null
@@ -23,7 +22,7 @@ print_count() {
         label+=" ${count}"
     fi
     lib -l
-    error=$?
+    local error=$?
     if (( error == 1 )); then
         label="%{F#ce7d86}${label}%{F-}"
     fi
@@ -37,6 +36,7 @@ print_count() {
     fi
 }
 
+sleep_pid=
 main() {
     while true; do
         print_count

@@ -26,11 +26,8 @@ print_count() {
     if (( error == 1 )); then
         label="%{F#ce7d86}${label}%{F-}"
     fi
-    if (( count > 0 )); then
-        label="%{A1:${SCRIPTPATH} -view:}${label}%{A}"
-    fi
     if (( count > 0 || error == 1 )); then
-        echo "%{A3:kill -USR2 $$:}${label}%{A}"
+        echo "%{A3:kill -USR2 $$:}%{A1:${SCRIPTPATH} -view:}${label}%{A}%{A}"
     else
         echo
     fi

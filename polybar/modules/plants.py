@@ -62,8 +62,8 @@ def icon(text, **kwargs):
 
 def menu(plants):
     entries = []
-    plants = sorted(plants, key=lambda p: p["target_watering"] - p["elapsed_watering"])
-    for p in plants:
+    by_delay = lambda p: p["target_watering"] - p["elapsed_watering"]
+    for p in sorted(plants, key=by_delay):
         line = ""
         delay = p["elapsed_watering"] > p["target_watering"]
         fg_color = FG_DELAY if delay else ""

@@ -108,7 +108,7 @@ tail = true
 [module/plants]
 type = custom/script
 exec = ~/.config/polybar/modules/plants.py
-interval = 60
+tail = true
 
 [module/wlan]
 type = custom/script

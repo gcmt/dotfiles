@@ -1,48 +1,48 @@
 #!/bin/bash
 
-SCRIPTPATH="$(realpath -s "$0")"
 STATE="$HOME/.cache/polybar-datetime.state"
-FORMATS=(default seconds utc est pst)
+FORMATS=(def sec utc est pst)
 
-if [ ! -f "${STATE}" ]; then
-    echo -n "${FORMATS[0]}" > "${STATE}"
+CURRENT="$(cat "${STATE}" 2>/dev/null)"
+if [ -z "${CURRENT}" ]; then
+    CURRENT="${FORMATS[0]}"
 fi
 
-main() {
+print_label() {
     local label
-    local format="$(cat "${STATE}")"
-    while true; do
-        inotifywait -t 1 -q -e modify "${STATE}" >/dev/null
-        (( $? == 0 )) && format="$(cat "${STATE}")"
-        case "${format}" in
-            default) label=$(date +"%a %d %H:%M") ;;
-            seconds) label=$(date +"%a %d %H:%M:%S") ;;
-            utc) label=$(date -u +"%a %d %H:%M UTC") ;;
-            est) label=$(TZ=America/New_York date +"%a %d %H:%M EST") ;;
-            pst) label=$(TZ=America/Los_Angeles date +"%a %d %H:%M PST") ;;
-            *) label="unknown format" ;;
-        esac
-        echo "%{A1:$SCRIPTPATH -cycle:}${label}%{A}"
-    done
+    case "${CURRENT}" in
+        def) label=$(date +"%a %d %H:%M") ;;
+        sec) label=$(date +"%a %d %H:%M:%S") ;;
+        utc) label=$(date -u +"%a %d %H:%M UTC") ;;
+        est) label=$(TZ=America/New_York date +"%a %d %H:%M EST") ;;
+        pst) label=$(TZ=America/Los_Angeles date +"%a %d %H:%M PST") ;;
+        *) label="unknown format" ;;
+    esac
+    echo "%{A1:kill -USR1 $$:}${label}%{A}"
 }
 
-cycle_format() {
-    local next_format
-    local curr_format="$(cat "${STATE}")"
+trap 'next_format' USR1
+next_format() {
+    local len=${#FORMATS[@]}
     for i in "${!FORMATS[@]}"; do
-       if [[ "${FORMATS[$i]}" == "${curr_format}" ]]; then
-           next_format="${FORMATS[$((i+1))]}"
-           if [ -n "${next_format}" ]; then
-                echo -n "${next_format}" > "${STATE}"
-           else
-                echo -n "${FORMATS[0]}" > "${STATE}"
-           fi
+       if [[ "${FORMATS[$i]}" == "${CURRENT}" ]]; then
+            CURRENT="${FORMATS[$(((i + 1) % len))]}"
+            break
        fi
     done
 }
 
-case "$1" in
-	"") main ;;
-	-cycle) cycle_format ;;
-	*) exit 1 ;;
-esac
+trap 'save_state' 0
+save_state() {
+    echo -n "${CURRENT}" > "${STATE}"
+}
+
+main() {
+    while true; do
+        print_label
+        sleep 1s &
+        wait $!
+    done
+}
+
+main

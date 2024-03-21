@@ -45,26 +45,6 @@ func! util#s(pattern, string, flags)
     call winrestview(view)
 endf
 
-" Search withouth moving the cursor
-func! util#search(visual)
-    if a:visual && line("'<") != line("'>")
-        return
-    end
-    if a:visual
-        let selection = getline('.')[col("'<")-1:col("'>")-1]
-        let pattern = '\V' . escape(selection, '/\')
-    else
-        let pattern = '\<' . expand('<cword>') . '\>'
-    end
-    if @/ == pattern
-        let @/ = ''
-        set nohlsearch
-    else
-        let @/ = pattern
-        set hlsearch
-    end
-endf
-
 
 " Edit register in a buffer
 func! util#regedit(reg)

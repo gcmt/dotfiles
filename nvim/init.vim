@@ -511,11 +511,33 @@
     " toggle highlighting of the last search pattern
     nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
 
+    " Search withouth moving the cursor
+    func! s:search(visual, cmd = '')
+        if a:visual && line("'<") != line("'>")
+            return
+        end
+        if a:visual
+            let selection = getline('.')[col("'<")-1:col("'>")-1]
+            let pattern = '\V' . escape(selection, '/\')
+        else
+            let pattern = '\<' . expand('<cword>') . '\>'
+        end
+        if !empty(a:cmd)
+            exec a:cmd pattern
+        elseif @/ == pattern
+            let @/ = ''
+            set nohlsearch
+        else
+            let @/ = pattern
+            set hlsearch
+        end
+    endf
+
     " Toggle search for current word or selected text without moving the cursor
-    nnoremap <silent> \ :call util#search(0)<cr>
-    vnoremap <silent> \ :<c-u>call util#search(1)<cr>
-    nnoremap <silent> <RightMouse> <LeftMouse>:call util#search(0)<cr>
-    vnoremap <silent> <RightMouse> :<c-u>call util#search(1)<cr>
+    nnoremap <silent> \ :call <sid>search(0)<cr>
+    vnoremap <silent> \ :<c-u>call <sid>search(1)<cr>
+    nnoremap <silent> <RightMouse> <LeftMouse>:call <sid>search(0)<cr>
+    vnoremap <silent> <RightMouse> :<c-u>call <sid>search(1)<cr>
 
 " REGISTERS
 " ----------------------------------------------------------------------------
@@ -652,25 +674,13 @@
 " Search
 " ----------------------------------------------------------------------------
 
-    " search current word or selection
-    func! s:search(visual)
-        if a:visual && line("'<") != line("'>")
-            call util#err("Not allowed")
-            return
-        end
-        if a:visual
-            let selection = getline('.')[col("'<")-1:col("'>")-1]
-            let pattern = '\V' . escape(selection, '/\')
-        else
-            let pattern = '\<' . expand('<cword>') . '\>'
-        end
-        exec 'Search' pattern
-    endf
+    let g:search_mappings_close = ['q', '<esc>', 's', 'S']
 
     nnoremap s :Search<space>
     nnoremap gs :Search<cr>
-    nnoremap <silent> S :call <sid>search(0)<cr>
-    vnoremap <silent> S :<c-u>call <sid>search(1)<cr>
+
+    nnoremap <silent> S :call <sid>search(0, 'Search')<cr>
+    vnoremap <silent> S :<c-u>call <sid>search(1, 'Search')<cr>
 
 " Fzf
 " ----------------------------------------------------------------------------

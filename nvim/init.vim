@@ -404,9 +404,9 @@
         if buflisted(@#)
             buffer #
         elseif !empty(@#)
-            call util#err("The alternate buffer has been unlisted")
+            call s:err("The alternate buffer has been unlisted")
         else
-            call util#err("No alternate buffer")
+            call s:err("No alternate buffer")
         end
     endf
 
@@ -583,6 +583,10 @@
         au BufNewFile,BufRead */Xresources.d/* set ft=xdefaults
         au BufNewFile,BufRead *.rasi set ft=css
     aug END
+
+    func! s:err(fmt, ...)
+        echohl WarningMsg | echo call('printf', [a:fmt] + a:000)  | echohl None
+    endf
 
     "inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
     "inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"

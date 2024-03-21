@@ -27,12 +27,16 @@
     call add(g:plugins, $VIMHOME.'/plugins/fzf')
 
     let g:vendor = []
-    call add(g:vendor, $VIMDATA.'/vendor/nvim-treesitter')
+    call add(g:vendor, $VIMDATA.'/vendor/ale')
     call add(g:vendor, $VIMDATA.'/vendor/vim-fugitive')
     call add(g:vendor, $VIMDATA.'/vendor/vim-gitgutter')
-    call add(g:vendor, $VIMDATA.'/vendor/ultisnips')
-    call add(g:vendor, $VIMDATA.'/vendor/vim-go')
-    call add(g:vendor, $VIMDATA.'/vendor/ale')
+    call add(g:vendor, $VIMDATA.'/vendor/nvim-lspconfig')
+    call add(g:vendor, $VIMDATA.'/vendor/nvim-treesitter')
+
+    call add(g:vendor, $VIMDATA.'/vendor/nvim-cmp')
+    call add(g:vendor, $VIMDATA.'/vendor/cmp-nvim-lsp')
+    call add(g:vendor, $VIMDATA.'/vendor/vim-vsnip')
+    call add(g:vendor, $VIMDATA.'/vendor/vim-vsnip-integ')
 
     let s:rtp = []
     call extend(s:rtp, g:plugins + g:vendor)
@@ -232,27 +236,7 @@
         if !empty(getloclist(a:win.winid))
             call add(flags, '%@STLOpenLoclist@[LOC]%X')
         end
-        let ale = _stl_ale(a:win)
-        return join(flags, ' ') . (empty(ale) ? '' : ' ' . ale)
-    endf
-
-    func! _stl_ale(win)
-        try
-            let counts = ale#statusline#Count(a:win.bufnr)
-        catch /.*/
-            return ''
-        endtry
-        let errors = counts.error + counts.style_error
-        let warnings = counts.total - errors
-        if counts.total
-            let ret = ''
-            let ret .= warnings ? '%#StatusLineWarn#■%* ' . warnings : ''
-            let ret .= warnings && errors ?  ' ' : ''
-            let ret .= errors ? '%#StatusLineErr#■%* ' . errors  : ''
-            let ret .= ''
-            return ret
-        end
-        return ''
+        return join(flags, ' ')
     endf
 
     func! _stl_meta(win, sep)
@@ -276,7 +260,15 @@
         return join(items, a:sep)
     endf
 
-    func! _stl_branch(win)
+    fun! _stl_git_status(win)
+        if win_getid() != a:win.winid
+            return ''
+        end
+        let [a,m,r] = GitGutterGetHunkSummary()
+        return printf('(+%d ~%d -%d)', a, m, r)
+    endf
+
+    func! _stl_git_branch(win)
         if win_getid() != a:win.winid
             return ''
         end
@@ -326,14 +318,14 @@
         let sep = win.width < 110 ? '  ' : '   '
         try
             let items = []
+            call add(items, _stl_qf(win))
             call add(items, _stl_alternate(win))
             call add(items, _stl_buffer(win, sep))
             call add(items, '%=')
-            call add(items, _stl_qf(win))
-            call add(items, '%=')
+            call add(items, _stl_git_status(win))
+            call add(items, _stl_git_branch(win))
             call add(items, _stl_regtee())
             call add(items, _stl_clip(win))
-            call add(items, _stl_branch(win))
             call add(items, _stl_meta(win, sep))
             call add(items, '%1lL %02cC (%P)')
             call filter(items, {_, v -> !empty(v)})
@@ -392,10 +384,10 @@
     nnoremap <silent> <c-w>v <c-w>v:b#<cr>
     nnoremap <silent> <c-w>s <c-w>s:b#<cr>
 
-	nnoremap <silent> <left> 3<c-w><
-	nnoremap <silent> <right> 3<c-w>>
-	nnoremap <silent> <up> <c-w>+
-	nnoremap <silent> <down> <c-w>-
+    nnoremap <silent> <left> 3<c-w><
+    nnoremap <silent> <right> 3<c-w>>
+    nnoremap <silent> <up> <c-w>+
+    nnoremap <silent> <down> <c-w>-
 
 " BUFFERS
 " ----------------------------------------------------------------------------
@@ -434,9 +426,9 @@
     nnoremap <silent> <c-e> :<c-u>call append(line('.')-1, map(range(v:count1), "''"))<cr>
     nnoremap <silent> <c-d> :<c-u>call append(line('.'), map(range(v:count1), "''"))<cr>
 
-	" buffer text object
-	vnoremap a% GoggV
-	onoremap a% :<c-u>norm va%<cr>
+    " buffer text object
+    vnoremap a% GoggV
+    onoremap a% :<c-u>norm va%<cr>
 
     " blackhole register shortcut
     nnoremap _ "_
@@ -565,7 +557,6 @@
         " Show cursorline only for a short amount of time
         "au CursorHold,CursorHoldI * if empty(&buftype) | set nocul | end
 
-        " Filetype fixes
         au BufNewFile,BufRead *.ledger set ft=ledger
         au BufNewFile,BufRead */Xresources.d/* set ft=xdefaults
         au BufNewFile,BufRead *.rasi set ft=css
@@ -580,12 +571,12 @@
     command! -nargs=0 Vimrc edit $MYVIMRC
     command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 
-	command! -nargs=? -complete=filetype Ftedit call <sid>ft_edit(<q-args>)
+    command! -nargs=? -complete=filetype Ftedit call <sid>ft_edit(<q-args>)
 
-	func! s:ft_edit(ft)
-		let ft = empty(a:ft) ? &ft : a:ft
-		call finder#find($VIMHOME, 'ftplugin.*'.ft.'\.vim$', 1)
-	endf
+    func! s:ft_edit(ft)
+        let ft = empty(a:ft) ? &ft : a:ft
+        call finder#find($VIMHOME, 'ftplugin.*'.ft.'\.vim$', 1)
+    endf
 
     " Write helpers
     command! -nargs=0 SudoWrite exec 'write !sudo tee % > /dev/null'
@@ -637,18 +628,18 @@
 " QUICKFIX
 " ----------------------------------------------------------------------------
 
-	let g:quickfix_height = 50
+    let g:quickfix_height = 50
     command! -nargs=0 Cclear call setqflist([], 'r')
 
-	nnoremap <silent> ]q :cnext<cr>zz<cr>
-	nnoremap <silent> ]Q :clast<cr>zz<cr>
-	nnoremap <silent> [q :cprev<cr>zz<cr>
-	nnoremap <silent> [Q :cfirst<cr>zz<cr>
+    nnoremap <silent> ]q :cnext<cr>zz<cr>
+    nnoremap <silent> ]Q :clast<cr>zz<cr>
+    nnoremap <silent> [q :cprev<cr>zz<cr>
+    nnoremap <silent> [Q :cfirst<cr>zz<cr>
 
-	nnoremap <silent> ]l :lnext<cr>zz<cr>
-	nnoremap <silent> ]L :llast<cr>zz<cr>
-	nnoremap <silent> [l :lprev<cr>zz<cr>
-	nnoremap <silent> [L :lfirst<cr>zz<cr>
+    nnoremap <silent> ]l :lnext<cr>zz<cr>
+    nnoremap <silent> ]L :llast<cr>zz<cr>
+    nnoremap <silent> [l :lprev<cr>zz<cr>
+    nnoremap <silent> [L :lfirst<cr>zz<cr>
 
 " Cd
 " ----------------------------------------------------------------------------
@@ -684,7 +675,7 @@
 " Fzf
 " ----------------------------------------------------------------------------
 
-	nnoremap <silent> <c-f> :Files<cr>
+    nnoremap <silent> <c-f> :Files<cr>
 
 " Buffers
 " ----------------------------------------------------------------------------
@@ -701,11 +692,9 @@
 " Bookmarks
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> <backspace> :call bookmarks#quickjump()<cr>
-    nnoremap <silent> gk :call bookmarks#quickjump()<cr>
+    nnoremap <silent> <c-b> :call bookmarks#quickjump()<cr>
     nnoremap <silent> gb :call bookmarks#view()<cr>
     nnoremap <silent> gB :call bookmarks#view(1)<cr>
-    nnoremap <silent> <c-b> :call bookmarks#jump(getchar())<cr>
     nnoremap <silent> gm :call bookmarks#set(input("Mark: "), expand('%:p'))<cr>
     nnoremap <silent> gM :call bookmarks#set(input("MarkDir: "), expand('%:p:h'))<cr>
 
@@ -736,71 +725,60 @@
         \ 'var':1, 'let':1, 'const':1, 'function':1, 'class':1
     \ }
 
-" GitGutter
-" ----------------------------------------------------------------------------
-
-	let g:gitgutter_enabled = 1
-
 " Ale
 " ----------------------------------------------------------------------------
 
-	highlight link AleError Underlined
-	highlight link AleWarning Underlined
-	highlight link AleErrorSign Red
-	highlight link AleWarningSign Orange
+    let g:ale_enabled = 1
+    let g:ale_fix_on_save = 1
+    let g:ale_lint_on_text_changed = 'normal'
+    let g:ale_virtualtext_cursor = 'never'
+
+    let g:ale_set_loclist = 0
+    let g:ale_open_list = 0
+
+    let g:ale_disable_lsp = 0
+    let g:ale_use_neovim_diagnostics_api = 1
+
+    let g:ale_linters_explicit = 1
+    let g:ale_fixers = {}
+    let g:ale_linters = {}
 
     let g:ale_echo_msg_error_str = 'E'
     let g:ale_echo_msg_warning_str = 'W'
-	let g:ale_sign_error = '■'
-	let g:ale_sign_warning = '■'
-	let g:ale_lint_on_text_changed = 'normal'
-    let g:ale_virtualtext_cursor = 'never'
-    let g:ale_set_highlights = 0
-    " let g:ale_set_loclist = 1
-    " let g:ale_set_quickfix = 1
+    let g:ale_echo_msg_format = '[%linter%] [%severity%] %s'
 
-    let g:ale_enabled = 1
-	let g:ale_open_list = 0
-	let g:ale_fix_on_save = 1
-    let g:ale_disable_lsp = 0
-    let g:ale_linters_explicit = 1
+    let g:ale_fixers['*'] = ['remove_trailing_lines', 'trim_whitespace']
 
-	let g:ale_fixers = {}
-	let g:ale_linters = {}
+    let g:ale_linters.python = ['ruff']
+    let g:ale_fixers.python = ['ruff', 'ruff_format']
+    let g:ale_python_ruff_options = '--select E,F,W,A,PLC,PLE,PLW,I --fixable I'
 
-	let g:ale_fixers['*'] = ['remove_trailing_lines', 'trim_whitespace']
+    let g:ale_linters.go = ['errcheck', 'staticcheck', 'revive']
+    let g:ale_fixers.go = ['gofmt']
 
-	let g:ale_fixers.python = ['black']
-	let g:ale_linters.python = ['flake8', 'pylint']
-	let g:ale_python_pylint_options = '--disable=C0111,C0103'
-	let g:ale_python_flake8_options = '--ignore=E203,E501'
+    let g:ale_linters.yaml = ['yamllint']
+    let g:ale_fixers.yaml = ['yamlfmt']
+    let g:ale_yaml_yamlfmt_options = '-formatter indent=2,retain_line_breaks_single=true,include_document_start=true'
 
-	let g:ale_fixers.go = ['goimports']
-	let g:ale_linters.go = ['errcheck', 'staticcheck', 'govet', 'revive']
+    let g:ale_linters.sh = ['shellcheck']
+    " let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
 
-	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
+    let g:ale_fixers.lua = ['stylua']
 
+    let g:ale_fixers.javascript = ['prettier']
 
-" vim-go
+    let g:ale_fixers.rust = ['rustfmt']
+
+" Git Gutter
 " ----------------------------------------------------------------------------
 
-    let g:go_list_type = "quickfix"
-    let g:go_auto_type_info = 1
-    let g:go_snippet_engine = ""
-
-" Ultisnips
-" ----------------------------------------------------------------------------
-
-	let g:UltiSnipsExpandTrigger = '<tab>'
-	let g:UltiSnipsJumpForwardTrigger = '<tab>'
-	let g:UltiSnipsJumpBackwardTrigger = '<c-z>'
-	let g:UltiSnipsSnippetDirectories = ['UltiSnips']
+    let g:gitgutter_enabled = 1
 
 " Disable unused plugins
 " ----------------------------------------------------------------------------
 
-	let g:loaded_2html_plugin = 1
-	let g:loaded_netrwPlugin = 1
+    let g:loaded_2html_plugin = 1
+    let g:loaded_netrwPlugin = 1
 
 " source init.lua
 " ----------------------------------------------------------------------------

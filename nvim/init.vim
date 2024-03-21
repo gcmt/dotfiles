@@ -622,8 +622,6 @@
     inoremap <c-c> <c-]><esc>
     inoremap <c-u> <c-g>u<c-u>
 
-    inoremap <c-a> <down>
-    inoremap <c-j> <c-g>u<c->
     inoremap <cr> <c-g>u<cr>
 
     vnoremap C c

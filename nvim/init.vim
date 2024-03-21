@@ -261,21 +261,19 @@
     endf
 
     fun! _stl_git_status(win)
-        if win_getid() != a:win.winid
+        if win_getid() != a:win.winid || !exists('*GitGutterGetHunkSummary')
             return ''
         end
-        let [a,m,r] = GitGutterGetHunkSummary()
+        let [a, m, r] = GitGutterGetHunkSummary()
         return printf('(+%d ~%d -%d)', a, m, r)
     endf
 
     func! _stl_git_branch(win)
-        if win_getid() != a:win.winid
+        if win_getid() != a:win.winid || !exists('*FugitiveHead')
             return ''
         end
-        let bnum = a:win.bufnr
-        let diff = getbufvar(bnum, '&diff')
-        let branch = exists('*FugitiveHead') ? FugitiveHead() : ''
-        if !diff && !empty(branch) && a:win.width > 60
+        let branch = FugitiveHead()
+        if !getbufvar(a:win.bufnr, '&diff') && !empty(branch) && a:win.width > 60
             return 'git@' . branch
         end
         return ''

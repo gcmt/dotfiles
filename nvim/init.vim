@@ -558,7 +558,8 @@
 
         au TextYankPost * if has('nvim') | sil! lua vim.highlight.on_yank { higroup='Yank', timeout=300 } | end
 
-        au BufWritePost */nvim/init.vim source $MYVIMRC
+        au BufWritePost */nvim/init.vim source %
+        au BufWritePost */nvim/lua/init.lua luafile %
         au BufWritePost */nvim/colors/*.vim nested exec 'colorscheme' g:colors_name
         au BufWritePost */*Xresources.d/* call <sid>set_bg(&background)
         au BufWritePost */ftplugin/*.vim source % | exec 'au BufEnter ' . expand('#:p') . ' ++once let &ft = &ft'

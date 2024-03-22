@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
+import argparse
 import os
 import re
+import shlex
 import sys
 import time
-import argparse
-import shlex
-from subprocess import run, Popen, PIPE
+from subprocess import PIPE, Popen, run
 
 import i3pie
 

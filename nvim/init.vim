@@ -592,6 +592,7 @@
     " Clear undo history (:h clear-undo)
     command! -nargs=0 ClearUndo call util#clear_undo()
 
+    command! -nargs=0 Luarc exec 'edit' $VIMHOME . '/lua/init.lua'
     command! -nargs=0 Vimrc edit $MYVIMRC
     command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 

@@ -93,7 +93,6 @@ def parse_args():
 
 def match(args, win):
     """Match the given window with command line arguments"""
-    print("win class", win.window_class)
     if args.m == "-" and set(win.marks):
         # If '-' is given as mark, then explicitly require no marks
         return False

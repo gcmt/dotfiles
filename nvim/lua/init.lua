@@ -81,6 +81,12 @@ vim.api.nvim_create_autocmd("DiagnosticChanged", {
 vim.api.nvim_create_autocmd("CursorHold", {
 	group = diag_augroup,
 	callback = function(args)
+		-- do nothing if any floating window already exists
+		for _, win in pairs(vim.api.nvim_tabpage_list_wins(0)) do
+			if vim.api.nvim_win_get_config(win).zindex then
+				return
+			end
+		end
 		vim.diagnostic.open_float()
 	end,
 })

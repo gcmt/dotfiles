@@ -49,23 +49,21 @@ vim.diagnostic.config({
 		border = "single",
 		source = false,
 		focusable = false,
-		suffix = function(diagnostic, i, total)
-			local rv = diagnostic.source
-			if diagnostic.code ~= nil and diagnostic.source ~= "Pyright" then
-				rv = rv .. string.format(", %s", diagnostic.code)
+		format = function(diagnostic)
+			local source = string.lower(diagnostic.source)
+			local ret = string.format("[%s]", source)
+			if diagnostic.code ~= nil and source ~= "pyright" then
+				ret = string.format("%s %s:", ret, diagnostic.code)
 			end
-			return string.format(" (%s) ", rv), "Comment"
+			return string.format("%s %s", ret, diagnostic.message)
 		end,
 		prefix = function(diagnostic, i, total)
 			if total > 1 then
-				return "+ ", "Comment"
-			else
-				return " "
+				return string.format("%s. ", i)
 			end
+			return ""
 		end,
-		format = function(diagnostic)
-			return string.format("%s", diagnostic.message)
-		end,
+		suffix = "",
 	},
 	virtual_text = false,
 	update_in_insert = false,

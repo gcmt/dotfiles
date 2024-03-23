@@ -35,6 +35,7 @@
     call add(g:vendor, $VIMDATA.'/vendor/nvim-treesitter')
     call add(g:vendor, $VIMDATA.'/vendor/nvim-cmp')
     call add(g:vendor, $VIMDATA.'/vendor/cmp-nvim-lsp')
+    call add(g:vendor, $VIMDATA.'/vendor/cmp-nvim-lsp-signature-help')
 
     let s:rtp = []
     call extend(s:rtp, g:plugins + g:vendor)

@@ -1,6 +1,7 @@
 -- COMPLETION
 ----------------------------------------------------------------------------
 
+-- https://github.com/hrsh7th/nvim-cmp
 local cmp_lsp = require("cmp_nvim_lsp")
 local cmp = require("cmp")
 
@@ -24,6 +25,7 @@ cmp.setup({
 	}),
 	sources = cmp.config.sources({
 		{ name = "nvim_lsp" },
+		{ name = "nvim_lsp_signature_help" },
 	}),
 	sorting = {
 		comparators = {
@@ -43,6 +45,7 @@ cmp.setup({
 -- DIAGNOSTICS
 ----------------------------------------------------------------------------
 
+-- https://neovim.io/doc/user/diagnostic.html
 vim.diagnostic.config({
 	float = {
 		header = "",
@@ -100,6 +103,7 @@ vim.fn.sign_define("DiagnosticSignHint", { text = "^", texthl = "DiagnosticSignH
 ----------------------------------------------------------------------------
 
 -- https://github.com/neovim/nvim-lspconfig
+-- https://neovim.io/doc/user/lsp.html
 local lspconfig = require("lspconfig")
 local capabilities = cmp_lsp.default_capabilities()
 

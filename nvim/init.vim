@@ -28,15 +28,13 @@
 
     let g:vendor = []
     call add(g:vendor, $VIMDATA.'/vendor/ale')
+    call add(g:vendor, $VIMDATA.'/vendor/ultisnips')
     call add(g:vendor, $VIMDATA.'/vendor/vim-fugitive')
     call add(g:vendor, $VIMDATA.'/vendor/vim-gitgutter')
     call add(g:vendor, $VIMDATA.'/vendor/nvim-lspconfig')
     call add(g:vendor, $VIMDATA.'/vendor/nvim-treesitter')
-
     call add(g:vendor, $VIMDATA.'/vendor/nvim-cmp')
     call add(g:vendor, $VIMDATA.'/vendor/cmp-nvim-lsp')
-    call add(g:vendor, $VIMDATA.'/vendor/vim-vsnip')
-    call add(g:vendor, $VIMDATA.'/vendor/vim-vsnip-integ')
 
     let s:rtp = []
     call extend(s:rtp, g:plugins + g:vendor)
@@ -785,6 +783,15 @@
 " ----------------------------------------------------------------------------
 
     let g:gitgutter_enabled = 1
+
+" Ultisnips
+" ----------------------------------------------------------------------------
+
+    let g:UltiSnipsSnippetDirectories = [$VIMHOME . '/snips']
+
+    let g:UltiSnipsExpandTrigger = "<c-j>"
+    let g:UltiSnipsJumpForwardTrigger = "<c-j>"
+    let g:UltiSnipsJumpBackwardTrigger = "<c-b>"
 
 " Disable unused plugins
 " ----------------------------------------------------------------------------

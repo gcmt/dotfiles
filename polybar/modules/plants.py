@@ -1,13 +1,14 @@
 #!/usr/bin/python -u
 
-import os
-import sys
-import yaml
-import signal
 import argparse
+import os
+import signal
+import sys
 import threading
 from datetime import datetime
-from subprocess import run, PIPE
+from subprocess import PIPE, run
+
+import yaml
 
 PID = os.getpid()
 SCRIPT_PATH = os.path.realpath(__file__)

@@ -25,7 +25,9 @@ func! search#do(pattern, options) abort
                 call s:err("Nothing found")
             else
                 let bufnr = s.open_window()
-                let s.ctx.curr_line = context.curr_line
+                if context.curr_bufnr == s.ctx.curr_bufnr
+                    let s.ctx.curr_line = context.curr_line
+                end
                 call s.render(bufnr)
             end
         else
@@ -149,22 +151,22 @@ endf
 func! s:search.do() abort
     let self.matches = []
     let lines = getbufline(self.ctx.curr_bufnr, 1, '$')
-    let exclude_syntax = {}
-    if bufnr('%') == self.ctx.curr_bufnr
-        let exclude_syntax = s:list2dict(self.options.exclude_syntax)
-    else
-        call s:err(printf("Current buffer is %s, filtering by syntax not available", bufnr('%')))
-    end
     let Filter = self.options.filter_cb
     for i in range(0, len(lines)-1)
         let match = matchstrpos(lines[i], self.pattern)
         if empty(match[0]) || (Filter != v:null && !Filter(lines[i]))
             continue
         end
-        if !empty(exclude_syntax) && has_key(exclude_syntax, s:synat(i+1, match[1]+1))
-            continue
+        let excluded = 0
+        for group in self.options.exclude_syntax
+            if has_key(s:synat(i+1, match[1]+1, self.ctx.curr_bufnr), group)
+                let excluded = 1
+                break
+            end
+        endfor
+        if !excluded
+            call add(self.matches, [i+1, match[1]+1])
         end
-        call add(self.matches, [i+1, match[1]+1])
     endfo
     if empty(self.matches)
         return 0
@@ -206,7 +208,7 @@ func! s:search.render(bufnr, ...) abort
         let line = Transform != v:null ? Transform(line) : line
         call setbufline(a:bufnr, i+1, line)
 
-        let dist =abs(self.ctx.curr_line - m[0])
+        let dist = abs(self.ctx.curr_line - m[0])
         if dist < mindist
             let mindist = dist
             let closest = i+1
@@ -307,26 +309,21 @@ func! s:toggle_numbers()
     call b:search.s.render(bufnr('%'), line('.'))
 endf
 
-" s:synat({line:number}, {col:number}) -> string
-" Return the syntax group at the given position.
-func! s:synat(line, col)
-    return synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name')
-endf
-
-" s:list2dict({list:list}[, {fn:funcref}]) -> dict
-" Construct a dictionary from a list.
-" If a function {fn} is given, then to every dictionary key 'item' will
-" be associated the value returned from fn(item). If {fn} is not given, the
-" value 1 is used instead.
-func! s:list2dict(list, ...)
-    let dict = {}
-    let Fn = a:0 > 0 && type(a:1) == t:v_func ? a:1 : {-> 1}
-    for item in a:list
-        if !has_key(dict, item)
-            let dict[item] = Fn(item)
+" s:synat({line:number}, {col:number}) -> dict
+" Return the syntax groups at the given position.
+func! s:synat(line, col, bufnr = 0)
+    if has('nvim')
+        " Uses nvim api to better support treesitter
+        let ret = {}
+        let luacmd = printf("vim.inspect_pos(%s, %s, %s)['syntax']", a:bufnr, a:line-1, a:col-1)
+        let syn_list = luaeval(luacmd)
+        if !empty(syn_list)
+            let ret[syn_list[-1]['hl_group']] = 1
+            let ret[syn_list[-1]['hl_group_link']] = 1
         end
-    endfo
-    return dict
+        return ret
+    end
+    return {synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name'): 1}
 endf
 
 " s:err({msg:string}) -> 0

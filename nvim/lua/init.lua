@@ -49,10 +49,14 @@ cmp.setup({
 })
 
 -- DIAGNOSTICS
+-- https://neovim.io/doc/user/diagnostic.html
 ----------------------------------------------------------------------------
 
--- https://neovim.io/doc/user/diagnostic.html
 vim.diagnostic.config({
+	virtual_text = false,
+	update_in_insert = false,
+	signs = true,
+	underline = true,
 	float = {
 		header = "",
 		border = "single",
@@ -74,10 +78,6 @@ vim.diagnostic.config({
 		end,
 		suffix = "",
 	},
-	virtual_text = false,
-	update_in_insert = false,
-	signs = true,
-	underline = true,
 })
 
 diag_augroup = vim.api.nvim_create_augroup("UserDiagnostics", { clear = true })
@@ -90,7 +90,7 @@ vim.api.nvim_create_autocmd("DiagnosticChanged", {
 vim.api.nvim_create_autocmd("CursorHold", {
 	group = diag_augroup,
 	callback = function(args)
-		-- do nothing if any floating window already exists
+		-- check if any floating window already exists
 		for _, win in pairs(vim.api.nvim_tabpage_list_wins(0)) do
 			if vim.api.nvim_win_get_config(win).zindex then
 				return
@@ -100,31 +100,41 @@ vim.api.nvim_create_autocmd("CursorHold", {
 	end,
 })
 
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+vim.keymap.set("n", "<leader>l", vim.diagnostic.setloclist)
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
+
 vim.fn.sign_define("DiagnosticSignError", { text = "*", texthl = "DiagnosticSignError" })
 vim.fn.sign_define("DiagnosticSignWarn", { text = "*", texthl = "DiagnosticSignWarn" })
 vim.fn.sign_define("DiagnosticSignInfo", { text = "^", texthl = "DiagnosticSignInfo" })
 vim.fn.sign_define("DiagnosticSignHint", { text = "^", texthl = "DiagnosticSignHint" })
 
 -- LSP CONFIG
-----------------------------------------------------------------------------
-
 -- https://github.com/neovim/nvim-lspconfig
 -- https://neovim.io/doc/user/lsp.html
+----------------------------------------------------------------------------
+
 local lspconfig = require("lspconfig")
-local capabilities = cmp_lsp.default_capabilities()
 
-lspconfig.gopls.setup({ capabilities = capabilities })
-lspconfig.tsserver.setup({ capabilities = capabilities })
-lspconfig.rust_analyzer.setup({ capabilities = capabilities })
-lspconfig.pyright.setup({ capabilities = capabilities })
-lspconfig.yamlls.setup({ capabilities = capabilities })
+local lsp_servers = {
+	gopls = {},
+	tsserver = {},
+	rust_analyzer = {},
+	pyright = {},
+	yamlls = {},
+}
 
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
-vim.keymap.set("n", "<leader>l", vim.diagnostic.setloclist)
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities = vim.tbl_deep_extend("force", capabilities, cmp_lsp.default_capabilities())
+
+for server, config in pairs(lsp_servers) do
+	config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+	lspconfig[server].setup(config)
+end
 
 vim.api.nvim_create_autocmd("LspAttach", {
+	group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 	callback = function(ev)
 		vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
 		local opts = { buffer = ev.buf }
@@ -136,6 +146,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "<leader>s", vim.lsp.buf.signature_help, opts)
 		vim.keymap.set("n", "<leader>t", vim.lsp.buf.type_definition, opts)
 		vim.keymap.set("n", "<leader>c", vim.lsp.buf.rename, opts)
+		vim.keymap.set("n", "<leader>a", vim.lsp.buf.code_action, opts)
 		vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts)
 		vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts)
 		vim.keymap.set("n", "<leader>wl", function()

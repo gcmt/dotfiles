@@ -8,14 +8,17 @@ clear_all() {
     echo
 }
 
+trap 'refresh' USR1
+refresh() {
+    kill ${sleep_pid} 2>/dev/null
+}
+
 open_term() {
     kitty --title Lib -e /bin/bash -c "lib -i"
     kill -USR1 $(pgrep -f /polybar/modules/lib)
 }
 
-trap 'print_count' USR1
 print_count() {
-    kill ${sleep_pid} 2>/dev/null
     local label=""
     local count=$(lib -c)
     if (( count > 0 )); then
@@ -37,7 +40,7 @@ sleep_pid=
 main() {
     while true; do
         print_count
-        sleep 1h &
+        sleep infinity &
         sleep_pid=$!
         wait $!
     done
@@ -46,6 +49,5 @@ main() {
 case "$1" in
 	"") main ;;
 	-view) open_term & ;;
-	-clear) clear_all & ;;
 	*) exit 1 ;;
 esac

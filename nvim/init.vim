@@ -36,6 +36,8 @@
     call add(g:vendor, $VIMDATA.'/vendor/nvim-cmp')
     call add(g:vendor, $VIMDATA.'/vendor/cmp-nvim-lsp')
     call add(g:vendor, $VIMDATA.'/vendor/cmp-nvim-lsp-signature-help')
+    call add(g:vendor, $VIMDATA.'/vendor/cmp-buffer')
+    call add(g:vendor, $VIMDATA.'/vendor/cmp-path')
 
     let s:rtp = []
     call extend(s:rtp, g:plugins + g:vendor)
@@ -146,7 +148,7 @@
     set nofoldenable
     set foldcolumn=0
 
-    set completeopt=menuone,longest
+    set completeopt=menu,menuone,noselect
     set report=9999
     set shortmess=CFFOIAoastc
     set noshowmode

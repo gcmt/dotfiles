@@ -1,7 +1,7 @@
 -- COMPLETION
+-- https://github.com/hrsh7th/nvim-cmp
 ----------------------------------------------------------------------------
 
--- https://github.com/hrsh7th/nvim-cmp
 local cmp_lsp = require("cmp_nvim_lsp")
 local cmp = require("cmp")
 
@@ -17,20 +17,26 @@ cmp.setup({
 	},
 	mapping = cmp.mapping.preset.insert({
 		["<TAB>"] = cmp.mapping.select_next_item(),
+		["<S-TAB>"] = cmp.mapping.select_prev_item(),
 		["<C-b>"] = cmp.mapping.scroll_docs(-4),
 		["<C-f>"] = cmp.mapping.scroll_docs(4),
 		["<C-Space>"] = cmp.mapping.complete(),
 		["<C-e>"] = cmp.mapping.abort(),
-		["<CR>"] = cmp.mapping.confirm({ select = true }),
+		-- ["<CR>"] = cmp.mapping.confirm({ select = true }),
 	}),
 	sources = cmp.config.sources({
 		{ name = "nvim_lsp" },
 		{ name = "nvim_lsp_signature_help" },
+		{ name = "buffer", keyword_length = 2 },
+		{ name = "path" },
 	}),
+	formatting = {
+		fields = { "abbr", "menu", "kind" },
+	},
 	sorting = {
 		comparators = {
-			cmp.config.compare.offset,
 			cmp.config.compare.exact,
+			cmp.config.compare.offset,
 			cmp.config.compare.score,
 			cmp.config.compare.recently_used,
 			cmp.config.compare.locality,

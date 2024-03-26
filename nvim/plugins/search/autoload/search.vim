@@ -158,8 +158,9 @@ func! s:search.do() abort
             continue
         end
         let excluded = 0
+        let cur_syn = s:synat(i+1, match[1]+1, self.ctx.curr_bufnr)
         for group in self.options.exclude_syntax
-            if has_key(s:synat(i+1, match[1]+1, self.ctx.curr_bufnr), group)
+            if has_key(cur_syn, group)
                 let excluded = 1
                 break
             end
@@ -309,22 +310,24 @@ func! s:toggle_numbers()
     call b:search.s.render(bufnr('%'), line('.'))
 endf
 
-" s:synat({line:number}, {col:number}) -> dict
-" Return the syntax groups at the given position.
-func! s:synat(line, col, bufnr = 0)
-    if has('nvim')
-        " Uses nvim api to better support treesitter
+if has('nvim')
+    " s:synat({line:number}, {col:number}, {bufnr:number}) -> dict
+    " Return the syntax groups at the given position.
+    func! s:synat(line, col, bufnr = 0)
         let ret = {}
-        let luacmd = printf("vim.inspect_pos(%s, %s, %s)['syntax']", a:bufnr, a:line-1, a:col-1)
-        let syn_list = luaeval(luacmd)
-        if !empty(syn_list)
-            let ret[syn_list[-1]['hl_group']] = 1
-            let ret[syn_list[-1]['hl_group_link']] = 1
-        end
+        let table = luaeval(printf("vim.inspect_pos(%s, %s, %s)", a:bufnr, a:line-1, a:col-1))
+        for syn in empty(table['syntax']) ? table['treesitter'] : table['syntax']
+            let group = empty(syn['hl_group_link']) ? syn['hl_group'] : syn['hl_group_link']
+            let ret[tolower(group)] = 1
+        endfor
         return ret
-    end
-    return {synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name'): 1}
-endf
+    endf
+else
+    " s:synat({line:number}, {col:number}, {bufnr:number}) -> dict
+    func! s:synat(line, col, bufnr = 0)
+        return {synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name'): 1}
+    endf
+end
 
 " s:err({msg:string}) -> 0
 " Display a simple error message.

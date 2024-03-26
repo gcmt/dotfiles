@@ -1,3 +1,8 @@
+P = function(v)
+	print(vim.inspect(v))
+	return v
+end
+
 -- COMPLETION
 -- https://github.com/hrsh7th/nvim-cmp
 ----------------------------------------------------------------------------
@@ -31,7 +36,7 @@ cmp.setup({
 		{ name = "path" },
 	}),
 	formatting = {
-		fields = { "abbr", "menu", "kind" },
+		fields = { "abbr", "kind", "menu" },
 	},
 	sorting = {
 		comparators = {
@@ -164,14 +169,25 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.s
 })
 
 -- TREESITTER
+-- https://github.com/nvim-treesitter/nvim-treesitter
+-- https://neovim.io/doc/user/treesitter.html
 ----------------------------------------------------------------------------
 
 require("nvim-treesitter.configs").setup({
-	ensure_installed = { "vim", "python", "go", "javascript", "rust", "yaml" },
+	ensure_installed = {
+		"vim",
+		"python",
+		"go",
+		"javascript",
+		"rust",
+		"lua",
+		"yaml",
+		"markdown",
+	},
 	sync_install = false,
 	ignore_install = { "" },
 	highlight = {
-		enable = false,
+		enable = true,
 		disable = { "" },
 		additional_vim_regex_highlighting = false,
 	},

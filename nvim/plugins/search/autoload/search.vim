@@ -158,13 +158,15 @@ func! s:search.do() abort
             continue
         end
         let excluded = 0
-        let cur_syn = s:synat(i+1, match[1]+1, self.ctx.curr_bufnr)
-        for group in self.options.exclude_syntax
-            if has_key(cur_syn, group)
-                let excluded = 1
-                break
-            end
-        endfor
+        if !empty(self.options.exclude_syntax)
+            let cur_syn = s:synat(i+1, match[1]+1, self.ctx.curr_bufnr)
+            for group in self.options.exclude_syntax
+                if has_key(cur_syn, group)
+                    let excluded = 1
+                    break
+                end
+            endfor
+        end
         if !excluded
             call add(self.matches, [i+1, match[1]+1])
         end

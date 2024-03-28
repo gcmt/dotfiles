@@ -286,8 +286,15 @@ func! s:node.render() abort
     let nr = 1
     let b:explorer.map[nr] = self
     let title = self.path
+
+    if has_key(marks, self.path)
+        let label = printf(" [%s]", marks[self.path])
+        call s:matchadd(winid, g:explorer_hl_mark, nr, len(title), len(title)+len(label)+1)
+        let title .= label
+    end
+
     call setbufline(b:explorer.bufnr, nr, title)
-    call s:matchadd(winid, g:explorer_hl_title, nr)
+    call s:matchadd(winid, g:explorer_hl_title, nr, 0, len(self.path)+1)
 
     let nodes = s:filter(self.content, filters)
     let last = len(nodes)-1

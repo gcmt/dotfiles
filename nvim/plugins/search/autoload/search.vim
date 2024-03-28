@@ -141,6 +141,11 @@ func! s:search.new(context, pattern, options)
     let s.bufname = s:bufname
     let s.options = a:options
     let s.matches = []
+    if s.options.smartcase && s.pattern =~# '[A-Z]'
+        let s.pattern = '\C' . s.pattern
+    else
+        let s.pattern = '\c' . s.pattern
+    end
     return s
 endf
 

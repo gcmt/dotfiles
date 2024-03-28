@@ -24,6 +24,7 @@ let s:options = #{
     \ max_height_popup: "90%",
     \ max_height_window: "50%",
     \ exclude_syntax: ['comment', 'string'],
+    \ smartcase: &smartcase,
     \ set_search_register: 1,
     \ add_to_search_history: 1,
     \ show_line_numbers: 1,

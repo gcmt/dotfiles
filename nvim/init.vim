@@ -480,17 +480,12 @@
     " select the last changed text
     nnoremap <expr> gV '`[' . strpart(getregtype(), 0, 1) . '`]'
 
+    " indent last changed text
     nmap g= gV=
 
+    " paste and indent
     nmap <silent> ]P Pg=gqac
     nmap <silent> ]p pg=gqac
-
-    " replace selection without side effects
-    vmap <expr> P '_d"' . v:register . 'P'
-    vmap <expr> ]P '_d"' . v:register . ']P'
-
-    " toggle paste
-    nnoremap gop :set paste!<bar>set paste?<cr>
 
     " copy to the end of the line
     nnoremap Y y$
@@ -498,6 +493,9 @@
     " indent lines without losing selection
     vnoremap < <gv
     vnoremap > >gv
+
+    " discard empty lines
+    nnoremap <expr> dd ":norm! " . (getline(".") =~ '^\s*$' ? '"_dd' : "dd") . "<cr>"
 
 " MOVING AROUND
 " ----------------------------------------------------------------------------
@@ -732,6 +730,8 @@
 
     let g:quickfix_height = 50
     command! -nargs=0 Cclear call setqflist([], 'r')
+
+    nnoremap <silent> <leader>q :copen<cr>
 
     nnoremap <silent> ]q :cnext<cr>zz<cr>
     nnoremap <silent> ]Q :clast<cr>zz<cr>

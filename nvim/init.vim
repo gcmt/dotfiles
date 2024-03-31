@@ -619,11 +619,13 @@
     aug _misc
         au!
 
+        if has('nvim')
+            au TextYankPost * sil! lua vim.highlight.on_yank { higroup="Yank", timeout=150, on_visual=false }
+        end
+
         au VimEnter * if isdirectory(expand('%:p')) | exec 'Explorer!' expand('%:p') | end
 
         au FocusGained,BufEnter,CursorHold * sil! checktime
-
-        au TextYankPost * if has('nvim') | sil! lua vim.highlight.on_yank { higroup='Yank', timeout=300 } | end
 
         au BufWritePost */nvim/init.vim source %
         au BufWritePost */nvim/lua/init.lua luafile %

@@ -409,8 +409,48 @@
         end
     endf
 
-    command! -bang -nargs=0 Bdelete call util#bdelete('bdelete', <q-bang>)
+    command! -bang -nargs=0 Bdelete call <sid>bdelete('bdelete', <q-bang>)
     nnoremap <silent> <c-w>d :Bdelete!<cr>
+
+    " Delete the buffer without closing the window
+    func! s:bdelete(cmd, bang)
+
+        let target = bufnr("%")
+        if &modified && empty(a:bang)
+            return s:err('E89 No write since last change for buffer %d (add ! to override)', target)
+        end
+
+        if buflisted(@#) && empty(getbufvar(@#, '&bt'))
+            let repl = bufnr(@#)
+        else
+            let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&bt'))}
+            let buffers = filter(range(1, bufnr('$')), Fn)
+            let repl = buffers[(index(buffers, target)+1) % len(buffers)]
+        end
+
+        if repl == target
+            if empty(bufname(target))
+                " there are no more named buffers to switch to
+                return
+            end
+            call win_execute(bufwinid(target), 'enew')
+        else
+            while bufwinid(target) != -1
+                call win_execute(bufwinid(target), 'buffer ' . repl)
+            endw
+        end
+
+        let cmd = a:cmd
+        if getbufvar(target, '&buftype') == 'terminal'
+            let cmd = 'bwipe!'
+        end
+
+        try
+            exec cmd target
+        catch /E.*/
+            return s:err(matchstr(v:exception, '\vE\d+:.*'))
+        endtry
+    endf
 
 " EDITING
 " ----------------------------------------------------------------------------
@@ -545,7 +585,33 @@
     vnoremap <silent> Q :norm! Q<cr>
 
     " edit registers
-    command! -nargs=? Regedit call util#regedit(<q-args>)
+    command! -nargs=? Regedit call <sid>regedit(<q-args>)
+
+    func! <sid>regedit(reg)
+        let reg = empty(a:reg) ? '"' : a:reg
+
+        exec "sil keepj keepa botright 1new __regedit__"
+        setl ft=regedit bt=nofile bh=wipe nobl noudf nobk noswf nospell
+        call setwinvar(winnr(), "&stl", " [Register " . reg . "] ctrl-v to insert control characters")
+
+        let reg_content = getreg(reg, 1, 1)
+        call append(1, reg_content)
+        sil norm! "_dd
+
+        let min_size = 5
+        let max_size = float2nr(&lines * 50 / 100)
+        exec "resize" min([max([len(reg_content), min_size]), max_size])
+
+        nno <silent> <buffer> q <c-w>c
+        nno <silent> <buffer> <cr> :let b:regedit_save = 1<bar>close<cr>
+        nno <silent> <buffer> <c-j> :let b:regedit_save = 1<bar>close<cr>
+
+        let b:regedit_reg = reg
+        au BufWipeout <buffer> |
+            \ if get(b:, "regedit_save") |
+                \ call setreg(b:regedit_reg, join(getline(0, "$"), "\n")) |
+            \ end
+    endf
 
 " MISC
 " ----------------------------------------------------------------------------
@@ -588,11 +654,20 @@
         echohl WarningMsg | echo call('printf', [a:fmt] + a:000)  | echohl None
     endf
 
-    "inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-    "inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+    " Clear undo history (:h clear-undo)
+    func! s:clear_undo()
+        let modified_save = &modified
+        let undolevels_save = &undolevels
+        let line_save = getline('.')
+        set undolevels=-1
+        exec "norm! a \<bs>\<esc>"
+        call setline('.', line_save)
+        let &undolevels = undolevels_save
+        let &modified = modified_save
+    endf
 
     " Clear undo history (:h clear-undo)
-    command! -nargs=0 ClearUndo call util#clear_undo()
+    command! -nargs=0 ClearUndo call <sid>clear_undo()
 
     command! -nargs=0 Luarc exec 'edit' $VIMHOME . '/lua/init.lua'
     command! -nargs=0 Vimrc edit $MYVIMRC
@@ -671,8 +746,38 @@
 
     let g:root_markers = ['.gitignore']
 
-    command! -bang -nargs=0 Here call util#cd_into_buf_dir(<q-bang>)
-    command! -bang -nargs=0 Root call util#cd_into_root_dir(<q-bang>)
+    " Find project root
+    func! s:find_root(path)
+        if empty(a:path) || a:path == '/'
+            return ''
+        end
+        let files = glob(a:path.'/.*', 1, 1) + glob(a:path.'/*', 1, 1)
+        let pattern = '\V\^\(' . join(get(g:, 'root_markers', ['.gitignore']), '\|') . '\)\$'
+        if match(map(files, "fnamemodify(v:val, ':t')"), pattern) >= 0
+            return a:path
+        end
+        return s:find_root(fnamemodify(a:path, ':h'))
+    endf
+
+    " Cd into the current project root directory
+    func! s:cd_into_root_dir(bang)
+        let path = s:find_root(expand('%:p:h'))
+        if !empty(path)
+            let cd = empty(a:bang) ? 'cd' : 'lcd'
+            exec cd fnameescape(path)
+            pwd
+        end
+    endf
+
+    " Cd into the directory of the current buffer
+    func! s:cd_into_buf_dir(bang)
+        let cd = empty(a:bang) ? 'cd' : 'lcd'
+        exec cd fnameescape(expand('%:p:h'))
+        pwd
+    endf
+
+    command! -bang -nargs=0 Here call <sid>cd_into_buf_dir(<q-bang>)
+    command! -bang -nargs=0 Root call <sid>cd_into_root_dir(<q-bang>)
 
 " Search
 " ----------------------------------------------------------------------------

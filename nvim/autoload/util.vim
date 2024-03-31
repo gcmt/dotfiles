@@ -1,43 +1,4 @@
 
-" Find project root
-func! util#find_root(path)
-    if empty(a:path) || a:path == '/'
-        return ''
-    end
-    let files = glob(a:path.'/.*', 1, 1) + glob(a:path.'/*', 1, 1)
-    let pattern = '\V\^\(' . join(get(g:, 'root_markers', ['.gitignore']), '\|') . '\)\$'
-    if match(map(files, "fnamemodify(v:val, ':t')"), pattern) >= 0
-        return a:path
-    end
-    return util#find_root(fnamemodify(a:path, ':h'))
-endf
-
-
-" Cd into the current project root directory
-func! util#cd_into_root_dir(bang)
-    let path = util#find_root(expand('%:p:h'))
-    if !empty(path)
-        let cd = empty(a:bang) ? 'cd' : 'lcd'
-        exec cd fnameescape(path)
-        pwd
-    end
-endf
-
-
-" Cd into the directory of the current buffer
-func! util#cd_into_buf_dir(bang)
-    let cd = empty(a:bang) ? 'cd' : 'lcd'
-    exec cd fnameescape(expand('%:p:h'))
-    pwd
-endf
-
-
-" Returns the syntax group under the cursor
-func! util#cursyn()
-    return synIDattr(synIDtrans(synID(line('.'), col('.'), 0)), 'name')
-endf
-
-
 " Execute the :s command without messing jumps or cursor
 func! util#s(pattern, string, flags)
     let view = winsaveview()
@@ -46,93 +7,12 @@ func! util#s(pattern, string, flags)
 endf
 
 
-" Edit register in a buffer
-func! util#regedit(reg)
-    let reg = empty(a:reg) ? '"' : a:reg
-
-    exec "sil keepj keepa botright 1new __regedit__"
-    setl ft=regedit bt=nofile bh=wipe nobl noudf nobk noswf nospell
-    call setwinvar(winnr(), "&stl", " [Register " . reg . "] ctrl-v to insert control characters")
-
-    let reg_content = getreg(reg, 1, 1)
-    call append(1, reg_content)
-    sil norm! "_dd
-
-    let min_size = 5
-    let max_size = float2nr(&lines * 50 / 100)
-    exec "resize" min([max([len(reg_content), min_size]), max_size])
-
-    nno <silent> <buffer> q <c-w>c
-    nno <silent> <buffer> <cr> :let b:regedit_save = 1<bar>close<cr>
-    nno <silent> <buffer> <c-j> :let b:regedit_save = 1<bar>close<cr>
-
-    let b:regedit_reg = reg
-    au BufWipeout <buffer> if get(b:, "regedit_save") |
-        \ call setreg(b:regedit_reg, join(getline(0, "$"), "\n")) | end
-
-endf
-
-
-" Delete the buffer without closing the window
-func! util#bdelete(cmd, bang)
-
-    let target = bufnr("%")
-
-    if &modified && empty(a:bang)
-        return util#errm('E89 No write since last change for buffer %d (add ! to override)', target)
-    end
-
-    let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&bt'))}
-    let buffers = filter(range(1, bufnr('$')), Fn)
-
-    " select the next buffer as a replacement buffer
-    let repl = buffers[(index(buffers, target)+1) % len(buffers)]
-
-    if repl == target
-        if empty(bufname(target))
-            " there are no more named buffers to switch to
-            return
-        end
-        call win_execute(bufwinid(target), 'enew')
-    else
-        while bufwinid(target) != -1
-            call win_execute(bufwinid(target), 'buffer ' . repl)
-        endw
-    end
-
-    let cmd = a:cmd
-    if getbufvar(target, '&buftype') == 'terminal'
-        let cmd = 'bwipe!'
-    end
-
-    try
-        exec cmd target
-    catch /E.*/
-        return s:err(matchstr(v:exception, '\vE\d+:.*'))
-    endtry
-
-endf
-
-
-" Clear undo history (:h clear-undo)
-func! util#clear_undo()
-    let modified_save = &modified
-    let undolevels_save = &undolevels
-    let line_save = getline('.')
-    set undolevels=-1
-    exec "norm! a \<bs>\<esc>"
-    call setline('.', line_save)
-    let &undolevels = undolevels_save
-    let &modified = modified_save
-endf
-
-
-func! util#err(fmt, ...)
+func! s:err(fmt, ...)
     echohl WarningMsg | echo call('printf', [a:fmt] + a:000)  | echohl None
 endf
 
 
-func! util#errm(fmt, ...)
+func! s:errm(fmt, ...)
     echohl WarningMsg | echom call('printf', [a:fmt] + a:000)  | echohl None
 endf
 
@@ -324,9 +204,9 @@ func! util#test_fmt() abort
         call assert_equal(t.expected_pos, pos)
 
         if !empty(v:errors)
-            call util#errm("Test #%d: FAIL", i)
+            call s:errm("Test #%d: FAIL", i)
             for err in v:errors
-                call util#errm(err)
+                call s:errm(err)
             endfo
             echo
         else

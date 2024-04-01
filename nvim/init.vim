@@ -605,10 +605,7 @@
         nno <silent> <buffer> <c-j> :let b:regedit_save = 1<bar>close<cr>
 
         let b:regedit_reg = reg
-        au BufWipeout <buffer> |
-            \ if get(b:, "regedit_save") |
-                \ call setreg(b:regedit_reg, join(getline(0, "$"), "\n")) |
-            \ end
+        au BufWipeout <buffer> if get(b:, "regedit_save") | call setreg(b:regedit_reg, join(getline(0, "$"), "\n")) | end
     endf
 
 " MISC

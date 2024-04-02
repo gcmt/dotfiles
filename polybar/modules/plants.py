@@ -63,23 +63,25 @@ def icon(text, **kwargs):
 
 def menu(plants):
     entries = []
-    by_delay = lambda p: p["target_watering"] - p["elapsed_watering"]
+    by_delay = lambda p: p["target_water"] - p["elapsed_water"]
     for p in sorted(plants, key=by_delay):
         line = ""
-        delay = p["elapsed_watering"] > p["target_watering"]
+        delay = p["elapsed_water"] > p["target_water"]
         fg_color = FG_DELAY if delay else ""
         line += span(p["plant"], foreground=fg_color)
+        if p["elapsed_water"] >= p["target_water"]:
+            line = f"<b>{line}</b>"
         line += span("   -   ", foreground=FG_DIM)
         line += icon("", size="small", foreground=FG_DIM) + "  "
-        if p["last_watering"]:
-            line += f"{p['elapsed_watering']} "
-            line += span(f"({p['target_watering']})", size="small", foreground=FG_DIM)
+        if p["water"]:
+            line += f"{p['elapsed_water']} "
+            line += span(f"({p['target_water']})", size="small", foreground=FG_DIM)
         else:
             line += "n/a"
-        if p["last_fertilizing"]:
+        if p["fertilizer"]:
             line += span("   -   ", foreground=FG_DIM)
             line += icon("", size="small", foreground=FG_DIM) + "  "
-            line += f"{p['elapsed_fertilizing']}"
+            line += f"{p['elapsed_fertilizer']}"
         line += ""
         entries.append(line)
     entries.append(MENU_SEPARATOR)
@@ -101,16 +103,12 @@ def load_file(path):
         for item in yaml.safe_load(f):
             yield {
                 "plant": item["plant"],
-                "target_watering": item["target_watering"],
-                "last_watering": item["last_watering"],
-                "last_fertilizing": item["last_fertilizing"],
-                "elapsed_watering": (
-                    (today - item["last_watering"]).days if item["last_watering"] else 0
-                ),
-                "elapsed_fertilizing": (
-                    (today - item["last_fertilizing"]).days
-                    if item["last_fertilizing"]
-                    else 0
+                "target_water": item["target_water"],
+                "water": item["water"],
+                "fertilizer": item["fertilizer"],
+                "elapsed_water": ((today - item["water"]).days if item["water"] else 0),
+                "elapsed_fertilizer": (
+                    (today - item["fertilizer"]).days if item["fertilizer"] else 0
                 ),
             }
 
@@ -118,7 +116,7 @@ def load_file(path):
 def print_label():
     while True:
         plants = load_file(WATERING_FILE)
-        delays = sum(int(p["elapsed_watering"] >= p["target_watering"]) for p in plants)
+        delays = sum(int(p["elapsed_water"] >= p["target_water"]) for p in plants)
         label = ""
         if delays:
             label = f" {delays}"

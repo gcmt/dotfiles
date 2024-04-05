@@ -261,7 +261,7 @@
         return join(items, a:sep)
     endf
 
-    fun! _stl_git_status(win)
+    func! _stl_git_status(win)
         if win_getid() != a:win.winid || !exists('*GitGutterGetHunkSummary')
             return ''
         end
@@ -585,7 +585,7 @@
     " edit registers
     command! -nargs=? Regedit call <sid>regedit(<q-args>)
 
-    func! <sid>regedit(reg)
+    func! s:regedit(reg)
         let reg = empty(a:reg) ? '"' : a:reg
 
         exec "sil keepj keepa botright 1new __regedit__"
@@ -720,6 +720,7 @@
         else
             set clipboard=
         end
+        redraw!
     endf
 
 " QUICKFIX
@@ -821,7 +822,7 @@
     "nnoremap <silent> g. :exec 'Fm' expand('%:p')<cr>
     "nnoremap <silent> <c-p> :exec 'Fm' getcwd()<cr>
 
-    let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
+    let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv|__pycache__)$'}]
 
     nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
     nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>

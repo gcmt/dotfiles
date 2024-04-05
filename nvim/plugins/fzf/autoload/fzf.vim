@@ -6,7 +6,7 @@ let s:default_actions = {
 \ }
 
 
-func! fzf#files(cwd)
+func! fzf#files(cwd, bang)
 
     func! s:files__cb() dict
         if self.status == 1
@@ -32,7 +32,7 @@ func! fzf#files(cwd)
     end
 
     call s:run({
-        \ 'source': g:fzf_files_cmd,
+        \ 'source': empty(a:bang) ? g:fzf_files_cmd : g:fzf_files_cmd_bang,
         \ 'callback': funcref('s:files__cb'),
         \ 'fzf_opts': fzf_opts,
         \ 'cwd' : empty(a:cwd) ? getcwd() : a:cwd,

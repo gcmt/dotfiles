@@ -10,13 +10,14 @@ if exists('g:fzf_loaded') || !executable('fzf') || &cp
 end
 let g:fzf_loaded = 1
 
-command! -nargs=* Files call fzf#files(<q-args>)
+command! -bang -nargs=* Files call fzf#files(<q-args>, <q-bang>)
 
 let s:options = {
     \ 'default_opts': "-e --multi --preview 'head -100 {}' --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:19,gutter:-1",
     \ 'preview_treshold': 150,
     \ 'term_prg': 'TMUX= kitty --name vim-popup',
-    \ 'files_cmd': "rg --files --hidden -g '!.git/' -g '!.venv/'  -g '!.mypy_cache/'",
+    \ 'files_cmd': "rg --files --no-hidden",
+    \ 'files_cmd_bang': "rg --files --hidden -g '!.git/' -g '!.venv/' -g '!.mypy_cache/' -g '!.ruff_cache/' -g '!node_modules/'",
 \ }
 
 for [s:option, s:default] in items(s:options)

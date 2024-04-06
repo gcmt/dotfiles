@@ -42,6 +42,7 @@ func marks#view() abort
         return
     end
 
+    let curr_path = fnamemodify(bufname('%'), ':p')
     let curr_bufnr = bufnr('%')
     let curr_winnr = winnr()
 
@@ -120,9 +121,8 @@ func marks#view() abort
     \ }
 
     " position the cursor to the current buffer
-    let current_file = fnamemodify(bufname('%'), ':p')
     for [line, m] in items(table)
-        if type(m) == v:t_string && m ==# current_file
+        if type(m) == v:t_string && m ==# curr_path
             let ctx.selected = line
             break
         end

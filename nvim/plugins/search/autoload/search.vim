@@ -210,11 +210,11 @@ func! s:search.render(bufnr, ...) abort
         let b:search.table[i+1] = m
 
         let num = printf("%".width."s", m[0])
-        let line = self.options.show_line_numbers ? num . padding : padding
-        let line .= getbufline(self.ctx.curr_bufnr, m[0])[0]
+        let entry = self.options.show_line_numbers ? num . padding : padding
+        let line = getbufline(self.ctx.curr_bufnr, m[0])[0]
         let Transform = self.options.transform_cb
-        let line = Transform != v:null ? Transform(line) : line
-        call setbufline(a:bufnr, i+1, line)
+        let entry .= Transform != v:null ? Transform(line) : line
+        call setbufline(a:bufnr, i+1, entry)
 
         let dist = abs(self.ctx.curr_line - m[0])
         if dist < mindist

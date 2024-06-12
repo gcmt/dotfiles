@@ -17,12 +17,13 @@ format_time() {
 	local h=$(( t / 60 / 60 % 24 ))
 	local m=$(( t / 60 % 60 ))
 	local s=$(( t % 60 ))
-	local out="$(printf "%01d" $s)"
-	(( m > 0 )) && out="$(printf "%02d" $m):$out"
-	(( h > 0 )) && out="$h:$out"
-	(( d > 0 )) && out="$d:$out"
+    local out
+    (( m > 0 )) && out="$(printf "%02d" $s)" || out="$(printf "%01d" $s)"
+	(( m > 0 )) && out="$(printf "%02d" $m):${out}"
+	(( h > 0 )) && out="$h:${out}"
+	(( d > 0 )) && out="$d:${out}"
 	(( m == 0 && h == 0 && d == 0 )) && out="${out}s"
-	echo "$out"
+	echo "${out}"
 }
 
 print_label() {

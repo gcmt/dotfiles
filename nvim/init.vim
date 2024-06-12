@@ -63,6 +63,7 @@
     set directory=
     set noswapfile
 
+    set notermguicolors
     set spelllang=it,en
     set updatetime=300
     set timeoutlen=1000

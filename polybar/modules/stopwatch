@@ -1,82 +1,64 @@
 #!/bin/bash
 
+scriptpath="$(realpath -s "$0")"
+scriptname="$(basename "$scriptpath")"
+
+state="stopped"
+start_time=
+
+trap 'toggle_timer' USR1
+toggle_timer() {
+    case "${state}" in
+        started)
+            stat_time=
+            state=stopped
+            ;;
+        stopped)
+            start_time=$(date +%s)
+            state=started
+            ;;
+    esac
+}
+
+trap 'reset_timer' USR2
+reset_timer() {
+	start_time=$(date +%s)
+}
+
 format_time() {
 	local t=$1
 	local d=$(( t / 60 / 60 / 24 ))
 	local h=$(( t / 60 / 60 % 24 ))
 	local m=$(( t / 60 % 60 ))
 	local s=$(( t % 60 ))
-	local out="$(printf "%02d" $s)"
-	(( m > 0 )) && out="$(printf "%02d" $m):$out"
+	local out="$(printf "%01d" $s)"
+	(( m > 0 )) && out="$(printf "%01d" $m):$out"
 	(( h > 0 )) && out="$h:$out"
 	(( d > 0 )) && out="$d:$out"
 	(( m == 0 && h == 0 && d == 0 )) && out="${out}s"
 	echo "$out"
 }
 
-stopwatch() {
-	local elapsed
-	local start=$(date +%s)
-	while true; do
-		elapsed="$(format_time $(( $(date +%s) - start )))"
-		echo "%{A1:$scriptpath stop:}%{A3:$scriptpath start:} $elapsed%{A}%{A}"
-		sleep 1
-	done
+print_label() {
+    local label elapsed
+    case "${state}" in
+        started)
+            elapsed="$(format_time $(( $(date +%s) - start_time )))"
+            label=" ${elapsed}"
+            ;;
+        stopped)
+            label="%{F#999}%{F-}"
+            ;;
+    esac
+    echo "%{A1:kill -USR1 $$:}%{A3:kill -USR2 $$:}${label}%{A}%{A}"
 }
 
 main() {
-	local pid
-	while true; do
-		if read -r cmd < "$fifo"; then
-			case $cmd in
-				start)
-					if [[ -n "$pid" ]]; then
-						kill $pid
-					fi
-					stopwatch &
-					pid=$!
-					;;
-				stop)
-					if [[ -n "$pid" ]]; then
-						kill $pid
-					fi
-					echo
-					pid=
-					;;
-				toggle)
-					if [[ -n "$pid" ]]; then
-						kill $pid
-						echo
-						pid=
-					else
-						stopwatch &
-						pid=$!
-					fi
-					;;
-			esac
-		fi
-	done
+    while true; do
+        print_label
+        sleep 1s &
+        wait $!
+    done
 }
 
-err() {
-	echo "$scriptname: $*" >&2
-	exit 1
-}
-
-scriptpath="$(realpath -s "$0")"
-scriptname="$(basename "$scriptpath")"
-fifo="/tmp/polybar_stopwatch.fifo"
-
-if (( $# == 0 )); then
-	if [[ -p "$fifo" ]]; then
-		err "module already running"
-	fi
-	mkfifo "$fifo"
-	trap "rm '$fifo'" 0
-	main
-else
-	if [[ ! -p "$fifo" ]]; then
-		err "module not running"
-	fi
-	echo "$1" > "$fifo"
-fi
+main

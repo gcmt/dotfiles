@@ -1,32 +1,72 @@
 #!/bin/bash
 
-STATE="$HOME/.cache/polybar-datetime.state"
+TIMER_STATE="stopped"
+TIMER_START_TIME=0
+
+DATETIME_STATE_FILE="$HOME/.cache/polybar-datetime.state"
 FORMATS=(def sec utc est pst)
 
-CURRENT="$(cat "${STATE}" 2>/dev/null)"
-if [ -z "${CURRENT}" ]; then
-    CURRENT="${FORMATS[0]}"
+CURRENT_FMT="$(cat "${DATETIME_STATE_FILE}" 2>/dev/null)"
+if [ -z "${CURRENT_FMT}" ]; then
+    CURRENT_FMT="${FORMATS[0]}"
 fi
 
+format_time() {
+	local t=$1
+	local d=$(( t / 60 / 60 / 24 ))
+	local h=$(( t / 60 / 60 % 24 ))
+	local m=$(( t / 60 % 60 ))
+	local s=$(( t % 60 ))
+	local out="$(printf "%01d" $s)"
+	(( m > 0 )) && out="$(printf "%02d" $m):$out"
+	(( h > 0 )) && out="$h:$out"
+	(( d > 0 )) && out="$d:$out"
+	(( m == 0 && h == 0 && d == 0 )) && out="${out}s"
+	echo "$out"
+}
+
 print_label() {
-    local label
-    case "${CURRENT}" in
-        def) label=$(date +"%a %d %H:%M") ;;
-        sec) label=$(date +"%a %d %H:%M:%S") ;;
-        utc) label=$(date -u +"%a %d %H:%M UTC") ;;
-        est) label=$(TZ=America/New_York date +"%a %d %H:%M EST") ;;
-        pst) label=$(TZ=America/Los_Angeles date +"%a %d %H:%M PST") ;;
-        *) label="unknown format" ;;
+    local label_time label_timer elapsed_time
+    case "${CURRENT_FMT}" in
+        def) label_time=$(date +"%a %d %H:%M") ;;
+        sec) label_time=$(date +"%a %d %H:%M:%S") ;;
+        utc) label_time=$(date -u +"%a %d %H:%M UTC") ;;
+        est) label_time=$(TZ=America/New_York date +"%a %d %H:%M EST") ;;
+        pst) label_time=$(TZ=America/Los_Angeles date +"%a %d %H:%M PST") ;;
+        *) label_time="unknown format" ;;
     esac
-    echo "%{A1:kill -USR1 $$:}${label}%{A}"
+    case "${TIMER_STATE}" in
+        started)
+            elapsed_time="$(format_time $(( $(date +%s) - TIMER_START_TIME )))"
+            label_timer="  %{F#999}|%{F-}   ${elapsed_time}"
+            ;;
+        *)
+            label_timer=""
+            ;;
+    esac
+    echo "%{A1:kill -USR1 $$:}%{A3:kill -USR2 $$:}${label_time}${label_timer}%{A}%{A}"
+}
+
+trap 'toggle_timer' USR2
+toggle_timer() {
+    case "${TIMER_STATE}" in
+        started)
+            TIMER_START_TIME=0
+            TIMER_STATE="stopped"
+            ;;
+        stopped)
+            TIMER_START_TIME=$(date +%s)
+            TIMER_STATE="started"
+            ;;
+    esac
 }
 
 trap 'next_format' USR1
 next_format() {
     local len=${#FORMATS[@]}
     for i in "${!FORMATS[@]}"; do
-       if [[ "${FORMATS[$i]}" == "${CURRENT}" ]]; then
-            CURRENT="${FORMATS[$(((i + 1) % len))]}"
+       if [[ "${FORMATS[$i]}" == "${CURRENT_FMT}" ]]; then
+            CURRENT_FMT="${FORMATS[$(((i + 1) % len))]}"
             break
        fi
     done
@@ -34,7 +74,7 @@ next_format() {
 
 trap 'save_state' 0
 save_state() {
-    echo -n "${CURRENT}" > "${STATE}"
+    echo -n "${CURRENT_FMT}" > "${DATETIME_STATE_FILE}"
 }
 
 main() {

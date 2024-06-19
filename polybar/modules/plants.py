@@ -117,7 +117,7 @@ def print_label():
     while True:
         plants = load_file(WATERING_FILE)
         delays = sum(int(p["elapsed_water"] >= p["target_water"]) for p in plants)
-        label = ""
+        label = " plants"
         if delays:
             label = f" {delays}"
         print(

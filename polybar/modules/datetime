@@ -1,8 +1,6 @@
 #!/bin/bash
 
-TIMER_STATE="stopped"
 TIMER_START_TIME=0
-
 DATETIME_STATE_FILE="$HOME/.cache/polybar-datetime.state"
 FORMATS=(def sec utc est pst)
 
@@ -12,18 +10,19 @@ if [ -z "${CURRENT_FMT}" ]; then
 fi
 
 format_time() {
-	local t=$1
-	local d=$(( t / 60 / 60 / 24 ))
-	local h=$(( t / 60 / 60 % 24 ))
-	local m=$(( t / 60 % 60 ))
-	local s=$(( t % 60 ))
-    local out
-    (( m > 0 )) && out="$(printf "%02d" $s)" || out="$(printf "%01d" $s)"
-	(( m > 0 )) && out="$(printf "%02d" $m):${out}"
-	(( h > 0 )) && out="$h:${out}"
-	(( d > 0 )) && out="$d:${out}"
-	(( m == 0 && h == 0 && d == 0 )) && out="${out}s"
-	echo "${out}"
+    local sign out
+    (( $1 >= 0 )) && sign="" || sign="-"
+    local t=${1#-}
+    local d=$(( t / 60 / 60 / 24 ))
+    local h=$(( t / 60 / 60 % 24 ))
+    local m=$(( t / 60 % 60 ))
+    local s=$(( t % 60 ))
+    (( s > 0 || m > 0 )) && out="${s}s"
+    (( m > 0 || h > 0 )) && out="${m}m ${out}"
+    (( h > 0 || d > 0 )) && out="${h}h ${out}"
+    (( d > 0 )) && out="${d}d ${out}"
+    (( s == 0 && m == 0 && h == 0 && d == 0 )) && out="0s"
+    echo "${sign}${out}"
 }
 
 print_label() {
@@ -36,13 +35,13 @@ print_label() {
         pst) label_time=$(TZ=America/Los_Angeles date +"%a %d %H:%M PST") ;;
         *) label_time="unknown format" ;;
     esac
-    case "${TIMER_STATE}" in
-        started)
-            elapsed_time="$(format_time $(( $(date +%s) - TIMER_START_TIME )))"
-            label_timer="  %{F#999}|%{F-}   ${elapsed_time}"
+    case "${TIMER_START_TIME}" in
+        0)
+            label_timer=""
             ;;
         *)
-            label_timer=""
+            elapsed_time="$(format_time $(( $(date +%s) - TIMER_START_TIME )))"
+            label_timer="  %{F#999}|%{F-}   ${elapsed_time}"
             ;;
     esac
     echo "%{A1:kill -USR1 $$:}%{A3:kill -USR2 $$:}${label_time}${label_timer}%{A}%{A}"
@@ -50,15 +49,9 @@ print_label() {
 
 trap 'toggle_timer' USR2
 toggle_timer() {
-    case "${TIMER_STATE}" in
-        started)
-            TIMER_START_TIME=0
-            TIMER_STATE="stopped"
-            ;;
-        stopped)
-            TIMER_START_TIME=$(date +%s)
-            TIMER_STATE="started"
-            ;;
+    case "${TIMER_START_TIME}" in
+        0) TIMER_START_TIME=$(date +%s) ;;
+        *) TIMER_START_TIME=0 ;;
     esac
 }
 

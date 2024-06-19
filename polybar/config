@@ -63,9 +63,10 @@ font-2 = "Font Awesome 6 Brands:style=regular:size=10.5;3"
 
 modules-left = i3
 modules-center = datetime
-modules-right = backup sync lib updates plants kb eth volume
+modules-right = backup sync lib updates plants timer kb eth volume
 
-separator = %{F#bbb}-%{F-}
+;separator = %{F#bbb}-%{F-}
+separator = "  "
 
 ; Modules
 ; ----------------------------------------------------------------------------

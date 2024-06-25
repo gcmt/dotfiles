@@ -87,7 +87,7 @@ for_window [title="Wine System Tray"] kill
 
 # Mouse bindings
 bindsym --release button3 exec --no-startup-id i3-titlebar-menu
-bindsym --whole-window button2 exec --no-startup-id i3-choose-window -no-inputbar -mouse y
+bindsym --whole-window $mod+w exec --no-startup-id i3-choose-window -no-inputbar -mouse y
 
 # Mouse wheel
 bindsym --whole-window $mod+button4 exec --no-startup-id i3-next-workspace -next
@@ -138,9 +138,6 @@ bindsym $mod+u exec --no-startup-id rofi-tmux
 # Rename current workspace
 bindsym $mod+comma exec --no-startup-id i3-rename-workspace -menu
 bindsym $mod+Shift+comma exec --no-startup-id i3-rename-workspace -reset
-
-# Create new workspace
-bindsym $mod+w exec --no-startup-id i3-new-workspace
 
 # Rofi bindings
 bindsym $mod+space exec --no-startup-id rofi -show drun

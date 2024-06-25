@@ -1,49 +1,64 @@
 #!/bin/bash
 
-use_selection=0
-extract_audio=0
+_use_selection=0
+_extract_audio=0
+_low_res=0
 
-while getopts "sx" OPT; do
+_NOTIFY_DELAY=60000
+
+_OUTPUT_FORMAT_AUDIO="%(title)s.%(ext)s"
+_OUTPUT_FORMAT_VIDEO="%(uploader)s - %(title)s.%(ext)s"
+
+_FORMAT_VIDEO_HIGH='bestvideo[height<=1080][vcodec^=av01][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio/best[ext=mp4]/best'
+_FORMAT_VIDEO_LOW='bestvideo[height<=720][vcodec^=av01][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio/best[ext=mp4]/best'
+
+while getopts "sxl" OPT; do
 	case $OPT in
-		s) use_selection=1 ;;
-		x) extract_audio=1 ;;
+		s) _use_selection=1 ;;
+		x) _extract_audio=1 ;;
+		l) _low_res=1 ;;
         *) exit 1
 	esac
 done
 shift $((OPTIND -1))
 
-if (( use_selection == 1 )); then
-	url="$(xclip -o -sel primary)"
+if (( _use_selection == 1 )); then
+	_url="$(xclip -o -sel primary)"
 else
-	url="$1"
+	_url="$1"
 fi
 
-if [[ -z "${url}" ]]; then
+if [[ -z "${_url}" ]]; then
 	exit 1
 fi
 
-_NOTIFY_DELAY=60000
-_OUT_FORMAT="%(title)s.%(ext)s"
-_FORMAT='bestvideo[height<=1080][vcodec^=av01][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio/best[ext=mp4]/best'
-
-header="Downloading Video"
-if (( extract_audio == 1 )); then
-    header="${header} (Audio only)"
+if (( _low_res == 1 )); then
+	_format="${_FORMAT_VIDEO_LOW}"
+else
+	_format="${_FORMAT_VIDEO_HIGH}"
 fi
 
-_notify_id=$(dunstify -p -t "${_NOTIFY_DELAY}" "${header}" "${url}")
+if (( _extract_audio == 1 )); then
+    _header="Downloading Video (Audio only)"
+    _output_format="${_OUTPUT_FORMAT_AUDIO}"
+else
+    _header="Downloading Video"
+    _output_format="${_OUTPUT_FORMAT_VIDEO}"
+fi
 
-title=$(yt-dlp --skip-download --print "%(title)s" "${url}")
-exitcode=$?
+_notify_id=$(dunstify -p -t "${_NOTIFY_DELAY}" "${_header}" "${_url}")
 
-if (( exitcode != 0 )); then
-	dunstify -t 10000 -u critical "Download Error" "yt-dlp failed with error code ${exitcode}"
-    echo >&2 "Error: yt-dlp failed with error code ${exitcode}"
+_title=$(yt-dlp --skip-download --print "%(title)s" "${_url}")
+_exitcode=$?
+
+if (( _exitcode != 0 )); then
+	dunstify -t 10000 -u critical "Download Error" "yt-dlp failed with error code ${_exitcode}"
+    echo >&2 "Error: yt-dlp failed with error code ${_exitcode}"
     exit 1
 fi
 
-echo "${header}: ${title}"
-dunstify -t "${_NOTIFY_DELAY}" -r "${_notify_id}" "${header}" "${title}"
+echo "${_header}: ${_title}"
+dunstify -t "${_NOTIFY_DELAY}" -r "${_notify_id}" "${_header}" "${_title}"
 
 cd ~/Downloads || exit 1
 
@@ -65,30 +80,30 @@ notify_progress() {
     done
 }
 
-if (( extract_audio == 1 )); then
+if (( _extract_audio == 1 )); then
 	yt-dlp --newline \
         --no-mtime \
         --format 'bestaudio/best'\
         --extract-audio \
         --audio-quality 0 \
         --audio-format mp3 \
-        --output "${_OUT_FORMAT}" \
-        "${url}" \
-        | notify_progress "${header}" "${title}"
+        --output "${_output_format}" \
+        "${_url}" \
+        | notify_progress "${_header}" "${_title}"
 else
 	yt-dlp --newline \
         --no-mtime \
-        --format "${_FORMAT}" \
-        --output "${_OUT_FORMAT}" \
-        "${url}" \
-        | notify_progress "${header}" "${title}"
+        --format "${_format}" \
+        --output "${_output_format}" \
+        "${_url}" \
+        | notify_progress "${_header}" "${_title}"
 fi
 
-exitcode=$?
-if (( exitcode == 0 )); then
+_exitcode=$?
+if (( _exitcode == 0 )); then
     echo "Download successful"
-	dunstify -t 5000 -r "${_notify_id}" "Download Finished" "${title}"
+	dunstify -t 5000 -r "${_notify_id}" "Download Finished" "${_title}"
 else
-    echo >&2 "Error: yt-dlp failed with error code ${exitcode}"
-	dunstify -t 10000 -u critical -r "${_notify_id}" "Download Error" "yt-dlp failed with error code ${exitcode}"
+    echo >&2 "Error: yt-dlp failed with error code ${_exitcode}"
+	dunstify -t 10000 -u critical -r "${_notify_id}" "Download Error" "yt-dlp failed with error code ${_exitcode}"
 fi

@@ -1,15 +1,17 @@
 #!/bin/bash
 
 resp=$(yad \
+    --form \
+    --columns=1 \
     --title 'Youtube Downloader' \
     --text "<b>Youtube Downloader</b>" \
     --borders 10 \
     --separator $'\t' \
     --width 500 \
     --text-align fill \
-    --form \
     --field "" "" \
-    --field "Extract Audio:chk" TRUE \
+    --field "Only Audio:chk" TRUE \
+    --field "Low Resolution:chk" FALSE \
     --button="Cancel":1 \
     --button="Download":0 \
 )
@@ -26,4 +28,9 @@ if [[ "${fields[1]}" == "TRUE" ]]; then
     extract="-x"
 fi
 
-yd ${extract} "${url}"
+low_res=
+if [[ "${fields[2]}" == "TRUE" ]]; then
+    low_res="-l"
+fi
+
+yd ${extract} ${low_res} "${url}"

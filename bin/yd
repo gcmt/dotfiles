@@ -3,6 +3,7 @@
 _use_selection=0
 _extract_audio=0
 _low_res=0
+_interactive=0
 
 _NOTIFY_DELAY=60000
 
@@ -12,8 +13,9 @@ _OUTPUT_FORMAT_VIDEO="%(uploader)s - %(title)s.%(ext)s"
 _FORMAT_VIDEO_HIGH='bestvideo[height<=1080][vcodec^=av01][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio/best[ext=mp4]/best'
 _FORMAT_VIDEO_LOW='bestvideo[height<=720][vcodec^=av01][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio/best[ext=mp4]/best'
 
-while getopts "sxl" OPT; do
+while getopts "isxl" OPT; do
 	case $OPT in
+		i) _interactive=1 ;;
 		s) _use_selection=1 ;;
 		x) _extract_audio=1 ;;
 		l) _low_res=1 ;;
@@ -22,10 +24,45 @@ while getopts "sxl" OPT; do
 done
 shift $((OPTIND -1))
 
-if (( _use_selection == 1 )); then
-	_url="$(xclip -o -sel primary)"
+if (( _interactive == 1 )); then
+
+    _yad_ret=$(yad \
+        --form \
+        --columns=1 \
+        --title 'Youtube Downloader' \
+        --text "<b>Youtube Downloader</b>" \
+        --borders 10 \
+        --separator $'\t' \
+        --width 500 \
+        --text-align fill \
+        --field "" "" \
+        --field "Audio only:chk" TRUE \
+        --field "Low resolution:chk" FALSE \
+        --button="Cancel":1 \
+        --button="Download":0 \
+    )
+
+    IFS=$'\t' read -ra _fields <<< "${_yad_ret}"
+    if [[ "${_fields[0]}" == "TRUE" ]]; then
+        exit 1
+    else
+        _url=${_fields[0]}
+    fi
+    if [[ "${_fields[1]}" == "TRUE" ]]; then
+        _extract_audio=1
+    fi
+    if [[ "${_fields[2]}" == "TRUE" ]]; then
+        _low_res=1
+    fi
+
 else
-	_url="$1"
+
+    if (( _use_selection == 1 )); then
+        _url="$(xclip -o -sel primary)"
+    else
+        _url="$1"
+    fi
+
 fi
 
 if [[ -z "${_url}" ]]; then

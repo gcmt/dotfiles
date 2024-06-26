@@ -1,8 +1,0 @@
-#!/bin/bash
-
-module="$HOME/.config/polybar/modules/stopwatch"
-
-case $1 in
-	start|stop) eval "$module $1" ;;
-	toggle|'') eval "$module toggle" ;;
-esac

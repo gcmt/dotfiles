@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# `kill-window -a` sometimes kills the current window (tmux 2.9a)
-
-fmt="#{window_active} #{window_id}"
-tmux lsw -F "${fmt}" | grep -Po '(?<=0 )@[0-9]+' | while read -r id; do
-	tmux kill-window -t "${id}"
-done

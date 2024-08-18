@@ -261,6 +261,9 @@ bindsym $mod+Shift+equal exec --no-startup-id nemo
 # Keyboard cheatsheet
 bindsym $mod+grave exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
 
+# Screenshot
+bindsym $mod+F1 exec --no-startup-id flameshot gui
+
 # system/i3 menu
 bindsym $mod+Delete exec --no-startup-id i3-sys-menu -sys
 bindsym $mod+Shift+Delete exec --no-startup-id i3-sys-menu -i3
@@ -307,10 +310,6 @@ bindsym $mod+Down mode "shrink"
 
 # Controls
 # ----------------------------------------------------------------------------
-
-# Screenshots
-bindsym $mod+F1 exec --no-startup-id capture
-bindsym $mod+F2 exec --no-startup-id capture -select
 
 # Volume controls
 bindsym XF86AudioMute exec --no-startup-id volume toggle

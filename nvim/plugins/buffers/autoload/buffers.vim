@@ -320,8 +320,9 @@ func! s:buf_edit(ctx) abort
         return 1
     end
 
-    let fullpath = fnamemodify(bufname(target), ':p')
-    if isdirectory(fullpath)
+    let bname = bufname(target)
+    let fullpath = fnamemodify(bname, ':p')
+    if !empty(bname) && isdirectory(fullpath)
         exec substitute(g:buffers_fm_command, '%f', fullpath, 'g')
         return 1
     end
@@ -332,10 +333,12 @@ func! s:buf_edit(ctx) abort
     let commands = {'tab': 'tab split', 'split': 'split', 'vsplit': 'vsplit'}
     sil exec get(commands, a:ctx.action, is_terminal ? 'split' : '')
 
-    if is_terminal || empty(bufname(target))
+    if is_terminal || empty(bname)
         exec 'buffer' target
     else
-        exec 'edit' fnameescape(bufname(target))
+        " Unlike the 'buffer' command, the 'edit' command on unlisted buffers
+        " makes them listed again
+        exec 'edit' fnameescape(bname)
     end
 
     return 1

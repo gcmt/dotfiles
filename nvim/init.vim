@@ -267,18 +267,18 @@
             return ''
         end
         let [a, m, r] = GitGutterGetHunkSummary()
-        return printf('(+%d ~%d -%d)', a, m, r)
+        let branch = _stl_git_branch(a:win)
+        if !getbufvar(a:win.bufnr, '&diff') && !empty(branch) && a:win.width > 60
+            return printf('[+%d ~%d -%d @ %s]', a, m, r, branch)
+        end
+        return ''
     endf
 
     func! _stl_git_branch(win)
         if win_getid() != a:win.winid || !exists('*FugitiveHead')
             return ''
         end
-        let branch = FugitiveHead()
-        if !getbufvar(a:win.bufnr, '&diff') && !empty(branch) && a:win.width > 60
-            return 'git@' . branch
-        end
-        return ''
+        return FugitiveHead()
     endf
 
     func! _stl_venv(win)
@@ -304,7 +304,7 @@
         end
         let lines = len(getreg(reg)) ? len(getreg(reg, 1, 1)) : 0
         let chars = strchars(getreg(reg))
-        return printf("@%s|%dL|%dc", reg, lines, chars)
+        return printf("[@%s %dL %dc]", reg, lines, chars)
     endf
 
     func! _stl_mode(win)
@@ -323,7 +323,6 @@
             call add(items, _stl_buffer(win, sep))
             call add(items, '%=')
             call add(items, _stl_git_status(win))
-            call add(items, _stl_git_branch(win))
             call add(items, _stl_regtee())
             call add(items, _stl_clip(win))
             call add(items, _stl_meta(win, sep))
@@ -580,9 +579,6 @@
 " REGISTERS
 " ----------------------------------------------------------------------------
 
-    vnoremap @ :norm! @
-    vnoremap <silent> Q :norm! Q<cr>
-
     " edit registers
     command! -nargs=? Regedit call <sid>regedit(<q-args>)
 
@@ -684,7 +680,10 @@
     command! -bang Wq wq<bang>
     command! -bang Q q<bang>
 
-    comm -bang -nargs=0 Quit quit<bang>
+    command! -bang -nargs=0 Quit quit<bang>
+
+    " requires sorting beforehand
+    command! Duplicates g/^\(.*\)$\n\1$/p
 
     nnoremap <2-RightMouse> <nop>
     nnoremap <3-RightMouse> <nop>
@@ -753,7 +752,7 @@
             return ''
         end
         let files = glob(a:path.'/.*', 1, 1) + glob(a:path.'/*', 1, 1)
-        let pattern = '\V\^\(' . join(get(g:, 'root_markers', ['.gitignore']), '\|') . '\)\$'
+        let pattern = '\V\^\(' . join(get(g:, 'root_markers', []), '\|') . '\)\$'
         if match(map(files, "fnamemodify(v:val, ':t')"), pattern) >= 0
             return a:path
         end
@@ -777,7 +776,7 @@
         pwd
     endf
 
-    command! -bang -nargs=0 Here call <sid>cd_into_buf_dir(<q-bang>)
+    command! -bang -nargs=0 Cd call <sid>cd_into_buf_dir(<q-bang>)
     command! -bang -nargs=0 Root call <sid>cd_into_root_dir(<q-bang>)
 
 " Search
@@ -799,6 +798,7 @@
 " Buffers
 " ----------------------------------------------------------------------------
 
+    nnoremap <silent> <c-p> :Buffers<cr>
     nnoremap <silent> gl :Buffers<cr>
 
 " Marks
@@ -907,6 +907,13 @@
 
     let g:loaded_2html_plugin = 1
     let g:loaded_netrwPlugin = 1
+
+" source local .vimrc
+" ----------------------------------------------------------------------------
+
+    if filereadable(expand("~/.vimrc.local"))
+        source ~/.vimrc.local
+    end
 
 " source init.lua
 " ----------------------------------------------------------------------------

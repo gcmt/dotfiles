@@ -51,6 +51,10 @@ cmp.setup({
 			cmp.config.compare.order,
 		},
 	},
+	performance = {
+		debounce = 0,
+		throttle = 0,
+	},
 })
 
 -- DIAGNOSTICS
@@ -169,6 +173,8 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.s
 	border = "single",
 })
 
+vim.lsp.inlay_hint.enable()
+
 -- TREESITTER
 -- https://github.com/nvim-treesitter/nvim-treesitter
 -- https://neovim.io/doc/user/treesitter.html
@@ -184,6 +190,8 @@ require("nvim-treesitter.configs").setup({
 		"lua",
 		"yaml",
 		"markdown",
+		"html",
+		"sql",
 	},
 	sync_install = false,
 	ignore_install = { "" },

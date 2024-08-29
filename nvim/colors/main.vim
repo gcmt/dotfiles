@@ -49,7 +49,8 @@ let g:minimal = get(g:, 'minimal', 0)
 
 " make these groups bold in minimal mode
 let s:bold = [
-    \ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception', 'StorageClass', 'Bold',
+    \ 'Keyword', 'Bold',
+    \ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception', 'StorageClass',
     \ 'htmlTagName', 'htmlEndTag',
     \ 'pythonInclude',
     \ 'jsFunction',
@@ -64,16 +65,17 @@ let s:colored = [
     \ 'Cursor', 'Comment', 'String', 'Visual', 'Linenr', 'Todo',
     \ 'Cursor', 'NonText', 'SpecialKey', 'Conceal',
     \ 'Search', 'IncSearch', 'SearchUnderline',
-    \ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded', 'WildMenu',
+    \ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded',
     \ 'Linenr', 'CursorLineNr',
     \ 'PopupSelected', 'CursorLine', 'CursorColumn', 'ColorColumn',
     \ 'WarningMsg', 'ErrorMsg', 'ModeMsg', 'MoreMsg', 'Question',
     \ 'DiffAdd', 'DiffDelete', 'DiffChange', 'DiffText',
-    \ 'PMenu', 'PMenuSel', 'PMenuSBar', 'PMenuThumb',
+    \ 'PMenu.*', 'WildMenu',
     \ 'TabLine', 'TabLineSel', 'TabLineFill',
     \ 'SpellBad', 'SpellCap', 'SpellLocal', 'SpellRare',
     \ 'Yank', 'Spotter', 'Float.*', 'QuickFixLine',
-    \ 'GitSigns.*', 'GitGutter.*'
+    \ 'GitSigns.*', 'GitGutter.*',
+    \ 'markdown.*',
 \ ]
 let s:colored = '\v^(' . join(s:colored, '|') . ')$'
 
@@ -131,7 +133,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     cal s:h('Cursor', '', s:magenta, '', '')
     cal s:h('NonText', s:fg_super_dim, '', 'none', '')
-    cal s:h('SpecialKey', s:fg_super_dim, '', 'none', '')
+    cal s:h('SpecialKey', s:fg_very_dim, '', 'none', '')
     cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
     if &bg == 'dark'
         cal s:h('Search', s:bg, s:hl, '', '')
@@ -179,7 +181,11 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('DiffText', s:bg, s:red, 'none', '')
 
     cal s:h('PMenu', s:fg_dim, s:bg_accent, 'none', '')
-    cal s:h('PMenuSel', s:bg_accent, s:fg_dim, '', '')
+    cal s:h('PMenuExtra', s:fg_very_dim, s:bg_accent, 'none', '')
+    cal s:h('PMenuExtraSel', s:bg_accent, s:fg_very_dim, 'bold', '')
+    cal s:h('PMenuKind', s:blue, s:bg_accent, 'none', '')
+    cal s:h('PMenuKindSel', s:bg_accent, s:blue, 'bold', '')
+    cal s:h('PMenuSel', s:bg_accent, s:fg_dim, 'bold', '')
     cal s:h('PMenuSBar', '', s:bg_accent, 'none', '')
     cal s:h('PMenuThumb', '', s:fg_super_dim, 'none', '')
 
@@ -283,6 +289,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('htmlEndTag', s:fg_super_dim, '', '', '')
     cal s:h('htmlSpecialChar', s:fg_super_dim, '', '', '')
     cal s:h('htmlString', s:green, '', '', '')
+    hi default link @tag.html Keyword
+    hi default link @tag.delimiter.html Keyword
 
     cal s:h('xmlTagName', s:magenta, '', '', '')
     cal s:h('xmlTag', s:fg_super_dim, '', '', '')
@@ -336,14 +344,17 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     cal s:h('yamlString', s:green, '', '', '')
     cal s:h('yamlKey', s:magenta, '', '', '')
-    hi default link yamlBlockMappingKey Statement
+    hi default link yamlBlockMappingKey Keyword
+
+    hi default link sqlKeyword Keyword
 
     cal s:h('markdownCode', s:fg_dim, '', '', '')
+    cal s:h('markdownCodeBlock', s:fg_dim, '', '', '')
     cal s:h('markdownURL', s:fg_dim, '', 'underline', '')
-    cal s:h('markdownBold', s:blue, '', '', '')
+    cal s:h('markdownBold', s:fg, '', 'bold', '')
     for s:n in range(1, 6)
         cal s:h('markdownH' . s:n, s:fg, '', 'bold', '')
+        cal s:h('markdownH' . s:n . "Delimiter", s:magenta, '', 'bold', '')
     endfor
-
 
 end

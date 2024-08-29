@@ -10,6 +10,8 @@
         let $VIMDATA = $HOME . '/.local/share/nvim'
     end
 
+    let $VIMVENDOR = $VIMDATA . '/vendor'
+
     let g:plugins = []
     call add(g:plugins, $VIMHOME.'/plugins/marks')
     call add(g:plugins, $VIMHOME.'/plugins/bookmarks')
@@ -26,24 +28,41 @@
     call add(g:plugins, $VIMHOME.'/plugins/fm')
     call add(g:plugins, $VIMHOME.'/plugins/fzf')
 
-    let g:vendor = []
-    call add(g:vendor, $VIMDATA.'/vendor/ale')
-    call add(g:vendor, $VIMDATA.'/vendor/ultisnips')
-    call add(g:vendor, $VIMDATA.'/vendor/vim-fugitive')
-    call add(g:vendor, $VIMDATA.'/vendor/vim-gitgutter')
-    call add(g:vendor, $VIMDATA.'/vendor/nvim-lspconfig')
-    call add(g:vendor, $VIMDATA.'/vendor/nvim-treesitter')
-    call add(g:vendor, $VIMDATA.'/vendor/nvim-cmp')
-    call add(g:vendor, $VIMDATA.'/vendor/cmp-nvim-lsp')
-    call add(g:vendor, $VIMDATA.'/vendor/cmp-nvim-lsp-signature-help')
-    call add(g:vendor, $VIMDATA.'/vendor/cmp-buffer')
-    call add(g:vendor, $VIMDATA.'/vendor/cmp-path')
+    let g:external = []
+    call add(g:external, 'dense-analysis/ale')
+    call add(g:external, 'SirVer/ultisnips')
+    call add(g:external, 'tpope/vim-fugitive')
+    call add(g:external, 'airblade/vim-gitgutter')
+    call add(g:external, 'neovim/nvim-lspconfig')
+    call add(g:external, 'nvim-treesitter/nvim-treesitter')
+    call add(g:external, 'hrsh7th/nvim-cmp')
+    call add(g:external, 'hrsh7th/cmp-nvim-lsp')
+    call add(g:external, 'hrsh7th/cmp-nvim-lsp-signature-help')
+    call add(g:external, 'hrsh7th/cmp-buffer')
+    call add(g:external, 'hrsh7th/cmp-path')
+
+    for s:ext in g:external
+        call add(g:plugins, $VIMVENDOR . '/' . split(s:ext, '/')[-1])
+    endfor
 
     let s:rtp = []
-    call extend(s:rtp, g:plugins + g:vendor)
+    call extend(s:rtp, g:plugins)
     call extend(s:rtp, globpath(join(g:plugins, ','), 'after', 1, 1))
-    call extend(s:rtp, globpath(join(g:vendor, ','), 'after', 1, 1))
     exec 'set rtp+=' . join(s:rtp, ',')
+
+    command -nargs=0 PlugInstall call <sid>plug_install()
+
+    func! s:plug_install()
+        for plugin in g:external
+            let path = $VIMVENDOR . '/' . split(plugin, '/')[-1]
+            if isdirectory(path)
+                echo plugin '...' 'ALREADY INSTALLED'
+            else
+                echo plugin '...' 'INSTALLING'
+                call system(printf('git clone https://github.com/%s %s', plugin, fnameescape(path)))
+            end
+        endfor
+    endf
 
 " OPTIONS
 " ----------------------------------------------------------------------------

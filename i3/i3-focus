@@ -201,13 +201,15 @@ def main(i3):
         # open the given fallback program if no window matched the rules
         try:
             pid = Popen(fallback).pid
+            if args.m and args.m != "-":
+                # automatically mark the window if marks are given (first one only)
+                print("marks given", args.m)
+                if winid := search_win_by_pid(pid):
+                    print("winid found", winid)
+                    mark = list(args.m)[0]
+                    i3.command(f'[id="{winid}"] mark "{mark}"')
         except FileNotFoundError:
             fatal(f"command not found: {fallback[0]}")
-        if args.m and args.m != "-":
-            # automatically mark the window if marks are given (first one only)
-            if winid := search_win_by_pid(pid):
-                mark = list(args.m)[0]
-                i3.command(f'[id="{winid}"] mark "{mark}"')
     else:
         sys.exit(not success)
 

@@ -56,10 +56,10 @@
         for plugin in g:external
             let path = $VIMVENDOR . '/' . split(plugin, '/')[-1]
             if isdirectory(path)
-                echo plugin '...' 'ALREADY INSTALLED'
+                echo plugin '...' 'DIRECTORY EXISTS'
             else
                 echo plugin '...' 'INSTALLING'
-                call system(printf('git clone https://github.com/%s %s', plugin, fnameescape(path)))
+                call system(printf('git clone https://github.com/%s %s', plugin, shellescape(path)))
             end
         endfor
     endf

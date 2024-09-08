@@ -579,9 +579,7 @@ func! s:action__rename() abort
         return s:err("Cannot rename file: ", node.path)
     end
     if bufnr(node.path) != -1
-        exec 'split' fnameescape(dest)
-        close
-        sil! exec 'bwipe' node.path
+        call execute("bwipe" . fnameescape(node.path))
     end
     let node.path = dest
     let node.content = []

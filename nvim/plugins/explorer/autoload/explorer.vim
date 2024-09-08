@@ -517,10 +517,10 @@ func! s:action__create_file() abort
     call s:goto(path)
 endf
 
-" s:action__create_directory() -> 0
+" s:action__create_dir() -> 0
 " Create a new directory inside the selected directory. Intermediate directories
 " are created as necessary.
-func! s:action__create_directory() abort
+func! s:action__create_dir() abort
     if !exists("*mkdir")
         return s:err('Functionality not available.')
     end

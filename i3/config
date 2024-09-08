@@ -259,7 +259,7 @@ bindsym $mod+Shift+equal exec --no-startup-id nemo
 bindsym $mod+grave exec --no-startup-id i3-focus -c "obsidian" -fallback "obsidian"
 
 # Keyboard cheatsheet
-#bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
+bindsym $mod+F2 exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"
 
 # Screenshot
 bindsym $mod+F1 exec --no-startup-id flameshot gui
@@ -267,9 +267,6 @@ bindsym $mod+F1 exec --no-startup-id flameshot gui
 # system/i3 menu
 bindsym $mod+Shift+Delete exec --no-startup-id i3-sys-menu -sys
 bindsym $mod+Delete exec --no-startup-id i3-sys-menu -i3
-
-# Reset workspace layout
-#bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 
 mode "open" {
 	bindsym q mode "default"
@@ -290,6 +287,8 @@ mode "shrink" {
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
 	bindsym Control+c mode "default"
+    # Reset workspace layout
+    bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 }
 
 mode "grow" {
@@ -302,6 +301,8 @@ mode "grow" {
 	bindsym Return mode "default"
 	bindsym Escape mode "default"
 	bindsym Control+c mode "default"
+    # Reset workspace layout
+    bindsym equal mode "default"; [workspace="__focused__"] move workspace "temp__"; [workspace="temp__"] move workspace current
 }
 
 # Resize mode

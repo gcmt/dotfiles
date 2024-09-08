@@ -13,9 +13,9 @@ import yaml
 PID = os.getpid()
 SCRIPT_PATH = os.path.realpath(__file__)
 
-WATERING_FILE = "~/Notes/Plants/Schedule.yaml"
-PLANTS_GUIDE_FILE = "~/Notes/Plants/Plants.pdf"
-PLANTS_WIKI_FILE = "obsidian://open?vault=Notes&file=Plants%2FWiki"
+WATERING_FILE = "~/Notes/Misc/Plants/Schedule.yaml"
+PLANTS_GUIDE_FILE = "~/Notes/Misc/Plants/Plants.pdf"
+PLANTS_WIKI_FILE = "obsidian://open?vault=Notes&file=Misc%2FPlants%2FPlants%20Wiki"
 
 DELAY = 60 * 60
 

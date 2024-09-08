@@ -37,7 +37,7 @@ if (( _interactive == 1 )); then
         --text-align fill \
         --field "" "" \
         --field "Audio only:chk" TRUE \
-        --field "Low resolution:chk" FALSE \
+        --field "Low resolution:chk" TRUE \
         --button="Cancel":1 \
         --button="Download":0 \
     )

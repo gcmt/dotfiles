@@ -37,15 +37,11 @@ let g:spotter_banned_syntax =
 " Main
 " -----------------------------------------------------------------------------
 
-let s:id = -1
-
 func s:highlight_word()
 
     if !g:spotter_active
         return
     end
-
-    call s:clear_highlighting()
 
     if !empty(&bt) || get(g:spotter_banned_filetypes, &ft)
         return
@@ -75,15 +71,10 @@ func s:highlight_word()
 
     " search for the word in the visible part of the buffer
     let pattern = printf('\V\%%>%dl\%%<%dl\<%s\>', line('w0')-1, line('w$')+1, word)
-    let s:id = matchadd("Spotter", pattern, -1)
+    let id = matchadd("Spotter", pattern, -1)
 
-endf
-
-func s:clear_highlighting()
-    if s:id > 0
-        sil! call matchdelete(s:id)
-        let s:id = -1
-    end
+    " delete the match
+    exec 'au CursorMoved,InsertEnter,WinLeave * ++once call matchdelete(' . id . ')'
 endf
 
 " Colors
@@ -99,7 +90,6 @@ call s:setup_colors()
 " -----------------------------------------------------------------------------
 
 aug _spotter
-    au CursorMoved,InsertEnter,WinLeave * call <sid>clear_highlighting()
     au CursorHold * call <sid>highlight_word()
     au BufWritePost .vimrc call <sid>setup_colors()
     au Colorscheme * call <sid>setup_colors()

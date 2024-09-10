@@ -74,7 +74,7 @@ func s:highlight_word()
     let id = matchadd("Spotter", pattern, -1)
 
     " delete the match
-    exec 'au CursorMoved,InsertEnter,WinLeave * ++once call matchdelete(' . id . ')'
+    exec 'au CursorMoved,InsertEnter,WinLeave * ++once sil! call matchdelete(' . id . ')'
 endf
 
 " Colors

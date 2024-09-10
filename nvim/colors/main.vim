@@ -10,16 +10,16 @@ let s:none = ['NONE', 'NONE']
 if &background == 'light'
     let s:black         = ['#2c3238', 0]
     let s:red           = ['#ad2f3b', 1]
-    let s:green         = ['#06803d', 2]
-    let s:yellow        = ['#dbc172', 3]
-    let s:blue          = ['#0862a8', 4]
+    let s:green         = ['#158045', 2]
+    let s:yellow        = ['#d2b96c', 3]
+    let s:blue          = ['#387fb7', 4]
     let s:magenta       = ['#9441a6', 5]
     let s:cyan          = ['#158cb0', 6]
     let s:white         = ['#ffffff', 7]
     let s:orange        = ['#c77408', 16]
     let s:fg_dim        = ['#6a737d', 21]
-    let s:fg_very_dim   = ['#97a1ad', 22]
-    let s:fg_super_dim  = ['#dbe3eb', 23]
+    let s:fg_very_dim   = ['#a2abb8', 22]
+    let s:fg_super_dim  = ['#dde5ed', 23]
     let s:bg_accent     = ['#f5f6f7', 24]
     let s:hl            = ['#f7f71b', 25]
     let s:select        = ['#2c3238', 26]
@@ -33,14 +33,14 @@ else
     let s:blue          = ['#657b99', 4]
     let s:magenta       = ['#917086', 5]
     let s:cyan          = ['#739492', 6]
-    let s:white         = ['#8e9299', 7]
+    let s:white         = ['#9898a0', 7]
     let s:orange        = ['#998068', 16]
-    let s:fg_dim        = ['#636770', 21]
-    let s:fg_very_dim   = ['#4a4e59', 22]
-    let s:fg_super_dim  = ['#353944', 23]
+    let s:fg_dim        = ['#747982', 21]
+    let s:fg_very_dim   = ['#626672', 22]
+    let s:fg_super_dim  = ['#323640', 23]
     let s:bg_accent     = ['#252933', 24]
     let s:hl            = ['#a39465', 25]
-    let s:select        = ['#c8c8fa', 26]
+    let s:select        = ['#323640', 26]
     let s:fg            = [s:white[0], 18]
     let s:bg            = [s:black[0], 19]
 end
@@ -49,9 +49,9 @@ let g:minimal = get(g:, 'minimal', 0)
 
 " make these groups bold in minimal mode
 let s:bold = [
-    \ 'Keyword', 'Bold',
+    \ 'Keyword', 'Bold', 'StatusLineBold',
     \ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception', 'StorageClass',
-    \ 'htmlTagName', 'htmlEndTag',
+    \ 'htmlTagName', 'htmlSpecialTagName', 'htmlEndTag',
     \ 'pythonInclude',
     \ 'jsFunction',
     \ 'goDeclaration', 'goBuiltins', 'goDeclType', 'goLabel', 'goVar', 'goConst',
@@ -62,9 +62,9 @@ let s:bold = '\v^(' . join(s:bold, '|') . ')$'
 let s:colored = [
     \ 'Hidden', 'Normal.*', 'StatusLine.*', 'Fg.*',
     \ 'Cyan.*', 'Green.*', 'Blue.*', 'Magenta.*', 'Red.*', 'Yellow.*', 'Orange.*',
-    \ 'Cursor', 'Comment', 'String', 'Visual', 'Linenr', 'Todo',
+    \ 'Cursor', 'Comment', 'String', 'Visual', 'Linenr', 'Todo', 'Number',
     \ 'Cursor', 'NonText', 'SpecialKey', 'Conceal',
-    \ 'Search', 'IncSearch', 'SearchUnderline',
+    \ 'Search', 'CurSearch', 'IncSearch', 'SearchUnderline',
     \ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded',
     \ 'Linenr', 'CursorLineNr',
     \ 'PopupSelected', 'CursorLine', 'CursorColumn', 'ColorColumn',
@@ -76,6 +76,7 @@ let s:colored = [
     \ 'Yank', 'Spotter', 'Float.*', 'QuickFixLine',
     \ 'GitSigns.*', 'GitGutter.*',
     \ 'markdown.*',
+    \ 'htmlString',
 \ ]
 let s:colored = '\v^(' . join(s:colored, '|') . ')$'
 
@@ -113,7 +114,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('Red', s:red, '', 'none', '')
     cal s:h('Orange', s:orange, '', 'none', '')
     cal s:h('Magenta', s:magenta, '', 'none', '')
-    cal s:h('Yellow', s:yellow, '', 'none', '')
+    cal s:h('Yellow', s:yellow, '', 'bold', '')
     cal s:h('Fg', s:fg, '', 'none', '')
     cal s:h('Bg', '', s:bg, 'none', '')
     cal s:h('FgDim', s:fg_dim, '', 'none', '')
@@ -121,8 +122,13 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('FgSuperDim', s:fg_super_dim, '', 'none', '')
     cal s:h('Bold', s:fg, '', 'bold', '')
 
+    if &bg == 'dark'
+        cal s:h('StatusLine', s:fg, s:bg_accent, 'none', '')
+    else
+        cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
+    end
+
     cal s:h('StatusLineNC', s:fg_very_dim, s:bg_accent, 'none', '')
-    cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
     cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')
     cal s:h('StatusLineDim', s:fg_very_dim, s:bg_accent, 'none', '')
     cal s:h('StatusLineMod', s:red, s:bg_accent, 'none', '')
@@ -131,22 +137,31 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('StatusLineErr', s:red, s:bg_accent, 'none', '')
     cal s:h('StatusLineWarn', s:orange, s:bg_accent, 'none', '')
 
-    cal s:h('Cursor', '', s:magenta, '', '')
+    cal s:h('Cursor', '', s:magenta, 'bold', '')
     cal s:h('NonText', s:fg_super_dim, '', 'none', '')
     cal s:h('SpecialKey', s:fg_very_dim, '', 'none', '')
     cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
+
     if &bg == 'dark'
-        cal s:h('Search', s:bg, s:hl, '', '')
+        cal s:h('Search', s:bg, s:hl, 'bold', '')
+        cal s:h('CurSearch', s:bg, s:red, 'bold', '')
     else
-        cal s:h('Search', s:fg, s:hl, '', '')
+        cal s:h('Search', s:fg, s:hl, 'bold', '')
+        cal s:h('CurSearch', s:bg, s:red, 'bold', '')
     end
+
     cal s:h('SearchUnderline', s:red, '', 'underline', 'none')
-    cal s:h('IncSearch', s:bg, s:red, 'none', '')
+    cal s:h('IncSearch', s:bg, s:red, 'bold', '')
     cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')
-    cal s:h('MatchParen', s:bg, s:fg_very_dim, '', '')
     cal s:h('Directory', s:blue, '', '', '')
     cal s:h('Folded', s:fg_super_dim, s:bg, '', '')
     cal s:h('Visual', s:fg, s:select, '', '')
+
+    if &bg == 'dark'
+        cal s:h('MatchParen', s:bg, s:fg_dim, 'bold', '')
+    else
+        cal s:h('MatchParen', s:bg, s:magenta, 'bold', '')
+    end
 
     if &bg == 'dark'
         cal s:h('WildMenu', s:bg, s:blue, '', '')
@@ -200,7 +215,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     cal s:h('Constant', s:fg_dim, '', '', '')
     cal s:h('Character', s:green, '', '', '')
-    cal s:h('Number', s:fg_dim, '', '', '')
+    cal s:h('Number', s:magenta, '', '', '')
     cal s:h('Boolean', s:fg_dim, '', '', '')
     cal s:h('Float', s:fg_dim, '', '', '')
     cal s:h('Identifier', s:fg, '', 'none', '')
@@ -246,7 +261,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     if g:minimal && &bg == 'dark'
         cal s:h('Spotter', '', s:bg_accent, '', '')
     elseif g:minimal && &bg == 'light'
-        cal s:h('Spotter', '', s:fg_super_dim, '', '')
+        cal s:h('Spotter', '', s:bg_accent, '', '')
     else
         cal s:h('Spotter', '', s:bg_accent, '', '')
     end
@@ -280,6 +295,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('goConst', s:fg, '', '', '')
     hi default link goFormatSpecifier String
     hi default link goEscapeC String
+    hi default link @function.method.go Keyword
+    hi default link @punctuation.delimiter.go Keyword
 
     cal s:h('htmlTagName', s:blue, '', '', '')
     cal s:h('htmlSpecialTagName', s:blue, '', '', '')
@@ -288,7 +305,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('htmlTag', s:fg_super_dim, '', '', '')
     cal s:h('htmlEndTag', s:fg_super_dim, '', '', '')
     cal s:h('htmlSpecialChar', s:fg_super_dim, '', '', '')
-    cal s:h('htmlString', s:green, '', '', '')
+    cal s:h('htmlString', s:magenta, '', '', '')
     hi default link @tag.html Keyword
     hi default link @tag.delimiter.html Keyword
 

@@ -92,7 +92,7 @@
 
     set ignorecase
     set smartcase
-    set showmatch
+    set noshowmatch
     set nohlsearch
 
     set clipboard=
@@ -212,11 +212,14 @@
                 let name = join(split(fnamemodify(bname, ':p:~'), '/')[-2:], '/')
             end
         end
+        if win_getid() == a:win.winid
+            let name = '%#StatusLineBold#' . name . '%*'
+        end
         if getbufvar(bnum, '&modified')
             let name = name . ' [+]'
         end
         if !empty(flags)
-            let name = '%#StatusLineDim#' . flags . '%*' . a:sep . name
+            let name = flags . a:sep . name
         end
         return name
     endf
@@ -226,14 +229,14 @@
     endf
 
     func! _stl_alternate(win)
-        if win_getid() != a:win.winid
+        if win_getid() != a:win.winid || a:win.width < 80
             return ''
         end
         let bnum = a:win.bufnr
         let bname = bufname(bnum)
         let alt = expand('#:t')
-        if !empty(alt) && expand('#:p') != fnamemodify(bname, ':p') && a:win.width > 80
-            return '%#StatusLineDim#%@STLGotoAltBuffer@[' . alt . ']%X%*'
+        if !empty(alt) && buflisted(bufnr(alt)) && expand('#:p') != fnamemodify(bname, ':p')
+            return '%@STLGotoAltBuffer@[' . alt . ']%X'
         end
         return ''
     endf
@@ -251,17 +254,18 @@
             return []
         end
         let flags = []
-        if !empty(getqflist())
-            call add(flags, '%@STLOpenQuickfix@[QF]%X')
+        let qlist = getqflist()
+        if !empty(qlist)
+            call add(flags, '%@STLOpenQuickfix@[q:'.len(qlist).']%X')
         end
-        if !empty(getloclist(a:win.winid))
-            call add(flags, '%@STLOpenLoclist@[LOC]%X')
+        let llist = getloclist(a:win.winid)
+        if !empty(llist) && win_getid() == a:win.winid
+            call add(flags, '%@STLOpenLoclist@[l:'.len(llist).']%X')
         end
         return join(flags, ' ')
     endf
 
     func! _stl_meta(win, sep)
-        let items = []
         let bnum = a:win.bufnr
         let diff = getbufvar(bnum, '&diff')
         let bt = getbufvar(bnum, '&buftype')
@@ -270,15 +274,26 @@
         let fenc = getbufvar(bnum, '&fileencoding')
         let enc = getbufvar(bnum, '&encoding')
         let enc = printf('%s:%s', fenc ? fenc : enc, ff)
-        if !empty(ft) && empty(bt) && a:win.width > 80
-            if !diff && ft == 'python' && !empty($VIRTUAL_ENV) && a:win.width > 60
-                let venv = fnamemodify($VIRTUAL_ENV, ':t')
-                let ft .= '@' . venv
-            end
-            call add(items, ft)
+        let items = [ft]
+        if a:win.width > 120
+            call add(items, enc)
         end
         call filter(items, 'len(v:val)')
-        return join(items, a:sep)
+        if !empty(items)
+            return '[' . join(items, ', ') . ']'
+        end
+        return ''
+    endf
+
+    func! _stl_venv(win, sep)
+        let ft = getbufvar(a:win.bufnr, '&filetype')
+        if !empty(ft) && empty(bt) && a:win.width > 80
+            if !diff && ft == 'python' && !empty($VIRTUAL_ENV)
+                let venv = fnamemodify($VIRTUAL_ENV, ':t')
+                return '[py:' . venv . ']'
+            end
+        end
+        return ''
     endf
 
     func! _stl_git_status(win)
@@ -311,7 +326,7 @@
 
     func! _stl_clip(win)
         if !empty(&clipboard) && a:win.width > 60
-            return 'clip:' . substitute(&clipboard, '\vplus$', '+', '')
+            return '[' . substitute(&clipboard, '\vplus$', '+', '') . ']'
         end
         return ''
     endf
@@ -334,18 +349,19 @@
     func! _stl()
         let ret = ''
         let win = getwininfo(g:statusline_winid)[0]
-        let sep = win.width < 110 ? '  ' : '   '
+        let sep = win.width < 110 ? ' ' : '  '
         try
             let items = []
-            call add(items, _stl_qf(win))
             call add(items, _stl_alternate(win))
             call add(items, _stl_buffer(win, sep))
             call add(items, '%=')
-            call add(items, _stl_git_status(win))
             call add(items, _stl_regtee())
+            call add(items, _stl_qf(win))
+            call add(items, _stl_git_status(win))
+            call add(items, _stl_venv(win))
             call add(items, _stl_clip(win))
             call add(items, _stl_meta(win, sep))
-            call add(items, '%1lL %02cC (%P)')
+            call add(items, '[%1lL %02cC %P]')
             call filter(items, {_, v -> !empty(v)})
             return ' ' . join(items, sep) . ' '
         catch /.*/
@@ -763,7 +779,7 @@
 " Cd
 " ----------------------------------------------------------------------------
 
-    let g:root_markers = ['.gitignore']
+    let g:root_markers = ['.gitignore', 'go.mod']
 
     " Find project root
     func! s:find_root(path)
@@ -892,7 +908,7 @@
     let g:ale_python_ruff_options = '--select E,F,W,A,PLC,PLE,PLW,I --fixable I'
 
     let g:ale_linters.go = ['errcheck', 'staticcheck', 'revive']
-    let g:ale_fixers.go = ['gofmt']
+    let g:ale_fixers.go = ['goimports']
 
     let g:ale_linters.yaml = ['yamllint']
     let g:ale_fixers.yaml = ['yamlfmt']

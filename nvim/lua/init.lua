@@ -11,23 +11,18 @@ local cmp_lsp = require("cmp_nvim_lsp")
 local cmp = require("cmp")
 
 cmp.setup({
-	snippet = {
-		expand = function(args)
-			vim.fn["UltiSnips#Anon"](args.body)
-		end,
-	},
+	preselect = cmp.PreselectMode.None,
 	window = {
 		completion = cmp.config.window.bordered({ border = "single" }),
 		documentation = cmp.config.window.bordered({ border = "single" }),
 	},
 	mapping = cmp.mapping.preset.insert({
 		["<TAB>"] = cmp.mapping.select_next_item(),
-		["<S-TAB>"] = cmp.mapping.select_prev_item(),
-		["<C-b>"] = cmp.mapping.scroll_docs(-4),
-		["<C-f>"] = cmp.mapping.scroll_docs(4),
-		["<C-Space>"] = cmp.mapping.complete(),
-		["<C-e>"] = cmp.mapping.abort(),
-		-- ["<CR>"] = cmp.mapping.confirm({ select = true }),
+		["<C-Space>"] = cmp.mapping.select_prev_item(),
+		["<C-b>"] = cmp.mapping.scroll_docs(-3),
+		["<C-f>"] = cmp.mapping.scroll_docs(3),
+		["<C-a>"] = cmp.mapping.abort(),
+		["<C-y>"] = cmp.mapping.confirm({ select = true }),
 	}),
 	sources = cmp.config.sources({
 		{ name = "nvim_lsp" },
@@ -38,6 +33,13 @@ cmp.setup({
 	formatting = {
 		fields = { "abbr", "kind", "menu" },
 	},
+	-- matching = {
+	-- disallow_fuzzy_matching = true,
+	-- disallow_fullfuzzy_matching = true,
+	-- disallow_partial_fuzzy_matching = true,
+	-- disallow_partial_matching = false,
+	-- disallow_prefix_unmatching = true,
+	-- },
 	sorting = {
 		comparators = {
 			cmp.config.compare.exact,
@@ -125,10 +127,26 @@ vim.fn.sign_define("DiagnosticSignHint", { text = "✖", texthl = "DiagnosticSig
 ----------------------------------------------------------------------------
 
 local lspconfig = require("lspconfig")
+local lsputil = require("lspconfig/util")
 
 local lsp_servers = {
-	gopls = {},
+	gopls = {
+		cmd = { "gopls" },
+		filetypes = { "go", "gomod", "gowork", "gotmpl" },
+		rootdir = lsputil.root_pattern("go.mod", "go.work", ".git"),
+		settings = {
+			gopls = {
+				completeUnimported = true,
+				usePlaceholders = false,
+				analyses = {
+					unusedparams = true,
+				},
+			},
+		},
+	},
 	tsserver = {},
+	eslint = {},
+	tailwindcss = {},
 	rust_analyzer = {},
 	pyright = {},
 	yamlls = {},
@@ -186,6 +204,7 @@ require("nvim-treesitter.configs").setup({
 		"python",
 		"go",
 		"javascript",
+		"typescript",
 		"rust",
 		"lua",
 		"yaml",

@@ -53,16 +53,21 @@ zle -N edit-command-line
 autoload -U compinit
 compinit
 
-zstyle ':completion:*' matcher-list '' 'r:|?=** m:{a-z\-}={A-Z\_}'
-zstyle ':completion:*' completer _complete _match _approximate
+zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' completer _extensions _complete _match _approximate
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path "$XDG_CACHE_HOME/zsh/.zcompcache"
 zstyle ':completion:*:approximate:*' max-errors 3
 zstyle ':completion:*' group-name ''
 zstyle ':completion:*' menu select
-zstyle ':completion:*' format '-- %d'
-zstyle ':completion:*:messages' format '-- %d'
-zstyle ':completion:*:descriptions' format '-- %d'
-zstyle ':completion:*:corrections' format '-- %d (errors %e)'
-zstyle ':completion:*:warnings' format '-- no match for: %d'
+zstyle ':completion:*' format '%B-- %d%b'
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS} "ma=7;1"
+zstyle ':completion:*:messages' format '%B-- %d%b'
+zstyle ':completion:*:descriptions' format '%B-- %d%b'
+zstyle ':completion:*:corrections' format '%B!! %d (errors %e)%b'
+zstyle ':completion:*:warnings' format '%B-- no match for: %d%b'
+zstyle ':completion:*:*:-command-:*:*' group-order alias builtins functions commands
+zstyle ':completion:*' file-list all
 
 # ignore EOF in tmux
 [ -n "$TMUX" ] && setopt ignoreeof

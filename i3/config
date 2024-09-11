@@ -123,6 +123,9 @@ bindsym $mod+Shift+q kill
 # Kill other windows
 bindsym $mod+Shift+o exec --no-startup-id i3-only
 
+# i3-msg dialog
+bindsym $mod+Shift+I exec --no-startup-id i3-msg-dialog
+
 # Tmux shortcuts
 bindsym $mod+bracketleft exec --no-startup-id i3-t
 bindsym $mod+Shift+bracketleft exec --no-startup-id i3-t -move

@@ -1,0 +1,3 @@
+#!/bin/bash
+
+i3-msg "$(echo | eval "rofi "-dmenu -p 'i3-msg' -theme 'i3-input')" >/dev/null

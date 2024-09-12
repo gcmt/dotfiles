@@ -29,13 +29,33 @@ let g:spotter_banned_filetypes =
 " to ban syntax by filetype use g:spotter_banned_syntax_{filetype}
 let g:spotter_banned_syntax =
     \ extend({
-        \ 'Statement':1, 'Repeat':1, 'Exception':1, 'Conditional':1,
+        \ 'Statement':1, 'Repeat':1, 'Exception':1, 'Conditional':1, 'Keyword': 1,
         \ 'Number':1, 'Float':1, 'Boolean':1, 'String': 1, 'Label':1,
         \ 'Operator':1, 'PreProc':1, 'Include':1, 'Define':1, 'Comment': 1,
     \ }, get(g:, 'spotter_banned_syntax', {}))
 
 " Main
 " -----------------------------------------------------------------------------
+
+if has('nvim')
+    " s:synat({line:number}, {col:number}, {bufnr:number}) -> dict
+    " Return the syntax groups at the given position.
+    func! s:synat(line, col, bufnr = 0)
+        let ret = {}
+        let table = luaeval(printf("vim.inspect_pos(%s, %s, %s)", a:bufnr, a:line-1, a:col-1))
+        let syntaxes = empty(table['syntax']) ? table['treesitter'] : table['syntax']
+        for syn in syntaxes
+            let group = empty(syn['hl_group_link']) ? syn['hl_group'] : syn['hl_group_link']
+            let ret[tolower(group)] = 1
+        endfor
+        return ret
+    endf
+else
+    " s:synat({line:number}, {col:number}, {bufnr:number}) -> dict
+    func! s:synat(line, col, bufnr = 0)
+        return {synIDattr(synIDtrans(synID(a:line, a:col, 0)), 'name'): 1}
+    endf
+end
 
 func s:highlight_word()
 
@@ -47,12 +67,12 @@ func s:highlight_word()
         return
     end
 
-     " detect syntax under cursor
-    let syntax = synIDattr(synIDtrans(synID(line("."), col("."), 0)), 'name')
-    let blacklist = extend(get(g:, "spotter_banned_syntax_".&ft, {}), g:spotter_banned_syntax)
-    if get(blacklist, syntax)
-        return
-    end
+    let cursor_syn = s:synat(line("."), col("."), bufnr('%'))
+    for banned_syn in keys(extend(get(g:, "spotter_banned_syntax_".&ft, {}), g:spotter_banned_syntax))
+        if has_key(cursor_syn, tolower(banned_syn))
+            return
+        end
+    endfor
 
     let word = expand("<cword>")
     if word !~ '\v^[-a-zA-Z_][-a-zA-Z0-9_]{'.g:spotter_treshold.',}$'
@@ -60,7 +80,7 @@ func s:highlight_word()
     end
 
     let blacklist = extend(get(g:, "spotter_banned_words_".&ft, {}), g:spotter_banned_words)
-    if get(blacklist, word)
+    if get(blacklist, tolower(word))
         return
     end
 

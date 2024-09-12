@@ -871,14 +871,6 @@
         \ 'text':1, 'markdown':1, 'notes':1,
     \ }
 
-    let g:spotter_banned_syntax_elixir = {
-        \ 'elixirDocString':1
-    \ }
-
-    let g:spotter_banned_words_javascript = {
-        \ 'var':1, 'let':1, 'const':1, 'function':1, 'class':1
-    \ }
-
 " Ale
 " ----------------------------------------------------------------------------
 

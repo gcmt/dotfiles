@@ -1,6 +1,6 @@
 
 let s:bufname = '__buffers__'
-let s:sortings = ['alphabetical', 'numerical', 'viewtime', 'modtime']
+let s:sortings = ['alphabetical', 'path', 'numerical', 'viewtime', 'modtime']
 
 " View loaded buffers
 "
@@ -494,9 +494,17 @@ func! s:get_buffers(all, sorting = 'numerical')
     let F1 = a:all ? function('bufexists') : function('buflisted')
     let F2 = {i, nr -> F1(nr) && getbufvar(nr, '&buftype') =~ '\v^(terminal)?$'}
     let buffers = filter(range(1, bufnr('$')), F2)
-    call map(buffers, {_, b -> [b, fnamemodify(bufname(b), ':t'), fnamemodify(bufname(b), ':p')]})
-    if a:sorting == 'alphabetical'
+    call map(buffers, {_, b -> [
+        \ b,
+        \ fnamemodify(bufname(b), ':t'),
+        \ fnamemodify(bufname(b), ':p'),
+        \ fnamemodify(bufname(b), ':h'),
+    \ ]})
+    if a:sorting == 'alphabetical' || a:sorting == 'path'
         call sort(buffers, {a, b -> a[1] == b[1] ? 0 : (a[1] > b[1] ? 1 : -1)})
+        if a:sorting == 'path'
+            call sort(buffers, {a, b -> a[3] == b[3] ? 0 : (a[3] > b[3] ? 1 : -1)})
+        end
     elseif a:sorting == 'viewtime'
         let t = g:buffers_viewtime_table
         call sort(buffers, {a, b -> get(t, b[2], 0) - get(t, a[2], 0)})

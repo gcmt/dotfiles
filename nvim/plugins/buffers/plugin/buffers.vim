@@ -12,13 +12,13 @@ let g:buffers_loaded = 1
 
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
-" sorting: [alphabetical | numerical | viewtime | modtime]
+" sorting: [alphabetical | path | numerical | viewtime | modtime]
 
 let s:options = #{
     \ popup: 1,
     \ popup_border: 'single',
     \ show_bookmarks: 1,
-    \ sorting: 'alphabetical',
+    \ sorting: 'path',
     \ cursorline: 1,
     \ max_height: 80,
     \ label_unnamed: '[no name]',

@@ -12,13 +12,13 @@ if &background == 'light'
     let s:red           = ['#ad2f3b', 1]
     let s:green         = ['#158045', 2]
     let s:yellow        = ['#d2b96c', 3]
-    let s:blue          = ['#387fb7', 4]
+    let s:blue          = ['#3179b2', 4]
     let s:magenta       = ['#9441a6', 5]
     let s:cyan          = ['#158cb0', 6]
     let s:white         = ['#ffffff', 7]
     let s:orange        = ['#c77408', 16]
     let s:fg_dim        = ['#6a737d', 21]
-    let s:fg_very_dim   = ['#a2abb8', 22]
+    let s:fg_very_dim   = ['#a1aab7', 22]
     let s:fg_super_dim  = ['#dde5ed', 23]
     let s:bg_accent     = ['#f5f6f7', 24]
     let s:hl            = ['#f7f71b', 25]
@@ -143,8 +143,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
 
     if &bg == 'dark'
-        cal s:h('Search', s:bg, s:hl, 'bold', '')
-        cal s:h('CurSearch', s:bg, s:red, 'bold', '')
+        cal s:h('Search', s:bg, s:magenta, 'bold', '')
+        cal s:h('CurSearch', s:bg, s:hl, 'bold', '')
     else
         cal s:h('Search', s:fg, s:hl, 'bold', '')
         cal s:h('CurSearch', s:bg, s:red, 'bold', '')

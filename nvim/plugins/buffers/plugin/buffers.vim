@@ -12,7 +12,7 @@ let g:buffers_loaded = 1
 
 command! -nargs=0 -bang Buffers call buffers#view(<q-bang> == '!')
 
-" sorting: [alphabetical | path | numerical | viewtime | modtime]
+" sorting: [path | name | number | viewtime | modtime]
 
 let s:options = #{
     \ popup: 1,

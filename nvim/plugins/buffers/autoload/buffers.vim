@@ -1,6 +1,6 @@
 
 let s:bufname = '__buffers__'
-let s:sortings = ['alphabetical', 'path', 'numerical', 'viewtime', 'modtime']
+let s:sortings = ['path', 'name', 'number', 'viewtime', 'modtime']
 
 " View loaded buffers
 "
@@ -490,7 +490,7 @@ endf
 " Returns:
 "   - buffers (list): a list of buffer numbers
 "
-func! s:get_buffers(all, sorting = 'numerical')
+func! s:get_buffers(all, sorting = 'number')
     let F1 = a:all ? function('bufexists') : function('buflisted')
     let F2 = {i, nr -> F1(nr) && getbufvar(nr, '&buftype') =~ '\v^(terminal)?$'}
     let buffers = filter(range(1, bufnr('$')), F2)
@@ -500,7 +500,7 @@ func! s:get_buffers(all, sorting = 'numerical')
         \ fnamemodify(bufname(b), ':p'),
         \ fnamemodify(bufname(b), ':h'),
     \ ]})
-    if a:sorting == 'alphabetical' || a:sorting == 'path'
+    if a:sorting == 'name' || a:sorting == 'path'
         call sort(buffers, {a, b -> a[1] == b[1] ? 0 : (a[1] > b[1] ? 1 : -1)})
         if a:sorting == 'path'
             call sort(buffers, {a, b -> a[3] == b[3] ? 0 : (a[3] > b[3] ? 1 : -1)})

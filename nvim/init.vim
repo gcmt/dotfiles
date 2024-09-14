@@ -449,8 +449,11 @@
         end
     endf
 
+    command! -bang -nargs=0 Bwipe call <sid>bdelete('bwipe', <q-bang>)
     command! -bang -nargs=0 Bdelete call <sid>bdelete('bdelete', <q-bang>)
+
     nnoremap <silent> <c-w>d :Bdelete!<cr>
+    nnoremap <silent> <c-w>D :Bwipe!<cr>
 
     " Delete the buffer without closing the window
     func! s:bdelete(cmd, bang)

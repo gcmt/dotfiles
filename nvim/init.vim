@@ -30,7 +30,7 @@
 
     let g:external = []
     call add(g:external, 'dense-analysis/ale')
-    call add(g:external, 'SirVer/ultisnips')
+    call add(g:external, 'L3MON4D3/LuaSnip')
     call add(g:external, 'tpope/vim-fugitive')
     call add(g:external, 'airblade/vim-gitgutter')
     call add(g:external, 'neovim/nvim-lspconfig')
@@ -925,14 +925,28 @@
 
     let g:gitgutter_enabled = 1
 
-" Ultisnips
+" Luasnip
 " ----------------------------------------------------------------------------
 
-    let g:UltiSnipsSnippetDirectories = [$VIMHOME . '/snips']
+    imap <silent><expr> <c-j> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<c-d>'
+    inoremap <silent> <c-b> <cmd>lua require('luasnip').jump(-1)<Cr>
 
-    let g:UltiSnipsExpandTrigger = "<c-j>"
-    let g:UltiSnipsJumpForwardTrigger = "<c-j>"
-    let g:UltiSnipsJumpBackwardTrigger = "<c-b>"
+    snoremap <silent> <c-j> <cmd>lua require('luasnip').jump(1)<Cr>
+    snoremap <silent> <c-b> <cmd>lua require('luasnip').jump(-1)<Cr>
+
+    command! -nargs=? -complete=filetype SnipEdit call <sid>snip_edit(<q-args>)
+
+    func! s:snip_edit(ft)
+        let ft = empty(a:ft) ? &ft : a:ft
+        if empty(ft)
+            return
+        end
+        let snippet_file = printf('%s/snippets/%s.snippets', $VIMHOME, ft)
+        if !filereadable(snippet_file)
+            return s:err("No snippets for filetype %s", ft)
+        end
+        exec "edit" fnameescape(snippet_file)
+    endf
 
 " Disable unused plugins
 " ----------------------------------------------------------------------------

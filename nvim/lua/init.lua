@@ -3,6 +3,12 @@ P = function(v)
 	return v
 end
 
+-- LUASNIP
+-- https://github.com/L3MON4D3/LuaSnip
+----------------------------------------------------------------------------
+
+require("luasnip.loaders.from_snipmate").lazy_load()
+
 -- COMPLETION
 -- https://github.com/hrsh7th/nvim-cmp
 ----------------------------------------------------------------------------

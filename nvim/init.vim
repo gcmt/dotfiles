@@ -64,6 +64,16 @@
         endfor
     endf
 
+    command -nargs=0 PlugUpdate call <sid>plug_update()
+
+    func! s:plug_update()
+        for plugin in g:external
+            echo plugin '...' 'UPDATING'
+            let path = $VIMVENDOR . '/' . split(plugin, '/')[-1]
+            call system(printf('git -C %s pull', shellescape(path)))
+        endfor
+    endf
+
 " OPTIONS
 " ----------------------------------------------------------------------------
 
@@ -285,7 +295,9 @@
         return ''
     endf
 
-    func! _stl_venv(win, sep)
+    func! _stl_venv(win)
+        let diff = getbufvar(a:win.bufnr, '&diff')
+        let bt = getbufvar(a:win.bufnr, '&buftype')
         let ft = getbufvar(a:win.bufnr, '&filetype')
         if !empty(ft) && empty(bt) && a:win.width > 80
             if !diff && ft == 'python' && !empty($VIRTUAL_ENV)
@@ -313,15 +325,6 @@
             return ''
         end
         return FugitiveHead()
-    endf
-
-    func! _stl_venv(win)
-        let bnum = a:win.bufnr
-        let diff = getbufvar(bnum, '&diff')
-        if !diff && &ft == 'python' && !empty($VIRTUAL_ENV) && a:win.width > 60
-            return 'venv:' . fnamemodify($VIRTUAL_ENV, ':t')
-        end
-        return ''
     endf
 
     func! _stl_clip(win)
@@ -361,7 +364,9 @@
             call add(items, _stl_venv(win))
             call add(items, _stl_clip(win))
             call add(items, _stl_meta(win, sep))
-            call add(items, '[%1lL %02cC %P]')
+            if win.width > 80
+                call add(items, '[%1lL %02cC %P]')
+            end
             call filter(items, {_, v -> !empty(v)})
             return ' ' . join(items, sep) . ' '
         catch /.*/

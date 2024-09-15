@@ -10,7 +10,7 @@ func! fzf#files(cwd, bang)
 
     func! s:files__cb() dict
         if self.status == 1
-            return s:err('Fzf failed')
+            return s:err('exited with status 1')
         end
         if empty(self.selection)
             return
@@ -45,7 +45,7 @@ func! s:default_opts()
 
     func! s:default_callback() dict
         if self.status
-            return s:err('Fzf exited with status ' . self.status)
+            return s:err('exited with status ' . self.status)
         end
     endf
 
@@ -159,5 +159,5 @@ endf
 
 
 func! s:err(fmt, ...)
-    echohl WarningMsg | echom call('printf', [a:fmt] + a:000)  | echohl None
+    echohl WarningMsg | echom call('printf', ['fzf: ', a:fmt] + a:000)  | echohl None
 endf

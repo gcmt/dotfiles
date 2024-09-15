@@ -498,7 +498,7 @@ func! s:get_buffers(all, sorting = 'number')
         \ b,
         \ fnamemodify(bufname(b), ':t'),
         \ fnamemodify(bufname(b), ':p'),
-        \ fnamemodify(bufname(b), ':h'),
+        \ fnamemodify(bufname(b), ':p:h'),
     \ ]})
     if a:sorting == 'name' || a:sorting == 'path'
         call sort(buffers, {a, b -> a[1] == b[1] ? 0 : (a[1] > b[1] ? 1 : -1)})

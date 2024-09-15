@@ -384,11 +384,16 @@
     func! _tabline()
         let tabline = ''
         for tabnr in range(1, tabpagenr('$'))
+            let tab_windows = gettabinfo(tabnr)[0]["windows"]
+            let tab_filetype = gettabwinvar(tabnr, tab_windows[0], '&filetype')
+            let tabname = gettabvar(tabnr, 'tabname', '')
+            let diffview = gettabvar(tabnr, 'diffview_view_initialized', v:false)
+            let tabname = diffview ? 'diffview' : tabname
+            let tabname = tab_filetype =~? "^neogit" ? 'neogit' : tabname
+            let tabname = empty(tabname) ? '' : ':' . tabname
             let tabline .= tabnr == tabpagenr() ? '%#TabLineSel#' : '%#TabLine#'
             let tabline .= ' %' . tabnr . 'T'
-            let tabname = gettabvar(tabnr, 'tabname', '')
-            let tabname = empty(tabname) ? 'TAB' : tabname
-            let tabline .= printf('[ #%s %s ]', tabnr, tabname)
+            let tabline .= printf('[%s%s]', tabnr, tabname)
             let tabline .= ' '
         endfor
         let tabline .= '%#TabLineFill#%T'
@@ -396,17 +401,13 @@
         return tabline
     endf
 
-    command! -nargs=? Tab tabe | TabName <args>
-    command! -nargs=? TabName call <sid>set_tabname(<q-args>)
+    command! -nargs=? Tab $tab split | Tabname <args>
+    command! -nargs=? Tabname call <sid>set_tabname(<q-args>)
 
     func! s:set_tabname(name)
         let t:tabname = a:name
         set tabline=%!_tabline()
     endf
-
-    " when there is only one tab, open a new one
-    nnoremap <silent> <expr> gt tabpagenr('$') == 1 ? ':$tab split<cr>' : '<c-u>:norm! '.v:count.'gt<cr>'
-    nnoremap <silent> <expr> gT tabpagenr('$') == 1 ? ':0tab split<cr>' : '<c-u>:norm! '.v:count.'gT<cr>'
 
 " WINDOWS
 " ----------------------------------------------------------------------------

@@ -13,8 +13,19 @@ let g:fzf_loaded = 1
 command! -bang -nargs=* Files call fzf#files(<q-args>, <q-bang>)
 
 let s:options = {
-    \ 'default_opts': "-e --multi --preview 'head -100 {}' --color fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:19,gutter:-1",
+    \ 'expect': {
+        \ 'ctrl-t': 'tab split',
+        \ 'ctrl-s': 'split',
+        \ 'ctrl-v': 'vsplit',
+    \ },
+    \ 'options': [
+        \ "-e",
+        \ "--multi",
+        \ "--layout=reverse",
+        \ "--color", "fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:19,gutter:-1",
+    \ ],
     \ 'preview_treshold': 150,
+    \ 'preview_cmd': 'head -100 {}',
     \ 'term_cmd': 'TMUX= kitty --name vim-popup',
     \ 'tmux_cmd': 'tmux display-popup -E -w 90% -h 90%',
     \ 'files_cmd': "rg --files --no-hidden",

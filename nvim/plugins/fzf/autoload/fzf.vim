@@ -1,120 +1,80 @@
 
-let s:default_actions = {
-    \ 'ctrl-t': 'tab split',
-    \ 'ctrl-s': 'split',
-    \ 'ctrl-v': 'vsplit',
-\ }
-
 func! fzf#files(cwd, bang)
-
-    func! s:files__cb() dict
-        if self.status == 1
-            return s:err('exited with status 1')
-        end
-        if empty(self.selection)
-            return
-        end
-        if !empty(self.cwd)
-            call map(self.selection, {i, v -> s:joinpaths(self.cwd, v)})
-        end
-        if len(self.selection) > 1
-            exec 'argadd' join(self.selection)
-        end
-        sil exec get(s:default_actions, self.key, '')
-        exec 'edit' fnameescape(self.selection[0])
-    endf
-
-    let fzf_opts = ['--multi', "--expect", join(keys(s:default_actions), ',')]
-
-    if &columns > g:fzf_preview_treshold
-        let fzf_opts += ["--preview", 'head -100 {}']
+    let fzf_opts = g:fzf_options
+    if !empty(g:fzf_expect) && type(g:fzf_expect) == v:t_dict
+        let fzf_opts += ["--expect", join(keys(g:fzf_expect), ',')]
     end
-
+    if &columns > g:fzf_preview_treshold
+        let fzf_opts += ["--preview", g:fzf_preview_cmd]
+    end
     call s:run({
         \ 'source': empty(a:bang) ? g:fzf_files_cmd : g:fzf_files_cmd_bang,
         \ 'callback': funcref('s:files__cb'),
         \ 'fzf_opts': fzf_opts,
         \ 'cwd' : empty(a:cwd) ? getcwd() : a:cwd,
     \ })
-
 endf
 
-func! s:default_callback() dict
-    if self.status
-        return s:err('exited with status ' . self.status)
+func! s:files__cb() dict
+    if self.status == 1
+        return s:err('exited with status 1')
     end
-endf
-
-func! s:default_opts()
-    return {
-        \ 'source': '',
-        \ 'callback': funcref('s:default_callback'),
-        \ 'fzf_opts': [],
-        \ 'cwd': getcwd(),
-    \ }
-endf
-
-func! s:default_fzf_opts()
-    return [
-        \ "--color", "fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23",
-    \ ]
+    if empty(self.selection)
+        return
+    end
+    if !empty(self.cwd)
+        call map(self.selection, {i, v -> s:joinpaths(self.cwd, v)})
+    end
+    if len(self.selection) > 1
+        exec 'argadd' join(self.selection)
+    end
+    sil exec get(g:fzf_expect, self.key, '')
+    exec 'edit' fnameescape(self.selection[0])
 endf
 
 func! s:run(opts)
-
-    let opts = extend(a:opts, s:default_opts(), 'keep')
-    let fzf_opts = a:opts.fzf_opts + s:default_fzf_opts()
-
     let out_file = tempname()
     let in_file = tempname()
 
-    let exit_cb_ctx = {
-        \ 'callback': opts.callback,
-        \ 'outfile': out_file,
-        \ 'infile': in_file,
-        \ 'curwin': winnr(),
-        \ 'cwd': opts.cwd,
-        \ 'expect': 0,
-        \ 'selection': [],
-    \ }
-
-    for opt in fzf_opts
-        if opt =~# '\v^--expect$'
-            let exit_cb_ctx['expect'] = 1
-            break
-        end
-    endfo
-
     let $FZF_DEFAULT_COMMAND = ''
-    let $FZF_DEFAULT_OPTS = g:fzf_default_opts
+    let $FZF_DEFAULT_OPTS = join(a:opts.fzf_opts)
 
-    if type(opts.source) == v:t_func
-        let opts.source = call(opts.source, [])
+    if type(a:opts.source) == v:t_func
+        let a:opts.source = call(a:opts.source, [])
     end
 
-    let t_source = type(opts.source)
+    let t_source = type(a:opts.source)
     if t_source != v:t_string && t_source != v:t_list
-        return s:err("invalid source: must be string or list: %s", opts.source)
+        return s:err("invalid source: must be string or list: %s", a:opts.source)
     end
 
     if t_source == v:t_string
-        let $FZF_DEFAULT_COMMAND = opts.source
+        let $FZF_DEFAULT_COMMAND = a:opts.source
     end
 
-    let fzf_opts += ['--layout=reverse']
+    let fzf_opts = copy(a:opts.fzf_opts)
     call map(fzf_opts, {i, v -> shellescape(v)})
-
     let cmd = ['fzf'] + fzf_opts + ['>'.out_file]
 
     if !empty($TMUX)
-        let cmd = join([g:fzf_tmux_cmd, '-d', shellescape(opts.cwd), shellescape(join(cmd))])
+        let cmd = join([g:fzf_tmux_cmd, '-d', shellescape(a:opts.cwd), shellescape(join(cmd))])
     else
         let cmd = g:fzf_term_cmd . ' -e sh -c ' . shellescape(join(cmd))
     end
 
-    let input = t_source == v:t_list ? opts.source : []
+    let ctx = {
+        \ 'callback': a:opts.callback,
+        \ 'outfile': out_file,
+        \ 'infile': in_file,
+        \ 'curwin': winnr(),
+        \ 'cwd': a:opts.cwd,
+        \ 'expect': !empty(g:fzf_expect),
+        \ 'selection': [],
+    \ }
+
+    let input = t_source == v:t_list ? a:opts.source : []
     sil call system(cmd, input)
-    call call('s:exit_cb', [-1, v:shell_error], exit_cb_ctx)
+    call call('s:exit_cb', [-1, v:shell_error], ctx)
 endf
 
 func! s:exit_cb(job, status) dict

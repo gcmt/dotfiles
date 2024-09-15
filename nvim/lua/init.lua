@@ -150,7 +150,7 @@ local lsp_servers = {
 			},
 		},
 	},
-	tsserver = {},
+	ts_ls = {},
 	eslint = {},
 	tailwindcss = {},
 	rust_analyzer = {},
@@ -165,6 +165,8 @@ for server, config in pairs(lsp_servers) do
 	config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 	lspconfig[server].setup(config)
 end
+
+require("lspconfig.ui.windows").default_options.border = "single"
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),

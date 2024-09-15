@@ -107,12 +107,17 @@ func! s:run(opts)
         let $FZF_DEFAULT_COMMAND = opts.source
     end
 
-    let fzf_opts += ['--layout=reverse', ]
-
+    let fzf_opts += ['--layout=reverse']
     call map(fzf_opts, {i, v -> shellescape(v)})
-    let cmd = ['fzf'] + fzf_opts
 
-    let cmd = g:fzf_term_prg . ' -e sh -c "' . join(cmd) . ' >'.out_file.'"'
+    let cmd = ['fzf'] + fzf_opts + ['>'.out_file]
+
+    if !empty($TMUX)
+        let cmd = join([g:fzf_tmux_cmd, '-d', shellescape(opts.cwd), shellescape(join(cmd))])
+    else
+        let cmd = g:fzf_term_cmd . ' -e sh -c ' . shellescape(join(cmd))
+    end
+
     let input = t_source == v:t_list ? opts.source : []
     sil call system(cmd, input)
     call call('s:exit_cb', [-1, v:shell_error], exit_cb_ctx)

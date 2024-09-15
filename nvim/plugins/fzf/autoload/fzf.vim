@@ -5,7 +5,6 @@ let s:default_actions = {
     \ 'ctrl-v': 'vsplit',
 \ }
 
-
 func! fzf#files(cwd, bang)
 
     func! s:files__cb() dict
@@ -40,31 +39,26 @@ func! fzf#files(cwd, bang)
 
 endf
 
+func! s:default_callback() dict
+    if self.status
+        return s:err('exited with status ' . self.status)
+    end
+endf
 
 func! s:default_opts()
-
-    func! s:default_callback() dict
-        if self.status
-            return s:err('exited with status ' . self.status)
-        end
-    endf
-
     return {
         \ 'source': '',
         \ 'callback': funcref('s:default_callback'),
         \ 'fzf_opts': [],
         \ 'cwd': getcwd(),
     \ }
-
 endf
-
 
 func! s:default_fzf_opts()
     return [
         \ "--color", "fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23",
     \ ]
 endf
-
 
 func! s:run(opts)
 
@@ -123,7 +117,6 @@ func! s:run(opts)
     call call('s:exit_cb', [-1, v:shell_error], exit_cb_ctx)
 endf
 
-
 func! s:exit_cb(job, status) dict
 
     exec self.curwin . 'wincmd w'
@@ -152,16 +145,13 @@ func! s:exit_cb(job, status) dict
     end
 
     call funcref(self.callback, [], ctx)()
-
 endf
-
 
 func! s:joinpaths(...)
     let args = filter(copy(a:000), {-> !empty(v:val)})
     let path = substitute(join(args, '/'), '\v/+', '/', 'g')
     return substitute(path, '\v/+$', '', '')
 endf
-
 
 func! s:err(fmt, ...)
     echohl WarningMsg | echom call('printf', ['fzf: ', a:fmt] + a:000)  | echohl None

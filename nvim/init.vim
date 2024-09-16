@@ -732,9 +732,6 @@
     nnoremap <2-RightMouse> <nop>
     nnoremap <3-RightMouse> <nop>
 
-    nnoremap <F2> :w<cr>
-    inoremap <F2> <esc>:w<cr>
-
     cnoremap <c-n> <down>
     cnoremap <c-p> <up>
 
@@ -753,10 +750,10 @@
     iabbrev lenght length
     iabbrev retrun return
 
-    nnoremap <silent> gow :set wrap!<bar>set wrap?<cr>
-    nnoremap <silent> gon :set number!<bar>set number?<cr>
-    nnoremap <silent> goz :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
-    nnoremap <silent> goc :call <sid>toggle_clipboard()<cr>
+    nnoremap <silent> <c-b>w :set wrap!<bar>set wrap?<cr>
+    nnoremap <silent> <c-b>n :set number!<bar>set number?<cr>
+    nnoremap <silent> <c-b>z :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
+    nnoremap <silent> <c-b>c :call <sid>toggle_clipboard()<cr>
 
     func! s:toggle_clipboard()
         if empty(&clipboard)
@@ -837,29 +834,26 @@
 " Fzf
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> <c-f> :Files<cr>
+    nnoremap <silent> go :Files<cr>
+    nnoremap <silent> <c-f>f :Files<cr>
 
 " Buffers
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> <c-p> :Buffers<cr>
     nnoremap <silent> gl :Buffers<cr>
 
 " Marks
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> m, :call marks#view()<cr>
+    nnoremap <silent> gm :call marks#view()<cr>
     nnoremap <silent> m. :call marks#set_auto(1)<cr>
-    nnoremap <silent> m; :call marks#set_auto(0)<cr>
+    nnoremap <silent> m, :call marks#set_auto(0)<cr>
 
 " Bookmarks
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> <c-b> :call bookmarks#quickjump()<cr>
     nnoremap <silent> gb :call bookmarks#view()<cr>
     nnoremap <silent> gB :call bookmarks#view(1)<cr>
-    nnoremap <silent> gm :call bookmarks#set(input("Mark: "), expand('%:p'))<cr>
-    nnoremap <silent> gM :call bookmarks#set(input("MarkDir: "), expand('%:p:h'))<cr>
 
 " Explorer/Ranger/Vifm
 " ----------------------------------------------------------------------------

@@ -21,15 +21,18 @@ let s:options = {
     \ 'options': [
         \ "-e",
         \ "--multi",
-        \ "--layout=reverse",
-        \ "--color", "fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,border:19,gutter:-1",
+        \ "--reverse",
+        \ "--preview-window", "border-left",
+        \ "--bind", "TAB:down,SHIFT-TAB:up",
+        \ "--bind", "CTRL-N:toggle+down,CTRL-L:toggle+down,CTRL-H:toggle+up,RIGHT:toggle+down,LEFT:toggle+up",
+        \ "--color", "fg+:18,bg+:24,hl+:1,hl:1,prompt:-1,pointer:-1,info:23,gutter:-1,border:22",
     \ ],
     \ 'preview_treshold': 150,
     \ 'preview_cmd': 'head -100 {}',
     \ 'term_cmd': 'TMUX= kitty --name vim-popup',
     \ 'tmux_cmd': 'tmux display-popup -E -w 90% -h 90%',
-    \ 'files_cmd': "rg --files --no-hidden",
-    \ 'files_cmd_bang': "rg --files --hidden -g '!.git/' -g '!.venv/' -g '!.mypy_cache/' -g '!.ruff_cache/' -g '!node_modules/'",
+    \ 'files_cmd': "rg --files --hidden --no-require-git -g '!.git/'",
+    \ 'files_cmd_bang': "rg --files --hidden --no-ignore"
 \ }
 
 for [s:option, s:default] in items(s:options)

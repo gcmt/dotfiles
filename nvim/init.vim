@@ -952,6 +952,21 @@
         exec "edit" fnameescape(snippet_file)
     endf
 
+" Lazygit
+" ----------------------------------------------------------------------------
+
+    nnoremap <silent> <c-t> :call <sid>open_lazygit()<cr>
+
+    func! s:open_lazygit()
+        let cwd = shellescape(getcwd())
+        if !empty($TMUX)
+            let cmd = "tmux display-popup -E -w 90% -h 90% -d " . cwd . " lazygit"
+        else
+            let cmd = "kitty --name vim-popup -d " . cwd . " -e lazygit"
+        end
+        call system(cmd)
+    endf
+
 " Disable unused plugins
 " ----------------------------------------------------------------------------
 

@@ -63,7 +63,7 @@ func s:highlight_word()
         return
     end
 
-    if !empty(&bt) || get(g:spotter_banned_filetypes, &ft)
+    if &diff || !empty(&bt) || get(g:spotter_banned_filetypes, &ft)
         return
     end
 

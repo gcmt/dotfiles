@@ -33,8 +33,6 @@ func! s:files__cb() dict
 endf
 
 func! s:run(opts)
-    let out_file = tempname()
-    let in_file = tempname()
 
     let $FZF_DEFAULT_COMMAND = ''
     let $FZF_DEFAULT_OPTS = join(a:opts.fzf_opts)
@@ -43,18 +41,23 @@ func! s:run(opts)
         let a:opts.source = call(a:opts.source, [])
     end
 
-    let t_source = type(a:opts.source)
-    if t_source != v:t_string && t_source != v:t_list
-        return s:err("invalid source: must be string or list: %s", a:opts.source)
-    end
-
-    if t_source == v:t_string
+    if type(a:opts.source) == v:t_string
         let $FZF_DEFAULT_COMMAND = a:opts.source
     end
 
+    let ctx = {
+        \ 'callback': a:opts.callback,
+        \ 'outfile': tempname(),
+        \ 'infile': tempname(),
+        \ 'curwin': winnr(),
+        \ 'cwd': a:opts.cwd,
+        \ 'expect': !empty(g:fzf_expect),
+        \ 'selection': [],
+    \ }
+
     let fzf_opts = copy(a:opts.fzf_opts)
     call map(fzf_opts, {i, v -> shellescape(v)})
-    let cmd = ['fzf'] + fzf_opts + ['>'.out_file]
+    let cmd = ['fzf'] + fzf_opts + ['>'.ctx.outfile]
 
     if !empty($TMUX)
         let cmd = join([g:fzf_tmux_cmd, '-d', shellescape(a:opts.cwd), shellescape(join(cmd))])
@@ -62,17 +65,8 @@ func! s:run(opts)
         let cmd = g:fzf_term_cmd . ' -e sh -c ' . shellescape(join(cmd))
     end
 
-    let ctx = {
-        \ 'callback': a:opts.callback,
-        \ 'outfile': out_file,
-        \ 'infile': in_file,
-        \ 'curwin': winnr(),
-        \ 'cwd': a:opts.cwd,
-        \ 'expect': !empty(g:fzf_expect),
-        \ 'selection': [],
-    \ }
+    let input = type(a:opts.source) == v:t_list ? a:opts.source : []
 
-    let input = t_source == v:t_list ? a:opts.source : []
     sil call system(cmd, input)
     call call('s:exit_cb', [-1, v:shell_error], ctx)
 endf

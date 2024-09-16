@@ -42,16 +42,8 @@ endf
 
 func! s:run(opts)
 
-    let $FZF_DEFAULT_COMMAND = ''
     let $FZF_DEFAULT_OPTS = join(a:opts.fzf_opts)
-
-    if type(a:opts.source) == v:t_func
-        let a:opts.source = call(a:opts.source, [])
-    end
-
-    if type(a:opts.source) == v:t_string
-        let $FZF_DEFAULT_COMMAND = a:opts.source
-    end
+    let $FZF_DEFAULT_COMMAND = a:opts.source
 
     let ctx = {
         \ 'callback': a:opts.callback,
@@ -65,17 +57,17 @@ func! s:run(opts)
 
     let fzf_opts = copy(a:opts.fzf_opts)
     call map(fzf_opts, {i, v -> shellescape(v)})
-    let cmd = ['fzf'] + fzf_opts + ['>'.ctx.outfile]
+    let fzf_cmd = ['fzf'] + fzf_opts + ['>'.ctx.outfile]
 
     if !empty($TMUX)
-        let cmd = join([g:fzf_tmux_cmd, '-d', shellescape(a:opts.cwd), shellescape(join(cmd))])
+        let env = "FZF_DEFAULT_COMMAND=" . shellescape($FZF_DEFAULT_COMMAND)
+        let tmux_cmd = [g:fzf_tmux_cmd, '-e', env, '-d', shellescape(a:opts.cwd)]
+        let cmd = join(tmux_cmd + [shellescape(join(fzf_cmd))])
     else
-        let cmd = g:fzf_term_cmd . ' -e sh -c ' . shellescape(join(cmd))
+        let cmd = g:fzf_term_cmd . ' -e sh -c ' . shellescape(join(fzf_cmd))
     end
 
-    let input = type(a:opts.source) == v:t_list ? a:opts.source : []
-
-    sil call system(cmd, input)
+    sil call system(cmd, [])
     call call('s:handle_selection', [v:shell_error], ctx)
 endf
 

@@ -108,5 +108,5 @@ func! s:joinpaths(...)
 endf
 
 func! s:err(fmt, ...)
-    echohl WarningMsg | echom call('printf', ['fzf: ', a:fmt] + a:000)  | echohl None
+    echohl WarningMsg | echom call('printf', ['fzf: ' . a:fmt] + a:000)  | echohl None
 endf

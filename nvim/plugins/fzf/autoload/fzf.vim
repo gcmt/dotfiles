@@ -68,10 +68,10 @@ func! s:run(opts)
     let input = type(a:opts.source) == v:t_list ? a:opts.source : []
 
     sil call system(cmd, input)
-    call call('s:exit_cb', [v:shell_error], ctx)
+    call call('s:handle_selection', [v:shell_error], ctx)
 endf
 
-func! s:exit_cb(status) dict
+func! s:handle_selection(status) dict
 
     exec self.curwin . 'wincmd w'
 

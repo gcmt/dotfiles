@@ -10,7 +10,7 @@ if exists('g:fzf_loaded') || !executable('fzf') || &cp
 end
 let g:fzf_loaded = 1
 
-command! -bang -nargs=* Files call fzf#files(<q-args>, <q-bang>)
+command! -bang -nargs=* Files call fzf#files(<q-args>, !empty(<q-bang>))
 
 let s:options = {
     \ 'expect': {

@@ -1,5 +1,5 @@
 
-func! fzf#files(cwd, bang)
+func! fzf#files(source, bang = v:false, cwd = "")
     let fzf_opts = g:fzf_options
     if !empty(g:fzf_expect) && type(g:fzf_expect) == v:t_dict
         let fzf_opts += ["--expect", join(keys(g:fzf_expect), ',')]
@@ -7,8 +7,16 @@ func! fzf#files(cwd, bang)
     if &columns > g:fzf_preview_treshold
         let fzf_opts += ["--preview", g:fzf_preview_cmd]
     end
+    let source = a:source
+    if empty(source)
+        if !a:bang
+            let source = g:fzf_files_cmd
+        else
+            let source = empty(g:fzf_files_cmd_bang) ? g:fzf_files_cmd : g:fzf_files_cmd_bang
+        end
+    end
     call s:run({
-        \ 'source': empty(a:bang) ? g:fzf_files_cmd : g:fzf_files_cmd_bang,
+        \ 'source': source,
         \ 'callback': funcref('s:files__cb'),
         \ 'fzf_opts': fzf_opts,
         \ 'cwd' : empty(a:cwd) ? getcwd() : a:cwd,

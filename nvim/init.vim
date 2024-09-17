@@ -574,20 +574,64 @@
         return "\<right>"
     endf
 
-" SEARCH AND SUBSTITUTE
-" ---------------------------------------------------------------------------
+" COMMAND LINE
+" ----------------------------------------------------------------------------
 
-    aug _hlsearch
+    aug _commandline
         au!
         if exists("##CmdlineEnter")
             au CmdlineEnter [/\?] set hlsearch
             au CmdlineLeave [/\?] set nohlsearch
         end
+        if exists("##CmdlineLeave")
+            au CmdlineLeave * call <sid>fix_cmdline()
+        end
     aug END
+
+    " Allow :User defined commands to be typed lowercase
+    " PS. vim commands can potentially be shadowed: see :bwipe -> Bwipe
+
+    let user_commands = {}
+    for s:cmd in getcompletion('\\u', 'command')
+        if s:cmd == 'Next'
+            " :Next is defined by vim itself
+            continue
+        end
+        let user_commands[tolower(s:cmd)] = s:cmd
+    endfor
+
+    func! s:fix_cmdline()
+        if expand('<afile>') != ':' || v:event.abort
+            return
+        end
+        let cmdline = split(getcmdline(), ' ', 1)
+        if empty(cmdline)
+            return
+        end
+        let raw = cmdline[0]
+        let [cmd, start, end] = matchstrpos(raw, '\v\a+')
+        let repl = get(g:user_commands, tolower(cmd), '')
+        if empty(repl)
+            return
+        end
+        let cmdline[0] = strpart(raw, 0, start) . repl . strpart(raw, end)
+        call setcmdline(join(cmdline))
+    endf
+
+    command! -bang -nargs=0 Quit quit<bang>
+    command! -bang -nargs=* W write<bang> <args>
+    command! -bang Wq wq<bang>
+    command! -bang Q q<bang>
 
     " use <tab> and <s-tab> instead of <c-g> and <c-t>
     cnoremap <expr> <tab> getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
     cnoremap <expr> <s-tab> getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
+
+    cnoremap <c-n> <down>
+    cnoremap <c-p> <up>
+
+" SEARCH AND SUBSTITUTE
+" ---------------------------------------------------------------------------
 
     " toggle highlighting of the last search pattern
     nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
@@ -720,20 +764,12 @@
 
     " Write helpers
     command! -nargs=0 SudoWrite exec 'write !sudo tee % > /dev/null'
-    command! -bang -nargs=* W write<bang> <args>
-    command! -bang Wq wq<bang>
-    command! -bang Q q<bang>
-
-    command! -bang -nargs=0 Quit quit<bang>
 
     " requires sorting beforehand
     command! Duplicates g/^\(.*\)$\n\1$/p
 
     nnoremap <2-RightMouse> <nop>
     nnoremap <3-RightMouse> <nop>
-
-    cnoremap <c-n> <down>
-    cnoremap <c-p> <up>
 
     inoremap <c-c> <c-]><esc>
     inoremap <c-u> <c-g>u<c-u>

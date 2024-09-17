@@ -605,14 +605,18 @@
         au BufWritePost */nvim/init.vim call <sid>setup_user_commands_map()
     aug END
 
+    " {Command: alias, ..}
     let g:user_commands_aliases = {
     \ }
 
+    let g:user_commands_ignore = ['Next', 'Tab']
+
     func! s:setup_user_commands_map()
         let g:user_commands = {}
+        let ignore_pattern = '\v^(' . join(g:user_commands_ignore, '|') . ')$'
         " Retrieve only commands that starts with an uppercase letter
         for cmd in getcompletion('', 'command')
-            if cmd =~ '\v^(Next)$' || cmd =~# '\v^\U'
+            if cmd =~ ignore_pattern || cmd[0] =~ '\U'
                 continue
             end
             if has_key(g:user_commands_aliases, cmd)

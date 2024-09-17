@@ -160,6 +160,7 @@
     set shiftwidth=0
     set softtabstop=0
 
+    set wildoptions=pum,fuzzy
     set wildmode=full
     set wildignore+=
     set wildignore+=*/venv/*,venv$

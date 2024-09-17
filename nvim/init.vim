@@ -858,7 +858,7 @@
         pwd
     endf
 
-    command! -bang -nargs=0 Cd call <sid>cd_into_buf_dir(<q-bang>)
+    command! -bang -nargs=0 Bufcd call <sid>cd_into_buf_dir(<q-bang>)
     command! -bang -nargs=0 Root call <sid>cd_into_root_dir(<q-bang>)
 
 " Search

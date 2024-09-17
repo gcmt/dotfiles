@@ -591,7 +591,6 @@
 
     " Allow :User defined commands to be typed lowercase
     " PS. vim commands can potentially be shadowed: see :bwipe -> Bwipe
-    " TODO: completion does not work
 
     let user_commands = {}
     for s:cmd in getcompletion('\\u', 'command')

@@ -31,7 +31,7 @@ func! s:files__cb() dict
         return
     end
     if !empty(self.cwd)
-        call map(self.selection, {i, v -> s:joinpaths(self.cwd, v)})
+        call map(self.selection, {i, p -> s:is_absolute(p) ? p : s:joinpaths(self.cwd, p)})
     end
     if len(self.selection) > 1
         exec 'argadd' join(self.selection)
@@ -105,6 +105,10 @@ func! s:joinpaths(...)
     let args = filter(copy(a:000), {-> !empty(v:val)})
     let path = substitute(join(args, '/'), '\v/+', '/', 'g')
     return substitute(path, '\v/+$', '', '')
+endf
+
+func! s:is_absolute(path)
+    return !empty(a:path) && a:path[0] == '/'
 endf
 
 func! s:err(fmt, ...)

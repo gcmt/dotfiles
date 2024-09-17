@@ -77,6 +77,7 @@ let s:colored = [
     \ 'GitSigns.*', 'GitGutter.*',
     \ 'markdown.*',
     \ 'htmlString',
+    \ 'jsonKeyword',
 \ ]
 let s:colored = '\v^(' . join(s:colored, '|') . ')$'
 
@@ -190,10 +191,10 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('MoreMsg', s:green, '', 'none', '')
     cal s:h('Question', s:green, '', 'none', '')
 
-    cal s:h('DiffAdd', s:bg, s:green, 'none', '')
-    cal s:h('DiffDelete', s:bg, s:red, 'none', '')
-    cal s:h('DiffChange', s:bg, s:yellow, 'none', '')
-    cal s:h('DiffText', s:bg, s:red, 'none', '')
+    cal s:h('DiffAdd', s:bg, s:green, 'bold', '')
+    cal s:h('DiffDelete', s:bg, s:red, 'bold', '')
+    cal s:h('DiffChange', s:bg, s:yellow, 'bold', '')
+    cal s:h('DiffText', s:bg, s:red, 'bold', '')
 
     cal s:h('PMenu', s:fg_dim, s:bg_accent, 'none', '')
     cal s:h('PMenuExtra', s:fg_very_dim, s:bg_accent, 'none', '')
@@ -204,8 +205,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('PMenuSBar', '', s:bg_accent, 'none', '')
     cal s:h('PMenuThumb', '', s:fg_super_dim, 'none', '')
 
-    cal s:h('TabLine', s:fg_very_dim, s:bg_accent, 'none', '')
-    cal s:h('TabLineSel', s:fg_dim, s:bg, 'none', '')
+    cal s:h('TabLine', s:fg_dim, s:bg_accent, 'none', '')
+    cal s:h('TabLineSel', s:fg_dim, s:bg, 'bold', '')
     cal s:h('TabLineFill', s:fg_dim, s:bg_accent, 'none', '')
 
     cal s:h('SpellBad', '', '', 'underline', s:red)
@@ -296,6 +297,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     hi default link goFormatSpecifier String
     hi default link goEscapeC String
     hi default link @function.method.go Keyword
+    hi default link @function.builtin.go Keyword
     hi default link @punctuation.delimiter.go Keyword
 
     cal s:h('htmlTagName', s:blue, '', '', '')
@@ -349,11 +351,12 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('jsExportDefault', s:magenta, '', '', '')
 
     cal s:h('jsonKeyword', s:magenta, '', '', '')
-    cal s:h('jsonQuote', s:fg_dim, '', '', '')
+    cal s:h('jsonQuote', s:fg, '', '', '')
     cal s:h('jsonString', s:fg, '', '', '')
     cal s:h('jsonNull', s:fg_dim, '', '', '')
-    cal s:h('jsonBoolean', s:fg_dim, '', '', '')
+    cal s:h('jsonBoolean', s:fg, '', '', '')
     cal s:h('jsonBraces', s:fg, '', '', '')
+    cal s:h('jsonNumber', s:fg, '', '', '')
 
     cal s:h('vimFunction', s:fg, '', '', '')
     cal s:h('vimFunc', s:fg, '', '', '')
@@ -364,6 +367,9 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     hi default link yamlBlockMappingKey Keyword
 
     hi default link sqlKeyword Keyword
+
+    hi default link snipKeyword Keyword
+    hi default link multiSnipText String
 
     cal s:h('markdownCode', s:fg_dim, '', '', '')
     cal s:h('markdownCodeBlock', s:fg_dim, '', '', '')

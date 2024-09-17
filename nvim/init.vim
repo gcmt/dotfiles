@@ -142,7 +142,7 @@
     set nowrap
     set linebreak
     set breakindent
-    set showbreak=..
+    setl showbreak=>>
     set textwidth=80
 
     set number

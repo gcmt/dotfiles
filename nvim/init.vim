@@ -750,17 +750,12 @@
     iabbrev lenght length
     iabbrev retrun return
 
-    nnoremap <silent> <c-b>w :set wrap!<bar>set wrap?<cr>
-    nnoremap <silent> <c-b>n :set number!<bar>set number?<cr>
-    nnoremap <silent> <c-b>z :let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?<cr>
-    nnoremap <silent> <c-b>c :call <sid>toggle_clipboard()<cr>
+    " keep cursor centered in the middle
+    command! -nargs=0 Pin let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?
 
+    command! -nargs=0 Clip call <sid>toggle_clipboard()
     func! s:toggle_clipboard()
-        if empty(&clipboard)
-            set clipboard=unnamedplus
-        else
-            set clipboard=
-        end
+        exec "set clipboard=" . (empty(&clipboard) ? 'unnamedplus' : '')
         redraw!
     endf
 

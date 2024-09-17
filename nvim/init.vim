@@ -266,11 +266,11 @@
         let flags = []
         let qlist = getqflist()
         if !empty(qlist)
-            call add(flags, '%@STLOpenQuickfix@[q:'.len(qlist).']%X')
+            call add(flags, '%@STLOpenQuickfix@[qf:'.len(qlist).']%X')
         end
         let llist = getloclist(a:win.winid)
         if !empty(llist) && win_getid() == a:win.winid
-            call add(flags, '%@STLOpenLoclist@[l:'.len(llist).']%X')
+            call add(flags, '%@STLOpenLoclist@[loc:'.len(llist).']%X')
         end
         return join(flags, ' ')
     endf
@@ -358,8 +358,9 @@
             call add(items, _stl_alternate(win))
             call add(items, _stl_buffer(win, sep))
             call add(items, '%=')
-            call add(items, _stl_regtee())
             call add(items, _stl_qf(win))
+            call add(items, '%=')
+            call add(items, _stl_regtee())
             call add(items, _stl_git_status(win))
             call add(items, _stl_venv(win))
             call add(items, _stl_clip(win))

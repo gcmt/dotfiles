@@ -152,6 +152,7 @@
 
     set scrolloff=0
     set sidescrolloff=0
+    set smoothscroll
 
     set virtualedit=block
 
@@ -560,6 +561,22 @@
 
     noremap J 3gj
     noremap K 3gk
+
+    func! _smooth_scroll(direction, count = 1, scrolloff = 1)
+        if a:direction > 0
+            if line('w$')-a:scrolloff > line('.') || line('$') == line('.')
+                exec "norm!" a:count."gj"
+            else
+                exec "norm! \<c-e>".a:count."gj"
+            end
+        elseif a:direction < 0
+            if line('w0')+a:scrolloff < line('.')
+                exec "norm!" a:count."gk"
+            else
+                exec "norm! \<c-y>".a:count."gk"
+            end
+        end
+    endf
 
     " jump after given characters without leaving insert mode
     inoremap <silent> <c-f> <c-r>=_jump_after("\\v[])}>`\"']", 0)<cr>

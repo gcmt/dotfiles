@@ -575,17 +575,33 @@
 " COMMAND LINE
 " ----------------------------------------------------------------------------
 
-    aug _commandline
+    aug _cmdline_search
         au!
         au CmdlineEnter [/\?] set hlsearch
         au CmdlineLeave [/\?] set nohlsearch
+    aug END
+
+    " use <tab> and <s-tab> instead of <c-g> and <c-t>
+    cnoremap <expr> <tab> getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
+    cnoremap <expr> <s-tab> getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
+
+    command! -bang -nargs=0 Quit quit<bang>
+    command! -bang -nargs=* W write<bang> <args>
+    command! -bang Wq wq<bang>
+    command! -bang Q q<bang>
+
+    cnoremap <c-n> <down>
+    cnoremap <c-p> <up>
+
+    " Allow :User defined commands to be typed lowercase
+    " PS. vim commands can potentially be shadowed: see :bwipe -> Bwipe
+
+    aug _cmdline_fix
+        au!
         au CmdlineLeave * call <sid>fix_cmdline()
         au CmdlineChanged * call <sid>fix_cmdline_on_change()
         au VimEnter * call <sid>setup_user_commands_map()
     aug END
-
-    " Allow :User defined commands to be typed lowercase
-    " PS. vim commands can potentially be shadowed: see :bwipe -> Bwipe
 
     func! s:setup_user_commands_map()
         let g:user_commands = {}
@@ -626,18 +642,6 @@
         let newpos = cmdpos + len(repl) - len(cmd)
         call setcmdline(join(cmdline), newpos)
     endf
-
-    command! -bang -nargs=0 Quit quit<bang>
-    command! -bang -nargs=* W write<bang> <args>
-    command! -bang Wq wq<bang>
-    command! -bang Q q<bang>
-
-    " use <tab> and <s-tab> instead of <c-g> and <c-t>
-    cnoremap <expr> <tab> getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
-    cnoremap <expr> <s-tab> getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
-
-    cnoremap <c-n> <down>
-    cnoremap <c-p> <up>
 
 " SEARCH AND SUBSTITUTE
 " ---------------------------------------------------------------------------

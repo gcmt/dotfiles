@@ -603,7 +603,7 @@
 
     func! s:fix_cmdline_on_change()
         let cmdline = split(getcmdline(), ' ', 1)
-        if len(cmdline) > 1 && cmdline[1] == ''
+        if len(cmdline) == 2 && cmdline[1] == ''
             " Trigger a fix only when typing space after the command
             call s:fix_cmdline()
         end

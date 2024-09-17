@@ -606,8 +606,8 @@
     func! s:setup_user_commands_map()
         let g:user_commands = {}
         " Retrieve only commands that starts with an uppercase letter
-        for cmd in getcompletion('\\u', 'command')
-            if cmd == 'Next'
+        for cmd in getcompletion('', 'command')
+            if cmd == 'Next' || cmd =~# '\v^\U'
                 " :Next is defined by vim itself
                 continue
             end

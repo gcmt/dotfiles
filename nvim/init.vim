@@ -584,6 +584,9 @@
         if exists("##CmdlineLeave")
             au CmdlineLeave * call <sid>fix_cmdline()
         end
+        if exists("##CmdlineChanged")
+            au CmdlineChanged * call <sid>fix_cmdline_on_change()
+        end
     aug END
 
     " Allow :User defined commands to be typed lowercase
@@ -599,10 +602,19 @@
         let user_commands[tolower(s:cmd)] = s:cmd
     endfor
 
+    func! s:fix_cmdline_on_change()
+        let cmdline = split(getcmdline(), ' ', 1)
+        if len(cmdline) > 1 && cmdline[1] == ''
+            " Trigger a fix only when typing space after the command
+            call s:fix_cmdline()
+        end
+    endf
+
     func! s:fix_cmdline()
-        if expand('<afile>') != ':' || v:event.abort
+        if expand('<afile>') != ':' || get(v:event, 'abort', v:false)
             return
         end
+        let cmdpos = getcmdpos()
         let cmdline = split(getcmdline(), ' ', 1)
         if empty(cmdline)
             return
@@ -614,7 +626,8 @@
             return
         end
         let cmdline[0] = strpart(raw, 0, start) . repl . strpart(raw, end)
-        call setcmdline(join(cmdline))
+        let newpos = cmdpos + len(repl) - len(cmd)
+        call setcmdline(join(cmdline), newpos)
     endf
 
     command! -bang -nargs=0 Quit quit<bang>

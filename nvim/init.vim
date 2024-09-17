@@ -577,16 +577,10 @@
 
     aug _commandline
         au!
-        if exists("##CmdlineEnter")
-            au CmdlineEnter [/\?] set hlsearch
-            au CmdlineLeave [/\?] set nohlsearch
-        end
-        if exists("##CmdlineLeave")
-            au CmdlineLeave * call <sid>fix_cmdline()
-        end
-        if exists("##CmdlineChanged")
-            au CmdlineChanged * call <sid>fix_cmdline_on_change()
-        end
+        au CmdlineEnter [/\?] set hlsearch
+        au CmdlineLeave [/\?] set nohlsearch
+        au CmdlineLeave * call <sid>fix_cmdline()
+        au CmdlineChanged * call <sid>fix_cmdline_on_change()
     aug END
 
     " Allow :User defined commands to be typed lowercase

@@ -601,6 +601,7 @@
         au CmdlineLeave * call <sid>fix_cmdline()
         au CmdlineChanged * call <sid>fix_cmdline_on_change()
         au VimEnter * call <sid>setup_user_commands_map()
+        au BufWritePost */nvim/init.vim call <sid>setup_user_commands_map()
     aug END
 
     let g:user_commands_aliases = {

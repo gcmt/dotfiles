@@ -612,8 +612,7 @@
         let g:user_commands = {}
         " Retrieve only commands that starts with an uppercase letter
         for cmd in getcompletion('', 'command')
-            if cmd == 'Next' || cmd =~# '\v^\U'
-                " :Next is defined by vim itself
+            if cmd =~ '\v^(Next)$' || cmd =~# '\v^\U'
                 continue
             end
             if has_key(g:user_commands_aliases, cmd)

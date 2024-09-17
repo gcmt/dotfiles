@@ -560,9 +560,6 @@
     noremap J 3gj
     noremap K 3gk
 
-    noremap <c-j> 5<c-e>
-    noremap <c-k> 5<c-y>
-
     " jump after given characters without leaving insert mode
     inoremap <silent> <c-f> <c-r>=_jump_after("\\v[])}>`\"']", 0)<cr>
 
@@ -800,14 +797,19 @@
 " ----------------------------------------------------------------------------
 
     let g:quickfix_height = 50
+
     command! -nargs=0 Cclear call setqflist([], 'r')
 
     nnoremap <silent> <leader>q :copen<cr>
+    nnoremap <silent> <leader>Q :cclose<cr>
 
     nnoremap <silent> ]q :cnext<cr>zz<cr>
     nnoremap <silent> ]Q :clast<cr>zz<cr>
     nnoremap <silent> [q :cprev<cr>zz<cr>
     nnoremap <silent> [Q :cfirst<cr>zz<cr>
+
+    nnoremap <silent> <leader>l :lopen<cr>
+    nnoremap <silent> <leader>L :lclose<cr>
 
     nnoremap <silent> ]l :lnext<cr>zz<cr>
     nnoremap <silent> ]L :llast<cr>zz<cr>
@@ -867,7 +869,7 @@
 " ----------------------------------------------------------------------------
 
     nnoremap <silent> go :Files<cr>
-    nnoremap <silent> <c-f>f :Files<cr>
+    nnoremap <silent> gO :Files rg --files ~/.dotfiles -g '!vim/'<cr>
 
 " Buffers
 " ----------------------------------------------------------------------------
@@ -887,16 +889,13 @@
     nnoremap <silent> gb :call bookmarks#view()<cr>
     nnoremap <silent> gB :call bookmarks#view(1)<cr>
 
-" Explorer/Ranger/Vifm
+" Explorer
 " ----------------------------------------------------------------------------
-
-    "nnoremap <silent> g. :exec 'Fm' expand('%:p')<cr>
-    "nnoremap <silent> <c-p> :exec 'Fm' getcwd()<cr>
 
     let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv|__pycache__)$'}]
 
     nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
-    nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
+    nnoremap <silent> g/ :exec 'Explorer' getcwd()<cr>
 
 " Spotter
 " ----------------------------------------------------------------------------

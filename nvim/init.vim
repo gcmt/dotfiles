@@ -603,6 +603,9 @@
         au VimEnter * call <sid>setup_user_commands_map()
     aug END
 
+    let g:user_commands_aliases = {
+    \ }
+
     func! s:setup_user_commands_map()
         let g:user_commands = {}
         " Retrieve only commands that starts with an uppercase letter
@@ -610,6 +613,10 @@
             if cmd == 'Next' || cmd =~# '\v^\U'
                 " :Next is defined by vim itself
                 continue
+            end
+            if has_key(g:user_commands_aliases, cmd)
+                let alias = get(g:user_commands_aliases, cmd)
+                let g:user_commands[alias] = cmd
             end
             let g:user_commands[tolower(cmd)] = cmd
         endfor

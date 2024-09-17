@@ -581,19 +581,23 @@
         au CmdlineLeave [/\?] set nohlsearch
         au CmdlineLeave * call <sid>fix_cmdline()
         au CmdlineChanged * call <sid>fix_cmdline_on_change()
+        au VimEnter * call <sid>setup_user_commands_map()
     aug END
 
     " Allow :User defined commands to be typed lowercase
     " PS. vim commands can potentially be shadowed: see :bwipe -> Bwipe
 
-    let user_commands = {}
-    for s:cmd in getcompletion('\\u', 'command')
-        if s:cmd == 'Next'
-            " :Next is defined by vim itself
-            continue
-        end
-        let user_commands[tolower(s:cmd)] = s:cmd
-    endfor
+    func! s:setup_user_commands_map()
+        let g:user_commands = {}
+        " Retrieve only commands that starts with an uppercase letter
+        for cmd in getcompletion('\\u', 'command')
+            if cmd == 'Next'
+                " :Next is defined by vim itself
+                continue
+            end
+            let g:user_commands[tolower(cmd)] = cmd
+        endfor
+    endf
 
     func! s:fix_cmdline_on_change()
         let cmdline = split(getcmdline(), ' ', 1)

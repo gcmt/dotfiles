@@ -27,6 +27,7 @@
     call add(g:plugins, $VIMHOME.'/plugins/spotter')
     call add(g:plugins, $VIMHOME.'/plugins/fm')
     call add(g:plugins, $VIMHOME.'/plugins/fzf')
+    call add(g:plugins, $HOME.'/Dev/vim/cmdx.nvim')
 
     let g:external = []
     call add(g:external, 'dense-analysis/ale')
@@ -611,67 +612,6 @@
 
     cnoremap <c-n> <down>
     cnoremap <c-p> <up>
-
-    " Allow :User defined commands to be typed lowercase
-    " PS. vim commands can potentially be shadowed: see :bwipe -> Bwipe
-
-    aug _cmdline_fix
-        au!
-        au CmdlineLeave * call <sid>fix_cmdline()
-        au CmdlineChanged * call <sid>fix_cmdline_on_change()
-        au VimEnter * call <sid>setup_user_commands_map()
-        au BufWritePost */nvim/init.vim call <sid>setup_user_commands_map()
-    aug END
-
-    " {Command: alias, ..}
-    let g:user_commands_aliases = {
-    \ }
-
-    let g:user_commands_ignore = ['Next', 'Tab']
-
-    func! s:setup_user_commands_map()
-        let g:user_commands = {}
-        let ignore_pattern = '\v^(' . join(g:user_commands_ignore, '|') . ')$'
-        " Retrieve only commands that starts with an uppercase letter
-        for cmd in getcompletion('', 'command')
-            if cmd =~ ignore_pattern || cmd[0] =~ '\U'
-                continue
-            end
-            if has_key(g:user_commands_aliases, cmd)
-                let alias = get(g:user_commands_aliases, cmd)
-                let g:user_commands[alias] = cmd
-            end
-            let g:user_commands[tolower(cmd)] = cmd
-        endfor
-    endf
-
-    func! s:fix_cmdline_on_change()
-        let cmdline = split(getcmdline(), ' ', 1)
-        if len(cmdline) == 2 && cmdline[1] == ''
-            " Trigger a fix only when typing space after the command
-            call s:fix_cmdline()
-        end
-    endf
-
-    func! s:fix_cmdline()
-        if expand('<afile>') != ':' || get(v:event, 'abort', v:false)
-            return
-        end
-        let cmdpos = getcmdpos()
-        let cmdline = split(getcmdline(), ' ', 1)
-        if empty(cmdline)
-            return
-        end
-        let raw = cmdline[0]
-        let [cmd, start, end] = matchstrpos(raw, '\v\a+')
-        let repl = get(g:user_commands, tolower(cmd), '')
-        if empty(repl)
-            return
-        end
-        let cmdline[0] = strpart(raw, 0, start) . repl . strpart(raw, end)
-        let newpos = cmdpos + len(repl) - len(cmd)
-        call setcmdline(join(cmdline), newpos)
-    endf
 
 " SEARCH AND SUBSTITUTE
 " ---------------------------------------------------------------------------

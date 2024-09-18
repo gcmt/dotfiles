@@ -3,6 +3,12 @@ P = function(v)
 	return v
 end
 
+-- Cmdx
+-- https://github.com/gcmt/cmdx.nvim
+----------------------------------------------------------------------------
+
+require("cmdx").setup({})
+
 -- LUASNIP
 -- https://github.com/L3MON4D3/LuaSnip
 ----------------------------------------------------------------------------

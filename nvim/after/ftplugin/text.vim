@@ -12,5 +12,8 @@ inoremap <buffer> ? ?<c-g>u
 inoremap <buffer> ! !<c-g>u
 inoremap <buffer> , ,<c-g>u
 
-nnoremap <silent> j :call _smooth_scroll(1, 1, 1)<cr>
-nnoremap <silent> k :call _smooth_scroll(-1, 1, 1)<cr>
+nnoremap <buffer> <silent> j :call _smooth_scroll(1, 1, 2)<cr>
+nnoremap <buffer> <silent> k :call _smooth_scroll(-1, 1, 2)<cr>
+
+nnoremap <buffer> <silent> J :call _smooth_scroll(1, 3, 4)<cr>
+nnoremap <buffer> <silent> K :call _smooth_scroll(-1, 3, 4)<cr>

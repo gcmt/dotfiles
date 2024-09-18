@@ -13,6 +13,8 @@
     let $VIMVENDOR = $VIMDATA . '/vendor'
 
     let g:plugins = []
+    call add(g:plugins, $HOME.'/Dev/vim/cmdfix.nvim')
+    call add(g:plugins, $HOME.'/Dev/vim/regtee.nvim')
     call add(g:plugins, $VIMHOME.'/plugins/marks')
     call add(g:plugins, $VIMHOME.'/plugins/bookmarks')
     call add(g:plugins, $VIMHOME.'/plugins/buffers')
@@ -22,12 +24,10 @@
     call add(g:plugins, $VIMHOME.'/plugins/objects')
     call add(g:plugins, $VIMHOME.'/plugins/grep')
     call add(g:plugins, $VIMHOME.'/plugins/quickfix')
-    call add(g:plugins, $VIMHOME.'/plugins/regtee')
     call add(g:plugins, $VIMHOME.'/plugins/search')
     call add(g:plugins, $VIMHOME.'/plugins/spotter')
     call add(g:plugins, $VIMHOME.'/plugins/fm')
     call add(g:plugins, $VIMHOME.'/plugins/fzf')
-    call add(g:plugins, $HOME.'/Dev/vim/cmdx.nvim')
 
     let g:external = []
     call add(g:external, 'dense-analysis/ale')
@@ -338,7 +338,11 @@
     endf
 
     func! _stl_regtee()
-        let reg = get(g:, 'regtee_register', '')
+        try
+            let reg = luaeval("require('regtee').register")
+        catch /.*/
+            let reg = ""
+        endtry
         if empty(reg)
             return ''
         end

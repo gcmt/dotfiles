@@ -3,11 +3,12 @@ P = function(v)
 	return v
 end
 
--- Cmdx
--- https://github.com/gcmt/cmdx.nvim
+-- https://github.com/gcmt/cmdfix.nvim
+-- https://github.com/gcmt/regtee.nvim
 ----------------------------------------------------------------------------
 
-require("cmdx").setup({})
+require("cmdfix").setup({})
+require("regtee").setup({})
 
 -- LUASNIP
 -- https://github.com/L3MON4D3/LuaSnip

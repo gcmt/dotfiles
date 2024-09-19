@@ -609,11 +609,6 @@
     cnoremap <expr> <tab> getcmdtype() =~ '[?/]' ? '<c-g>' : feedkeys('<tab>', 'int')[1]
     cnoremap <expr> <s-tab> getcmdtype() =~ '[?/]' ? '<c-t>' : feedkeys('<s-tab>', 'int')[1]
 
-    command! -bang -nargs=0 Quit quit<bang>
-    command! -bang -nargs=* W write<bang> <args>
-    command! -bang Wq wq<bang>
-    command! -bang Q q<bang>
-
     cnoremap <c-n> <down>
     cnoremap <c-p> <up>
 

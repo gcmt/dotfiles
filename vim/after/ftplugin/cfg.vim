@@ -1,2 +1,0 @@
-
-setl commentstring=#\ %s

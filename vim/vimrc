@@ -14,28 +14,6 @@
 
 	let g:plugins = []
 
-	comm! -nargs=1 Local call add(g:plugins, $VIMHOME . '/plugins/' . <q-args>)
-
-	Local flow
-	Local bookmarks
-	Local buffers
-	Local commenter
-	Local explorer
-	Local finder
-	Local fm
-	Local fzf
-	Local grep
-	Local marks
-	Local objects
-	Local python
-	Local quickfix
-	Local regtee
-	Local search
-	Local spotter
-	Local tmux
-
-	delcomm Local
-
 	func! s:set_rtp()
 		let rtp = []
 		call add(rtp, $VIMHOME)
@@ -49,21 +27,6 @@
 	endf
 
 	call s:set_rtp()
-
-	call plug#begin($VIMDATA . '/plugins/')
-
-	Plug 'dense-analysis/ale'
-	Plug 'tpope/vim-fugitive'
-	Plug 'editorconfig/editorconfig-vim'
-	Plug 'airblade/vim-gitgutter'
-	Plug 'SirVer/ultisnips'
-	Plug 'pangloss/vim-javascript'
-	Plug 'mxw/vim-jsx'
-	Plug 'JulesWang/css.vim'
-	Plug 'othree/html5.vim'
-	Plug 'tpope/vim-markdown'
-
-	call plug#end()
 
 " OPTIONS
 " ----------------------------------------------------------------------------
@@ -330,19 +293,6 @@
 		return join(items, a:sep)
 	endf
 
-	func! _stl_branch(win)
-		if win_getid() != a:win.winid
-			return ''
-		end
-		let bnum = a:win.bufnr
-		let diff = getbufvar(bnum, '&diff')
-		let branch = exists('*FugitiveHead') ? FugitiveHead() : ''
-		if !diff && !empty(branch) && a:win.width > 60
-			return 'git@' . branch
-		end
-		return ''
-	endf
-
 	func! _stl_venv(win)
 		let bnum = a:win.bufnr
 		let diff = getbufvar(bnum, '&diff')
@@ -359,38 +309,9 @@
 		return ''
 	endf
 
-	func! _stl_regtee()
-		let reg = get(g:, 'regtee_register', '')
-		if empty(reg)
-			return ''
-		end
-		let lines = len(getreg(reg)) ? len(getreg(reg, 1, 1)) : 0
-		let chars = strchars(getreg(reg))
-		return printf("@%s|%dL|%dc", reg, lines, chars)
-	endf
-
 	func! _stl_mode(win)
 		let map = {'n': 'normal', 'v': 'visual', 'V': 'visual', 'i': 'insert', 'c': 'cmd'}
 		return toupper('--'.get(map, mode(), mode()).'--')
-	endf
-
-	fun! _stl_ale(win)
-		try
-			let counts = ale#statusline#Count(a:win.bufnr)
-		catch /.*/
-			return ''
-		endtry
-		let errors = counts.error + counts.style_error
-		let warnings = counts.total - errors
-		if counts.total
-			let ret = '['
-			let ret .= warnings ? warnings . 'W' : ''
-			let ret .= warnings && errors ?  '/' : ''
-			let ret .= errors ? errors . 'E' : ''
-			let ret .= ']'
-			return ret
-		end
-		return ''
 	endf
 
 	func! _stl()
@@ -405,10 +326,7 @@
 			call add(items, _stl_alternate(win))
 			call add(items, _stl_buffer(win, sep))
 			call add(items, '%=')
-			call add(items, _stl_regtee())
 			call add(items, _stl_clip(win))
-			call add(items, _stl_ale(win))
-			call add(items, _stl_branch(win))
 			call add(items, _stl_meta(win, sep))
 			call add(items, '%1lL %02cC (%P)')
 			call add(items, _stl_flags(win))
@@ -788,14 +706,6 @@
 	" Clear undo history (:h clear-undo)
 	command! -nargs=0 ClearUndo call util#clear_undo()
 
-	" Edit filetype plugin
-	command! -nargs=? -complete=filetype FtEdit call <sid>ft_edit(<q-args>)
-
-	func! s:ft_edit(ft)
-		let ft = empty(a:ft) ? &ft : a:ft
-		call finder#find($HOME . '/.dotfiles', 'ftplugin.*'.ft.'\.vim$')
-	endf
-
 	command! -nargs=0 Vimrc edit $MYVIMRC
 	"command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 
@@ -841,147 +751,6 @@
 	iabbrev wiht with
 	iabbrev lenght length
 	iabbrev retrun return
-
-" Search
-" ----------------------------------------------------------------------------
-
-	nnoremap s :Search<space>
-	nnoremap gs :Search<cr>
-	nnoremap <silent> S :Search \<<c-r><c-w>\><cr>
-
-" Buffers
-" ----------------------------------------------------------------------------
-
-	nnoremap <silent> <c-b> :Buffers<cr>
-	nnoremap <silent> gl :Buffers<cr>
-	nnoremap <silent> gL :Buffers!<cr>
-	tnoremap <silent> <c-g>l <c-w>:Buffers<cr>
-	tnoremap <silent> <c-g>L <c-w>:Buffers!<cr>
-
-" Marks
-" ----------------------------------------------------------------------------
-
-	nnoremap <silent> m, :call marks#view()<cr>
-	nnoremap <silent> m. :call marks#set_auto(1)<cr>
-	nnoremap <silent> m: :call marks#set_auto(0)<cr>
-
-" Bookmarks
-" ----------------------------------------------------------------------------
-
-	nnoremap <silent> gm, :call bookmarks#view()<cr>
-	nnoremap <silent> gm' :call bookmarks#jump(getchar())<cr>
-	nnoremap <silent> gmm :call bookmarks#set(getchar(), expand('%:p'))<cr>
-	nnoremap <silent> gmd :call bookmarks#set(getchar(), expand('%:p:h'))<cr>
-
-" Spotter
-" ----------------------------------------------------------------------------
-
-	let g:spotter_banned_filetypes = {
-		\ 'html':1, 'jinja':1, 'htmldjango':1, "json":1,
-		\ 'text':1, 'markdown':1, 'notes':1,
-	\ }
-
-	let g:spotter_banned_syntax_elixir = {
-		\ 'elixirDocString':1
-	\ }
-
-	let g:spotter_banned_words_javascript = {
-		\ 'var':1, 'let':1, 'const':1, 'function':1, 'class':1
-	\ }
-
-" Explorer/Ranger/Vifm
-" ----------------------------------------------------------------------------
-
-	nnoremap <silent> g. :exec 'Fm!' expand('%:p')<cr>
-	nnoremap <silent> g: :exec 'Fm!' getcwd()<cr>
-
-	" let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv)$'}]
-
-	" nnoremap <silent> gy :Explorer<cr>
-	" nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
-	" nnoremap <silent> g: :exec 'Explorer' getcwd()<cr>
-
-" Fzf
-" ----------------------------------------------------------------------------
-
-	nnoremap <silent> <c-f> :Files!<cr>
-
-" Objects
-" ----------------------------------------------------------------------------
-
-	let g:objects_enabled = 1
-
-	aug _objects
-		au!
-		au FileType python call objects#mapl('Aif', 'objects#python#if', {})
-		au FileType python call objects#mapl('Iif', 'objects#python#if', {'inner': 1})
-		au FileType python call objects#mapl('Afo', 'objects#python#for', {})
-		au FileType python call objects#mapl('Ifo', 'objects#python#for', {'inner': 1})
-		au FileType python call objects#mapl('Awh', 'objects#python#while', {})
-		au FileType python call objects#mapl('Iwh', 'objects#python#while', {'inner': 1})
-		au FileType python call objects#mapl('Atry', 'objects#python#try', {})
-		au FileType python call objects#mapl('Itry', 'objects#python#try', {'inner': 1})
-		au FileType python call objects#mapl('Awi', 'objects#python#with', {})
-		au FileType python call objects#mapl('Iwi', 'objects#python#with', {'inner': 1})
-	aug END
-
-" Ultisnips
-" ----------------------------------------------------------------------------
-
-	let g:UltiSnipsExpandTrigger = '<c-s>'
-	let g:UltiSnipsJumpForwardTrigger = '<c-s>'
-	let g:UltiSnipsJumpBackwardTrigger = '<c-b>'
-	let g:UltiSnipsSnippetsDir = $VIMHOME . '/UltiSnips'
-
-" Ale
-" ----------------------------------------------------------------------------
-
-	highlight link AleError Underlined
-	highlight link AleWarning Underlined
-	highlight link AleErrorSign Red
-	highlight link AleWarningSign Orange
-
-	let g:ale_sign_error = 'x'
-	let g:ale_sign_warning = '!'
-	let g:ale_lint_on_text_changed = 'never'
-	let g:ale_open_list = 0
-	let g:ale_fix_on_save = 1
-
-	let g:ale_fixers = {}
-	let g:ale_fixers['ledger'] = ['remove_trailing_lines', 'trim_whitespace']
-	let g:ale_fixers.python = ['black']
-
-	let g:ale_linters = {}
-	let g:ale_linters.python = ['flake8', 'mypy']
-
-	let g:ale_python_pylint_options = '--disable=C0111,C0103'
-	let g:ale_python_flake8_options = '--ignore=E203,E501'
-	let g:ale_sh_shellcheck_options = '-e SC2181 -e SC2155'
-
-
-" EditorConfig
-" ----------------------------------------------------------------------------
-
-	let g:EditorConfig_exclude_patterns = ['fugitive://.*']
-
-" Prettier
-" ----------------------------------------------------------------------------
-
-	let g:prettier#quickfix_enabled = 0
-	let g:prettier#quickfix_auto_focus = 0
-	let g:prettier#autoformat_require_pragma = 0
-	let g:prettier#autoformat_config_present = 1
-	let g:prettier#autoformat_config_files = ['.prettierrc']
-
-" GitGutter
-" ----------------------------------------------------------------------------
-
-	let g:gitgutter_enabled = 0
-
-" vim-go
-" ----------------------------------------------------------------------------
-
-	let g:go_doc_popup_window = 1
 
 " Disable unused plugins
 " ----------------------------------------------------------------------------

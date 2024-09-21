@@ -14,8 +14,8 @@ inoremap <buffer> , ,<c-g>u
 
 imap <silent> <buffer> <c-t> <c-r>=trim(system("date +%Y-%m-%d"))<cr>
 
-nnoremap <buffer> <silent> j :call _smooth_scroll(1, 1, 2)<cr>
-nnoremap <buffer> <silent> k :call _smooth_scroll(-1, 1, 2)<cr>
+nnoremap <buffer> j <cmd>call _smooth_scroll(1, 1, 2)<cr>
+nnoremap <buffer> k <cmd>call _smooth_scroll(-1, 1, 2)<cr>
 
-nnoremap <buffer> <silent> J :call _smooth_scroll(1, 3, 4)<cr>
-nnoremap <buffer> <silent> K :call _smooth_scroll(-1, 3, 4)<cr>
+nnoremap <buffer> J <cmd>call _smooth_scroll(1, 3, 4)<cr>
+nnoremap <buffer> K <cmd>call _smooth_scroll(-1, 3, 4)<cr>

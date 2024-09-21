@@ -426,11 +426,11 @@
     aug END
 
     " view current buffer in a new tab
-    nnoremap <c-w>t :tabe %<cr>
-    tnoremap <c-w>t <c-w>:tabe %<cr>
+    nnoremap <c-w>t <cmd>tabe %<cr>
+    tnoremap <c-w>t <c-w><cmd>tabe %<cr>
 
-    nnoremap <silent> <c-w>v <c-w>v:b#<cr>
-    nnoremap <silent> <c-w>s <c-w>s:b#<cr>
+    nnoremap <silent> <c-w>v <c-w>v<cmd>b#<cr>
+    nnoremap <silent> <c-w>s <c-w>s<cmd>b#<cr>
 
     nnoremap <silent> <left> 3<c-w><
     nnoremap <silent> <right> 3<c-w>>
@@ -446,7 +446,7 @@
     aug END
 
     " switch to the alternate buffer
-    nnoremap <silent> <tab> :call <sid>goto_alternate()<cr>
+    nnoremap <tab> <cmd>call <sid>goto_alternate()<cr>
 
     func! s:goto_alternate()
         if buflisted(@#)
@@ -461,8 +461,8 @@
     command! -bang -nargs=0 Bwipe call <sid>bdelete('bwipe', <q-bang>)
     command! -bang -nargs=0 Bdelete call <sid>bdelete('bdelete', <q-bang>)
 
-    nnoremap <silent> <c-w>d :Bdelete!<cr>
-    nnoremap <silent> <c-w>D :Bwipe!<cr>
+    nnoremap <c-w>d <cmd>Bdelete!<cr>
+    nnoremap <c-w>D <cmd>Bwipe!<cr>
 
     " Delete the buffer without closing the window
     func! s:bdelete(cmd, bang)
@@ -616,7 +616,7 @@
 " ---------------------------------------------------------------------------
 
     " toggle highlighting of the last search pattern
-    nnoremap <silent> <c-h> :set hlsearch!<bar>set hlsearch?<cr>
+    nnoremap <c-h> <cmd>set hlsearch!<bar>set hlsearch?<cr>
 
     " Search withouth moving the cursor
     func! s:search(visual, cmd = '')
@@ -641,9 +641,9 @@
     endf
 
     " Toggle search for current word or selected text without moving the cursor
-    nnoremap <silent> \ :call <sid>search(0)<cr>
+    nnoremap \ <cmd>call <sid>search(0)<cr>
     vnoremap <silent> \ :<c-u>call <sid>search(1)<cr>
-    nnoremap <silent> <RightMouse> <LeftMouse>:call <sid>search(0)<cr>
+    nnoremap <RightMouse> <LeftMouse><cmd>call <sid>search(0)<cr>
     vnoremap <silent> <RightMouse> :<c-u>call <sid>search(1)<cr>
 
 " REGISTERS
@@ -668,8 +668,8 @@
         exec "resize" min([max([len(reg_content), min_size]), max_size])
 
         nno <silent> <buffer> q <c-w>c
-        nno <silent> <buffer> <cr> :let b:regedit_save = 1<bar>close<cr>
-        nno <silent> <buffer> <c-j> :let b:regedit_save = 1<bar>close<cr>
+        nno <buffer> <cr> <cmd>let b:regedit_save = 1<bar>close<cr>
+        nno <buffer> <c-j> <cmd>let b:regedit_save = 1<bar>close<cr>
 
         let b:regedit_reg = reg
         au BufWipeout <buffer> if get(b:, "regedit_save") | call setreg(b:regedit_reg, join(getline(0, "$"), "\n")) | end
@@ -784,21 +784,21 @@
 
     command! -nargs=0 Cclear call setqflist([], 'r')
 
-    nnoremap <silent> <leader>q :copen<cr>
-    nnoremap <silent> <leader>Q :cclose<cr>
+    nnoremap <leader>q <cmd>copen<cr>
+    nnoremap <leader>Q <cmd>cclose<cr>
 
-    nnoremap <silent> ]q :cnext<cr>zz<cr>
-    nnoremap <silent> ]Q :clast<cr>zz<cr>
-    nnoremap <silent> [q :cprev<cr>zz<cr>
-    nnoremap <silent> [Q :cfirst<cr>zz<cr>
+    nnoremap ]q <cmd>cnext<cr>zz<cr>
+    nnoremap ]Q <cmd>clast<cr>zz<cr>
+    nnoremap [q <cmd>cprev<cr>zz<cr>
+    nnoremap [Q <cmd>cfirst<cr>zz<cr>
 
-    nnoremap <silent> <leader>l :lopen<cr>
-    nnoremap <silent> <leader>L :lclose<cr>
+    nnoremap <leader>l <cmd>lopen<cr>
+    nnoremap <leader>L <cmd>lclose<cr>
 
-    nnoremap <silent> ]l :lnext<cr>zz<cr>
-    nnoremap <silent> ]L :llast<cr>zz<cr>
-    nnoremap <silent> [l :lprev<cr>zz<cr>
-    nnoremap <silent> [L :lfirst<cr>zz<cr>
+    nnoremap ]l <cmd>lnext<cr>zz<cr>
+    nnoremap ]L <cmd>llast<cr>zz<cr>
+    nnoremap [l <cmd>lprev<cr>zz<cr>
+    nnoremap [L <cmd>lfirst<cr>zz<cr>
 
 " Cd
 " ----------------------------------------------------------------------------
@@ -844,21 +844,22 @@
     let g:search_mappings_close = ['q', '<esc>', 's', 'S']
 
     nnoremap s :Search<space>
-    nnoremap gs :Search<cr>
+    nnoremap gs <cmd>Search<cr>
 
-    nnoremap <silent> S :call <sid>search(0, 'Search')<cr>
+    nnoremap S <cmd>call <sid>search(0, 'Search')<cr>
     vnoremap <silent> S :<c-u>call <sid>search(1, 'Search')<cr>
 
 " Fzf
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> go :Files<cr>
-    nnoremap <silent> gO :Files rg --files ~/.dotfiles -g '!vim/'<cr>
+    nnoremap go <cmd>Files<cr>
+    nnoremap <c-f> <cmd>Files<cr>
+    nnoremap gO <cmd>Files rg --files ~/.dotfiles -g '!vim/'<cr>
 
 " Buffers
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> gl :Buffers<cr>
+    nnoremap gl <cmd>Buffers<cr>
 
 " Marks
 " ----------------------------------------------------------------------------
@@ -870,16 +871,17 @@
 " Bookmarks
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> gb :call bookmarks#view()<cr>
-    nnoremap <silent> gB :call bookmarks#view(1)<cr>
+    nnoremap gb <cmd>call bookmarks#view()<cr>
+    nnoremap gB <cmd>call bookmarks#view(1)<cr>
+    nnoremap <c-b> <cmd>call bookmarks#quickjump(0)<cr>
 
 " Explorer
 " ----------------------------------------------------------------------------
 
     let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv|__pycache__)$'}]
 
-    nnoremap <silent> g. :exec 'Explorer' expand('%:p')<cr>
-    nnoremap <silent> g/ :exec 'Explorer' getcwd()<cr>
+    nnoremap g. <cmd>exec 'Explorer' expand('%:p')<cr>
+    nnoremap g/ <cmd>exec 'Explorer' getcwd()<cr>
 
 " Spotter
 " ----------------------------------------------------------------------------
@@ -941,11 +943,11 @@
 " Luasnip
 " ----------------------------------------------------------------------------
 
-    imap <silent><expr> <c-j> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<c-d>'
-    inoremap <silent> <c-b> <cmd>lua require('luasnip').jump(-1)<Cr>
+    imap <silent> <expr> <c-j> luasnip#expand_or_jumpable() ? '<Plug>luasnip-expand-or-jump' : '<c-d>'
+    inoremap <c-b> <cmd>lua require('luasnip').jump(-1)<Cr>
 
-    snoremap <silent> <c-j> <cmd>lua require('luasnip').jump(1)<Cr>
-    snoremap <silent> <c-b> <cmd>lua require('luasnip').jump(-1)<Cr>
+    snoremap <c-j> <cmd>lua require('luasnip').jump(1)<Cr>
+    snoremap <c-b> <cmd>lua require('luasnip').jump(-1)<Cr>
 
     command! -nargs=? -complete=filetype SnipEdit call <sid>snip_edit(<q-args>)
 

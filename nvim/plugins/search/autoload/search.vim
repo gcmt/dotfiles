@@ -252,6 +252,12 @@ func! s:search.render(bufnr, ...) abort
         call matchadd(self.options.match_hl, pattern, -1, -1, #{window: winid})
     end
 
+    if !empty(get(self.options, "matchadd", {}))
+        for [hl, pattern] in items(self.options.matchadd)
+            call matchadd(hl, pattern, -1, -1, #{window: winid})
+        endfor
+    end
+
     call setbufvar(a:bufnr, "&modifiable", 0)
 endf
 

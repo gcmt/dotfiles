@@ -15,7 +15,6 @@
     let g:plugins = []
     call add(g:plugins, $HOME.'/Dev/vim/cmdfix.nvim')
     call add(g:plugins, $HOME.'/Dev/vim/regtee.nvim')
-    call add(g:plugins, $VIMHOME.'/plugins/marks')
     call add(g:plugins, $VIMHOME.'/plugins/bookmarks')
     call add(g:plugins, $VIMHOME.'/plugins/buffers')
     call add(g:plugins, $VIMHOME.'/plugins/commenter')

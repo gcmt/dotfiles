@@ -860,12 +860,8 @@
 
     nnoremap gl <cmd>Buffers<cr>
 
-" Marks
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> gm :call marks#view()<cr>
-    nnoremap <silent> m. :call marks#set_auto(1)<cr>
-    nnoremap <silent> m, :call marks#set_auto(0)<cr>
 
 " Bookmarks
 " ----------------------------------------------------------------------------

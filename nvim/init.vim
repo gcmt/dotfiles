@@ -80,11 +80,12 @@
     filetype plugin indent on
 
     if empty($VIMCACHE)
-        set viminfo=
+        set shada=
+        set shadafile=NONE
         set noundofile
     else
-        set viminfo=!,'100,f0
-        set viminfofile=$VIMCACHE/viminfo
+        set shada=!,'100,/100,:100,s100,f1
+        set shadafile=$VIMCACHE/nvim/shada
         set undofile
         set undodir=$VIMCACHE/undo
     end

@@ -546,7 +546,7 @@
     vnoremap > >gv
 
     " discard empty lines
-    nnoremap <silent> <expr> dd ":norm! " . (getline(".") =~ '^\s*$' ? '"_dd' : "dd") . "<cr>"
+    nnoremap <silent> <expr> dd ":norm! " . (getline(".") =~ '^\s*$' ? '"_dd' : '"'.v:register."dd") . "<cr>"
 
 " MOVING AROUND
 " ----------------------------------------------------------------------------

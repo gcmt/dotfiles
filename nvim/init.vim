@@ -961,7 +961,7 @@
 " Lazygit
 " ----------------------------------------------------------------------------
 
-    nnoremap <silent> <c-t> :call <sid>open_lazygit()<cr>
+    nnoremap <c-t> <cmd>call <sid>open_lazygit()<cr>
 
     func! s:open_lazygit()
         let cwd = shellescape(getcwd())

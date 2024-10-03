@@ -116,7 +116,7 @@ autoload -Uz colors vcs_info
 colors
 
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git*' formats "%F{21}%s:%f%b"
+zstyle ':vcs_info:git*' formats "%F{21}@%f%b"
 
 setopt prompt_subst
 

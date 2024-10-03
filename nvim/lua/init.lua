@@ -3,12 +3,44 @@ P = function(v)
 	return v
 end
 
--- https://github.com/gcmt/cmdfix.nvim
--- https://github.com/gcmt/regtee.nvim
+-- MISC
 ----------------------------------------------------------------------------
 
-require("cmdfix").setup({})
 require("regtee").setup({})
+
+require("cmdfix").setup({
+	aliases = { echo = "ehco" },
+	ignore = { "Marks", "Buffers", "Jumps" },
+})
+
+local vessel = require("vessel")
+vessel.opt.lazy_load_buffers = false
+vessel.opt.highlight_on_jump = true
+vessel.opt.buffers.directory_handler = function(path, context)
+	vim.cmd("Explorer " .. vim.fn.fnameescape(path))
+end
+
+local vessel_aug = vim.api.nvim_create_augroup("VesselCustom", { clear = true })
+vim.api.nvim_create_autocmd("User", {
+	group = vessel_aug,
+	pattern = "VesselBufferlistEnter",
+	callback = function()
+		vim.keymap.set("n", ".", function()
+			local sel = vim.b.vessel.get_selected()
+			local path = sel and vim.fs.dirname(sel.path) or vim.fn.getcwd()
+			vim.b.vessel.close_window()
+			vim.cmd("Explorer " .. vim.fn.fnameescape(path))
+		end, { buffer = true })
+		vim.keymap.set("n", ";", function()
+			vim.b.vessel.close_window()
+			vim.cmd("Explorer " .. vim.fn.fnameescape(vim.fn.getcwd()))
+		end, { buffer = true })
+		vim.keymap.set("n", "f", function()
+			vim.b.vessel.close_window()
+			vim.cmd("Files")
+		end, { buffer = true })
+	end,
+})
 
 -- LUASNIP
 -- https://github.com/L3MON4D3/LuaSnip
@@ -16,12 +48,21 @@ require("regtee").setup({})
 
 require("luasnip.loaders.from_snipmate").lazy_load()
 
+-- DIFFVIEW
+-- https://github.com/sindrets/diffview.nvim
+----------------------------------------------------------------------------
+
+require("diffview").setup({
+	use_icons = false,
+	show_help_hints = true,
+})
+
 -- COMPLETION
 -- https://github.com/hrsh7th/nvim-cmp
 ----------------------------------------------------------------------------
 
-local cmp_lsp = require("cmp_nvim_lsp")
 local cmp = require("cmp")
+local cmp_lsp = require("cmp_nvim_lsp")
 
 cmp.setup({
 	preselect = cmp.PreselectMode.None,
@@ -255,5 +296,14 @@ require("nvim-treesitter.configs").setup({
 	indent = {
 		enable = true,
 		disable = { "" },
+	},
+	incremental_selection = {
+		enable = true,
+		keymaps = {
+			init_selection = "<cr>",
+			-- scope_incremental = "<cr>",
+			node_incremental = "<cr>",
+			node_decremental = "<bs>",
+		},
 	},
 })

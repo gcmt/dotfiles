@@ -49,7 +49,7 @@ let g:minimal = get(g:, 'minimal', 0)
 
 " make these groups bold in minimal mode
 let s:bold = [
-    \ 'Keyword', 'Bold', 'StatusLineBold',
+    \ 'Keyword', 'Bold', 'StatusLineBold', 'Cursor',
     \ 'Statement', 'Conditional', 'Repeat', 'Operator', 'Exception', 'StorageClass',
     \ 'htmlTagName', 'htmlSpecialTagName', 'htmlEndTag',
     \ 'pythonInclude',
@@ -62,7 +62,7 @@ let s:bold = '\v^(' . join(s:bold, '|') . ')$'
 let s:colored = [
     \ 'Hidden', 'Normal.*', 'StatusLine.*', 'Fg.*',
     \ 'Cyan.*', 'Green.*', 'Blue.*', 'Magenta.*', 'Red.*', 'Yellow.*', 'Orange.*',
-    \ 'Cursor', 'Comment', 'String', 'Visual', 'Linenr', 'Todo', 'Number',
+    \ 'Comment', 'String', 'Visual', 'Linenr', 'Todo', 'Number',
     \ 'Cursor', 'NonText', 'SpecialKey', 'Conceal',
     \ 'Search', 'CurSearch', 'IncSearch', 'SearchUnderline',
     \ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded',
@@ -108,7 +108,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     cal s:h('Hidden', s:bg, s:bg, '', '')
 
-    cal s:h('Normal', s:fg, s:bg, 'none', '')
+    cal s:h('Normal', s:fg, '', 'none', '')
     cal s:h('Blue', s:blue, '', 'none', '')
     cal s:h('Cyan', s:cyan, '', 'none', '')
     cal s:h('Green', s:green, '', 'none', '')
@@ -124,7 +124,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('Bold', s:fg, '', 'bold', '')
 
     if &bg == 'dark'
-        cal s:h('StatusLine', s:fg, s:bg_accent, 'none', '')
+        cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
     else
         cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
     end
@@ -144,8 +144,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
 
     if &bg == 'dark'
-        cal s:h('Search', s:bg, s:magenta, 'bold', '')
-        cal s:h('CurSearch', s:bg, s:hl, 'bold', '')
+        cal s:h('Search', s:bg, s:hl, 'bold', '')
+        cal s:h('CurSearch', s:bg, s:red, 'bold', '')
     else
         cal s:h('Search', s:fg, s:hl, 'bold', '')
         cal s:h('CurSearch', s:bg, s:red, 'bold', '')
@@ -159,15 +159,15 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('Visual', s:fg, s:select, '', '')
 
     if &bg == 'dark'
-        cal s:h('MatchParen', s:bg, s:fg_dim, 'bold', '')
+        cal s:h('MatchParen', s:bg, s:blue, 'bold', '')
     else
-        cal s:h('MatchParen', s:bg, s:magenta, 'bold', '')
+        cal s:h('MatchParen', s:bg, s:fg_very_dim, 'bold', '')
     end
 
     if &bg == 'dark'
-        cal s:h('WildMenu', s:bg, s:blue, '', '')
+        cal s:h('WildMenu', s:bg, s:blue, 'bold', '')
     else
-        cal s:h('WildMenu', s:bg, s:fg_very_dim, '', '')
+        cal s:h('WildMenu', s:bg, s:fg_very_dim, 'bold', '')
     end
 
     cal s:h('NormalFloat', s:fg, '', '', '')
@@ -177,7 +177,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('FloatFooter', s:fg_dim, '', '', '')
 
     cal s:h('Linenr', s:fg_very_dim, '', '', '')
-    cal s:h('CursorLineNr', s:red, '', 'none', '')
+    cal s:h('CursorLineNr', s:red, '', 'bold', '')
     cal s:h('CursorLine', '', s:bg_accent, 'none', '')
     cal s:h('PopupSelected', '', s:bg_accent, 'bold', '')
     cal s:h('CursorColumn', '', s:bg_accent, '', '')
@@ -214,6 +214,8 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('SpellLocal', '', '', 'underline', s:fg_dim)
     cal s:h('SpellRare', '', '', 'underline', s:fg_dim)
 
+    cal s:h('Variable', s:fg, '', '', '')
+    cal s:h('Delimiter', s:fg, '', '', '')
     cal s:h('Constant', s:fg_dim, '', '', '')
     cal s:h('Character', s:green, '', '', '')
     cal s:h('Number', s:magenta, '', '', '')
@@ -361,6 +363,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('vimFunction', s:fg, '', '', '')
     cal s:h('vimFunc', s:fg, '', '', '')
     cal s:h('vimUserFunc', s:fg, '', '', '')
+    hi default link @variable.vim Normal
 
     cal s:h('yamlString', s:green, '', '', '')
     cal s:h('yamlKey', s:magenta, '', '', '')
@@ -370,6 +373,12 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     hi default link snipKeyword Keyword
     hi default link multiSnipText String
+
+    hi default link @variable.lua Normal
+    hi default link @lsp.type.variable.lua Normal
+    hi default link @lsp.type.keyword.lua Comment
+    hi default link @lsp.type.type.lua Comment
+    hi default link @lsp.type.parameter.lua Normal
 
     cal s:h('markdownCode', s:fg_dim, '', '', '')
     cal s:h('markdownCodeBlock', s:fg_dim, '', '', '')

@@ -2,22 +2,17 @@
 
 clear
 
+FZF_DEFAULT_OPTS+=" --multi"
+FZF_DEFAULT_OPTS+=" --preview-window border-left"
 FZF_DEFAULT_OPTS+=" --color prompt:19,info:19,pointer:24,info:22"
-FZF_DEFAULT_OPTS+=" --bind 'tab:down,shift-tab:up'"
+FZF_DEFAULT_OPTS+=" --bind TAB:down,SHIFT-TAB:up --bind CTRL-N:toggle+down,CTRL-L:toggle+down,CTRL-H:toggle+up,RIGHT:toggle+down,LEFT:toggle+up"
 
 if [[ "$1" == '-cd' ]]; then
 	shift
 	target="$(fd -td --hidden -E ".git/" "$@" | fzf 2>/dev/tty)"
 	cmd="cd \"${target}\""
 else
-	target="$(rg --files \
-        --hidden --no-require-git -g "!.git/" "$@" \
-        | fzf \
-        --preview-window border-left \
-        --multi \
-        --reverse \
-        2>/dev/tty)"
-
+	target="$(rg --files --hidden --no-require-git -g "!.git/" "$@" | fzf 2>/dev/tty)"
 	cmd="edit \"${target}\""
 fi
 

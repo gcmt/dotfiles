@@ -26,7 +26,7 @@
     call add(g:plugins, $VIMHOME.'/plugins/quickfix')
     call add(g:plugins, $VIMHOME.'/plugins/search')
     call add(g:plugins, $VIMHOME.'/plugins/spotter')
-    call add(g:plugins, $VIMHOME.'/plugins/fm')
+    call add(g:plugins, $VIMHOME.'/plugins/vifm')
     call add(g:plugins, $VIMHOME.'/plugins/fzf')
 
     let g:external = []
@@ -872,11 +872,6 @@
     nnoremap S <cmd>call <sid>search(0, 'Search')<cr>
     vnoremap <silent> S :<c-u>call <sid>search(1, 'Search')<cr>
 
-" Fzf
-" ----------------------------------------------------------------------------
-
-    nnoremap <c-f> <cmd>Files<cr>
-
 " Vessel
 " ----------------------------------------------------------------------------
 
@@ -889,17 +884,20 @@
     nnoremap m. <plug>(VesselSetLocalMark)
     nnoremap m, <plug>(VesselSetGlobalMark)
 
-" Bookmarks
+    nnoremap <up> <plug>(VesselPinnedPrev)
+    nnoremap <down> <plug>(VesselPinnedNext)
+
+" Vifm
 " ----------------------------------------------------------------------------
 
-    " nnoremap <c-b> <cmd>call bookmarks#view()<cr>
+    nnoremap <c-f> <cmd>call <sid>vifm_fzf()<cr>
+    nnoremap <c-b> <cmd>exec 'Vifm' expand('%:p:h')<cr>
 
-" Explorer
-" ----------------------------------------------------------------------------
-
-    let g:explorer_filters = [{node -> node.filename() !~ '\v^(.git|node_modules|venv|__pycache__)$'}]
-
-    nnoremap <c-n> <cmd>exec 'Explorer' expand('%:p')<cr>
+    func! s:vifm_fzf()
+        let path = s:find_root(expand('%:p:h'))
+        let path = empty(path) ? getcwd() : path
+        exec 'Vifm!' path
+    endf
 
 " Spotter
 " ----------------------------------------------------------------------------

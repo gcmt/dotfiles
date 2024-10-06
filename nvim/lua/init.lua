@@ -15,9 +15,13 @@ require("cmdfix").setup({
 
 local vessel = require("vessel")
 vessel.opt.lazy_load_buffers = false
+vessel.opt.buffers.wrap_around = false
 vessel.opt.highlight_on_jump = true
+vessel.opt.buffers.bufname_align = "right"
+vessel.opt.buffers.mappings.pin_increment = { "<c-y>" }
+vessel.opt.buffers.mappings.pin_decrement = { "<c-u>" }
 vessel.opt.buffers.directory_handler = function(path, context)
-	vim.cmd("Explorer " .. vim.fn.fnameescape(path))
+	vim.cmd("Vifm " .. vim.fn.fnameescape(path))
 end
 
 local vessel_aug = vim.api.nvim_create_augroup("VesselCustom", { clear = true })
@@ -25,19 +29,19 @@ vim.api.nvim_create_autocmd("User", {
 	group = vessel_aug,
 	pattern = "VesselBufferlistEnter",
 	callback = function()
-		vim.keymap.set("n", ".", function()
+		vim.keymap.set("n", "<c-b>", function()
 			local sel = vim.b.vessel.get_selected()
 			local path = sel and vim.fs.dirname(sel.path) or vim.fn.getcwd()
 			vim.b.vessel.close_window()
-			vim.cmd("Explorer " .. vim.fn.fnameescape(path))
+			vim.cmd("Vifm " .. vim.fn.fnameescape(path))
 		end, { buffer = true })
-		vim.keymap.set("n", ";", function()
+		vim.keymap.set("n", "B", function()
 			vim.b.vessel.close_window()
-			vim.cmd("Explorer " .. vim.fn.fnameescape(vim.fn.getcwd()))
+			vim.cmd("Vifm " .. vim.fn.fnameescape(vim.fn.getcwd()))
 		end, { buffer = true })
-		vim.keymap.set("n", "f", function()
+		vim.keymap.set("n", "<c-f>", function()
 			vim.b.vessel.close_window()
-			vim.cmd("Files")
+			vim.cmd("Vifm! " .. vim.fn.fnameescape(vim.fn.getcwd()))
 		end, { buffer = true })
 	end,
 })

@@ -10,7 +10,14 @@ if [[ "$1" == '-cd' ]]; then
 	target="$(fd -td --hidden -E ".git/" "$@" | fzf 2>/dev/tty)"
 	cmd="cd \"${target}\""
 else
-	target="$(rg --files --hidden -g "!.git/" "$@" | fzf 2>/dev/tty)"
+	target="$(rg --files \
+        --hidden --no-require-git -g "!.git/" "$@" \
+        | fzf \
+        --preview-window border-left \
+        --multi \
+        --reverse \
+        2>/dev/tty)"
+
 	cmd="edit \"${target}\""
 fi
 

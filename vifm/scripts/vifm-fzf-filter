@@ -13,7 +13,8 @@ target="$(LC_COLLATE=C ls -A1p --color=always --group-directories-first "$@" | f
 if [[ -n "${target}" ]]; then
 	after=
 	if [[ -d "${target}" ]]; then
-        after=fzfilter
+        # after=fzfilter
+        after=
 	fi
 	vifm --server-name "$VIFM_SERVER" --remote +"goto \"${target}\""  +"norm! l" +"${after}"
 fi

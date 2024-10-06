@@ -79,7 +79,7 @@ command! unpack aunpack %a %f 2>/dev/null &
 
 command! dev :!blkmenu --border -p "name == 'sda'" --vifm $VIFM_SERVER %%n
 
-command! root :!vifm-root .git/ &
+command! root :!vifm-root .git/ .gitignore &
 
 " The %n macro make sure env variables set here are visible in child processes
 " when using vifm inside tmux

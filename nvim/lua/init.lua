@@ -3,119 +3,148 @@ P = function(v)
 	return v
 end
 
--- MISC
-----------------------------------------------------------------------------
-
-require("regtee").setup({})
-
-require("cmdfix").setup({
-	aliases = { echo = "ehco" },
-	ignore = { "Marks", "Buffers", "Jumps" },
-})
-
-local vessel = require("vessel")
-vessel.opt.lazy_load_buffers = false
-vessel.opt.buffers.wrap_around = false
-vessel.opt.highlight_on_jump = true
-vessel.opt.buffers.bufname_align = "right"
-vessel.opt.buffers.mappings.pin_increment = { "<c-y>" }
-vessel.opt.buffers.mappings.pin_decrement = { "<c-u>" }
-vessel.opt.buffers.directory_handler = function(path, context)
-	vim.cmd("Vifm " .. vim.fn.fnameescape(path))
+local function with(module, fn, default)
+	local ok, mod = pcall(require, module)
+	if ok then
+		return fn(mod)
+	end
+	return default
 end
 
-local vessel_aug = vim.api.nvim_create_augroup("VesselCustom", { clear = true })
-vim.api.nvim_create_autocmd("User", {
-	group = vessel_aug,
-	pattern = "VesselBufferlistEnter",
-	callback = function()
-		vim.keymap.set("n", "<c-b>", function()
-			local sel = vim.b.vessel.get_selected()
-			local path = sel and vim.fs.dirname(sel.path) or vim.fn.getcwd()
-			vim.b.vessel.close_window()
+-- REGTEE
+----------------------------------------------------------------------------
+
+with("regtee", function(regtee)
+	regtee.setup({})
+end)
+
+-- CMDFIX
+----------------------------------------------------------------------------
+
+with("cmdfix", function(cmdfix)
+	cmdfix.setup({
+		aliases = { echo = "ehco" },
+		ignore = { "Marks", "Buffers", "Jumps" },
+	})
+end)
+
+-- VESSEL
+----------------------------------------------------------------------------
+
+with("vessel", function(vessel)
+	vessel.opt.lazy_load_buffers = false
+	vessel.opt.highlight_on_jump = true
+	vessel.opt.preview.position = "right"
+
+	vessel.opt.buffers.mappings.pin_increment = { "<c-y>" }
+	vessel.opt.buffers.mappings.pin_decrement = { "<c-u>" }
+
+	vessel.opt.buffers = {
+		wrap_around = false,
+		bufname_align = "right",
+		directory_handler = function(path, context)
 			vim.cmd("Vifm " .. vim.fn.fnameescape(path))
-		end, { buffer = true })
-		vim.keymap.set("n", "B", function()
-			vim.b.vessel.close_window()
-			vim.cmd("Vifm " .. vim.fn.fnameescape(vim.fn.getcwd()))
-		end, { buffer = true })
-		vim.keymap.set("n", "<c-f>", function()
-			vim.b.vessel.close_window()
-			vim.cmd("Vifm! " .. vim.fn.fnameescape(vim.fn.getcwd()))
-		end, { buffer = true })
-	end,
-})
+		end,
+	}
+
+	local vessel_aug = vim.api.nvim_create_augroup("VesselCustom", { clear = true })
+	vim.api.nvim_create_autocmd("User", {
+		group = vessel_aug,
+		pattern = "VesselBufferlistEnter",
+		callback = function()
+			vim.keymap.set("n", "b", function()
+				local sel = vim.b.vessel.get_selected()
+				local path = sel and vim.fs.dirname(sel.path) or vim.fn.getcwd()
+				vim.b.vessel.close_window()
+				vim.cmd("Vifm " .. vim.fn.fnameescape(path))
+			end, { buffer = true })
+
+			vim.keymap.set("n", "B", function()
+				vim.b.vessel.close_window()
+				vim.cmd("Vifm " .. vim.fn.fnameescape(vim.fn.getcwd()))
+			end, { buffer = true })
+
+			vim.keymap.set("n", "f", function()
+				vim.b.vessel.close_window()
+				vim.cmd("Vifm! " .. vim.fn.fnameescape(vim.fn.getcwd()))
+			end, { buffer = true })
+		end,
+	})
+end)
 
 -- LUASNIP
 -- https://github.com/L3MON4D3/LuaSnip
 ----------------------------------------------------------------------------
 
-require("luasnip.loaders.from_snipmate").lazy_load()
+with("luasnip.loaders.from_snipmate", function(luasnip)
+	luasnip.lazy_load()
+end)
 
 -- DIFFVIEW
 -- https://github.com/sindrets/diffview.nvim
 ----------------------------------------------------------------------------
 
-require("diffview").setup({
-	use_icons = false,
-	show_help_hints = true,
-})
+with("diffview", function(diffview)
+	diffview.setup({
+		use_icons = false,
+		show_help_hints = true,
+	})
+end)
 
 -- COMPLETION
 -- https://github.com/hrsh7th/nvim-cmp
 ----------------------------------------------------------------------------
 
-local cmp = require("cmp")
-local cmp_lsp = require("cmp_nvim_lsp")
-
-cmp.setup({
-	preselect = cmp.PreselectMode.None,
-	window = {
-		completion = cmp.config.window.bordered({ border = "single" }),
-		documentation = cmp.config.window.bordered({ border = "single" }),
-	},
-	mapping = cmp.mapping.preset.insert({
-		["<TAB>"] = cmp.mapping.select_next_item(),
-		["<C-Space>"] = cmp.mapping.select_prev_item(),
-		["<C-b>"] = cmp.mapping.scroll_docs(-3),
-		["<C-f>"] = cmp.mapping.scroll_docs(3),
-		["<C-a>"] = cmp.mapping.abort(),
-		["<C-y>"] = cmp.mapping.confirm({ select = true }),
-	}),
-	sources = cmp.config.sources({
-		{ name = "nvim_lsp" },
-		{ name = "nvim_lsp_signature_help" },
-		{ name = "buffer", keyword_length = 2 },
-		{ name = "path" },
-	}),
-	formatting = {
-		fields = { "abbr", "kind", "menu" },
-	},
-	-- matching = {
-	-- disallow_fuzzy_matching = true,
-	-- disallow_fullfuzzy_matching = true,
-	-- disallow_partial_fuzzy_matching = true,
-	-- disallow_partial_matching = false,
-	-- disallow_prefix_unmatching = true,
-	-- },
-	sorting = {
-		comparators = {
-			cmp.config.compare.exact,
-			cmp.config.compare.offset,
-			cmp.config.compare.score,
-			cmp.config.compare.recently_used,
-			cmp.config.compare.locality,
-			cmp.config.compare.kind,
-			cmp.config.compare.sort_text,
-			cmp.config.compare.length,
-			cmp.config.compare.order,
+with("cmp", function(cmp)
+	cmp.setup({
+		preselect = cmp.PreselectMode.None,
+		window = {
+			completion = cmp.config.window.bordered({ border = "single" }),
+			documentation = cmp.config.window.bordered({ border = "single" }),
 		},
-	},
-	performance = {
-		debounce = 0,
-		throttle = 0,
-	},
-})
+		mapping = cmp.mapping.preset.insert({
+			["<TAB>"] = cmp.mapping.select_next_item(),
+			["<C-Space>"] = cmp.mapping.select_prev_item(),
+			["<C-b>"] = cmp.mapping.scroll_docs(-3),
+			["<C-f>"] = cmp.mapping.scroll_docs(3),
+			["<C-a>"] = cmp.mapping.abort(),
+			["<C-y>"] = cmp.mapping.confirm({ select = true }),
+		}),
+		sources = cmp.config.sources({
+			{ name = "nvim_lsp" },
+			{ name = "nvim_lsp_signature_help" },
+			{ name = "buffer", keyword_length = 2 },
+			{ name = "path" },
+		}),
+		formatting = {
+			fields = { "abbr", "kind", "menu" },
+		},
+		-- matching = {
+		-- disallow_fuzzy_matching = true,
+		-- disallow_fullfuzzy_matching = true,
+		-- disallow_partial_fuzzy_matching = true,
+		-- disallow_partial_matching = false,
+		-- disallow_prefix_unmatching = true,
+		-- },
+		sorting = {
+			comparators = {
+				cmp.config.compare.exact,
+				cmp.config.compare.offset,
+				cmp.config.compare.score,
+				cmp.config.compare.recently_used,
+				cmp.config.compare.locality,
+				cmp.config.compare.kind,
+				cmp.config.compare.sort_text,
+				cmp.config.compare.length,
+				cmp.config.compare.order,
+			},
+		},
+		performance = {
+			debounce = 0,
+			throttle = 0,
+		},
+	})
+end)
 
 -- DIAGNOSTICS
 -- https://neovim.io/doc/user/diagnostic.html
@@ -149,7 +178,7 @@ vim.diagnostic.config({
 	},
 })
 
-diag_augroup = vim.api.nvim_create_augroup("UserDiagnostics", { clear = true })
+local diag_augroup = vim.api.nvim_create_augroup("UserDiagnostics", { clear = true })
 vim.api.nvim_create_autocmd("DiagnosticChanged", {
 	group = diag_augroup,
 	callback = function(args)
@@ -228,8 +257,13 @@ local lsp_servers = {
 	yamlls = {},
 }
 
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = vim.tbl_deep_extend("force", capabilities, cmp_lsp.default_capabilities())
+local capabilities = vim.tbl_deep_extend(
+	"force",
+	vim.lsp.protocol.make_client_capabilities(),
+	with("cmp_lsp", function(cmp_lsp)
+		return cmp_lsp.default_capabilities()
+	end, {})
+)
 
 for server, config in pairs(lsp_servers) do
 	config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})

@@ -42,7 +42,7 @@ with("vessel", function(vessel)
 	vessel.opt.buffers = {
 		wrap_around = false,
 		bufname_align = "right",
-		directory_handler = function(path, context)
+		directory_handler = function(path, _)
 			vim.cmd("Vifm " .. vim.fn.fnameescape(path))
 		end,
 	}
@@ -168,11 +168,12 @@ vim.diagnostic.config({
 			end
 			return string.format("%s %s", ret, diagnostic.message)
 		end,
-		prefix = function(diagnostic, i, total)
+		prefix = function(_, i, total)
 			if total > 1 then
-				return string.format("%s. ", i)
+				-- second return value is highlighting
+				return string.format("%s. ", i), ""
 			end
-			return ""
+			return "", ""
 		end,
 		suffix = "",
 	},
@@ -181,13 +182,13 @@ vim.diagnostic.config({
 local diag_augroup = vim.api.nvim_create_augroup("UserDiagnostics", { clear = true })
 vim.api.nvim_create_autocmd("DiagnosticChanged", {
 	group = diag_augroup,
-	callback = function(args)
+	callback = function()
 		vim.diagnostic.setloclist({ open = false })
 	end,
 })
 vim.api.nvim_create_autocmd("CursorHold", {
 	group = diag_augroup,
-	callback = function(args)
+	callback = function()
 		-- check if any floating window already exists
 		for _, win in pairs(vim.api.nvim_tabpage_list_wins(0)) do
 			if vim.api.nvim_win_get_config(win).zindex then
@@ -213,64 +214,65 @@ vim.fn.sign_define("DiagnosticSignHint", { text = "✖", texthl = "DiagnosticSig
 -- https://neovim.io/doc/user/lsp.html
 ----------------------------------------------------------------------------
 
-local lspconfig = require("lspconfig")
-local lsputil = require("lspconfig/util")
-
-local lsp_servers = {
-	gopls = {
-		cmd = { "gopls" },
-		filetypes = { "go", "gomod", "gowork", "gotmpl" },
-		rootdir = lsputil.root_pattern("go.mod", "go.work", ".git"),
-		settings = {
-			gopls = {
-				completeUnimported = true,
-				usePlaceholders = false,
-				analyses = {
-					unusedparams = true,
+with("lspconfig", function(lspconfig)
+	local lsp_servers = {
+		gopls = {
+			cmd = { "gopls" },
+			filetypes = { "go", "gomod", "gowork", "gotmpl" },
+			rootdir = require("lspconfig.util").root_pattern("go.mod", "go.work", ".git"),
+			settings = {
+				gopls = {
+					completeUnimported = true,
+					usePlaceholders = false,
+					analyses = {
+						unusedparams = true,
+					},
 				},
 			},
 		},
-	},
-	lua_ls = {
-		on_init = function(client)
-			client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
-				runtime = {
-					version = "LuaJIT",
-				},
-				workspace = {
-					checkThirdParty = false,
-					library = {
-						vim.env.VIMRUNTIME,
-					},
-				},
-			})
-		end,
-		settings = {
-			Lua = {},
+		lua_ls = {
+			on_init = function(client)
+				client.config.settings.Lua =
+					vim.tbl_deep_extend("force", client.config.settings.Lua, {
+						runtime = {
+							version = "LuaJIT",
+						},
+						workspace = {
+							checkThirdParty = false,
+							library = {
+								vim.env.VIMRUNTIME,
+							},
+						},
+					})
+			end,
+			settings = {
+				Lua = {},
+			},
 		},
-	},
-	ts_ls = {},
-	eslint = {},
-	tailwindcss = {},
-	rust_analyzer = {},
-	pyright = {},
-	yamlls = {},
-}
+		ts_ls = {},
+		eslint = {},
+		tailwindcss = {},
+		rust_analyzer = {},
+		pyright = {},
+		yamlls = {},
+	}
 
-local capabilities = vim.tbl_deep_extend(
-	"force",
-	vim.lsp.protocol.make_client_capabilities(),
-	with("cmp_lsp", function(cmp_lsp)
-		return cmp_lsp.default_capabilities()
-	end, {})
-)
+	local capabilities = vim.tbl_deep_extend(
+		"force",
+		vim.lsp.protocol.make_client_capabilities(),
+		with("cmp_lsp", function(cmp_lsp)
+			return cmp_lsp.default_capabilities()
+		end, {})
+	)
 
-for server, config in pairs(lsp_servers) do
-	config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
-	lspconfig[server].setup(config)
-end
+	for server, config in pairs(lsp_servers) do
+		config.capabilities =
+			vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+		lspconfig[server].setup(config)
+	end
 
-require("lspconfig.ui.windows").default_options.border = "single"
+	require("lspconfig.ui.windows").default_options.border = "single"
+end)
 
 vim.api.nvim_create_autocmd("LspAttach", {
 	group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
@@ -310,38 +312,40 @@ vim.lsp.inlay_hint.enable()
 -- https://neovim.io/doc/user/treesitter.html
 ----------------------------------------------------------------------------
 
-require("nvim-treesitter.configs").setup({
-	ensure_installed = {
-		"vim",
-		"python",
-		"go",
-		"javascript",
-		"typescript",
-		"rust",
-		"lua",
-		"yaml",
-		"markdown",
-		"html",
-		"sql",
-	},
-	sync_install = false,
-	ignore_install = { "" },
-	highlight = {
-		enable = true,
-		disable = { "" },
-		additional_vim_regex_highlighting = false,
-	},
-	indent = {
-		enable = true,
-		disable = { "" },
-	},
-	incremental_selection = {
-		enable = true,
-		keymaps = {
-			init_selection = "<cr>",
-			-- scope_incremental = "<cr>",
-			node_incremental = "<cr>",
-			node_decremental = "<bs>",
+with("nvim-treesitter.configs", function(configs)
+	configs.setup({
+		ensure_installed = {
+			"vim",
+			"python",
+			"go",
+			"javascript",
+			"typescript",
+			"rust",
+			"lua",
+			"yaml",
+			"markdown",
+			"html",
+			"sql",
 		},
-	},
-})
+		sync_install = false,
+		ignore_install = { "" },
+		highlight = {
+			enable = true,
+			disable = { "" },
+			additional_vim_regex_highlighting = false,
+		},
+		indent = {
+			enable = true,
+			disable = { "" },
+		},
+		incremental_selection = {
+			enable = true,
+			keymaps = {
+				init_selection = "<cr>",
+				-- scope_incremental = "<cr>",
+				node_incremental = "<cr>",
+				node_decremental = "<bs>",
+			},
+		},
+	})
+end)

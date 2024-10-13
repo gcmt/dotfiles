@@ -31,11 +31,11 @@ i3_menu() {
     local icons=("${config}" "${reload}" "${restart}" "${exit}" "${redshift}")
     local choice=$(display_menu "${icons[@]}")
     case "${choice}" in
-        1) kitty --name floating -e nvim ~/.config/i3/config ;;
+        1) wezterm start --class wez-floating -e nvim ~/.config/i3/config ;;
         2) i3-msg reload >/dev/null ;;
         3) i3-msg restart >/dev/null ;;
         4) i3-msg exit >/dev/null ;;
-        5) kitty --name floating -e nvim ~/.config/redshift/redshift.conf ;;
+        5) wezterm start --class wez-floating -e nvim ~/.config/redshift/redshift.conf ;;
         *) exit 1 ;;
     esac
 }

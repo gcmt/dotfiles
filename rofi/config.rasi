@@ -1,11 +1,11 @@
 configuration {
 	show-icons: false;
-	terminal: "kitty";
+	terminal: "wezterm";
 	ssh-client: "ssh";
-	ssh-command: "kitty -e {ssh-client} {host}";
+	ssh-command: "wezterm -e {ssh-client} {host}";
 	run-command: "{cmd}";
 	run-list-command: "";
-	run-shell-command: "kitty -e {cmd}";
+	run-shell-command: "wezterm -e {cmd}";
 	drun-match-fields: "name";
 	disable-history: false;
 	case-sensitive: false;

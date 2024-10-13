@@ -28,8 +28,8 @@ nnoremap <buffer> q <c-w>c
 nnoremap <buffer> <RightMouse> <c-w>c
 
 " don't close the quickfix window
-nnoremap <silent> <buffer> L <enter>zz
-nnoremap <silent> <buffer> l <enter>:exec winnr('#').'wincmd c'<cr>zz
+nnoremap <silent> <buffer> l <enter>zz
+nnoremap <silent> <buffer> L <enter>:exec winnr('#').'wincmd c'<cr>zz
 nnoremap <silent> <buffer> <2-LeftMouse> <enter>:exec winnr('#').'wincmd c'<cr>zz
 
 vnoremap <silent> <buffer> d :call quickfix#remove_entries(mode())<cr>

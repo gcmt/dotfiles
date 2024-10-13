@@ -18,7 +18,7 @@
 	ck = checkout
 	ss = status
 	amend = commit --amend --reuse-message=HEAD
-	ll = log --graph --pretty=format:'%C(red)%h%Creset -%C(magenta)%d%Creset %s (%cr) <%an>' --abbrev-commit --date=relative
+	ll = log --graph --pretty=format:'%C(magenta)%h%Creset -%C(blue)%d%Creset %s (%cr) <%an>' --abbrev-commit --date=relative
 [color]
 	ui = auto
 [color "branch"]
@@ -41,7 +41,7 @@
 	spellcheck = true
 	tabwidth = 4
 [gui]
-	editor = kitty -e nvim
+	editor = wezterm -e nvim
 [credential]
 	provider = generic
 [filter "lfs"]
@@ -49,3 +49,5 @@
 	process = git-lfs filter-process
 	required = true
 	clean = git-lfs clean -- %f
+[init]
+	defaultBranch = main

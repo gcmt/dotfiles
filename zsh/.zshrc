@@ -147,9 +147,9 @@ _prompt_cwd() {
 
 PROMPT_TRIMDIR=0
 
-PROMPT=
-PROMPT+='%B%F{red}%(?..%? )%f%(1j.%jj .)'
-PROMPT+='$(_prompt_info)$(_prompt_cwd) $%b '
+PROMPT='%F{23}${(l:$COLUMNS::─:)%f'
+PROMPT+='%F{red}%f%F{red}%(?..%? )%f%(1j.%jj .)'
+PROMPT+='%B$(_prompt_info)$(_prompt_cwd) $%b '
 
 # FUNCTIONS
 # ----------------------------------------------------------------------------

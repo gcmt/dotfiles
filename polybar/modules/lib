@@ -14,7 +14,7 @@ refresh() {
 }
 
 open_term() {
-    kitty --title Lib -e /bin/bash -c "lib -i"
+    wezterm -e /bin/bash -c "lib -i"
     kill -USR1 $(pgrep -f /polybar/modules/lib)
 }
 

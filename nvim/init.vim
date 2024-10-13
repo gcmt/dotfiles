@@ -17,6 +17,7 @@
     call add(g:plugins, $HOME.'/Dev/vim/cmdfix.nvim')
     call add(g:plugins, $HOME.'/Dev/vim/regtee.nvim')
     call add(g:plugins, $HOME.'/Dev/vim/vessel.nvim')
+
     call add(g:plugins, $VIMHOME.'/plugins/bookmarks')
     call add(g:plugins, $VIMHOME.'/plugins/commenter')
     call add(g:plugins, $VIMHOME.'/plugins/explorer')
@@ -35,7 +36,6 @@
     call add(g:external, 'L3MON4D3/LuaSnip')
     call add(g:external, 'tpope/vim-fugitive')
     call add(g:external, 'sindrets/diffview.nvim')
-    call add(g:external, 'nvim-lua/plenary.nvim')
     call add(g:external, 'airblade/vim-gitgutter')
     call add(g:external, 'neovim/nvim-lspconfig')
     call add(g:external, 'nvim-treesitter/nvim-treesitter')
@@ -44,7 +44,6 @@
     call add(g:external, 'hrsh7th/cmp-nvim-lsp-signature-help')
     call add(g:external, 'hrsh7th/cmp-buffer')
     call add(g:external, 'hrsh7th/cmp-path')
-    call add(g:external, 'ibhagwan/fzf-lua')
 
     for s:ext in g:external
         call add(g:plugins, $VIMVENDOR . '/' . split(s:ext, '/')[-1])
@@ -89,7 +88,7 @@
         set shadafile=NONE
         set noundofile
     else
-        set shada=!,'50,/50,:50,s100,f1
+        set shada=!,'100,/100,:100,s100,f1
         set shadafile=$VIMCACHE/shada
         set undofile
         set undodir=$VIMCACHE/undo
@@ -116,7 +115,8 @@
     let mapleader = "\<space>"
 
     func! s:get_term_bg()
-        let bg = matchstr(system('xrdb -query all'), '\v<colorscheme.name:\s+\zs\w+')
+        let conf = $HOME . '/.config/wezterm/wezterm.lua'
+        let bg = trim(system(["grep", "-Po", '(?<=colorscheme = ")([a-z]+)(?=")', conf]))
         return empty(bg) ? 'dark' : bg
     endf
 
@@ -159,7 +159,7 @@
     set scrolloff=0
     set sidescrolloff=0
     set smoothscroll
-    set mousescroll=ver:8,hor:1
+    set mousescroll=ver:6,hor:1
 
     set virtualedit=block
 
@@ -205,42 +205,37 @@
         let bname = bufname(bnum)
         let bt = getbufvar(bnum, '&buftype')
         let ft = getbufvar(bnum, '&filetype')
-        let flags = ''
+        let flags = []
         if !empty(bt)
-            let flags .= '[' . bt . ']'
+            call add(flags, '[' . bt . ']')
         end
         if getbufvar(bnum, '&previewwindow')
-            let flags .= '[preview]'
+            call add(flags, '[preview]')
         end
         if getbufvar(bnum, '&readonly')
-            let flags .= '[ro]'
+            call add(flags, '[ro]')
         end
         let name = ''
         if empty(bname)
             let name = '[no name]'
-        elseif !empty(bt) || ft == 'notes'
+        elseif !empty(bt)
             let name = fnamemodify(bname, ':t')
         else
-            if winwidth(a:win.winid) < 60
+            if winwidth(a:win.winid) < 80
                 let name = fnamemodify(bname, ':t')
-            elseif winwidth(a:win.winid) > 100
+            elseif winwidth(a:win.winid) < 120
+                let name = join(split(fnamemodify(bname, ':p:~'), '/')[-2:], '/')
+            else
                 let name = fnamemodify(bname, ':p')
                 let name = substitute(name, getcwd() != $HOME ? '\V\^'.getcwd().'/' : '', '', '')
                 let name = substitute(name, '\V\^'.$HOME, '~', '')
-            else
-                let name = join(split(fnamemodify(bname, ':p:~'), '/')[-2:], '/')
             end
         end
-        if win_getid() == a:win.winid
-            let name = '%#StatusLineBold#' . name . '%*'
-        end
-        if getbufvar(bnum, '&modified')
-            let name = name . a:sep . '[+]'
-        end
         if !empty(flags)
-            let name = flags . a:sep . name
+            let name = name . " " . join(flags)
         end
-        return name
+        let hl = getbufvar(bnum, '&modified') ? "StatusLineErr" : "StatusLineIcon"
+        return _i("󰷈", hl) . name
     endf
 
     func! STLGotoAltBuffer(minwid, clicks, btn, mod)
@@ -252,10 +247,10 @@
             return ''
         end
         let alt = expand('#:t')
-        if !empty(alt) && buflisted(@#) && expand('#:p') != fnamemodify(bufname(a:win.bufnr), ':p')
-            return '%@STLGotoAltBuffer@' . alt . '%X'
+        if empty(alt) || !buflisted(@#) || expand('#:p') == fnamemodify(bufname(a:win.bufnr), ':p')
+            return ""
         end
-        return ''
+        return '%@STLGotoAltBuffer@' . _i("") . alt . '%X'
     endf
 
     func! STLOpenQuickfix(minwid, clicks, btn, mod)
@@ -266,20 +261,20 @@
         lopen
     endf
 
-    func! _stl_qf(win)
+    func! _stl_qf(win, sep)
         if a:win.width < 80
             return []
         end
         let flags = []
         let qlist = getqflist()
         if !empty(qlist)
-            call add(flags, '%@STLOpenQuickfix@qf = '.len(qlist).'%X')
+            call add(flags, '%@STLOpenQuickfix@' . _i("") . len(qlist).'%X')
         end
         let llist = getloclist(a:win.winid)
         if !empty(llist) && win_getid() == a:win.winid
-            call add(flags, '%@STLOpenLoclist@loc = '.len(llist).'%X')
+            call add(flags, '%@STLOpenLoclist@' . _i("") . len(llist).'%*%X')
         end
-        return join(flags, ', ')
+        return join(flags, a:sep)
     endf
 
     func! _stl_meta(win)
@@ -292,11 +287,11 @@
         let enc = getbufvar(bnum, '&encoding')
         let enc = printf('%s:%s', fenc ? fenc : enc, ff)
         let items = [ft]
-        if a:win.width > 120
-            call add(items, enc)
-        end
         call filter(items, 'len(v:val)')
-        return join(items, ', ')
+        if !empty(items)
+            return _i("") . join(items, ', ')
+        end
+        return ""
     endf
 
     func! _stl_venv(win)
@@ -306,7 +301,7 @@
         if !empty(ft) && empty(bt) && a:win.width > 80
             if !diff && ft == 'python' && !empty($VIRTUAL_ENV)
                 let venv = fnamemodify($VIRTUAL_ENV, ':t')
-                return 'py = ' . venv
+                return _i("") . venv
             end
         end
         return ''
@@ -319,7 +314,7 @@
         let [a, m, r] = GitGutterGetHunkSummary()
         let branch = _stl_git_branch(a:win)
         if !getbufvar(a:win.bufnr, '&diff') && !empty(branch) && a:win.width > 60
-            return printf('+%d ~%d -%d @ %s', a, m, r, branch)
+            return printf('%s%s', _i(""), branch)
         end
         return ''
     endf
@@ -349,7 +344,7 @@
         end
         let lines = len(getreg(reg)) ? len(getreg(reg, 1, 1)) : 0
         let chars = strchars(getreg(reg))
-        return printf("@%s %dL %dc", reg, lines, chars)
+        return printf("%s@%s %dL %dc", _i(""), reg, lines, chars)
     endf
 
     func! _stl_mode(win)
@@ -357,26 +352,28 @@
         return toupper('--'.get(map, mode(), mode()).'--')
     endf
 
+    func! _i(icon, hl = "StatusLineIcon")
+        return "%#" . a:hl . "#" . a:icon . '  %*'
+    endf
+
     func! _stl()
         let ret = ''
         let win = getwininfo(g:statusline_winid)[0]
-        let sep = win.width < 120 ? ' ' : '  '
-        let pad = win.width < 120 ? '' : ' '
-        let W = {s -> empty(s) ? '' : '{' . pad . s . pad . '}' }
+        let sep = win.width < 120 ? '   ' : '   '
         try
             let items = []
-            call add(items, W(_stl_git_status(win)))
-            call add(items, W(_stl_alternate(win)))
+            call add(items, _stl_alternate(win))
             call add(items, _stl_buffer(win, sep))
             call add(items, '%=')
             call add(items, '%=')
-            call add(items, W(_stl_regtee(win)))
-            call add(items, W(_stl_qf(win)))
-            call add(items, W(_stl_venv(win)))
-            call add(items, W(_stl_clip(win)))
-            call add(items, W(_stl_meta(win)))
+            call add(items, _stl_regtee(win))
+            call add(items, _stl_qf(win, sep))
+            call add(items, _stl_venv(win))
+            call add(items, _stl_clip(win))
+            call add(items, _stl_git_status(win))
+            call add(items, _stl_meta(win))
             if win.width > 80
-                call add(items, W('%1lL, %02cC, %P'))
+                call add(items, _i("") . '%1lL %02cC %P')
             end
             call filter(items, {_, v -> !empty(v)})
             return ' ' . join(items, sep) . ' '
@@ -390,6 +387,7 @@
 " TABS
 " ----------------------------------------------------------------------------
 
+    " set tabline=%!_tabline()
 
     func! _tabline()
         let tabline = ''
@@ -411,6 +409,7 @@
         return tabline
     endf
 
+    command! -nargs=? Tab $tab split | Tabname <args>
     command! -nargs=? Tabname call <sid>set_tabname(<q-args>)
 
     func! s:set_tabname(name)
@@ -435,21 +434,36 @@
     nnoremap <silent> <c-w>v <c-w>v<cmd>b#<cr>
     nnoremap <silent> <c-w>s <c-w>s<cmd>b#<cr>
 
-    nnoremap <silent> <left> 3<c-w><
-    nnoremap <silent> <right> 3<c-w>>
-    nnoremap <silent> <up> <c-w>+
-    nnoremap <silent> <down> <c-w>-
-
     nnoremap <silent> <c-w>C <c-w>o
-    nnoremap <c-w>c <cmd>call <sid>close_win()<cr>
+    nnoremap <c-w>c <cmd>call <sid>win_close()<cr>
 
-    func! s:close_win()
-        let diffview = gettabvar(tabpagenr(), 'diffview_view_initialized', '')
-        if !empty(diffview)
-            tabclose
-        else
-            sil! exec "norm! \<c-w>c"
+    func! s:win_close()
+        if !empty(gettabvar(tabpagenr(), 'diffview_view_initialized', ''))
+            tabclose | return
         end
+        close
+    endf
+
+    " resize window using percentages
+    nnoremap <c-w>_ <cmd>call <sid>win_resize(&lines-2, "\<c-w>_")<cr>
+    nnoremap <c-w>\| <cmd>call <sid>win_resize(&columns - len(string(line("$"))), "\<c-w>\|")<cr>
+
+    func! s:win_resize(avail, cmd)
+        if v:count == 0
+            let count = min([float2nr(a:avail * 0.95), line("$")])
+        elseif v:count < 10
+            let count = float2nr(a:avail * v:count / 10)
+        else
+            let count = float2nr(a:avail * v:count / 100)
+        end
+        exec "norm!" count . a:cmd
+    endf
+
+    " fit window to content
+    nnoremap <c-w>f <cmd>call <sid>win_fit()<cr>
+
+    func! s:win_fit()
+        exec "resize" min([float2nr((&lines - 2) * 0.9), line("$")])
     endf
 
 " BUFFERS
@@ -461,7 +475,7 @@
     aug END
 
     " switch to the alternate buffer
-    nnoremap <c-p> <cmd>call <sid>goto_alternate()<cr>
+    nnoremap <bs> <cmd>call <sid>goto_alternate()<cr>
 
     func! s:goto_alternate()
         if !empty(&bt)
@@ -549,13 +563,19 @@
 
     " select the last changed text
     nnoremap <expr> gV '`[' . strpart(getregtype(), 0, 1) . '`]'
+    nmap g= gV=
+    nmap g> gV>
 
     " indent last changed text
     nmap g= gV=
+    nmap g> gV>
+    nmap g< gV<
 
     " paste and indent
     nmap <silent> ]P Pg=gqac
     nmap <silent> ]p pg=gqac
+    xmap <silent> ]P Pg=gqac
+    xmap <silent> ]p pg=gqac
 
     " copy to the end of the line
     nnoremap Y y$
@@ -566,6 +586,9 @@
 
     " discard empty lines
     nnoremap <silent> <expr> dd (getline(".") =~ '^\s*$' ? '"_dd' : '"'.v:register."dd")
+
+    " start replacement only for selection
+    vnoremap s :s/\%V
 
 " MOVING AROUND
 " ----------------------------------------------------------------------------
@@ -584,6 +607,9 @@
 
     noremap J 3gj
     noremap K 3gk
+
+    noremap <c-o> <c-o>zz
+    noremap <c-i> <c-i>zz
 
     " smooth scrolling with long wrapped lines
     func! _smooth_scroll(direction, count = 1, scrolloff = 1)
@@ -704,7 +730,7 @@
         end
 
         au VimEnter * clearjumps
-        au VimEnter * if isdirectory(expand('%:p')) | exec 'Explorer!' expand('%:p') | end
+        au VimEnter * if isdirectory(expand('%:p')) | exec 'Vifm' expand('%:p') | end
 
         au FocusGained,BufEnter,CursorHold * sil! checktime
 
@@ -727,9 +753,6 @@
         " Keep the help window to the bottom when there are multiple splits
         au BufWinEnter * if &ft == 'help' | wincmd J | end
         au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q <c-w>c | end
-
-        " Show cursorline only for a short amount of time
-        "au CursorHold,CursorHoldI * if empty(&buftype) | set nocul | end
 
         au BufNewFile,BufRead *.ledger set ft=ledger
         au BufNewFile,BufRead */Xresources.d/* set ft=xdefaults
@@ -810,18 +833,18 @@
     nnoremap <leader>q <cmd>copen<cr>
     nnoremap <leader>Q <cmd>cclose<cr>
 
-    nnoremap ]q <cmd>cnext<cr>zz<cr>
-    nnoremap ]Q <cmd>clast<cr>zz<cr>
-    nnoremap [q <cmd>cprev<cr>zz<cr>
-    nnoremap [Q <cmd>cfirst<cr>zz<cr>
+    nnoremap ]q <cmd>cnext<cr>zz
+    nnoremap ]Q <cmd>clast<cr>zz
+    nnoremap [q <cmd>cprev<cr>zz
+    nnoremap [Q <cmd>cfirst<cr>zz
 
     nnoremap <leader>l <cmd>lopen<cr>
     nnoremap <leader>L <cmd>lclose<cr>
 
-    nnoremap ]l <cmd>lnext<cr>zz<cr>
-    nnoremap ]L <cmd>llast<cr>zz<cr>
-    nnoremap [l <cmd>lprev<cr>zz<cr>
-    nnoremap [L <cmd>lfirst<cr>zz<cr>
+    nnoremap ]l <cmd>lnext<cr>zz
+    nnoremap ]L <cmd>llast<cr>zz
+    nnoremap [l <cmd>lprev<cr>zz
+    nnoremap [L <cmd>lfirst<cr>zz
 
 " Cd
 " ----------------------------------------------------------------------------
@@ -884,8 +907,8 @@
     nnoremap m. <plug>(VesselSetLocalMark)
     nnoremap m, <plug>(VesselSetGlobalMark)
 
-    nnoremap <up> <plug>(VesselPinnedPrev)
-    nnoremap <down> <plug>(VesselPinnedNext)
+    nnoremap <c-p> <plug>(VesselPinnedPrev)
+    nnoremap <c-n> <plug>(VesselPinnedNext)
 
 " Vifm
 " ----------------------------------------------------------------------------
@@ -989,15 +1012,10 @@
         if !empty($TMUX)
             let cmd = "tmux display-popup -E -w 90% -h 90% -d " . cwd . " lazygit"
         else
-            let cmd = "kitty --name vim-popup -d " . cwd . " -e lazygit"
+            let cmd = "wezterm start --class wez-floating -d " . cwd . " -e lazygit"
         end
         call system(cmd)
     endf
-
-" Diffview
-" ----------------------------------------------------------------------------
-
-    nnoremap <c-w>f <cmd>DiffviewOpen<cr>
 
 " Disable unused plugins
 " ----------------------------------------------------------------------------

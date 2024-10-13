@@ -1,4 +1,8 @@
 
+"^org.wezfurlong.wezterm$"
+	None, Up, Button4, 1
+	None, Down, Button5, 1
+
 "^kitty$"
 	None, Up, Button4, 1
 	None, Down, Button5, 1

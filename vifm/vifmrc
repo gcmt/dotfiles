@@ -66,7 +66,7 @@ command! df df -h %S 2>/dev/null
 command! ncdu ncdu --colors off %d
 command! mcd :mkdir! %a | cd %a
 command! link ln -s %d/%f %D
-command! last :set sort=-mtime | !rg --files --hidden -g '!.git/*' -0 | xargs -0 ls -tr | tail -%a | tac %%U
+command! last :set sort=-mtime | !rg --files --hidden --no-require-git -0 | xargs -0 ls -tr | tail -%a | tac %%U
 
 command! details :set viewcolumns=-{name}..,-10{size},-18{mtime},10{uname},-10{gname},12{perms}
 command! details! :set viewcolumns=

@@ -9,6 +9,7 @@ xrdb -load -D$(echo $1 | tr /a-z/ /A-Z/) ~/.Xresources
 
 i3_config="$HOME/.config/i3/config"
 kitty_config="$HOME/.config/kitty/kitty.conf"
+wez_config="$HOME/.config/wezterm/wezterm.lua"
 
 if [[ "$1" == 'light' ]]; then
 	vim -E "${i3_config}" <<-EOF
@@ -17,6 +18,7 @@ if [[ "$1" == 'light' ]]; then
 	wq
 	EOF
     sed -i 's\dark.conf\light.conf\g' "${kitty_config}"
+    sed -i 's\colorscheme = "dark"\colorscheme = "light"\g' "${wez_config}"
     kill -SIGUSR1 $(pgrep kitty) 2>/dev/null
 else
 	vim -E "${i3_config}" <<-EOF
@@ -25,6 +27,7 @@ else
 	wq
 	EOF
     sed -i 's\light.conf\dark.conf\g' "${kitty_config}"
+    sed -i 's\colorscheme = "light"\colorscheme = "dark"\g' "${wez_config}"
     kill -SIGUSR1 $(pgrep kitty) 2>/dev/null
 fi
 

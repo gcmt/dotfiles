@@ -24,7 +24,7 @@ end)
 with("cmdfix", function(cmdfix)
 	cmdfix.setup({
 		aliases = { echo = "ehco" },
-		ignore = { "Marks", "Buffers", "Jumps" },
+		ignore = { "Marks", "Buffers", "Jumps", "Bdelete" },
 	})
 end)
 
@@ -32,14 +32,20 @@ end)
 ----------------------------------------------------------------------------
 
 with("vessel", function(vessel)
-	vessel.opt.lazy_load_buffers = false
 	vessel.opt.highlight_on_jump = true
 	vessel.opt.preview.position = "right"
+	vessel.opt.window.max_height = 90
 
+	vessel.opt.buffers.mappings.toggle_group = { "L" }
+	vessel.opt.buffers.mappings.prev_group = { "<c-k>" }
+	vessel.opt.buffers.mappings.next_group = { "<c-j>" }
 	vessel.opt.buffers.mappings.pin_increment = { "<c-y>" }
 	vessel.opt.buffers.mappings.pin_decrement = { "<c-u>" }
+	vessel.opt.buffers.highlights.tree_root = "Magenta"
 
 	vessel.opt.buffers = {
+		view = "tree",
+		directories_first = false,
 		wrap_around = false,
 		bufname_align = "right",
 		directory_handler = function(path, _)
@@ -232,18 +238,17 @@ with("lspconfig", function(lspconfig)
 		},
 		lua_ls = {
 			on_init = function(client)
-				client.config.settings.Lua =
-					vim.tbl_deep_extend("force", client.config.settings.Lua, {
-						runtime = {
-							version = "LuaJIT",
+				client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+					runtime = {
+						version = "LuaJIT",
+					},
+					workspace = {
+						checkThirdParty = false,
+						library = {
+							vim.env.VIMRUNTIME,
 						},
-						workspace = {
-							checkThirdParty = false,
-							library = {
-								vim.env.VIMRUNTIME,
-							},
-						},
-					})
+					},
+				})
 			end,
 			settings = {
 				Lua = {},
@@ -266,8 +271,7 @@ with("lspconfig", function(lspconfig)
 	)
 
 	for server, config in pairs(lsp_servers) do
-		config.capabilities =
-			vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+		config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 		lspconfig[server].setup(config)
 	end
 

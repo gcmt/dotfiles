@@ -25,7 +25,7 @@ open_tmux() {
 	if ! tmux has -t "=${session}" 2>/dev/null; then
 		tmux new -ds "${session}"
 	fi
-	kitty --name floating -e t "${session}"
+	wezterm start --class wez-floating -e t "${session}"
 }
 
 updates_menu() {

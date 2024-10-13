@@ -60,6 +60,7 @@ for_window [class="Sxiv" instance="floating"] floating enable
 for_window [class="kitty" instance="floating"] floating enable, $float_m, move position center
 for_window [class="kitty" instance="calc"] floating enable, resize set 35ppt 30ppt, move position center
 for_window [class="kitty" instance="vim-popup"] border pixel 1, floating enable, $float_m, move position center
+for_window [class="wez-floating"] border pixel 1, floating enable, $float_m, move position center
 for_window [class="corectrl"] floating enable, resize set 30ppt 70ppt, move position center
 
 for_window [instance="system-config-printer"] floating enable
@@ -329,17 +330,17 @@ bindsym $mod+F12 exec --no-startup-id volume up
 # class                  border   back     text     indic    child_border
 
 # =light colors=
-# client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
-# client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
-# client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
-# client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
-# client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
-# client.background       #e7e8eb
-
-# =dark colors=
-client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #aaaaaa
-client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #6a737d
-client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #6a737d
+client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #c2c7ce
+client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #c2c7ce
+client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #e7e8eb
 client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
 client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
 client.background       #e7e8eb
+
+# =dark colors=
+# client.focused          #c2c7ce  #c2c7ce  #52565e  #f95467  #aaaaaa
+# client.focused_inactive #d8dce2  #d7d9dc  #52565e  #f95467  #6a737d
+# client.unfocused        #e7e8eb  #e7e8eb  #82858c  #f95467  #6a737d
+# client.urgent           #ce7d86  #ce7d86  #cdd1d6  #ce7d86  #e7e8eb
+# client.placeholder      #e7e8eb  #e7e8eb  #8e9299  #ce7d86  #e7e8eb
+# client.background       #e7e8eb

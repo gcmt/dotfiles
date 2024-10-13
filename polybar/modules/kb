@@ -1,10 +1,9 @@
 #!/usr/bin/python -u
-import os
-import hashlib
 import argparse
+import hashlib
+import os
 from pathlib import Path
-from subprocess import run, PIPE
-
+from subprocess import PIPE, run
 
 DUNSTIFY_ID = "6688"
 DUNSTIFY_TIMEOUT = "5000"
@@ -44,7 +43,7 @@ def notify(msg, urgency="normal"):
 
 def edit_with_vim(path):
     old_hash = file_hash(path)
-    cmd = ["kitty", "--name", "floating", "-e", "nvim", path]
+    cmd = ["wezterm", "start", "--class", "wez-floating", "-e", "nvim", path]
     run(cmd, stdout=PIPE, stderr=PIPE)
     new_hash = file_hash(path)
     return old_hash != new_hash

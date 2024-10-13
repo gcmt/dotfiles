@@ -14,4 +14,4 @@ if [[ -d "${current_dir}" ]]; then
     # done
 fi
 
-exec kitty --name floating -e vidir "${paths[@]}"
+exec wezterm start --class wez-floating -e vidir "${paths[@]}"

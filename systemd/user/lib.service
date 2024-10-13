@@ -5,3 +5,4 @@ Description=Lib check
 Type=oneshot
 ExecStart=%h/.local/bin/lib -q -s
 ExecStartPre=/bin/sleep 60
+SuccessExitStatus=SIGUSR1

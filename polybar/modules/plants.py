@@ -36,9 +36,10 @@ MENU_CMD = [
 ]
 
 VIM_CMD = [
-    "kitty",
-    "--name",
-    "floating",
+    "wezterm",
+    "start",
+    "--class",
+    "wez-floating",
     "-e",
     "nvim",
 ]

@@ -6,6 +6,8 @@ cwd="${PWD/#$HOME/\~}"
 header="$(tput bold)$(tput setaf 5)${cwd}$(tput sgr0)"
 FZF_DEFAULT_OPTS+=" --header='${header}'"
 
+FZF_DEFAULT_OPTS+=" --pointer=''"
+FZF_DEFAULT_OPTS+=" --preview-window border-left"
 FZF_DEFAULT_OPTS+=" --color prompt:19,info:19,pointer:24"
 FZF_DEFAULT_OPTS+=" --ansi --inline-info --no-bold --bind 'tab:down,shift-tab:up'"
 

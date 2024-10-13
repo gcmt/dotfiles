@@ -129,14 +129,17 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
         cal s:h('StatusLine', s:fg_dim, s:bg_accent, 'none', '')
     end
 
+    cal s:h('StatusLineNormal', s:fg, s:bg_accent, 'none', '')
+    cal s:h('StatusLineAccent', s:fg_dim, s:bg_accent, 'none', '')
+    cal s:h('StatusLineMod', s:fg, s:bg_accent, 'bold', '')
+    cal s:h('StatusLineIcon', s:fg_very_dim, s:bg_accent, 'none', '')
     cal s:h('StatusLineNC', s:fg_very_dim, s:bg_accent, 'none', '')
     cal s:h('StatusLineBold', s:fg_dim, s:bg_accent, 'bold', '')
     cal s:h('StatusLineDim', s:fg_very_dim, s:bg_accent, 'none', '')
-    cal s:h('StatusLineMod', s:red, s:bg_accent, 'none', '')
     cal s:h('StatusLineTermNC', s:fg_very_dim, s:bg_accent, 'none', '')
     cal s:h('StatusLineTerm', s:fg_dim, s:bg_accent, 'none', '')
-    cal s:h('StatusLineErr', s:red, s:bg_accent, 'none', '')
     cal s:h('StatusLineWarn', s:orange, s:bg_accent, 'none', '')
+    cal s:h('StatusLineErr', s:red, s:bg_accent, 'none', '')
 
     cal s:h('Cursor', '', s:magenta, 'bold', '')
     cal s:h('NonText', s:fg_super_dim, '', 'none', '')

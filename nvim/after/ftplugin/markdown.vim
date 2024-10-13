@@ -19,3 +19,10 @@ nnoremap <buffer> k <cmd>call _smooth_scroll(-1, 1, 2)<cr>
 
 nnoremap <buffer> J <cmd>call _smooth_scroll(1, 3, 4)<cr>
 nnoremap <buffer> K <cmd>call _smooth_scroll(-1, 3, 4)<cr>
+
+" Outline file
+nnoremap <silent> <buffer> - <cmd>call search#do('\v^\zs(#+) ', #{
+    \ show_match: 0,
+    \ transform_cb: {l -> l},
+    \ post_jump_cmd: "norm! zt10\<c-y>"
+\ })<cr>

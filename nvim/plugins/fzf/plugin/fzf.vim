@@ -29,9 +29,9 @@ let s:options = {
     \ ],
     \ 'preview_treshold': 150,
     \ 'preview_cmd': 'head -100 {}',
-    \ 'term_cmd': 'TMUX= kitty --name vim-popup',
+    \ 'term_cmd': 'TMUX= wezterm start --class wez-floating',
     \ 'tmux_cmd': 'tmux display-popup -E -w 90% -h 90% -y -1',
-    \ 'files_cmd': "rg --files --hidden --no-require-git -g '!.git/'",
+    \ 'files_cmd': "rg --files --hidden --no-require-git",
     \ 'files_cmd_bang': "rg --files --hidden --no-ignore"
 \ }
 

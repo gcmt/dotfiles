@@ -13,7 +13,7 @@ function M.render(ns, node, metadata, context)
 	-- Find all tags at the start
 	local tags = {}
 	local start = 0
-	local text = vim.treesitter.get_node_text(node, context.bufnr)
+	local text = vim.split(vim.treesitter.get_node_text(node, context.bufnr), "\n")[1]
 	while true do
 		local i, j = string.find(text, "^#[a-z_-]+", start + 1)
 		if j then

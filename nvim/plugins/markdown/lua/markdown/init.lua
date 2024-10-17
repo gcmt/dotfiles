@@ -51,14 +51,15 @@ end
 
 function M.setup_autocommands()
 	AUGROUP = vim.api.nvim_create_augroup("__markdown__", { clear = true })
+	local update = function()
+		if #get_extmarks() > 0 then
+			M.prettify()
+		end
+	end
 	vim.api.nvim_create_autocmd({ "BufModifiedSet" }, {
 		group = AUGROUP,
 		buffer = 0,
-		callback = function()
-			if #get_extmarks() > 0 then
-				M.prettify()
-			end
-		end,
+		callback = update,
 	})
 	vim.api.nvim_create_autocmd({ "InsertEnter" }, {
 		group = AUGROUP,
@@ -71,11 +72,7 @@ function M.setup_autocommands()
 	vim.api.nvim_create_autocmd({ "InsertLeave", "WinResized" }, {
 		group = AUGROUP,
 		buffer = 0,
-		callback = function()
-			if #get_extmarks() > 0 then
-				M.prettify()
-			end
-		end,
+		callback = update,
 	})
 end
 

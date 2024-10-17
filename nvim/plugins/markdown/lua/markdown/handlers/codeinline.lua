@@ -10,6 +10,11 @@ function M.render(ns, node, metadata, context)
 	local ids = {}
 	local row1, col1, row2, col2 = node:range()
 
+	if row1 ~= row2 then
+		-- can happen
+		return {}
+	end
+
 	-- add background
 	table.insert(
 		ids,

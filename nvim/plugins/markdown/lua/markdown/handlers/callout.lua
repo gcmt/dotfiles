@@ -53,7 +53,7 @@ function M.render(ns, node, metadata, context)
 	table.insert(
 		ids,
 		vim.api.nvim_buf_set_extmark(0, ns, row1, col1, {
-			end_row = col2,
+			end_col = col2,
 			virt_text = { { overlay .. " ", hlgroup } },
 			virt_text_pos = "overlay",
 			virt_text_hide = true,

@@ -17,7 +17,7 @@ return {
 
 	markdown_inline = [[
         (code_span) @codeinline
-        ((shortcut_link) @callout (#match? "^[!") (#has-ancestor? @callout block_quote))
+        ((shortcut_link) @callout (#match? "^[!"))
         (inline_link) @link
         (image) @image
     ]],

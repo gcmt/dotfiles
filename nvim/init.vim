@@ -18,6 +18,7 @@
     call add(g:plugins, $HOME.'/Dev/vim/regtee.nvim')
     call add(g:plugins, $HOME.'/Dev/vim/vessel.nvim')
 
+    call add(g:plugins, $VIMHOME.'/plugins/markdown')
     call add(g:plugins, $VIMHOME.'/plugins/bookmarks')
     call add(g:plugins, $VIMHOME.'/plugins/commenter')
     call add(g:plugins, $VIMHOME.'/plugins/explorer')

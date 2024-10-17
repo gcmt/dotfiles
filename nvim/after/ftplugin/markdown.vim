@@ -6,6 +6,8 @@ setl nonumber
 setl norelativenumber
 setl foldcolumn=1
 
+nnoremap <leader>m <cmd>lua require("markdown").toggle()<cr>
+
 " break undo sequence
 inoremap <buffer> . .<c-g>u
 inoremap <buffer> ? ?<c-g>u

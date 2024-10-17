@@ -14,11 +14,11 @@ inoremap <buffer> ? ?<c-g>u
 inoremap <buffer> ! !<c-g>u
 inoremap <buffer> , ,<c-g>u
 
-nnoremap <buffer> j <cmd>call util#smooth_scroll(1, 1, 2)<cr>
-nnoremap <buffer> k <cmd>call util#smooth_scroll(-1, 1, 2)<cr>
+nnoremap <buffer> j <cmd>call util#smooth_scroll(1, 2)<cr>
+nnoremap <buffer> k <cmd>call util#smooth_scroll(-1, 2)<cr>
 
-nnoremap <buffer> J <cmd>call util#smooth_scroll(1, 3, 4)<cr>
-nnoremap <buffer> K <cmd>call util#smooth_scroll(-1, 3, 4)<cr>
+nnoremap <buffer> J <cmd>call util#smooth_scroll(1, 4, 3)<cr>
+nnoremap <buffer> K <cmd>call util#smooth_scroll(-1, 4, 3)<cr>
 
 " Outline file
 nnoremap <silent> <buffer> - <cmd>call search#do('\v^\zs(#+) ', #{

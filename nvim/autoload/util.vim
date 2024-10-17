@@ -235,18 +235,20 @@ func! util#zz(cmd)
 endf
 
 " Smooth scrolling with long wrapped lines
-func! util#smooth_scroll(direction, count = 1, scrolloff = 1)
+" Scrolloff needs to be adjusted according to preference
+func! util#smooth_scroll(direction, scrolloff = 1, count = v:null)
+    let count = a:count ? a:count : v:count1
     if a:direction > 0
-        if line('w$')-a:scrolloff > line('.') || line('$') == line('.')
-            exec "norm!" a:count."gj"
+        if line('w$')-a:scrolloff > line('.') || line(".") >= line('$')-a:scrolloff
+            exec "norm!" count."gj"
         else
-            exec "norm!" a:count."\<c-e>".a:count."gj"
+            exec "norm!" count."\<c-e>".count."gj"
         end
     elseif a:direction < 0
         if line('w0')+a:scrolloff < line('.')
-            exec "norm!" a:count."gk"
+            exec "norm!" count."gk"
         else
-            exec "norm!" a:count."\<c-y>".a:count."gk"
+            exec "norm!" count."\<c-y>".count."gk"
         end
     end
 endf

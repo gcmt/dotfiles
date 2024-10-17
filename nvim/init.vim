@@ -657,29 +657,6 @@
         redraw!
     endf
 
-    " noremap <c-t> <nop> " lazygit
-    " noremap <c-j> <nop> " marks
-    " noremap <c-k> <nop> " buffer list
-    " noremap <c-b> <nop> " browse directory
-    " noremap <c-f> <nop> " fuzzy search from root
-    " noremap <c-p> <nop> " vessel prev pinned
-    " noremap <c-n> <nop> " vessel next pinned
-    " noremap <bs>  <nop> " goto alternate
-
-    " free:
-    " - gl gL
-    " - gm gM
-    " - gb gB
-    " - go gO
-    " - ga gA
-    " - s* S*
-    " - z* Z*
-    " - g*
-    " - []
-    " - {}
-    " - ()
-    " - +
-
 " QUICKFIX
 " ----------------------------------------------------------------------------
 

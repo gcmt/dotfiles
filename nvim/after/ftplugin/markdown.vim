@@ -6,8 +6,6 @@ setl nonumber
 setl norelativenumber
 setl foldcolumn=1
 
-nnoremap <leader>m <cmd>lua require("markdown").toggle()<cr>
-
 " break undo sequence
 inoremap <buffer> . .<c-g>u
 inoremap <buffer> ? ?<c-g>u
@@ -26,3 +24,7 @@ nnoremap <silent> <buffer> - <cmd>call search#do('\v^\zs(#+) ', #{
     \ transform_cb: {l -> l},
     \ post_jump_cmd: "norm! zt10\<c-y>"
 \ })<cr>
+
+nnoremap <leader>m <cmd>lua require("markdown").toggle()<cr>
+
+lua require("markdown").prettify()

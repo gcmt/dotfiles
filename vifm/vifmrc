@@ -50,13 +50,14 @@ let $LS_COLORS = "di=34:ln=36:so=32:pi=35:ex=31"
 " ------------------------------------------------------------------------------
 
 mark d ~/Downloads/
-mark m ~/Music/
 
 nnoremap M :marks<cr>
 nnoremap B :bmarks<cr>
 
 " Commands
 " ------------------------------------------------------------------------------
+
+command! mcd :Mcd
 
 command! reload :write | restart
 
@@ -114,7 +115,7 @@ nnoremap <c-s> :shell<cr>
 nnoremap <c-a> :cd -<cr>
 nnoremap <c-x> <nop>
 
-nnoremap f :fzfilter<cr>
+nnoremap ? :fzfilter<cr>
 nnoremap <c-f> :fzf<cr>
 nnoremap <c-d> :fzfd<cr>
 
@@ -157,6 +158,8 @@ nnoremap J 3j
 nnoremap K 3k
 vnoremap J 3j
 vnoremap K 3k
+
+nnoremap <bs> h
 
 nnoremap t tj
 nnoremap T tk

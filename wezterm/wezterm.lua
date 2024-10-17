@@ -6,11 +6,12 @@ config.hide_tab_bar_if_only_one_tab = true
 config.window_close_confirmation = "NeverPrompt"
 
 config.font_size = 16
-config.line_height = 1.09
+config.line_height = 1.2
 config.cell_width = 1
 config.cursor_thickness = "2px"
 config.freetype_load_target = "Normal"
-config.freetype_load_flags = "DEFAULT"
+config.freetype_load_flags = "NO_HINTING"
+config.front_end = "WebGpu"
 
 config.font = wezterm.font_with_fallback({
 	{ family = "Inconsolata" },

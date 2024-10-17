@@ -260,7 +260,8 @@ bindsym $mod+Shift+backslash exec --no-startup-id i3-focus -c "firefox" -m "docs
 bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c "firefox" -m "mail" -fallback "firefox --no-remote -P Mail"
 bindsym $mod+equal exec --no-startup-id i3-focus -c Nemo -fallback nemo
 bindsym $mod+Shift+equal exec --no-startup-id nemo
-bindsym $mod+grave exec --no-startup-id i3-focus -c "obsidian" -fallback "obsidian"
+# bindsym $mod+grave exec --no-startup-id i3-focus -c "obsidian" -fallback "obsidian"
+ bindsym $mod+grave exec --no-startup-id wezterm start -e tmux-notes
 
 # Keyboard cheatsheet
 bindsym $mod+F2 exec --no-startup-id i3-focus -c feh -t "^Cheatsheet$" -kill -fallback '.local/share/cheats/altgr-intl'; mode "default"

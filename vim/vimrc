@@ -658,7 +658,7 @@
 	aug _misc
 		au!
 
-		au BufEnter * if isdirectory(expand('%:p')) | exec 'Explorer!' expand('%:p') | end
+		au BufEnter * if isdirectory(expand('%:p')) | exec 'Vifm' expand('%:p') | end
 
 		au FocusGained,BufEnter,CursorHold * sil! checktime
 

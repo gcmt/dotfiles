@@ -15,7 +15,7 @@ command! -bang -nargs=* Vifm call vifm#open(<q-args>, <q-bang>)
 let s:options = {
     \ 'preview_treshold': 150,
     \ 'term_cmd': 'TMUX= wezterm start --class wez-floating',
-    \ 'tmux_cmd': 'tmux display-popup -E -w 80% -h 80%',
+    \ 'tmux_cmd': 'tmux display-popup -E -w 90% -h 90%',
 \ }
 
 for [s:option, s:default] in items(s:options)

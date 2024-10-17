@@ -1,4 +1,4 @@
-P = function(v)
+function P(v)
 	print(vim.inspect(v))
 	return v
 end
@@ -23,6 +23,7 @@ end)
 
 with("cmdfix", function(cmdfix)
 	cmdfix.setup({
+		threshold = 1,
 		aliases = { echo = "ehco" },
 		ignore = { "Marks", "Buffers", "Jumps", "Bdelete" },
 	})
@@ -36,6 +37,8 @@ with("vessel", function(vessel)
 	vessel.opt.preview.position = "right"
 	vessel.opt.window.max_height = 90
 
+	vessel.opt.buffers.mappings.edit = { "l", "<2-leftmouse>" }
+	vessel.opt.buffers.mappings.collapse_directory = { "h", "<rightmouse>" }
 	vessel.opt.buffers.mappings.toggle_group = { "L" }
 	vessel.opt.buffers.mappings.prev_group = { "<c-k>" }
 	vessel.opt.buffers.mappings.next_group = { "<c-j>" }
@@ -44,6 +47,7 @@ with("vessel", function(vessel)
 	vessel.opt.buffers.highlights.tree_root = "Magenta"
 
 	vessel.opt.buffers = {
+		tree_folder_icons = { " ", "󰉋 " },
 		view = "tree",
 		directories_first = false,
 		wrap_around = false,

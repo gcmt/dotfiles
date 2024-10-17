@@ -10,7 +10,7 @@ shift $((OPTIND -1))
 
 target=$1
 default="scratch"
-exclude=("$default" cmus calc updates)
+exclude=("$default" calc updates notes)
 
 # Find the last active session that is not $default or cmus
 last_active_session() {

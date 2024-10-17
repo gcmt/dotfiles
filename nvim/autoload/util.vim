@@ -1,4 +1,268 @@
 
+" Install plugins
+func! util#plug_install()
+    for plugin in g:external
+        let path = $VIMVENDOR . '/' . split(plugin, '/')[-1]
+        if isdirectory(path)
+            echo plugin '...' 'DIRECTORY EXISTS'
+        else
+            echo plugin '...' 'INSTALLING'
+            call system(printf('git clone https://github.com/%s %s', plugin, shellescape(path)))
+        end
+    endfor
+endf
+
+" Update plugins
+func! util#plug_update()
+    for plugin in g:external
+        echo plugin '...' 'UPDATING'
+        let path = $VIMVENDOR . '/' . split(plugin, '/')[-1]
+        call system(printf('git -C %s pull', shellescape(path)))
+    endfor
+endf
+
+func! util#regedit(reg)
+    let reg = empty(a:reg) ? '"' : a:reg
+
+    exec "sil keepj keepa botright 1new __regedit__"
+    setl ft=regedit bt=nofile bh=wipe nobl noudf nobk noswf nospell
+    call setwinvar(winnr(), "&stl", " [reg " . reg . "] <ctrl-v> to insert control characters, save with <enter>")
+
+    let reg_content = getreg(reg, 1, 1)
+    call append(1, reg_content)
+    sil norm! "_dd
+
+    let min_size = 5
+    let max_size = float2nr(&lines * 50 / 100)
+    exec "resize" min([max([len(reg_content), min_size]), max_size])
+
+    nno <silent> <buffer> q <c-w>c
+    nno <buffer> <cr> <cmd>let b:regedit_save = 1<bar>close<cr>
+
+    let b:regedit_reg = reg
+    au BufWipeout <buffer> if get(b:, "regedit_save") | call setreg(b:regedit_reg, join(getline(0, "$"), "\n")) | end
+endf
+
+" Delete the buffer without closing the window
+func! util#bdelete(cmd, bang)
+
+    let target = bufnr("%")
+    if &modified && empty(a:bang)
+        return s:err('E89 No write since last change for buffer %d (add ! to override)', target)
+    end
+
+    if buflisted(@#) && empty(getbufvar(@#, '&bt'))
+        let repl = bufnr(@#)
+    else
+        let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&bt'))}
+        let buffers = filter(range(1, bufnr('$')), Fn)
+        let repl = buffers[(index(buffers, target)+1) % len(buffers)]
+    end
+
+    if repl == target
+        if empty(bufname(target))
+            " there are no more named buffers to switch to
+            return
+        end
+        call win_execute(bufwinid(target), 'enew')
+    else
+        while bufwinid(target) != -1
+            call win_execute(bufwinid(target), 'buffer ' . repl)
+        endw
+    end
+
+    let cmd = a:cmd
+    if getbufvar(target, '&buftype') == 'terminal'
+        let cmd = 'bwipe!'
+    end
+
+    try
+        exec cmd target
+    catch /E.*/
+        return s:err(matchstr(v:exception, '\vE\d+:.*'))
+    endtry
+endf
+
+func! s:find_root(path)
+    if empty(a:path) || a:path == '/'
+        return ''
+    end
+    let files = glob(a:path.'/.*', 1, 1) + glob(a:path.'/*', 1, 1)
+    let pattern = '\V\^\(' . join(get(g:, 'root_markers', []), '\|') . '\)\$'
+    if match(map(files, "fnamemodify(v:val, ':t')"), pattern) >= 0
+        return a:path
+    end
+    return s:find_root(fnamemodify(a:path, ':h'))
+endf
+
+" Find project root
+func! util#find_root(path, default = "")
+    let root = s:find_root(a:path)
+    if empty(root) || root == $HOME
+        return a:default
+    end
+    return root
+endf
+
+" Cd into the current project root directory
+func! util#cd_root_dir(bang)
+    let path = util#find_root(expand('%:p:h'))
+    if !empty(path)
+        let cd = empty(a:bang) ? 'cd' : 'lcd'
+        exec cd fnameescape(path)
+        pwd
+    else
+        call s:err("root not found")
+    end
+endf
+
+" Cd into the directory of the current buffer
+func! util#cd_buf_dir(bang)
+    let cd = empty(a:bang) ? 'cd' : 'lcd'
+    exec cd fnameescape(expand('%:p:h'))
+    pwd
+endf
+
+" Open lazygit popup
+func! util#open_lazygit()
+    let cwd = shellescape(getcwd())
+    if !empty($TMUX)
+        let cmd = "tmux display-popup -E -w 90% -h 90% -d " . cwd . " lazygit"
+    else
+        let cmd = "wezterm start --class wez-floating -d " . cwd . " -e lazygit"
+    end
+    call system(cmd)
+endf
+
+func! util#ft_edit(ft)
+    let ft = empty(a:ft) ? &ft : a:ft
+    call finder#find($VIMHOME, 'ftplugin.*'.ft.'\.vim$', 1)
+endf
+
+" Edit snippets file
+func! util#snip_edit(ft)
+    let ft = empty(a:ft) ? &ft : a:ft
+    if empty(ft)
+        return
+    end
+    let snippet_file = printf('%s/snippets/%s.snippets', $VIMHOME, ft)
+    if !filereadable(snippet_file)
+        return s:err("No snippets for filetype %s", ft)
+    end
+    exec "edit" fnameescape(snippet_file)
+endf
+
+" Search withouth moving the cursor
+func! util#search(visual, cmd = '')
+    if a:visual && line("'<") != line("'>")
+        return
+    end
+    if a:visual
+        let selection = getline('.')[col("'<")-1:col("'>")-1]
+        let pattern = '\V' . escape(selection, '/\')
+    else
+        let pattern = '\<' . expand('<cword>') . '\>'
+    end
+    if !empty(a:cmd)
+        exec a:cmd pattern
+    elseif @/ == pattern
+        let @/ = ''
+        set nohlsearch
+    else
+        let @/ = pattern
+        set hlsearch
+    end
+endf
+
+" Jump after given characters without leaving insert mode
+func! util#jump_after(pattern, sameline = 0)
+    let pos = searchpos(a:pattern, 'Wcen')
+    if pos == [0, 0] || a:sameline && pos[0] != line('.')
+        return ''
+    end
+    call cursor(pos)
+    return "\<right>"
+endf
+
+" Resize window using percentages
+func! util#win_resize(avail, cmd)
+    if v:count == 0
+        let count = min([float2nr(a:avail * 0.95), line("$")])
+    elseif v:count < 10
+        let count = float2nr(a:avail * v:count / 10)
+    else
+        let count = float2nr(a:avail * v:count / 100)
+    end
+    exec "norm!" count . a:cmd
+endf
+
+" Fit window to content
+func! util#win_fit()
+    exec "resize" min([float2nr((&lines - 2) * 0.9), line("$")])
+endf
+
+" Edit alternate buffer
+func! util#goto_alternate()
+    if !empty(&bt)
+        return s:err("Not a normal buffer")
+    end
+    if buflisted(@#)
+        buffer #
+    elseif !empty(@#)
+        call s:err("The alternate buffer has been unlisted")
+    else
+        call s:err("No alternate buffer")
+    end
+endf
+
+" zz only when jumping out of view
+func! util#zz(cmd)
+    let bufnr = bufnr("%")
+    let topline = line("w0")
+    let botline = line("w$")
+    try
+        exec "norm!" v:count1 . a:cmd
+    catch /.*/
+            return s:err(matchstr(v:exception, '\vE\d+:.*'))
+    endtry
+    if line(".") < topline || line(".") > botline || bufnr("%") != bufnr
+        norm! zz
+    end
+    if &cursorline == 0
+        setl cursorline
+        call timer_start(250, {-> execute("setl nocursorline")})
+    end
+endf
+
+" Smooth scrolling with long wrapped lines
+func! util#smooth_scroll(direction, count = 1, scrolloff = 1)
+    if a:direction > 0
+        if line('w$')-a:scrolloff > line('.') || line('$') == line('.')
+            exec "norm!" a:count."gj"
+        else
+            exec "norm!" a:count."\<c-e>".a:count."gj"
+        end
+    elseif a:direction < 0
+        if line('w0')+a:scrolloff < line('.')
+            exec "norm!" a:count."gk"
+        else
+            exec "norm!" a:count."\<c-y>".a:count."gk"
+        end
+    end
+endf
+
+" Clear undo history (:h clear-undo)
+func! util#clear_undo()
+    let modified_save = &modified
+    let undolevels_save = &undolevels
+    let line_save = getline('.')
+    set undolevels=-1
+    exec "norm! a \<bs>\<esc>"
+    call setline('.', line_save)
+    let &undolevels = undolevels_save
+    let &modified = modified_save
+endf
+
 " Execute the :s command without messing jumps or cursor
 func! util#s(pattern, string, flags)
     let view = winsaveview()

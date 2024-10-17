@@ -54,29 +54,8 @@
     call extend(s:rtp, globpath(join(g:plugins, ','), 'after', 1, 1))
     exec 'set rtp+=' . join(s:rtp, ',')
 
-    command -nargs=0 PlugInstall call <sid>plug_install()
-
-    func! s:plug_install()
-        for plugin in g:external
-            let path = $VIMVENDOR . '/' . split(plugin, '/')[-1]
-            if isdirectory(path)
-                echo plugin '...' 'DIRECTORY EXISTS'
-            else
-                echo plugin '...' 'INSTALLING'
-                call system(printf('git clone https://github.com/%s %s', plugin, shellescape(path)))
-            end
-        endfor
-    endf
-
-    command -nargs=0 PlugUpdate call <sid>plug_update()
-
-    func! s:plug_update()
-        for plugin in g:external
-            echo plugin '...' 'UPDATING'
-            let path = $VIMVENDOR . '/' . split(plugin, '/')[-1]
-            call system(printf('git -C %s pull', shellescape(path)))
-        endfor
-    endf
+    command -nargs=0 PlugInstall call util#plug_install()
+    command -nargs=0 PlugUpdate call util#plug_update()
 
 " OPTIONS
 " ----------------------------------------------------------------------------
@@ -148,11 +127,12 @@
     set nowrap
     set linebreak
     set breakindent
-    set showbreak=>>
+    let &showbreak = ""
     set textwidth=80
+    set conceallevel=2
 
     set number
-    set norelativenumber
+    set relativenumber
     set numberwidth=1
     set nocursorline
 
@@ -168,7 +148,7 @@
     set shiftwidth=0
     set softtabstop=0
 
-    set wildoptions=pum,fuzzy
+    set wildoptions=pum
     set wildmode=full
     set wildignore+=
     set wildignore+=*/venv/*,venv$
@@ -195,7 +175,7 @@
     set t_vb=
 
     set list
-    let &listchars = 'tab:│  ,leadmultispace:│   ,trail:·,precedes:‹,extends:›'
+    let &listchars = 'tab:│  ,leadmultispace:│   ,trail:·,nbsp:+,precedes:◂,extends:🢒'
 
 " STATUSLINE
 " ----------------------------------------------------------------------------
@@ -250,7 +230,7 @@
         if empty(alt) || !buflisted(@#) || expand('#:p') == fnamemodify(bufname(a:win.bufnr), ':p')
             return ""
         end
-        return '%@STLGotoAltBuffer@' . _i("") . alt . '%X'
+        return '%@STLGotoAltBuffer@' . _i("") . alt . '%X'
     endf
 
     func! STLOpenQuickfix(minwid, clicks, btn, mod)
@@ -277,16 +257,22 @@
         return join(flags, a:sep)
     endf
 
+    func! _stl_ft(win)
+        let ft = getbufvar(a:win.bufnr, '&filetype')
+        if !empty(ft)
+            return _i("") . ft
+        end
+    endf
+
     func! _stl_meta(win)
         let bnum = a:win.bufnr
         let diff = getbufvar(bnum, '&diff')
         let bt = getbufvar(bnum, '&buftype')
-        let ft = getbufvar(bnum, '&filetype')
         let ff = getbufvar(bnum, '&fileformat')
         let fenc = getbufvar(bnum, '&fileencoding')
         let enc = getbufvar(bnum, '&encoding')
         let enc = printf('%s:%s', fenc ? fenc : enc, ff)
-        let items = [ft]
+        let items = []
         call filter(items, 'len(v:val)')
         if !empty(items)
             return _i("") . join(items, ', ')
@@ -371,7 +357,7 @@
             call add(items, _stl_venv(win))
             call add(items, _stl_clip(win))
             call add(items, _stl_git_status(win))
-            call add(items, _stl_meta(win))
+            call add(items, _stl_ft(win))
             if win.width > 80
                 call add(items, _i("") . '%1lL %02cC %P')
             end
@@ -445,102 +431,42 @@
     endf
 
     " resize window using percentages
-    nnoremap <c-w>_ <cmd>call <sid>win_resize(&lines-2, "\<c-w>_")<cr>
-    nnoremap <c-w>\| <cmd>call <sid>win_resize(&columns - len(string(line("$"))), "\<c-w>\|")<cr>
-
-    func! s:win_resize(avail, cmd)
-        if v:count == 0
-            let count = min([float2nr(a:avail * 0.95), line("$")])
-        elseif v:count < 10
-            let count = float2nr(a:avail * v:count / 10)
-        else
-            let count = float2nr(a:avail * v:count / 100)
-        end
-        exec "norm!" count . a:cmd
-    endf
+    nnoremap <c-w>_ <cmd>call util#win_resize(&lines-2, "\<c-w>_")<cr>
+    nnoremap <c-w>\| <cmd>call util#win_resize(&columns - len(string(line("$"))), "\<c-w>\|")<cr>
 
     " fit window to content
-    nnoremap <c-w>f <cmd>call <sid>win_fit()<cr>
-
-    func! s:win_fit()
-        exec "resize" min([float2nr((&lines - 2) * 0.9), line("$")])
-    endf
+    nnoremap <c-w>f <cmd>call util#win_fit()<cr>
 
 " BUFFERS
 " ----------------------------------------------------------------------------
 
     aug _buffers
         au!
-        au BufReadPost * call setpos(".", getpos("'\""))
+        " restore cursor position
+        au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | end
     aug END
 
     " switch to the alternate buffer
-    nnoremap <bs> <cmd>call <sid>goto_alternate()<cr>
+    nnoremap <bs> <cmd>call util#goto_alternate()<cr>
 
-    func! s:goto_alternate()
-        if !empty(&bt)
-            return s:err("Not a normal buffer")
-        end
-        if buflisted(@#)
-            buffer #
-        elseif !empty(@#)
-            call s:err("The alternate buffer has been unlisted")
-        else
-            call s:err("No alternate buffer")
-        end
-    endf
-
-    command! -bang -nargs=0 Bwipe call <sid>bdelete('bwipe', <q-bang>)
-    command! -bang -nargs=0 Bdelete call <sid>bdelete('bdelete', <q-bang>)
+    command! -bang -nargs=0 Bwipe call util#bdelete('bwipe', <q-bang>)
+    command! -bang -nargs=0 Bdelete call util#bdelete('bdelete', <q-bang>)
 
     nnoremap <c-w>d <cmd>Bdelete!<cr>
     nnoremap <c-w>D <cmd>Bwipe!<cr>
 
-    " Delete the buffer without closing the window
-    func! s:bdelete(cmd, bang)
-
-        let target = bufnr("%")
-        if &modified && empty(a:bang)
-            return s:err('E89 No write since last change for buffer %d (add ! to override)', target)
-        end
-
-        if buflisted(@#) && empty(getbufvar(@#, '&bt'))
-            let repl = bufnr(@#)
-        else
-            let Fn = {i, nr -> buflisted(nr) && empty(getbufvar(nr, '&bt'))}
-            let buffers = filter(range(1, bufnr('$')), Fn)
-            let repl = buffers[(index(buffers, target)+1) % len(buffers)]
-        end
-
-        if repl == target
-            if empty(bufname(target))
-                " there are no more named buffers to switch to
-                return
-            end
-            call win_execute(bufwinid(target), 'enew')
-        else
-            while bufwinid(target) != -1
-                call win_execute(bufwinid(target), 'buffer ' . repl)
-            endw
-        end
-
-        let cmd = a:cmd
-        if getbufvar(target, '&buftype') == 'terminal'
-            let cmd = 'bwipe!'
-        end
-
-        try
-            exec cmd target
-        catch /E.*/
-            return s:err(matchstr(v:exception, '\vE\d+:.*'))
-        endtry
-    endf
-
 " EDITING
 " ----------------------------------------------------------------------------
 
+    " Clear undo history (:h clear-undo)
+    command! -nargs=0 ClearUndo call util#clear_undo()
+
+    " Edit registers
+    command! -nargs=? Regedit call util#regedit(<q-args>)
+
     inoremap <c-e> <c-g>u<esc>O
     inoremap <c-d> <c-g>u<esc>o
+
     inoremap <c-w> <c-g>u<c-w>
     inoremap <c-l> <right><bs>
     cnoremap <c-l> <right><bs>
@@ -608,37 +534,14 @@
     noremap J 3gj
     noremap K 3gk
 
-    noremap <c-o> <c-o>zz
-    noremap <c-i> <c-i>zz
+    noremap <c-o> <cmd>call util#zz("\<c-o>")<cr>
+    noremap <c-i> <cmd>call util#zz("\<c-i>")<cr>
 
-    " smooth scrolling with long wrapped lines
-    func! _smooth_scroll(direction, count = 1, scrolloff = 1)
-        if a:direction > 0
-            if line('w$')-a:scrolloff > line('.') || line('$') == line('.')
-                exec "norm!" a:count."gj"
-            else
-                exec "norm!" a:count."\<c-e>".a:count."gj"
-            end
-        elseif a:direction < 0
-            if line('w0')+a:scrolloff < line('.')
-                exec "norm!" a:count."gk"
-            else
-                exec "norm!" a:count."\<c-y>".a:count."gk"
-            end
-        end
-    endf
+    noremap n <cmd>call util#zz("n")<cr>
+    noremap N <cmd>call util#zz("N")<cr>
 
     " jump after given characters without leaving insert mode
-    inoremap <silent> <c-f> <c-r>=_jump_after("\\v[])}>`\"']", 0)<cr>
-
-    func! _jump_after(pattern, sameline = 0)
-        let pos = searchpos(a:pattern, 'Wcen')
-        if pos == [0, 0] || a:sameline && pos[0] != line('.')
-            return ''
-        end
-        call cursor(pos)
-        return "\<right>"
-    endf
+    inoremap <silent> <c-f> <c-r>=util#jump_after("\\v[])}>`\"']", 0)<cr>
 
 " COMMAND LINE
 " ----------------------------------------------------------------------------
@@ -662,62 +565,11 @@
     " toggle highlighting of the last search pattern
     nnoremap <c-h> <cmd>set hlsearch!<bar>set hlsearch?<cr>
 
-    " Search withouth moving the cursor
-    func! s:search(visual, cmd = '')
-        if a:visual && line("'<") != line("'>")
-            return
-        end
-        if a:visual
-            let selection = getline('.')[col("'<")-1:col("'>")-1]
-            let pattern = '\V' . escape(selection, '/\')
-        else
-            let pattern = '\<' . expand('<cword>') . '\>'
-        end
-        if !empty(a:cmd)
-            exec a:cmd pattern
-        elseif @/ == pattern
-            let @/ = ''
-            set nohlsearch
-        else
-            let @/ = pattern
-            set hlsearch
-        end
-    endf
-
     " Toggle search for current word or selected text without moving the cursor
-    nnoremap \ <cmd>call <sid>search(0)<cr>
-    vnoremap <silent> \ :<c-u>call <sid>search(1)<cr>
-    nnoremap <RightMouse> <LeftMouse><cmd>call <sid>search(0)<cr>
-    vnoremap <silent> <RightMouse> :<c-u>call <sid>search(1)<cr>
-
-" REGISTERS
-" ----------------------------------------------------------------------------
-
-    " edit registers
-    command! -nargs=? Regedit call <sid>regedit(<q-args>)
-
-    func! s:regedit(reg)
-        let reg = empty(a:reg) ? '"' : a:reg
-
-        exec "sil keepj keepa botright 1new __regedit__"
-        setl ft=regedit bt=nofile bh=wipe nobl noudf nobk noswf nospell
-        call setwinvar(winnr(), "&stl", " [Register " . reg . "] ctrl-v to insert control characters")
-
-        let reg_content = getreg(reg, 1, 1)
-        call append(1, reg_content)
-        sil norm! "_dd
-
-        let min_size = 5
-        let max_size = float2nr(&lines * 50 / 100)
-        exec "resize" min([max([len(reg_content), min_size]), max_size])
-
-        nno <silent> <buffer> q <c-w>c
-        nno <buffer> <cr> <cmd>let b:regedit_save = 1<bar>close<cr>
-        nno <buffer> <c-j> <cmd>let b:regedit_save = 1<bar>close<cr>
-
-        let b:regedit_reg = reg
-        au BufWipeout <buffer> if get(b:, "regedit_save") | call setreg(b:regedit_reg, join(getline(0, "$"), "\n")) | end
-    endf
+    nnoremap \ <cmd>call util#search(0)<cr>
+    vnoremap <silent> \ :<c-u>call util#search(1)<cr>
+    nnoremap <RightMouse> <LeftMouse><cmd>call util#search(0)<cr>
+    vnoremap <silent> <RightMouse> :<c-u>call util#search(1)<cr>
 
 " MISC
 " ----------------------------------------------------------------------------
@@ -729,19 +581,19 @@
             au TextYankPost * sil! lua vim.highlight.on_yank { higroup="Yank", timeout=150, on_visual=false }
         end
 
-        au VimEnter * clearjumps
+        " au VimEnter * clearjumps
         au VimEnter * if isdirectory(expand('%:p')) | exec 'Vifm' expand('%:p') | end
 
         au FocusGained,BufEnter,CursorHold * sil! checktime
+
+        " au FocusGained,WinEnter * setl cursorline
+        " au FocusLost,WinLeave * setl nocursorline
 
         au BufWritePost */nvim/init.vim source %
         au BufWritePost */nvim/lua/init.lua luafile %
         au BufWritePost */nvim/colors/*.vim nested exec 'colorscheme' g:colors_name
         au BufWritePost */*Xresources.d/* call <sid>set_bg(&background)
         au BufWritePost */ftplugin/*.vim source % | exec 'au BufEnter ' . expand('#:p') . ' ++once let &ft = &ft'
-
-        " restore cursor position
-        au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | end
 
         au CmdWinEnter * set ft=
         au CmdWinEnter * nnoremap <buffer> l <cr>
@@ -763,31 +615,11 @@
         echohl WarningMsg | echo call('printf', [a:fmt] + a:000)  | echohl None
     endf
 
-    " Clear undo history (:h clear-undo)
-    func! s:clear_undo()
-        let modified_save = &modified
-        let undolevels_save = &undolevels
-        let line_save = getline('.')
-        set undolevels=-1
-        exec "norm! a \<bs>\<esc>"
-        call setline('.', line_save)
-        let &undolevels = undolevels_save
-        let &modified = modified_save
-    endf
-
-    " Clear undo history (:h clear-undo)
-    command! -nargs=0 ClearUndo call <sid>clear_undo()
-
     command! -nargs=0 Luarc exec 'edit' $VIMHOME . '/lua/init.lua'
     command! -nargs=0 Vimrc edit $MYVIMRC
     command! -nargs=0 ColorEdit  exec 'e' $VIMHOME.'/colors/' . g:colors_name . '.vim'
 
-    command! -nargs=? -complete=filetype Ftedit call <sid>ft_edit(<q-args>)
-
-    func! s:ft_edit(ft)
-        let ft = empty(a:ft) ? &ft : a:ft
-        call finder#find($VIMHOME, 'ftplugin.*'.ft.'\.vim$', 1)
-    endf
+    command! -nargs=? -complete=filetype Ftedit call util#ft_edit(<q-args>)
 
     " Write helpers
     command! -nargs=0 SudoWrite exec 'write !sudo tee % > /dev/null'
@@ -813,16 +645,41 @@
     iabbrev lenght length
     iabbrev retrun return
 
+    command! -nargs=0 Wrap set wrap!
+
     " keep cursor centered in the middle
-    command! -nargs=0 Pin let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?
+    command! -nargs=0 Mid let &scrolloff = abs(&scrolloff - 999)<bar>set scrolloff?
 
     command! -nargs=0 Clip call <sid>toggle_clipboard()
+
     func! s:toggle_clipboard()
         exec "set clipboard=" . (empty(&clipboard) ? 'unnamedplus' : '')
         redraw!
     endf
 
+    " noremap <c-t> <nop> " lazygit
     " noremap <c-j> <nop> " marks
+    " noremap <c-k> <nop> " buffer list
+    " noremap <c-b> <nop> " browse directory
+    " noremap <c-f> <nop> " fuzzy search from root
+    " noremap <c-p> <nop> " vessel prev pinned
+    " noremap <c-n> <nop> " vessel next pinned
+    " noremap <bs>  <nop> " goto alternate
+
+    " free:
+    " - gl gL
+    " - gm gM
+    " - gb gB
+    " - go gO
+    " - ga gA
+    " - s* S*
+    " - z* Z*
+    " - g*
+    " - []
+    " - {}
+    " - ()
+    " - +
+
 " QUICKFIX
 " ----------------------------------------------------------------------------
 
@@ -849,40 +706,10 @@
 " Cd
 " ----------------------------------------------------------------------------
 
-    let g:root_markers = ['.gitignore', 'go.mod']
+    let g:root_markers = ['.git', 'go.mod', '.obsidian']
 
-    " Find project root
-    func! s:find_root(path)
-        if empty(a:path) || a:path == '/'
-            return ''
-        end
-        let files = glob(a:path.'/.*', 1, 1) + glob(a:path.'/*', 1, 1)
-        let pattern = '\V\^\(' . join(get(g:, 'root_markers', []), '\|') . '\)\$'
-        if match(map(files, "fnamemodify(v:val, ':t')"), pattern) >= 0
-            return a:path
-        end
-        return s:find_root(fnamemodify(a:path, ':h'))
-    endf
-
-    " Cd into the current project root directory
-    func! s:cd_into_root_dir(bang)
-        let path = s:find_root(expand('%:p:h'))
-        if !empty(path)
-            let cd = empty(a:bang) ? 'cd' : 'lcd'
-            exec cd fnameescape(path)
-            pwd
-        end
-    endf
-
-    " Cd into the directory of the current buffer
-    func! s:cd_into_buf_dir(bang)
-        let cd = empty(a:bang) ? 'cd' : 'lcd'
-        exec cd fnameescape(expand('%:p:h'))
-        pwd
-    endf
-
-    command! -bang -nargs=0 Bufcd call <sid>cd_into_buf_dir(<q-bang>)
-    command! -bang -nargs=0 Root call <sid>cd_into_root_dir(<q-bang>)
+    command! -bang -nargs=0 Bufcd call util#cd_buf_dir(<q-bang>)
+    command! -bang -nargs=0 Root call util#cd_root_dir(<q-bang>)
 
 " Search
 " ----------------------------------------------------------------------------
@@ -892,8 +719,8 @@
     nnoremap s :Search<space>
     nnoremap gs <cmd>Search<cr>
 
-    nnoremap S <cmd>call <sid>search(0, 'Search')<cr>
-    vnoremap <silent> S :<c-u>call <sid>search(1, 'Search')<cr>
+    nnoremap S <cmd>call util#search(0, 'Search')<cr>
+    vnoremap <silent> S :<c-u>call util#search(1, 'Search')<cr>
 
 " Vessel
 " ----------------------------------------------------------------------------
@@ -901,6 +728,7 @@
     nnoremap gl <plug>(VesselViewLocalJumps)
     nnoremap gL <plug>(VesselViewExternalJumps)
 
+    nnoremap gb <plug>(VesselViewBuffersSidebar)
     nnoremap <c-k> <plug>(VesselViewBuffers)
     nnoremap <c-j> <plug>(VesselViewMarks)
 
@@ -917,9 +745,7 @@
     nnoremap <c-b> <cmd>exec 'Vifm' expand('%:p:h')<cr>
 
     func! s:vifm_fzf()
-        let path = s:find_root(expand('%:p:h'))
-        let path = empty(path) ? getcwd() : path
-        exec 'Vifm!' path
+        exec 'Vifm!' util#find_root(expand('%:p:h'), getcwd())
     endf
 
 " Spotter
@@ -979,6 +805,11 @@
 
     let g:gitgutter_enabled = 1
 
+" Tmux
+" ----------------------------------------------------------------------------
+
+    nnoremap <c-t> <cmd>call system("tmux select-pane -t +")<cr>
+
 " Luasnip
 " ----------------------------------------------------------------------------
 
@@ -988,34 +819,12 @@
     snoremap <c-j> <cmd>lua require('luasnip').jump(1)<Cr>
     snoremap <c-b> <cmd>lua require('luasnip').jump(-1)<Cr>
 
-    command! -nargs=? -complete=filetype SnipEdit call <sid>snip_edit(<q-args>)
-
-    func! s:snip_edit(ft)
-        let ft = empty(a:ft) ? &ft : a:ft
-        if empty(ft)
-            return
-        end
-        let snippet_file = printf('%s/snippets/%s.snippets', $VIMHOME, ft)
-        if !filereadable(snippet_file)
-            return s:err("No snippets for filetype %s", ft)
-        end
-        exec "edit" fnameescape(snippet_file)
-    endf
+    command! -nargs=? -complete=filetype Snipedit call util#snip_edit(<q-args>)
 
 " Lazygit
 " ----------------------------------------------------------------------------
 
-    nnoremap <c-t> <cmd>call <sid>open_lazygit()<cr>
-
-    func! s:open_lazygit()
-        let cwd = shellescape(getcwd())
-        if !empty($TMUX)
-            let cmd = "tmux display-popup -E -w 90% -h 90% -d " . cwd . " lazygit"
-        else
-            let cmd = "wezterm start --class wez-floating -d " . cwd . " -e lazygit"
-        end
-        call system(cmd)
-    endf
+    nnoremap <leader>g <cmd>call util#open_lazygit()<cr>
 
 " Disable unused plugins
 " ----------------------------------------------------------------------------

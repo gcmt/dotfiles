@@ -60,12 +60,12 @@ let s:bold = '\v^(' . join(s:bold, '|') . ')$'
 
 " keep these groups colored in minimal mode
 let s:colored = [
-    \ 'Hidden', 'Normal.*', 'StatusLine.*', 'Fg.*',
+    \ 'Hidden', 'Normal.*', 'StatusLine.*', 'Fg.*', 'Bg.*',
     \ 'Cyan.*', 'Green.*', 'Blue.*', 'Magenta.*', 'Red.*', 'Yellow.*', 'Orange.*',
     \ 'Comment', 'String', 'Visual', 'Linenr', 'Todo', 'Number',
     \ 'Cursor', 'NonText', 'SpecialKey', 'Conceal',
     \ 'Search', 'CurSearch', 'IncSearch', 'SearchUnderline',
-    \ 'VertSplit', 'Visual', 'MatchParen', 'Directory', 'Folded',
+    \ 'VertSplit', 'WinSeparator', 'Visual', 'MatchParen', 'Directory', 'Folded',
     \ 'Linenr', 'CursorLineNr',
     \ 'PopupSelected', 'CursorLine', 'CursorColumn', 'ColorColumn',
     \ 'WarningMsg', 'ErrorMsg', 'ModeMsg', 'MoreMsg', 'Question',
@@ -118,6 +118,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('Yellow', s:yellow, '', 'bold', '')
     cal s:h('Fg', s:fg, '', 'none', '')
     cal s:h('Bg', '', s:bg, 'none', '')
+    cal s:h('BgAccent', '', s:bg_accent, 'none', '')
     cal s:h('FgDim', s:fg_dim, '', 'none', '')
     cal s:h('FgVeryDim', s:fg_very_dim, '', 'none', '')
     cal s:h('FgSuperDim', s:fg_super_dim, '', 'none', '')
@@ -146,6 +147,9 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('SpecialKey', s:fg_very_dim, '', 'none', '')
     cal s:h('Conceal', s:fg_very_dim, s:bg, '', '')
 
+    cal s:h('WinSeparator', s:fg_super_dim, s:bg, '', '')
+    cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')
+
     if &bg == 'dark'
         cal s:h('Search', s:bg, s:hl, 'bold', '')
         cal s:h('CurSearch', s:bg, s:red, 'bold', '')
@@ -156,7 +160,6 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
 
     cal s:h('SearchUnderline', s:red, '', 'underline', 'none')
     cal s:h('IncSearch', s:bg, s:red, 'bold', '')
-    cal s:h('VertSplit', s:fg_super_dim, s:bg, 'none', '')
     cal s:h('Directory', s:blue, '', '', '')
     cal s:h('Folded', s:fg_super_dim, s:bg, '', '')
     cal s:h('Visual', s:fg, s:select, '', '')

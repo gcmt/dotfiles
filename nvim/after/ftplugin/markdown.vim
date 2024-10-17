@@ -12,13 +12,11 @@ inoremap <buffer> ? ?<c-g>u
 inoremap <buffer> ! !<c-g>u
 inoremap <buffer> , ,<c-g>u
 
-imap <silent> <buffer> <c-t> <c-r>=trim(system("date +%Y-%m-%d"))<cr>
+nnoremap <buffer> j <cmd>call util#smooth_scroll(1, 1, 2)<cr>
+nnoremap <buffer> k <cmd>call util#smooth_scroll(-1, 1, 2)<cr>
 
-nnoremap <buffer> j <cmd>call _smooth_scroll(1, 1, 2)<cr>
-nnoremap <buffer> k <cmd>call _smooth_scroll(-1, 1, 2)<cr>
-
-nnoremap <buffer> J <cmd>call _smooth_scroll(1, 3, 4)<cr>
-nnoremap <buffer> K <cmd>call _smooth_scroll(-1, 3, 4)<cr>
+nnoremap <buffer> J <cmd>call util#smooth_scroll(1, 3, 4)<cr>
+nnoremap <buffer> K <cmd>call util#smooth_scroll(-1, 3, 4)<cr>
 
 " Outline file
 nnoremap <silent> <buffer> - <cmd>call search#do('\v^\zs(#+) ', #{

@@ -116,25 +116,25 @@ autoload -Uz colors vcs_info
 colors
 
 zstyle ':vcs_info:*' enable git
-zstyle ':vcs_info:git*' formats "%F{21}@%f%b"
+zstyle ':vcs_info:git*' formats "%F{21}%f%b"
 
 setopt prompt_subst
 
 _prompt_info() {
-    local info=()
+    local info=
     if [[ -n "$VIFM_SERVER" ]]; then
-        info+=("[vifm]")
+        info+="  vifm  "
     fi
     if [[ -n "${VIRTUAL_ENV}" ]]; then
-        info+=("[%F{21}py:%f$(basename "${VIRTUAL_ENV}")]")
+        info+="  $(basename "${VIRTUAL_ENV}")  "
     fi
     vcs_info
     local vcs="${vcs_info_msg_0_}"
     if [[ -n "${vcs}" ]]; then
-        info+=("[${vcs}]")
+        info+="  ${vcs}  "
     fi
-    if (( ${#info[@]} > 0 )); then
-        echo -n "${info[*]} "
+    if [[ -n "${info}" ]]; then
+        echo -n "${info}"
     fi
 }
 
@@ -145,11 +145,21 @@ _prompt_cwd() {
     esac
 }
 
+_prompt_divider() {
+    if [[ -n $PROMPT_SEP ]]; then
+        echo "%F{23}${(l:$COLUMNS::─:)}%f"
+    fi
+}
+
+preexec() {
+    PROMPT_SEP=1
+}
+
 PROMPT_TRIMDIR=0
 
-PROMPT='%F{23}${(l:$COLUMNS::─:)%f'
-PROMPT+='%F{red}%f%F{red}%(?..%? )%f%(1j.%jj .)'
-PROMPT+='%B$(_prompt_info)$(_prompt_cwd) $%b '
+PROMPT='$(_prompt_divider)'
+PROMPT+='%F{23}─ %f%F{red}%(?.. %?  )%f%(1j. %j  .)'
+PROMPT+='$(_prompt_info)  $(_prompt_cwd)    '
 
 # FUNCTIONS
 # ----------------------------------------------------------------------------
@@ -330,13 +340,19 @@ zle -N delete-argument
 # add timestamp every time a command is executed
 accept-line-timestamp() {
     if [[ -n $BUFFER ]]; then
-        RPROMPT='%F{22}%*%f'
+        RPROMPT='%F{22}󰥔  %*%f'
     fi
     zle reset-prompt
     zle accept-line
     RPROMPT=
 }
 zle -N accept-line-timestamp
+
+
+tmux-next-pane() {
+    tmux select-pane -t +
+}
+zle -N tmux-next-pane
 
 # FZF
 # ----------------------------------------------------------------------------
@@ -358,8 +374,8 @@ if hash "fzf" 2>/dev/null; then
 
     bindkey -M vicmd '^F' fzf-file-widget
     bindkey -M viins '^F' fzf-file-widget
-    bindkey -M vicmd '^T' fzf-cd-widget
-    bindkey -M viins '^T' fzf-cd-widget
+    bindkey -M vicmd '^E' fzf-cd-widget
+    bindkey -M viins '^E' fzf-cd-widget
 fi
 
 # BINDINGS
@@ -410,6 +426,8 @@ for i in {1..4}; do
     zle -N delete-argument-$i
     bindkey "\\e$i" delete-argument-$i
 done
+
+bindkey "^t" tmux-next-pane
 
 # LOCAL RC
 # ----------------------------------------------------------------------------

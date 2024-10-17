@@ -1,0 +1,13 @@
+#!/bin/bash
+
+session=notes
+
+if ! tmux has -t "$session" 2>/dev/null; then
+    tmux new -ds "$session" -c ~/Notes nvim Wall.md -c "comm! Q call system('i3-msg kill')"
+	tmux set -t "$session" set-titles on
+	tmux set -t "$session" set-titles-string 'Notes'
+	tmux set -t "$session" status off
+    tmux set -t "$session" pane-border-status off
+fi
+
+exec t "$session"

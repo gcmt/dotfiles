@@ -9,6 +9,8 @@ return {
             (atx_h5_marker)
             (atx_h6_marker)
         ] @heading)
+        (minus_metadata) @metadata
+        (thematic_break) @separator
         (fenced_code_block) @codeblock
         (block_quote) @blockquote
         (list) @list

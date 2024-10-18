@@ -37,6 +37,16 @@ function M.render(ns, node, metadata, context)
 		})
 	)
 
+	table.insert(
+		ids,
+		vim.api.nvim_buf_set_extmark(0, ns, row1, col2, {
+			virt_lines = { { { " ", "NonText" } } },
+			virt_text_pos = "inline",
+			virt_lines_above = true,
+			invalidate = true,
+		})
+	)
+
 	-- conceal hash characters
 	table.insert(
 		ids,

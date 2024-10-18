@@ -8,8 +8,9 @@ local blockquote = require("markdown.handlers.blockquote")
 local link = require("markdown.handlers.link")
 local list = require("markdown.handlers.list")
 local image = require("markdown.handlers.image")
-local shortcut = require("markdown.handlers.shortcut")
+local separator = require("markdown.handlers.separator")
 local callout = require("markdown.handlers.callout")
+local metadata = require("markdown.handlers.metadata")
 
 local handlers = {
 	heading = heading.render,
@@ -20,8 +21,9 @@ local handlers = {
 	link = link.render,
 	list = list.render,
 	image = image.render,
-	shortcut = shortcut.render,
+	separator = separator.render,
 	callout = callout.render,
+	metadata = metadata.render,
 }
 
 --- Return handler for the given capture

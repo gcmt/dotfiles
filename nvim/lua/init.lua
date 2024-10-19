@@ -171,12 +171,12 @@ vim.diagnostic.config({
 		source = false,
 		focusable = false,
 		format = function(diagnostic)
-			local source = string.lower(diagnostic.source)
+			local source = string.lower(diagnostic.source or "")
 			local ret = string.format("[%s]", source)
 			if diagnostic.code ~= nil and source ~= "pyright" then
-				ret = string.format("%s %s:", ret, diagnostic.code)
+				ret = string.format("%s %s:", ret, diagnostic.code or -1)
 			end
-			return string.format("%s %s", ret, diagnostic.message)
+			return string.format("%s %s", ret, diagnostic.message or "")
 		end,
 		prefix = function(_, i, total)
 			if total > 1 then
@@ -242,17 +242,18 @@ with("lspconfig", function(lspconfig)
 		},
 		lua_ls = {
 			on_init = function(client)
-				client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
-					runtime = {
-						version = "LuaJIT",
-					},
-					workspace = {
-						checkThirdParty = false,
-						library = {
-							vim.env.VIMRUNTIME,
+				client.config.settings.Lua =
+					vim.tbl_deep_extend("force", client.config.settings.Lua, {
+						runtime = {
+							version = "LuaJIT",
 						},
-					},
-				})
+						workspace = {
+							checkThirdParty = false,
+							library = {
+								vim.env.VIMRUNTIME,
+							},
+						},
+					})
 			end,
 			settings = {
 				Lua = {},
@@ -275,7 +276,8 @@ with("lspconfig", function(lspconfig)
 	)
 
 	for server, config in pairs(lsp_servers) do
-		config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+		config.capabilities =
+			vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 		lspconfig[server].setup(config)
 	end
 
@@ -332,6 +334,7 @@ with("nvim-treesitter.configs", function(configs)
 			"lua",
 			"yaml",
 			"markdown",
+			"markdown_inline",
 			"html",
 			"sql",
 		},

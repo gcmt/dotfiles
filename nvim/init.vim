@@ -17,7 +17,7 @@
     call add(g:plugins, $HOME.'/Dev/vim/cmdfix.nvim')
     call add(g:plugins, $HOME.'/Dev/vim/regtee.nvim')
     call add(g:plugins, $HOME.'/Dev/vim/vessel.nvim')
-    call add(g:plugins, $HOME.'/Dev/vim/mou.nvim')
+    call add(g:plugins, $HOME.'/Dev/vim/mida.nvim')
 
     call add(g:plugins, $VIMHOME.'/plugins/bookmarks')
     call add(g:plugins, $VIMHOME.'/plugins/commenter')

@@ -25,4 +25,4 @@ nnoremap <silent> <buffer> - <cmd>call search#do('\v^\zs(#+) ', #{
     \ post_jump_cmd: "norm! zt10\<c-y>"
 \ })<cr>
 
-nnoremap <leader>m <cmd>Mou<cr>
+nnoremap <leader>m <cmd>Mida<cr>

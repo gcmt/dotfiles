@@ -395,4 +395,9 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
         cal s:h('markdownH' . s:n . "Delimiter", s:magenta, '', 'bold', '')
     endfor
 
+    hi default link MidaTagIcon FgVeryDim
+    hi default link MidaLinkIcon FgVeryDim
+    hi default link MidaImageIcon FgVeryDim
+    hi default link MidaCalloutText FgDim
+
 end

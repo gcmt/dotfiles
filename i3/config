@@ -257,9 +257,10 @@ bindsym $mod+Control+minus floating enable; resize shrink right 40px; resize shr
 # Apps shortcuts
 bindsym $mod+backslash exec --no-startup-id i3-focus -c "firefox" -m "-" -fallback "firefox"
 bindsym $mod+Shift+backslash exec --no-startup-id i3-focus -c "firefox" -m "docs"
-bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c "firefox" -m "mail" -fallback "firefox --no-remote -P Mail"
 bindsym $mod+equal exec --no-startup-id i3-focus -c Nemo -fallback nemo
 bindsym $mod+Shift+equal exec --no-startup-id nemo
+# bindsym $mod+Shift+grave exec --no-startup-id i3-focus -c "firefox" -m "mail" -fallback "firefox --no-remote -P Mail"
+bindsym $mod+Shift+grave exec --no-startup-id vim-xdotool
 # bindsym $mod+grave exec --no-startup-id i3-focus -c "obsidian" -fallback "obsidian"
  bindsym $mod+grave exec --no-startup-id wezterm start -e tmux-notes
 

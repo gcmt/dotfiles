@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+
+tempfile=$(mktemp --suffix ".vim-xdotool")
+
+trap "_exit" 0
+
+_exit() {
+    rm "${tempfile}"
+}
+
+wezterm start --class "wez-floating" nvim -c startinsert "${tempfile}"
+
+# remove latest newline
+text=$(head -c -1 "${tempfile}")
+if [[ -n "${text}" ]]; then
+    cp "${tempfile}" /tmp/latest.vim-xdotool
+    sleep 0.1
+    echo -n "${text}" | tr "\n" "\r" | xdotool type --clearmodifiers --delay 0 --file -
+fi

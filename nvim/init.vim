@@ -576,7 +576,7 @@
         au TextYankPost * sil! lua vim.highlight.on_yank { higroup="Yank", timeout=200, on_visual=false }
 
         " au VimEnter * clearjumps
-        au BufReadPost * if isdirectory(expand('%:p')) | exec 'Vifm' expand('%:p') | end
+        au BufWinEnter * if isdirectory(expand('%:p')) | exec 'Vifm' expand('%:p') | end
 
         au FocusGained,BufEnter,CursorHold * sil! checktime
 

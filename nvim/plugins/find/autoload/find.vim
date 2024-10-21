@@ -1,7 +1,7 @@
 
-let s:bufname = '__finder__'
+let s:bufname = '__find__'
 
-func finder#findg(path, query) abort
+func find#findg(path, query) abort
     if empty(a:query) && !bufexists(s:bufname)
         return s:err('No previous searches')
     end
@@ -21,7 +21,7 @@ func finder#findg(path, query) abort
 endf
 
 
-func finder#find(path, query, autojump = 0) abort
+func find#find(path, query, autojump = 0) abort
     if empty(a:query) && !bufexists(s:bufname)
         return s:err('No previous searches')
     end
@@ -50,27 +50,27 @@ func s:view_results(results) abort
         exec bufwinnr(s:bufname).'wincmd w'
     else
         exec 'sil keepj keepa botright 1new' s:bufname
-        setl filetype=finder buftype=nofile bufhidden=hide nobuflisted
+        setl filetype=find buftype=nofile bufhidden=hide nobuflisted
         setl noundofile nobackup noswapfile nospell
         setl nowrap nonumber norelativenumber nolist textwidth=0
         setl cursorline nocursorcolumn colorcolumn=0
-        call setwinvar(0, '&stl', ' finder')
+        call setwinvar(0, '&stl', ' find')
     end
-    call s:render(a:results[:g:finder_max_results])
+    call s:render(a:results[:g:find_max_results])
 endf
 
 func s:render(files) abort
 
     if empty(a:files)
-        let table = get(get(b:, 'finder', {}), 'table', {})
-        let files = map(sort(keys(table)), {-> b:finder.table[v:val]})
+        let table = get(get(b:, 'find', {}), 'table', {})
+        let files = map(sort(keys(table)), {-> b:find.table[v:val]})
     else
         let files = a:files
     end
 
     if empty(files)
         close
-        return s:err("Finder: error: no files to render")
+        return s:err("find: error: no files to render")
     end
 
     syntax clear
@@ -85,11 +85,11 @@ func s:render(files) abort
     endfo
 
     let i = 1
-    let b:finder = { 'table': {}}
+    let b:find = { 'table': {}}
     for path in files
 
         let line = ''
-        let b:finder.table[i] = path
+        let b:find.table[i] = path
         let path = s:prettify_path(path)
 
         let tail = fnamemodify(path, ':t')
@@ -99,7 +99,7 @@ func s:render(files) abort
         let line .= tail
 
         if path != tail
-            exec 'syn match FinderDim /\%'.i.'l\%'.(len(line)+1).'c.*/'
+            exec 'syn match FindDim /\%'.i.'l\%'.(len(line)+1).'c.*/'
             let line .= ' ' . path
         end
 
@@ -115,10 +115,10 @@ func s:render(files) abort
 
 endf
 
-" Resize the current window according to g:finder_max_winsize.
+" Resize the current window according to g:find_max_winsize.
 " That value is expected to be expressed in percentage.
 func s:resize_window()
-    let max = float2nr(&lines * g:finder_max_winsize / 100)
+    let max = float2nr(&lines * g:find_max_winsize / 100)
     exec 'resize' min([line('$'), max])
 endf
 

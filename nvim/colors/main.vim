@@ -374,6 +374,7 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     cal s:h('yamlString', s:green, '', '', '')
     cal s:h('yamlKey', s:magenta, '', '', '')
     hi default link yamlBlockMappingKey Keyword
+    hi default link @property.yaml Normal
 
     hi default link sqlKeyword Keyword
 
@@ -385,7 +386,11 @@ if has('gui_running') || &t_Co == 88 || &t_Co == 256
     hi default link @lsp.type.keyword.lua Comment
     hi default link @lsp.type.type.lua Comment
     hi default link @lsp.type.parameter.lua Normal
+    hi default link @string.regexp.lua String
+    hi default link @string.escape.lua String
 
+
+    hi default link @keyword.directive.markdown Normal
     cal s:h('markdownCode', s:fg_dim, '', '', '')
     cal s:h('markdownCodeBlock', s:fg_dim, '', '', '')
     cal s:h('markdownURL', s:fg_dim, '', 'underline', '')

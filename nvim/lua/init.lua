@@ -29,6 +29,17 @@ with("cmdfix", function(cmdfix)
 	})
 end)
 
+-- GLARE
+----------------------------------------------------------------------------
+
+with("glare", function(glare)
+	glare.opt.verbosity = vim.log.levels.INFO
+	glare.opt.heading.lines_above = 0
+	glare.opt.image.icon_position = "left"
+	glare.opt.link.icon_position = "left"
+	glare.opt.wikilink.icon_position = "left"
+end)
+
 -- VESSEL
 ----------------------------------------------------------------------------
 
@@ -88,6 +99,31 @@ end)
 
 with("luasnip.loaders.from_snipmate", function(luasnip)
 	luasnip.lazy_load()
+end)
+
+-- GITSIGNS
+-- https://github.com/lewis6991/gitsigns.nvim
+----------------------------------------------------------------------------
+
+with("gitsigns", function(gitsigns)
+	gitsigns.setup({
+		signs = {
+			add = { text = "+" },
+			change = { text = "*" },
+			delete = { text = "_" },
+			topdelete = { text = "‾" },
+			changedelete = { text = "~" },
+			untracked = { text = "?" },
+		},
+		signs_staged = {
+			add = { text = "+" },
+			change = { text = "*" },
+			delete = { text = "_" },
+			topdelete = { text = "‾" },
+			changedelete = { text = "~" },
+			untracked = { text = "?" },
+		},
+	})
 end)
 
 -- DIFFVIEW
@@ -214,10 +250,10 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
 vim.keymap.set("n", "<leader>l", vim.diagnostic.setloclist)
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
 
-vim.fn.sign_define("DiagnosticSignError", { text = "✖", texthl = "DiagnosticSignError" })
-vim.fn.sign_define("DiagnosticSignWarn", { text = "✖", texthl = "DiagnosticSignWarn" })
-vim.fn.sign_define("DiagnosticSignInfo", { text = "✖", texthl = "DiagnosticSignInfo" })
-vim.fn.sign_define("DiagnosticSignHint", { text = "✖", texthl = "DiagnosticSignHint" })
+vim.fn.sign_define("DiagnosticSignError", { text = "", texthl = "DiagnosticSignError" })
+vim.fn.sign_define("DiagnosticSignWarn", { text = "", texthl = "DiagnosticSignWarn" })
+vim.fn.sign_define("DiagnosticSignInfo", { text = "󰋼", texthl = "DiagnosticSignInfo" })
+vim.fn.sign_define("DiagnosticSignHint", { text = "󰋼", texthl = "DiagnosticSignHint" })
 
 -- LSP CONFIG
 -- https://github.com/neovim/nvim-lspconfig
@@ -323,7 +359,10 @@ vim.lsp.inlay_hint.enable()
 ----------------------------------------------------------------------------
 
 with("nvim-treesitter.configs", function(configs)
+	local parsers_dir = os.getenv("HOME") .. "/.local/share/nvim"
+	vim.opt.runtimepath:prepend(parsers_dir)
 	configs.setup({
+		parser_install_dir = parsers_dir,
 		ensure_installed = {
 			"vim",
 			"python",

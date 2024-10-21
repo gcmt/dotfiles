@@ -1,7 +1,7 @@
 
 func! s:edit(cmd) abort
     let win = winnr()
-    let path = get(b:finder.table, line('.'), '')
+    let path = get(b:find.table, line('.'), '')
     if !empty(path)
         wincmd p
         exec win.'wincmd c'

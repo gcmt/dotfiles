@@ -5,6 +5,7 @@ setl nolist
 setl nonumber
 setl norelativenumber
 setl foldcolumn=1
+setl conceallevel=0
 
 " break undo sequence
 inoremap <buffer> . .<c-g>u
@@ -25,4 +26,4 @@ nnoremap <silent> <buffer> - <cmd>call search#do('\v^\zs(#+) ', #{
     \ post_jump_cmd: "norm! zt10\<c-y>"
 \ })<cr>
 
-nnoremap <leader>m <cmd>Mida<cr>
+nnoremap <leader>m <cmd>Glare<cr>

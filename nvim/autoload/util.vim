@@ -136,7 +136,7 @@ endf
 
 func! util#ft_edit(ft)
     let ft = empty(a:ft) ? &ft : a:ft
-    call finder#find($VIMHOME, 'ftplugin.*'.ft.'\.vim$', 1)
+    call find#find($VIMHOME, 'ftplugin.*'.ft.'\.vim$', 1)
 endf
 
 " Edit snippets file

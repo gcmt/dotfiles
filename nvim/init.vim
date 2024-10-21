@@ -17,17 +17,16 @@
     call add(g:plugins, $HOME.'/Dev/vim/cmdfix.nvim')
     call add(g:plugins, $HOME.'/Dev/vim/regtee.nvim')
     call add(g:plugins, $HOME.'/Dev/vim/vessel.nvim')
-    call add(g:plugins, $HOME.'/Dev/vim/mida.nvim')
+    call add(g:plugins, $HOME.'/Dev/vim/glare.nvim')
 
+    call add(g:plugins, $VIMHOME.'/plugins/search')
+    call add(g:plugins, $VIMHOME.'/plugins/find')
     call add(g:plugins, $VIMHOME.'/plugins/bookmarks')
-    call add(g:plugins, $VIMHOME.'/plugins/commenter')
     call add(g:plugins, $VIMHOME.'/plugins/explorer')
-    call add(g:plugins, $VIMHOME.'/plugins/finder')
+    call add(g:plugins, $VIMHOME.'/plugins/spotter')
+    call add(g:plugins, $VIMHOME.'/plugins/quickfix')
     call add(g:plugins, $VIMHOME.'/plugins/objects')
     call add(g:plugins, $VIMHOME.'/plugins/grep')
-    call add(g:plugins, $VIMHOME.'/plugins/quickfix')
-    call add(g:plugins, $VIMHOME.'/plugins/search')
-    call add(g:plugins, $VIMHOME.'/plugins/spotter')
     call add(g:plugins, $VIMHOME.'/plugins/vifm')
     call add(g:plugins, $VIMHOME.'/plugins/fzf')
 
@@ -37,7 +36,7 @@
     call add(g:external, 'L3MON4D3/LuaSnip')
     call add(g:external, 'tpope/vim-fugitive')
     call add(g:external, 'sindrets/diffview.nvim')
-    call add(g:external, 'airblade/vim-gitgutter')
+    call add(g:external, 'lewis6991/gitsigns.nvim')
     call add(g:external, 'neovim/nvim-lspconfig')
     call add(g:external, 'nvim-treesitter/nvim-treesitter')
     call add(g:external, 'hrsh7th/nvim-cmp')
@@ -129,8 +128,9 @@
     set linebreak
     set breakindent
     let &showbreak = ""
+    let &breakat = " 	"
     set textwidth=80
-    set conceallevel=2
+    set conceallevel=0
 
     set number
     set relativenumber
@@ -220,7 +220,7 @@
     endf
 
     func! STLGotoAltBuffer(minwid, clicks, btn, mod)
-        call s:goto_alternate()
+        call util#goto_alternate()
     endf
 
     func! _stl_alternate(win)
@@ -295,22 +295,14 @@
     endf
 
     func! _stl_git_status(win)
-        if win_getid() != a:win.winid || !exists('*GitGutterGetHunkSummary')
+        if win_getid() != a:win.winid
             return ''
         end
-        let [a, m, r] = GitGutterGetHunkSummary()
-        let branch = _stl_git_branch(a:win)
-        if !getbufvar(a:win.bufnr, '&diff') && !empty(branch) && a:win.width > 60
-            return printf('%s%s', _i(""), branch)
+        let status = getbufvar(a:win.bufnr,'gitsigns_status_dict', {})
+        if !getbufvar(a:win.bufnr, '&diff') && !empty(status) && a:win.width > 60
+            return printf('%s%s', _i(""), status.head)
         end
         return ''
-    endf
-
-    func! _stl_git_branch(win)
-        if win_getid() != a:win.winid || !exists('*FugitiveHead')
-            return ''
-        end
-        return FugitiveHead()
     endf
 
     func! _stl_clip(win)
@@ -468,7 +460,9 @@
     inoremap <c-e> <c-g>u<esc>O
     inoremap <c-d> <c-g>u<esc>o
 
-    inoremap <c-w> <c-g>u<c-w>
+    " break undo sequence
+    inoremap <c-r> <c-g>u<c-r>
+
     inoremap <c-l> <right><bs>
     cnoremap <c-l> <right><bs>
 
@@ -504,9 +498,6 @@
     xmap <silent> ]P Pg=gqac
     xmap <silent> ]p pg=gqac
 
-    " copy to the end of the line
-    nnoremap Y y$
-
     " indent lines without losing selection
     vnoremap < <gv
     vnoremap > >gv
@@ -534,6 +525,9 @@
 
     noremap J 3gj
     noremap K 3gk
+
+    nnoremap ) <c-d>zz
+    nnoremap ( <c-u>zz
 
     noremap <c-o> <cmd>call util#zz("\<c-o>")<cr>
     noremap <c-i> <cmd>call util#zz("\<c-i>")<cr>
@@ -578,12 +572,11 @@
     aug _misc
         au!
 
-        if has('nvim')
-            au TextYankPost * sil! lua vim.highlight.on_yank { higroup="Yank", timeout=150, on_visual=false }
-        end
+        " highlight yanked text
+        au TextYankPost * sil! lua vim.highlight.on_yank { higroup="Yank", timeout=200, on_visual=false }
 
         " au VimEnter * clearjumps
-        au VimEnter * if isdirectory(expand('%:p')) | exec 'Vifm' expand('%:p') | end
+        au BufReadPost * if isdirectory(expand('%:p')) | exec 'Vifm' expand('%:p') | end
 
         au FocusGained,BufEnter,CursorHold * sil! checktime
 
@@ -602,10 +595,6 @@
         au CmdWinEnter * noremap <buffer> q <c-w>c
         au CmdWinEnter * setl nonumber norelativenumber
         au CmdWinEnter * resize 20 | keepj norm! ggG
-
-        " Keep the help window to the bottom when there are multiple splits
-        au BufWinEnter * if &ft == 'help' | wincmd J | end
-        au BufWinEnter * if &ft == 'help' | nnoremap <silent> <buffer> q <c-w>c | end
 
         au BufNewFile,BufRead *.ledger set ft=ledger
         au BufNewFile,BufRead */Xresources.d/* set ft=xdefaults
@@ -706,24 +695,24 @@
     nnoremap gl <plug>(VesselViewLocalJumps)
     nnoremap gL <plug>(VesselViewExternalJumps)
 
-    nnoremap gb <plug>(VesselViewBuffersSidebar)
-    nnoremap <c-k> <plug>(VesselViewBuffers)
-    nnoremap <c-j> <plug>(VesselViewMarks)
+    nnoremap <c-l> <plug>(VesselViewBuffers)
+    nnoremap <c-n> <plug>(VesselViewMarks)
 
     nnoremap m. <plug>(VesselSetLocalMark)
     nnoremap m, <plug>(VesselSetGlobalMark)
 
-    nnoremap <c-p> <plug>(VesselPinnedPrev)
-    nnoremap <c-n> <plug>(VesselPinnedNext)
+    nnoremap <c-j> <plug>(VesselPinnedPrev)
+    nnoremap <c-k> <plug>(VesselPinnedNext)
 
 " Vifm
 " ----------------------------------------------------------------------------
 
-    nnoremap <c-f> <cmd>call <sid>vifm_fzf()<cr>
+    nnoremap <c-f> <cmd>call <sid>vifm_fzf("!")<cr>
+    nnoremap <c-p> <cmd>call <sid>vifm_fzf("")<cr>
     nnoremap <c-b> <cmd>exec 'Vifm' expand('%:p:h')<cr>
 
-    func! s:vifm_fzf()
-        exec 'Vifm!' util#find_root(expand('%:p:h'), getcwd())
+    func! s:vifm_fzf(bang)
+        exec 'Vifm' . a:bang util#find_root(expand('%:p:h'), getcwd())
     endf
 
 " Spotter
@@ -778,11 +767,6 @@
 
     let g:ale_fixers.rust = ['rustfmt']
 
-" Git Gutter
-" ----------------------------------------------------------------------------
-
-    let g:gitgutter_enabled = 1
-
 " Tmux
 " ----------------------------------------------------------------------------
 
@@ -809,6 +793,12 @@
 
     let g:loaded_2html_plugin = 1
     let g:loaded_netrwPlugin = 1
+    let g:loaded_zipPlugin = 1
+    let g:loaded_tarPlugin = 1
+    let g:loaded_tutor_mode_plugin = 1
+    let g:loaded_gzip = 1
+    let g:loaded_fzf = 1
+    let g:load_black = 1
 
 " source local .vimrc
 " ----------------------------------------------------------------------------

@@ -250,8 +250,8 @@ vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
 vim.keymap.set("n", "<leader>l", vim.diagnostic.setloclist)
 vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float)
 
-vim.fn.sign_define("DiagnosticSignError", { text = "", texthl = "DiagnosticSignError" })
-vim.fn.sign_define("DiagnosticSignWarn", { text = "", texthl = "DiagnosticSignWarn" })
+vim.fn.sign_define("DiagnosticSignError", { text = "󰋼", texthl = "DiagnosticSignError" })
+vim.fn.sign_define("DiagnosticSignWarn", { text = "󰋼", texthl = "DiagnosticSignWarn" })
 vim.fn.sign_define("DiagnosticSignInfo", { text = "󰋼", texthl = "DiagnosticSignInfo" })
 vim.fn.sign_define("DiagnosticSignHint", { text = "󰋼", texthl = "DiagnosticSignHint" })
 
@@ -278,18 +278,17 @@ with("lspconfig", function(lspconfig)
 		},
 		lua_ls = {
 			on_init = function(client)
-				client.config.settings.Lua =
-					vim.tbl_deep_extend("force", client.config.settings.Lua, {
-						runtime = {
-							version = "LuaJIT",
+				client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
+					runtime = {
+						version = "LuaJIT",
+					},
+					workspace = {
+						checkThirdParty = false,
+						library = {
+							vim.env.VIMRUNTIME,
 						},
-						workspace = {
-							checkThirdParty = false,
-							library = {
-								vim.env.VIMRUNTIME,
-							},
-						},
-					})
+					},
+				})
 			end,
 			settings = {
 				Lua = {},
@@ -312,8 +311,7 @@ with("lspconfig", function(lspconfig)
 	)
 
 	for server, config in pairs(lsp_servers) do
-		config.capabilities =
-			vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+		config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 		lspconfig[server].setup(config)
 	end
 

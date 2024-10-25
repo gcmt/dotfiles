@@ -307,7 +307,7 @@
 
     func! _stl_clip(win)
         if !empty(&clipboard) && a:win.width > 60
-            return substitute(&clipboard, '\vplus$', '+', '')
+            return _i("") . substitute(&clipboard, '\vplus$', '+', '')
         end
         return ''
     endf
@@ -526,8 +526,8 @@
     noremap J 3gj
     noremap K 3gk
 
-    nnoremap ) <c-d>zz
-    nnoremap ( <c-u>zz
+    nnoremap <c-j> <c-d>zz
+    nnoremap <c-k> <c-u>zz
 
     noremap <c-o> <cmd>call util#zz("\<c-o>")<cr>
     noremap <c-i> <cmd>call util#zz("\<c-i>")<cr>
@@ -686,8 +686,8 @@
     nnoremap s :Search<space>
     nnoremap gs <cmd>Search<cr>
 
-    nnoremap S <cmd>call util#search(0, 'Search')<cr>
-    vnoremap <silent> S :<c-u>call util#search(1, 'Search')<cr>
+    nnoremap \| <cmd>call util#search(0, 'Search!')<cr>
+    vnoremap <silent> \| :<c-u>call util#search(1, 'Search!')<cr>
 
 " Vessel
 " ----------------------------------------------------------------------------
@@ -701,8 +701,8 @@
     nnoremap m. <plug>(VesselSetLocalMark)
     nnoremap m, <plug>(VesselSetGlobalMark)
 
-    nnoremap <c-j> <plug>(VesselPinnedPrev)
-    nnoremap <c-k> <plug>(VesselPinnedNext)
+    nnoremap ( <plug>(VesselPinnedPrev)
+    nnoremap ) <plug>(VesselPinnedNext)
 
 " Vifm
 " ----------------------------------------------------------------------------

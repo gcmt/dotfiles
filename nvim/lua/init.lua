@@ -34,7 +34,7 @@ end)
 
 with("glare", function(glare)
 	glare.opt.verbosity = vim.log.levels.INFO
-	glare.opt.heading.lines_above = 0
+	glare.opt.heading.lines_above = 1
 	glare.opt.image.icon_position = "left"
 	glare.opt.link.icon_position = "left"
 	glare.opt.wikilink.icon_position = "left"
@@ -44,6 +44,7 @@ end)
 ----------------------------------------------------------------------------
 
 with("vessel", function(vessel)
+	vessel.opt.create_commands = true
 	vessel.opt.highlight_on_jump = true
 	vessel.opt.preview.position = "right"
 	vessel.opt.window.max_height = 90
@@ -91,6 +92,7 @@ with("vessel", function(vessel)
 			end, { buffer = true })
 		end,
 	})
+	vessel.setup()
 end)
 
 -- LUASNIP
@@ -278,17 +280,18 @@ with("lspconfig", function(lspconfig)
 		},
 		lua_ls = {
 			on_init = function(client)
-				client.config.settings.Lua = vim.tbl_deep_extend("force", client.config.settings.Lua, {
-					runtime = {
-						version = "LuaJIT",
-					},
-					workspace = {
-						checkThirdParty = false,
-						library = {
-							vim.env.VIMRUNTIME,
+				client.config.settings.Lua =
+					vim.tbl_deep_extend("force", client.config.settings.Lua, {
+						runtime = {
+							version = "LuaJIT",
 						},
-					},
-				})
+						workspace = {
+							checkThirdParty = false,
+							library = {
+								vim.env.VIMRUNTIME,
+							},
+						},
+					})
 			end,
 			settings = {
 				Lua = {},
@@ -311,7 +314,8 @@ with("lspconfig", function(lspconfig)
 	)
 
 	for server, config in pairs(lsp_servers) do
-		config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+		config.capabilities =
+			vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 		lspconfig[server].setup(config)
 	end
 

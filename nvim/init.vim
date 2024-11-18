@@ -133,7 +133,7 @@
     set conceallevel=0
 
     set number
-    set relativenumber
+    set norelativenumber
     set numberwidth=1
     set nocursorline
 
@@ -215,8 +215,11 @@
         if !empty(flags)
             let name = name . " " . join(flags)
         end
-        let hl = getbufvar(bnum, '&modified') ? "StatusLineErr" : "StatusLineIcon"
-        return _i("󰷈", hl) . name
+        let hl = "StatusLineIcon"
+        if getbufvar(bnum, '&mod')
+            let hl = "StatusLineErr"
+        end
+        return _i("󰷈", hl) . _hl(name, hl)
     endf
 
     func! STLGotoAltBuffer(minwid, clicks, btn, mod)
@@ -333,6 +336,10 @@
 
     func! _i(icon, hl = "StatusLineIcon")
         return "%#" . a:hl . "#" . a:icon . '  %*'
+    endf
+
+    func! _hl(text, hl = "StatusLineNormal")
+        return "%#" . a:hl . "#" . a:text . '  %*'
     endf
 
     func! _stl()

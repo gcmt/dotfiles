@@ -440,7 +440,7 @@ snippet html5
 		<head>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width">
-			<title>${1:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
+			<title>${1}</title>
 		</head>
 		<body>
 			$0
@@ -452,7 +452,7 @@ snippet html5l
 		<head>
 			<meta charset="utf-8">
 			<meta name="viewport" content="width=device-width">
-			<title>${2:`substitute(vim_snippets#Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
+			<title>${2}</title>
 			${3:link}
 		</head>
 		<body>

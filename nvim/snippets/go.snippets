@@ -3,6 +3,11 @@ snippet vars "variables declaration"
 		${1} ${2} = ${3}
 	)
 
+snippet { "closing brace"
+	{
+		${0}
+	}
+
 snippet ap "append"
 	append(${1:slice}, ${0:value})
 
@@ -128,39 +133,31 @@ snippet sel "select"
 # ERROR HANDLING
 # -----------------------------------------------------------------------------
 
-snippet er "if error not nil, return err"
-	if err != nil {
-		return err
-	}
-	${0}
-
-snippet e "if error not nil, return err"
+snippet ifer "if error not nil, return err"
 	if err != nil {
 	    ${1}
 	}
 	${0}
 
-snippet errwr "Error handling with fmt.Errorf"
-	if ${1}err != nil {
-		return fmt.Errorf("${2} %w", err)
-	}
+snippet ef "fmt.Errorf()"
+	fmt.Errorf("${1}\n", ${0})
 
 # PRINTING
 # -----------------------------------------------------------------------------
 
-snippet p "fmt.Printf()"
+snippet pf "fmt.Printf()"
 	fmt.Printf("${1}\n", ${0})
 
 snippet pl "fmt.Println()"
 	fmt.Println(${1})
 
-snippet fp "fmt.Fprintf()"
+snippet fpf "fmt.Fprintf()"
 	fmt.Fprintf(${1}, "${2}\n", ${0})
 
 snippet fpl "fmt.Fprintln()"
 	fmt.Fprintln(${1}, ${0})
 
-snippet sp "fmt.Sprintf()"
+snippet spf "fmt.Sprintf()"
 	fmt.Sprintf("${1}", ${0})
 
 snippet spl "fmt.Sprintln()"
